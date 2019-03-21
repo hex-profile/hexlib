@@ -1,0 +1,73 @@
+#if defined(_WIN32)
+
+#include "timerWin32.h"
+
+#include <windows.h>
+
+//================================================================
+//
+// TimerWin32::TimerWin32
+//
+//================================================================
+
+TimerWin32::TimerWin32()
+{
+    LARGE_INTEGER f;
+    if (!QueryPerformanceFrequency(&f)) return;
+
+    if (f.QuadPart == 0) return;
+
+    tickPeriod = 1.0f / float32(f.QuadPart);
+    tickFreq = float32(f.QuadPart);
+}
+
+//================================================================
+//
+// TimerWin32::momentFunc
+//
+//================================================================
+
+TimeMoment TimerWin32::moment()
+{
+    LARGE_INTEGER f = {0};
+    QueryPerformanceCounter(&f);
+
+    TimeMoment result;
+    (Moment&) result = f.QuadPart;
+    return result;
+}
+
+//================================================================
+//
+// TimerWin32::diff
+//
+//================================================================
+
+float32 TimerWin32::diff(const TimeMoment& t1, const TimeMoment& t2)
+{
+    const Moment& m1 = (Moment&) t1;
+    const Moment& m2 = (Moment&) t2;
+
+    return int64(m2 - m1) * tickPeriod;
+}
+
+//================================================================
+//
+// TimerWin32::add
+//
+//================================================================
+
+TimeMoment TimerWin32::add(const TimeMoment& baseMoment, float32 difference)
+{
+    const Moment& base = (const Moment&) baseMoment;
+
+    int64 diffInTicks = int64(difference * tickFreq + 0.5f);
+
+    TimeMoment result;
+    (Moment&) result = base + diffInTicks;
+    return result;
+}
+
+//----------------------------------------------------------------
+
+#endif

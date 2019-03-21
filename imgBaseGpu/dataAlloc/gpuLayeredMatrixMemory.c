@@ -1,0 +1,193 @@
+#include "gpuLayeredMatrixMemory.h"
+
+#include "vectorTypes/vectorType.h"
+#include "errorLog/errorLog.h"
+#include "data/spacex.h"
+
+//================================================================
+//
+// computeAlignedSize
+//
+//================================================================
+
+inline bool computeAlignedSize(Space size, Space alignmentMask, Space& result)
+{
+    Space sizePlusMask = 0;
+    require(safeAdd(size, alignmentMask, sizePlusMask));
+
+    result = sizePlusMask & (~alignmentMask);
+    return true;
+}
+
+//================================================================
+//
+// GpuLayeredMatrixMemory<Type>::reallocEx
+//
+// ~115 instructions x86, plus allocator
+//
+//================================================================
+
+template <typename Type>
+bool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+{
+    stdBegin;
+
+    REQUIRE(layerCount >= 1);
+
+    Space sizeX = size.X;
+    Space sizeY = size.Y;
+
+    const Space elemSize = (Space) sizeof(Type);
+
+    //
+    // Row alignment is less or equal to base aligment.
+    //
+
+    REQUIRE(isPower2(baseByteAlignment) && isPower2(rowByteAlignment));
+    COMPILE_ASSERT(COMPILE_IS_POWER2(sizeof(Type)));
+
+    baseByteAlignment = clampMin(baseByteAlignment, elemSize);
+    rowByteAlignment = clampMin(rowByteAlignment, elemSize);
+
+    REQUIRE(rowByteAlignment <= baseByteAlignment);
+
+    //
+    // compute alignment in elements
+    //
+
+    Space rowAlignment = SpaceU(rowByteAlignment) / SpaceU(elemSize);
+    Space baseAlignment = SpaceU(baseByteAlignment) / SpaceU(elemSize);
+
+    Space rowAlignMask = rowAlignment - 1;
+    Space baseAlignMask = baseAlignment - 1;
+
+    //
+    // check size
+    //
+
+    REQUIRE(sizeX >= 0 && sizeY >= 0);
+
+    //
+    // align image size X
+    // 
+
+    Space alignedSizeX = 0;
+    REQUIRE(computeAlignedSize(sizeX, rowAlignMask, alignedSizeX));
+
+    //
+    // allocation image area (in elements)
+    //
+
+    Space imageArea = 0;
+    REQUIRE(safeMul(alignedSizeX, sizeY, imageArea));
+
+    Space alignedImageArea = 0;
+    REQUIRE(computeAlignedSize(imageArea, baseAlignMask, alignedImageArea));
+
+    //
+    // allocation height
+    //
+
+    Space allocTotalSize = 0;
+    REQUIRE(safeMul(layerCount, alignedImageArea, allocTotalSize));
+
+    ////
+
+    const Space maxAllocSize = TYPE_MAX(Space) / elemSize;
+    REQUIRE(allocTotalSize <= maxAllocSize);
+    Space byteAllocSize = allocTotalSize * elemSize;
+
+    //
+    // Allocate; if successful, update matrix layout.
+    //
+
+    AddrU newAddr = 0;
+    require(allocator.func.alloc(allocator.state, byteAllocSize, baseByteAlignment, memoryOwner, newAddr, stdPass));
+
+    COMPILE_ASSERT(sizeof(Pointer) == sizeof(AddrU));
+    Pointer newPtr = Pointer(newAddr);
+
+    ////
+
+    allocPtr = newPtr;
+    allocSize = point(sizeX, sizeY);
+    allocAlignMask = rowAlignMask;
+    allocLayerCount = layerCount;
+    allocLayerPitch = alignedImageArea;
+
+    ////
+
+    currentImageSize = point(sizeX, sizeY);
+    currentImagePitch = alignedSizeX;
+    currentLayerCount = layerCount;
+    currentLayerPitch = alignedImageArea;
+
+    stdEnd;
+}
+
+//================================================================
+//
+// GpuLayeredMatrixMemory<Type>::dealloc
+//
+//================================================================
+
+template <typename Type>
+void GpuLayeredMatrixMemory<Type>::dealloc()
+{
+    memoryOwner.clear();
+
+    ////
+
+    allocPtr = Pointer(0);
+    allocSize = point(0);
+    allocAlignMask = 0;
+    allocLayerCount = 0;
+    allocLayerPitch = 0;
+
+    ////
+
+    resizeNull();
+}
+
+//================================================================
+//
+// GpuLayeredMatrixMemory::resize
+//
+//================================================================
+
+template <typename Type>
+bool GpuLayeredMatrixMemory<Type>::resize(Space layerCount, Space sizeX, Space sizeY)
+{
+    require(layerCount <= allocLayerCount);
+    require(SpaceU(sizeX) <= SpaceU(allocSize.X));
+    require(SpaceU(sizeY) <= SpaceU(allocSize.Y));
+
+    //
+    // Pitch is compressed for better DRAM locality
+    //
+
+    Space alignedSizeX = (sizeX + allocAlignMask) & (~allocAlignMask); // overflow impossible
+
+    ////
+
+    currentImageSize = point(sizeX, sizeY);
+    currentImagePitch = alignedSizeX;
+    currentLayerCount = layerCount;
+    currentLayerPitch = alignedSizeX * sizeY;
+
+    return true;
+}
+
+//================================================================
+//
+// instantiations
+//
+//================================================================
+
+#define TMP_MACRO(Type, o) \
+    template class GpuLayeredMatrixMemory<Type>;
+  
+VECTOR_INT_FOREACH(TMP_MACRO, o)
+VECTOR_FLOAT_FOREACH(TMP_MACRO, o)
+
+#undef TMP_MACRO
