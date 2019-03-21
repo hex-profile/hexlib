@@ -1,0 +1,43 @@
+#pragma once
+
+#include "timer/timer.h"
+#include "numbers/int/intBase.h"
+#include "numbers/float/floatBase.h"
+
+//================================================================
+//
+// TimerWin32
+//
+//================================================================
+
+class TimerWin32 : public Timer
+{
+
+public:
+
+    TimerWin32();
+
+public:
+
+    TimeMoment moment() override;
+    float32 diff(const TimeMoment& t1, const TimeMoment& t2) override;
+    TimeMoment add(const TimeMoment& baseMoment, float32 difference) override;
+
+public:
+
+    bool isThreadProtected() const override
+    {
+        return true; // Win32 API is protected, all class fields are runtime-constant
+    }
+
+private:
+
+    using Moment = uint64;
+
+    COMPILE_ASSERT(sizeof(Moment) <= sizeof(TimeMoment));
+    COMPILE_ASSERT(alignof(Moment) <= alignof(TimeMoment));
+
+    float32 tickFreq = 0;
+    float32 tickPeriod = 0;
+
+};

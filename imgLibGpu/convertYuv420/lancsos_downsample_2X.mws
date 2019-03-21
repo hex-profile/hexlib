@@ -1,0 +1,62 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
+1 0 0 0 0 1 }{CSTYLE "2D Math" -1 2 "Times" 0 1 0 0 0 0 0 0 2 0 0 0 0 
+0 0 1 }{CSTYLE "2D Output" 2 20 "" 0 1 0 0 255 1 0 0 0 0 0 0 0 0 0 1 }
+{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 
+2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Output" -1 
+11 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 3 0 
+0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Plot" -1 13 1 {CSTYLE "" -1 -1 "
+Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 1 0 0 0 0 1 0 1 0 2 2 0 1 }
+}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "restart;" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 96 "lanczos := (x, a) -> piecewise(x = \+
+0, 1, abs(x) < a, sin(Pi*x) * sin(Pi*x/a) * a / (Pi*x)^2, 0):" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 35 "plot(lanczos(x/2, 2)/2, x = \+
+-4..4);" }}{PARA 13 "" 1 "" {GLPLOT2D 528 528 528 {PLOTDATA 2 "6%-%'CU
+RVESG6$7jo7$$!\"%\"\"!$F*F*7$$!3ommmmFiDQ!#<$!3@9UkkjoA5!#?7$$!35LLLo!
+)*Qn$F/$!3kdx+*)*H#GPF27$$!3nmmmwxE.NF/$!3[SUyA7![$))F27$$!3YmmmOk]JLF
+/$!3eN;So7s(e\"!#>7$$!3_LLL[9cgJF/$!3<R!H0&on1CFB7$$!3smmmhN2-IF/$!39*
+p\\0w?Y<$FB7$$!3!******\\`oz$GF/$!3U<tfDow_QFB7$$!3eLLL3(4Jv#F/$!3A'*z
+=**y+4TFB7$$!3!omm;)3DoEF/$!3%fkW*H#fCF%FB7$$!3]LLL)>kOe#F/$!3q.&=Mf'=
+@VFB7$$!3?+++:v2*\\#F/$!3!*z!=a2!\\MUFB7$$!3$pmmTrp?T#F/$!3/%)\\:@<^#)
+RFB7$$!3BLLL8>1DBF/$!3e!)es5L5XNFB7$$!3%******\\RD%[AF/$!3Q2a6z,s\"*HF
+B7$$!3kmmmw))yr@F/$!3e!H8!4,#)pAFB7$$!3;+++S(R#**>F/$\"3yJD\\*H64@\"!#
+@7$$!30++++@)f#=F/$\"3m&>-a6+3D$FB7$$!3-+++gi,f;F/$\"394JPJ$ztC(FB7$$!
+3OLL$3x0Ke\"F/$\"3m$3)Gj1'GK*FB7$$!3qmmm\"G&R2:F/$\"3Qq-\\DFNa6!#=7$$!
+32++]x#\\sT\"F/$\"3qwy1z)>]V\"F^r7$$!3XLLLtK5F8F/$\"3p'3OZkI1t\"F^r7$$
+!3_LLL$yP2D\"F/$\"3%[vcQwz**)>F^r7$$!3eLLL$HsV<\"F/$\"3)yBT5Bl[D#F^r7$
+$!3!pmmT2Tb3\"F/$\"3#R*zHQQPmDF^r7$$!3+-++]&)4n**F^r$\"3'z(Q!zjWs(GF^r
+7$$!3cpmmT<z!=*F^r$\"3[=fOvm:[JF^r7$$!37PLLL\\[%R)F^r$\"3Q6[PX%[;T$F^r
+7$$!3qnmmT<yJvF^r$\"3s\"Ge#\\BK)o$F^r7$$!3G)*****\\&y!pmF^r$\"3_Gh(4V/
+z%RF^r7$$!3'))******4\"eZeF^r$\"33qQY)>*\\vTF^r7$$!3Y******\\O3E]F^r$
+\"3'Q;y9yd1Q%F^r7$$!3NKLLL3z6LF^r$\"3\"HaQ`:BQs%F^r7$$!3/LLLeGmCDF^r$
+\"39>YSM$=\"Q[F^r7$$!3sLLL$)[`P<F^r$\"37(Re+pTG#\\F^r7$$!39nm;aH-88F^r
+$\"3Aqw+L:$e&\\F^r7$$!3m0++]-6&)))FB$\"39xIt#QR(z\\F^r7$$!3')RLLe4**RY
+FB$\"3Q#fE?poW*\\F^r7$$!3gSnmmmr[RF2$\"3%\\#pZC*f***\\F^r7$$\"3S6LL3Uh
+9SFB$\"3)f/7(4)ee*\\F^r7$$\"3'oHLL3+TU)FB$\"3C0'G>f%y\")\\F^r7$$\"3AGL
+$efeLG\"F^r$\"3_6Q5`')zd\\F^r7$$\"3yELL$=2Vs\"F^r$\"3%y)**>3b+C\\F^r7$
+$\"3Khmmm7+#\\#F^r$\"3&ox]OWJA%[F^r7$$\"3)e*****\\`pfKF^r$\"3A^u\\$GsA
+t%F^r7$$\"36HLLLm&z\"\\F^r$\"3RYpWC&GeS%F^r7$$\"3>(******z-6j'F^r$\"3K
+PCmhT()eRF^r7$$\"3W%*****\\C4puF^r$\"3cN!>g-6yq$F^r7$$\"3q\"******4#32
+$)F^r$\"3Ue!)pDkLSMF^r7$$\"3q#****\\<!)y6*F^r$\"37,Ed$)\\bpJF^r7$$\"3r
+$*****\\#y'G**F^r$\"3iX1^aYg!*GF^r7$$\"3K****\\FJ*G3\"F/$\"3-OX>$[scd#
+F^r7$$\"3G******H%=H<\"F/$\"3Q\"4mJbW*fAF^r7$$\"3qKLLo,\"QD\"F/$\"3c=$
+*=86Uz>F^r7$$\"35mmm1>qM8F/$\"3Ctj*)p_A0<F^r7$$\"3(HLLL5r5U\"F/$\"3E>0
+p\"o#zA9F^r7$$\"3%)*******HSu]\"F/$\"3k.6zeo@a6F^r7$$\"3Smm;HOq&e\"F/$
+\"3!fy36.\"3_#*FB7$$\"3'HLL$ep'Rm\"F/$\"3P+-s*zLs6(FB7$$\"3')******R>4
+N=F/$\"33-b8]8$p0$FB7$$\"3#emm;@2h*>F/$\"3V`kG[eo>iFip7$$\"3]*****\\c9
+W;#F/$!3'*HD`U)Q6>#FB7$$\"3#HLLe;!pYAF/$!3!>/;-;vs(HFB7$$\"3Lmmmmd'*GB
+F/$!3qfDv<f'*oNFB7$$\"3)HLLep+^T#F/$!3kiD9lPH%*RFB7$$\"3j*****\\iN7]#F
+/$!3+iEMw`bQUFB7$$\"3emm;*z$>%e#F/$!3-H#Hh'3G@VFB7$$\"3aLLLt>:nEF/$!3]
+fgrw.(QF%FB7$$\"3KLLL)o))>v#F/$!3n%*\\#zT?=6%FB7$$\"35LLL.a#o$GF/$!3)e
+P9'R'Qn&QFB7$$\"3ammm^Q40IF/$!3iHoZ(H41;$FB7$$\"3y******z]rfJF/$!3f;k!
+fza3T#FB7$$\"3gmmmc%GpL$F/$!39,286q=j:FB7$$\"3/LLL8-V&\\$F/$!3O3^\"*p+
+\\=\"*F27$$\"3=+++XhUkOF/$!3k'otthEa&RF27$$\"3=+++:o<EQF/$!3+%[IK$[+;5
+F27$$\"\"%F*F+-%'COLOURG6&%$RGBG$\"#5!\"\"F+F+-%+AXESLABELSG6$Q\"x6\"Q
+!Fedl-%%VIEWG6$;F(Fhcl%(DEFAULTG" 1 2 0 1 10 0 2 9 1 4 2 1.000000 
+45.000000 45.000000 0 0 "Curve 1" }}}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 52 "evalf[10](seq(lanczos(i/2 + 0.25, 2)/2, i=-10..10));
+" }}{PARA 11 "" 1 "" {XPPMATH 20 "67$\"\"!F$F#F#F#F#F#$!+dDf_*)!#7$!+(
+>SiB%!#6$\"+)QLn<\"!#5$\"+d.x'Q%F-F.F+F(F%F#F#F#F#F#F#F#" }}}}{MARK "0
+ 0 0" 8 }{VIEWOPTS 1 0 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
+
