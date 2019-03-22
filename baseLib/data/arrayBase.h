@@ -55,13 +55,31 @@ public:
     }
 
     //
-    // Export cast (no code generated, reinterpret 'this')
+    // Export cast (no code generated, reinterpret 'this').
     //
 
 public:
 
     template <typename OtherType>
     inline operator const ArrayBase<OtherType>& () const
+    {
+        using Src = Type;
+        using Dst = OtherType;
+
+        static_assert(std::is_same<Src, Dst>::value || std::is_same<const Src, Dst>::value, "");
+        static_assert(sizeof(ArrayBase<Src>) == sizeof(ArrayBase<Dst>), "");
+        static_assert(alignof(ArrayBase<Src>) == alignof(ArrayBase<Dst>), "");
+        return * (const ArrayBase<Dst>*) this;
+    }
+
+public:
+
+    //
+    // Export const.
+    //
+
+    template <typename OtherType>
+    inline operator ArrayBase<OtherType> () const
     {
         using Src = Type;
         using Dst = OtherType;
