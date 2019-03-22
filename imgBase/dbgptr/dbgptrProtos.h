@@ -2,6 +2,7 @@
 
 #include "data/space.h"
 #include "compileTools/compileTools.h"
+#include "storage/addrSpace.h"
 
 //================================================================
 //
