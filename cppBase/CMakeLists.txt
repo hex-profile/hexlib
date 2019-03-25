@@ -4,4 +4,4 @@
 #
 #================================================================
 
-hexlibProjectTemplate(hexlibCppBase hexlib::cppBase "")
+hexlibProjectTemplate(hexlibCppBase hexlib::cppBase "" FALSE)
