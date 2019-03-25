@@ -4,4 +4,4 @@
 #
 #================================================================
 
-hexlibProjectTemplate(hexlibModuleToolsGpu hexlib::moduleToolsGpu "hexlibImgBaseGpu;hexlibModuleTools")
+hexlibProjectTemplate(hexlibModuleToolsGpu hexlib::moduleToolsGpu "hexlibImgBaseGpu;hexlibModuleTools" FALSE)

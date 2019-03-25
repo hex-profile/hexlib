@@ -5,4 +5,4 @@
 #================================================================
 
 set(usedProjects hexlibImgBaseGpu hexlibImgLibGpu hexlibModuleTools hexlibModuleToolsGpu hexlibShellCommon hexlibGpuCompilerInterface)
-hexlibProjectTemplate(hexlibShellCommonGpu hexlib::shellCommonGpu "${usedProjects}")
+hexlibProjectTemplate(hexlibShellCommonGpu hexlib::shellCommonGpu "${usedProjects}" TRUE)

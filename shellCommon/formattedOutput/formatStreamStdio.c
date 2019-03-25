@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "formatStreamStdio.h"
 
 #include <string.h>

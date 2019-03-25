@@ -20,6 +20,21 @@ struct Point
 
 //================================================================
 //
+// HEXLIB_POINT_INLINE
+//
+//================================================================
+
+#if defined(__CUDA_ARCH__)
+    #define HEXLIB_POINT_INLINE __device__ __host__ inline
+    #define HEXLIB_POINT_INLINE_WAS_DEFINED_FOR_DEVICE
+#elif defined(_MSC_VER)
+    #define HEXLIB_POINT_INLINE __forceinline
+#else
+    #define HEXLIB_POINT_INLINE inline
+#endif
+
+//================================================================
+//
 // point
 //
 // point function is used to create Point objects:
@@ -30,7 +45,7 @@ struct Point
 //================================================================
 
 template <typename Type>
-inline Point<Type> point(const Type& X, const Type& Y)
+HEXLIB_POINT_INLINE Point<Type> point(const Type& X, const Type& Y)
 {
     Point<Type> result;
     result.X = X;
@@ -39,7 +54,7 @@ inline Point<Type> point(const Type& X, const Type& Y)
 }
 
 template <typename Type>
-inline Point<Type> point(const Type& value)
+HEXLIB_POINT_INLINE Point<Type> point(const Type& value)
 {
     Point<Type> result;
     result.X = value;

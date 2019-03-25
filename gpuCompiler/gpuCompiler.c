@@ -2,6 +2,14 @@
     #include <windows.h>
 #endif
 
+#ifndef  HEXLIB_COMPILER_NVRTC
+    #error 
+#endif
+
+#if HEXLIB_COMPILER_NVRTC
+    #include <nvrtc.h>
+#endif
+
 #include <stdlib.h>
 
 #include "cmdLine/cmdLine.h"
@@ -292,7 +300,6 @@ bool parseClArgs
 // prepareForDeviceCompilation
 //
 // Appends #ifdef __CUDA_ARCH__
-// and finds kernel names.
 //
 //================================================================
 
@@ -701,17 +708,21 @@ bool compileDevicePartToBin
 
     splitPath(binPath, binDir, binName, binExt);
 
+    //----------------------------------------------------------------
     //
     // Prepare input file (surround with #ifdef __CUDA_ARCH__)
     //
+    //----------------------------------------------------------------
 
     StlString cuInputPath = sprintMsg(STR("%0/%1.cu"), inputDir, inputName);
     REMEMBER_CLEANUP1(remove(cuInputPath.c_str()), const StlString&, cuInputPath);
     require(prepareForDeviceCompilation(inputPath, cuInputPath, stdPass));
 
+    //----------------------------------------------------------------
     //
     // Preprocess with NVCC
     //
+    //----------------------------------------------------------------
 
     StlString cupPath = sprintMsg(STR("%0/%1.cup"), binDir, binName);
     StlString cachedPath = sprintMsg(STR("%0/%1.src"), binDir, binName);
@@ -720,7 +731,7 @@ bool compileDevicePartToBin
         vector<StlString> nvccArgs;
 
         nvccArgs.push_back(CT("nvcc.exe"));
-        nvccArgs.push_back(CT("-m32"));
+        nvccArgs.push_back(CT("-m32")); // ```
 
         nvccArgs.push_back(CT("-E"));
 
@@ -755,12 +766,17 @@ bool compileDevicePartToBin
                 printMsg(kit.msgLog, STR("[NVCC %0] %1"), dec(i, 2), nvccArgs[i]);
         }
 
+        if (1)
+            printMsg(kit.msgLog, STR("[PREP NVCC]"));
+
         require(runProcess(nvccArgs, stdPass));
     }
 
+    //----------------------------------------------------------------
     //
     // Read new preprocessed file
     //
+    //----------------------------------------------------------------
 
     basic_ifstream<CharType> cupFile(cupPath.c_str(), ios_base::in | ios_base::binary | ios_base::ate );
     REQUIRE(!!cupFile); // for tellg
@@ -777,9 +793,11 @@ bool compileDevicePartToBin
 
     extractKernelAndSamplerNames(&cupData[0], cupSize, kernelNames, samplerNames);
 
+    //----------------------------------------------------------------
     //
     // Try to use cached version
     //
+    //----------------------------------------------------------------
 
     if
     (
@@ -811,28 +829,48 @@ bool compileDevicePartToBin
         }
     }
 
+    //----------------------------------------------------------------
     //
     // Compile preprocessed file with NVCC,
     // overwrite .bin
     //
-
-    remove(cachedPath.c_str());
+    //----------------------------------------------------------------
 
     {
-        vector<StlString> nvccArgs;
+        remove(cachedPath.c_str());
 
-        nvccArgs.push_back(CT("nvcc.exe"));
+        #if !HEXLIB_COMPILER_NVRTC
+        
+            vector<StlString> nvccArgs;
 
-        nvccArgs.push_back(CT("-m32"));
-        nvccArgs.push_back(CT("--ptxas-options=-v"));
+            nvccArgs.push_back(CT("nvcc.exe"));
 
-        nvccArgs.push_back(CT("-fatbin"));
-        nvccArgs.push_back(CT("-o"));
-        nvccArgs.push_back(binPath);
-        nvccArgs.push_back(cupPath);
-        addTargetArch(nvccArgs, platformArch);
+            nvccArgs.push_back(CT("-m32")); // ```
+            nvccArgs.push_back(CT("--ptxas-options=-v"));
 
-        require(runProcess(nvccArgs, stdPass));
+            nvccArgs.push_back(CT("-fatbin"));
+            nvccArgs.push_back(CT("-o"));
+            nvccArgs.push_back(binPath);
+
+            nvccArgs.push_back(cupPath);
+
+            addTargetArch(nvccArgs, platformArch);
+
+            if (1)
+                printMsg(kit.msgLog, STR("[COMPILE NVCC]"));
+
+            require(runProcess(nvccArgs, stdPass));
+        
+        #else
+        
+            cupData.push_back(0);
+            const CharType* sourceStr = &cupData[0];
+
+            nvrtcProgram prog = nullptr;
+            REQUIRE(nvrtcCreateProgram(&prog, sourceStr, nullptr, 0, nullptr, nullptr) == NVRTC_SUCCESS);
+            REMEMBER_CLEANUP({nvrtcDestroyProgram(&prog); prog = nullptr;});
+
+        #endif
     }
 
     //
@@ -1277,7 +1315,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
         if (stringBeginsWith(defines[i], CT("HEXLIB_PLATFORM=1")))
             gpuHardwareTarget = true;
 
-        StlString platformArchStr = CT("CUDA_ARCH=");
+        StlString platformArchStr = CT("HEXLIB_CUDA_ARCH=");
 
         if (stringBeginsWith(defines[i], platformArchStr))
         {
@@ -1288,7 +1326,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
     ////
 
     if (gpuHardwareTarget)
-        REQUIRE_MSG(platformArch.length() >= 5, STR("For CUDA hardware target, CUDA_ARCH should be specified (sm_20, sm_30, ...)"));
+        REQUIRE_MSG(platformArch.length() >= 5, STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)"));
 
     //----------------------------------------------------------------
     //

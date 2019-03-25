@@ -39,7 +39,7 @@ public:
     template <typename OtherType>
     sysinline operator const GpuArray<OtherType>& () const
     {
-        ARRAY__CHECK_CONVERSION(GpuPtr(Type), GpuPtr(OtherType));
+        COMPILE_ASSERT((CheckConversion<GpuPtr(Type), GpuPtr(OtherType)>::value));
         COMPILE_ASSERT(sizeof(GpuArray<Type>) == sizeof(GpuArray<OtherType>));
         return * (const GpuArray<OtherType> *) this;
     }

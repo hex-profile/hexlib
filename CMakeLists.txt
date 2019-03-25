@@ -2,6 +2,30 @@ cmake_minimum_required(VERSION 3.13.2 FATAL_ERROR)
 
 #================================================================
 #
+# HEXLIB_PLATFORM
+#
+# 0: CPU emulation backend (slow for GPU functions).
+# 1: CUDA Driver API backend.
+#
+#================================================================
+
+if (NOT DEFINED HEXLIB_PLATFORM)
+    message(WARNING "HEXLIB_PLATFORM is not defined, defaulting to 0 (CPU emulation)")
+    set(HEXLIB_PLATFORM 0)
+endif()
+
+###
+
+if (${HEXLIB_PLATFORM} EQUAL 0)
+    # CPU emulation
+elseif (${HEXLIB_PLATFORM} EQUAL 1)
+    # CUDA Driver API
+else()
+    message(FATAL_ERROR "HEXLIB_PLATFORM=${HEXLIB_PLATFORM} is not valid")
+endif()
+
+#================================================================
+#
 # addSourcesRecursive
 #
 #================================================================
@@ -41,9 +65,11 @@ endfunction()
 #
 #================================================================
 
-function (hexlibProjectTemplate projectName projectAlias dependentProjects)
+function (hexlibProjectTemplate projectName projectAlias dependentProjects requiresGpuCompiler)
 
     addSourcesRecursive(sources .)
+
+    ###
 
     add_library(${projectName} OBJECT ${sources})
     add_library(${projectAlias} ALIAS ${projectName})
@@ -51,11 +77,43 @@ function (hexlibProjectTemplate projectName projectAlias dependentProjects)
 
     target_include_directories(${projectName} PUBLIC .)
 
+    ###
+
     if (dependentProjects)
         target_link_libraries(${projectName} PUBLIC ${dependentProjects})
     endif()
 
-    # target_compile_definitions(${projectName} PRIVATE HEX_PLATFORM=0 HOSTCODE=1 DEVCODE=1)
+    ###
+
+    target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
+
+    ###
+
+    if (${requiresGpuCompiler})
+
+        if (${HEXLIB_PLATFORM} EQUAL 0)
+
+            target_compile_definitions(${projectName} PRIVATE HOSTCODE=1 DEVCODE=1)
+
+        elseif(${HEXLIB_PLATFORM} EQUAL 1)
+
+            if (NOT DEFINED HEXLIB_CUDA_ARCH)
+                message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)")
+            endif()
+
+            target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
+            
+            # add_dependencies(${projectName} hexlibGpuCompiler)
+
+            set(CMAKE_CXX_COMPILER "${CMAKE_BINARY_DIR}/hexlibGpuCompiler" PARENT_SCOPE)
+
+        else()
+
+            message(FATAL_ERROR, "Bad HEXLIB_PLATFORM")
+
+        endif()
+
+    endif()
 
 endfunction()
 

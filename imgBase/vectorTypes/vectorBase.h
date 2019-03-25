@@ -12,16 +12,15 @@
 //
 //================================================================
 
-#ifndef HEXLIB_VECTOR_BASE_TYPES
-#define HEXLIB_VECTOR_BASE_TYPES
-
 #if defined(__CUDA_ARCH__)
-    # include "vectorBaseCuda.inl"
+    #include "vectorBaseCuda.inl"
 #else
-    # include "vectorBaseHost.inl"
-#endif
+    #ifndef HEXLIB_HOST_VECTOR_BASE_TYPES
+    #define HEXLIB_HOST_VECTOR_BASE_TYPES
+        #include "vectorBaseHost.inl"
+    #endif
 
-#endif // HEXLIB_VECTOR_BASE_TYPES
+#endif
 
 //================================================================
 //

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "numbers/divRoundCompile.h"
+#include "data/space.h"
 
 //================================================================
 //
@@ -161,7 +162,7 @@
 //
 //================================================================
 
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ == 200 || __CUDA_ARCH__ == 350 || __CUDA_ARCH__ == 500 || __CUDA_ARCH__ == 600)
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 200 || __CUDA_ARCH__ <= 750)
 
     #define devWarpSize 32
     #define devSramBankPeriod (32*4)

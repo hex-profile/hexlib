@@ -3,8 +3,8 @@
 #include "types/intTypes.h"
 #include "types/floatTypes.h"
 
-#ifndef HEXLIB_VECTOR_BASE_TYPES
-#define HEXLIB_VECTOR_BASE_TYPES
+#ifndef HEXLIB_HOST_VECTOR_BASE_TYPES
+#define HEXLIB_HOST_VECTOR_BASE_TYPES
 
 //================================================================
 //
@@ -145,4 +145,4 @@ TMP_MACRO(float32_x4, 16, 16);
 
 //----------------------------------------------------------------
 
-#endif // HEXLIB_VECTOR_BASE_TYPES
+#endif // HEXLIB_HOST_VECTOR_BASE_TYPES
