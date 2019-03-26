@@ -26,7 +26,7 @@ endif()
 
 ###
 
-set(touchUnusedVars ${HEXLIB_CUDA_ARCH})
+set(touchUnusedVars ${HEXLIB_CUDA_ARCH} ${HEXLIB_CUDA_BITNESS})
 
 #================================================================
 #
@@ -106,7 +106,17 @@ function (hexlibProjectTemplate projectName projectAlias dependentProjects requi
             endif()
 
             target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
+
+            ###
+
+            if (NOT DEFINED HEXLIB_CUDA_BITNESS)
+                message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_BITNESS should be specified (32 or 64)")
+            endif()
+
+            target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_BITNESS=${HEXLIB_CUDA_BITNESS})
             
+            ###
+
             target_link_libraries(${projectName} PUBLIC cuda.lib)
 
             set(CMAKE_CXX_COMPILER "${CMAKE_BINARY_DIR}/hexlibGpuCompiler" PARENT_SCOPE)
