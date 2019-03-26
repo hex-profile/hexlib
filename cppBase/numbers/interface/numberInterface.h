@@ -1079,9 +1079,9 @@ sysinline Type square(const Type& value)
 //================================================================
 
 #define VECTOR_DECOMPOSE_EX(prefix, vec) \
-    decltype(vec.X) prefix##LengthSq; \
-    decltype(vec.X) prefix##DivLength; \
-    decltype(vec.X) prefix##Length; \
+    VECTOR_BASE(decltype(vec)) prefix##LengthSq; \
+    VECTOR_BASE(decltype(vec)) prefix##DivLength; \
+    VECTOR_BASE(decltype(vec)) prefix##Length; \
     auto prefix##Dir = vec; \
     vectorDecompose(vec, prefix##LengthSq, prefix##DivLength, prefix##Length, prefix##Dir)
 
