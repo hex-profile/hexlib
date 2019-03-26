@@ -2,14 +2,6 @@
     #include <windows.h>
 #endif
 
-#ifndef  HEXLIB_COMPILER_NVRTC
-    #error 
-#endif
-
-#if HEXLIB_COMPILER_NVRTC
-    #include <nvrtc.h>
-#endif
-
 #include <stdlib.h>
 
 #include "cmdLine/cmdLine.h"
@@ -836,35 +828,22 @@ bool compileDevicePartToBin
     {
         remove(cachedPath.c_str());
 
-        #if !HEXLIB_COMPILER_NVRTC
-        
-            vector<StlString> nvccArgs;
+        vector<StlString> nvccArgs;
 
-            nvccArgs.push_back(CT("nvcc.exe"));
+        nvccArgs.push_back(CT("nvcc.exe"));
 
-            nvccArgs.push_back(CT("-m32")); // ```
-            nvccArgs.push_back(CT("--ptxas-options=-v"));
+        nvccArgs.push_back(CT("-m32")); // ```
+        nvccArgs.push_back(CT("--ptxas-options=-v"));
 
-            nvccArgs.push_back(CT("-fatbin"));
-            nvccArgs.push_back(CT("-o"));
-            nvccArgs.push_back(binPath);
+        nvccArgs.push_back(CT("-fatbin"));
+        nvccArgs.push_back(CT("-o"));
+        nvccArgs.push_back(binPath);
 
-            nvccArgs.push_back(cupPath);
+        nvccArgs.push_back(cupPath);
 
-            addTargetArch(nvccArgs, platformArch);
+        addTargetArch(nvccArgs, platformArch);
 
-            require(runProcess(nvccArgs, stdPass));
-        
-        #else
-        
-            cupData.push_back(0);
-            const CharType* sourceStr = &cupData[0];
-
-            nvrtcProgram prog = nullptr;
-            REQUIRE(nvrtcCreateProgram(&prog, sourceStr, nullptr, 0, nullptr, nullptr) == NVRTC_SUCCESS);
-            REMEMBER_CLEANUP({nvrtcDestroyProgram(&prog); prog = nullptr;});
-
-        #endif
+        require(runProcess(nvccArgs, stdPass));
     }
 
     //

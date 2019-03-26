@@ -11,12 +11,6 @@ target_include_directories(hexlibGpuCompiler PRIVATE .)
 
 target_link_libraries(hexlibGpuCompiler PUBLIC hexlibCppBase hexlibShellCommon)
 
-target_compile_definitions(hexlibGpuCompiler PRIVATE HEXLIB_COMPILER_NVRTC=${HEXLIB_COMPILER_NVRTC})
-
-if (${HEXLIB_COMPILER_NVRTC})
-    target_link_libraries(hexlibGpuCompiler PRIVATE nvrtc)
-endif()
-
 #----------------------------------------------------------------
 #
 # Interface headers.
