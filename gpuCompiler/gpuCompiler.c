@@ -681,6 +681,7 @@ bool compileDevicePartToBin
     const vector<StlString>& includes,
     const vector<StlString>& defines,
     const StlString& platformArch,
+    const StlString& platformBitness,
     stdPars(TextKit)
 )
 {
@@ -723,7 +724,8 @@ bool compileDevicePartToBin
         vector<StlString> nvccArgs;
 
         nvccArgs.push_back(CT("nvcc.exe"));
-        nvccArgs.push_back(CT("-m32")); // ```
+
+        nvccArgs.push_back(CT("-m") + platformBitness);
 
         nvccArgs.push_back(CT("-E"));
 
@@ -832,7 +834,8 @@ bool compileDevicePartToBin
 
         nvccArgs.push_back(CT("nvcc.exe"));
 
-        nvccArgs.push_back(CT("-m32")); // ```
+        nvccArgs.push_back(CT("-m" + platformBitness));
+
         nvccArgs.push_back(CT("--ptxas-options=-v"));
 
         nvccArgs.push_back(CT("-fatbin"));
@@ -1282,24 +1285,38 @@ bool mainFunc(int argCount, const CharType* argStr[])
     bool gpuHardwareTarget = false;
 
     StlString platformArch;
+    StlString platformBitness;
 
     for (size_t i = 0; i < defines.size(); ++i)
     {
         if (stringBeginsWith(defines[i], CT("HEXLIB_PLATFORM=1")))
             gpuHardwareTarget = true;
 
+        ////
+
         StlString platformArchStr = CT("HEXLIB_CUDA_ARCH=");
 
         if (stringBeginsWith(defines[i], platformArchStr))
-        {
             platformArch = defines[i].substr(platformArchStr.length());
-        }
+
+        ////
+
+        StlString platformBitnessStr = CT("HEXLIB_CUDA_BITNESS=");
+
+        if (stringBeginsWith(defines[i], platformBitnessStr))
+            platformBitness = defines[i].substr(platformBitnessStr.length());
     }
 
     ////
 
     if (gpuHardwareTarget)
-        REQUIRE_MSG(platformArch.length() >= 5, STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)"));
+    {
+        REQUIRE_MSG(platformArch.length() != 0, 
+            STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)"));
+
+        REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"), 
+            STR("For CUDA hardware target, HEXLIB_CUDA_BITNESS should be specified (32 or 64)"));
+    }
 
     //----------------------------------------------------------------
     //
@@ -1407,7 +1424,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
             StlString binPath = sprintMsg(STR("%0/%1.bin"), outputDir, inputName);
             StlString asmPath = sprintMsg(STR("%0/%1.asm"), outputDir, inputName);
 
-            require(compileDevicePartToBin(inputPath, binPath, asmPath, kernelNames, samplerNames, includes, defines, platformArch, stdPass));
+            require(compileDevicePartToBin(inputPath, binPath, asmPath, kernelNames, samplerNames, includes, defines, platformArch, platformBitness, stdPass));
 
             if (0)
             {
