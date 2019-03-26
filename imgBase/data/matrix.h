@@ -158,11 +158,11 @@ struct Matrix_CheckConversion
 
 class MatrixPreconditions
 {
-    inline MatrixPreconditions() {}
-    friend inline MatrixPreconditions matrixPreconditionsAreVerified();
+    sysinline MatrixPreconditions() {}
+    friend sysinline MatrixPreconditions matrixPreconditionsAreVerified();
 };
 
-inline MatrixPreconditions matrixPreconditionsAreVerified()
+sysinline MatrixPreconditions matrixPreconditionsAreVerified()
     {return MatrixPreconditions();}
 
 //================================================================
@@ -203,7 +203,7 @@ private:
 
 public:
 
-    friend inline void exchange(MatrixEx<Pointer>& A, MatrixEx<Pointer>& B)
+    friend sysinline void exchange(MatrixEx<Pointer>& A, MatrixEx<Pointer>& B)
     {
         exchange(A.theMemPtr, B.theMemPtr);
         exchange(A.theMemPitch, B.theMemPitch);
@@ -226,14 +226,14 @@ public:
 
     struct TmpType {};
 
-    inline MatrixEx(const TmpType* = 0)
+    sysinline MatrixEx(const TmpType* = 0)
         {assignNull();}
 
     //
     // Create uninitialized
     //
 
-    inline MatrixEx(const ConstructUnitialized&)
+    sysinline MatrixEx(const ConstructUnitialized&)
         {}
 
     //
@@ -241,11 +241,11 @@ public:
     //
 
     template <typename Ptr>
-    inline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY)
+    sysinline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY)
         {assign(memPtr, memPitch, sizeX, sizeY);} // checked
 
     template <typename Ptr>
-    inline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
+    sysinline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
         {assign(memPtr, memPitch, sizeX, sizeY, preconditions);} // unchecked, static assertion
 
     //
@@ -253,7 +253,7 @@ public:
     //
 
     template <typename OtherPointer>
-    inline MatrixEx(const ArrayEx<OtherPointer>& that)
+    sysinline MatrixEx(const ArrayEx<OtherPointer>& that)
         :
         theMemPtr(that.thePtr),
         theMemPitch(that.theSize),
@@ -267,7 +267,7 @@ public:
     //
 
     template <typename OtherPointer>
-    inline operator const MatrixEx<OtherPointer>& () const
+    sysinline operator const MatrixEx<OtherPointer>& () const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
         COMPILE_ASSERT(sizeof(MatrixEx<Pointer>) == sizeof(MatrixEx<OtherPointer>));
@@ -278,7 +278,7 @@ public:
     // Assign data (checked).
     //
 
-    inline bool assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY)
+    sysinline bool assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
         bool ok = matrixParamsAreValid<sizeof(Type)>(sizeX, sizeY, memPitch);
 
@@ -297,7 +297,7 @@ public:
     // Assign data (unchecked, static assertion).
     //
 
-    inline void assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions&)
+    sysinline void assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions&)
     {
         theMemPtr = memPtr;
         theMemPitch = memPitch;
@@ -344,7 +344,7 @@ public:
     // Assign empty
     //
 
-    inline void assignNull()
+    sysinline void assignNull()
     {
         theMemPtr = Pointer(0);
         theMemPitch = 0;
@@ -352,7 +352,7 @@ public:
         theSize.Y = 0;
     }
 
-    inline void assignEmptyFast()
+    sysinline void assignEmptyFast()
     {
         theSize.Y = 0;
     }
@@ -362,37 +362,37 @@ public:
     // Always >= 0.
     //
 
-    inline Space sizeX() const
+    sysinline Space sizeX() const
         {return theSize.X;}
 
-    inline Space sizeY() const
+    sysinline Space sizeY() const
         {return theSize.Y;}
 
-    inline const Point<Space>& size() const
+    sysinline const Point<Space>& size() const
         {return theSize;}
 
     //
     // Get pitch.
     //
 
-    inline Space memPitch() const
+    sysinline Space memPitch() const
         {return theMemPitch;}
 
     //
     // Get base pointer.
     //
 
-    inline Pointer memPtrUnsafeInternalUseOnly() const
+    sysinline Pointer memPtrUnsafeInternalUseOnly() const
         {return theMemPtr;}
 
 #ifdef DBGPTR_MODE
 
-    inline typename MatrixPtr(Type) memPtr() const
+    sysinline typename MatrixPtr(Type) memPtr() const
         {return MatrixPtrCreate(Type, theMemPtr, theMemPitch, theSize.X, theSize.Y, DbgptrMatrixPreconditions());}
 
 #else
 
-    inline Pointer memPtr() const
+    sysinline Pointer memPtr() const
         {return theMemPtr;}
 
 #endif
@@ -402,7 +402,7 @@ public:
     //
 
     template <typename OtherPointer>
-    inline bool subRow(Space Y, ArrayEx<OtherPointer>& result) const
+    sysinline bool subRow(Space Y, ArrayEx<OtherPointer>& result) const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
@@ -431,7 +431,7 @@ public:
     //
 
     template <typename OtherPointer>
-    inline bool subr(Space orgX, Space orgY, Space endX, Space endY, MatrixEx<OtherPointer>& result) const
+    sysinline bool subr(Space orgX, Space orgY, Space endX, Space endY, MatrixEx<OtherPointer>& result) const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
@@ -457,7 +457,7 @@ public:
     ////
 
     template <typename Coord, typename OtherPointer>
-    inline bool subr(const Point<Coord>& org, const Point<Coord>& end, MatrixEx<OtherPointer>& result) const
+    sysinline bool subr(const Point<Coord>& org, const Point<Coord>& end, MatrixEx<OtherPointer>& result) const
     {
         return subr(org.X, org.Y, end.X, end.Y, result);
     }
@@ -467,7 +467,7 @@ public:
     //
 
     template <typename OtherPointer>
-    inline void subsUnsafeVeryDangerous(Space orgX, Space orgY, Space sizeX, Space sizeY, MatrixEx<OtherPointer>& result) const
+    sysinline void subsUnsafeVeryDangerous(Space orgX, Space orgY, Space sizeX, Space sizeY, MatrixEx<OtherPointer>& result) const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
@@ -481,7 +481,7 @@ public:
     ////
 
     template <typename Coord, typename OtherPointer>
-    inline void subsUnsafeVeryDangerous(const Point<Coord>& org, const Point<Coord>& size, MatrixEx<OtherPointer>& result) const
+    sysinline void subsUnsafeVeryDangerous(const Point<Coord>& org, const Point<Coord>& size, MatrixEx<OtherPointer>& result) const
     {
         return subsUnsafeVeryDangerous(org.X, org.Y, size.X, size.Y, result);
     }
@@ -496,7 +496,7 @@ public:
     //
 
     template <typename OtherPointer>
-    inline bool subs(Space orgX, Space orgY, Space sizeX, Space sizeY, MatrixEx<OtherPointer>& result) const
+    sysinline bool subs(Space orgX, Space orgY, Space sizeX, Space sizeY, MatrixEx<OtherPointer>& result) const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
@@ -522,7 +522,7 @@ public:
     ////
 
     template <typename Coord, typename OtherPointer>
-    inline bool subs(const Point<Coord>& org, const Point<Coord>& size, MatrixEx<OtherPointer>& result) const
+    sysinline bool subs(const Point<Coord>& org, const Point<Coord>& size, MatrixEx<OtherPointer>& result) const
     {
         return subs(org.X, org.Y, size.X, size.Y, result);
     }
@@ -535,7 +535,7 @@ public:
     //
 
     template <typename OtherPointer>
-    inline bool asArray(Array<OtherPointer>& result) const
+    sysinline bool asArray(Array<OtherPointer>& result) const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
@@ -573,7 +573,7 @@ public:
 
 ////
 
-inline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& pos)
+sysinline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& pos)
 {
     return
         SpaceU(pos.X) < SpaceU(size.X) &&
@@ -581,7 +581,7 @@ inline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& pos)
 }
 
 template <typename Pointer>
-inline bool matrixValidAccess(const MatrixEx<Pointer>& matrix, const Point<Space>& pos)
+sysinline bool matrixValidAccess(const MatrixEx<Pointer>& matrix, const Point<Space>& pos)
 {
     return matrixValidAccess(matrix.size(), pos);
 }
@@ -608,27 +608,27 @@ public:
     // Constructors
     //
 
-    inline Matrix(const TmpType* = 0)
+    sysinline Matrix(const TmpType* = 0)
         {}
 
-    inline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
+    sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}
 
-    inline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
+    sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
         : Base(memPtr, memPitch, sizeX, sizeY, preconditions) {}
 
 #ifdef DBGPTR_MODE
 
-    inline Matrix(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
+    sysinline Matrix(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}
 
 #endif
 
-    inline Matrix(const Base& base)
+    sysinline Matrix(const Base& base)
         : Base(base) {}
 
     template <typename OtherPointer>
-    inline Matrix(const Array<OtherPointer>& that)
+    sysinline Matrix(const Array<OtherPointer>& that)
         : Base(that) {}
 
     //
@@ -636,7 +636,7 @@ public:
     //
 
     template <typename OtherType>
-    inline operator const Matrix<OtherType>& () const
+    sysinline operator const Matrix<OtherType>& () const
     {
         MATRIX__CHECK_CONVERSION(Type*, OtherType*);
         COMPILE_ASSERT(sizeof(Matrix<Type>) == sizeof(Matrix<OtherType>));
@@ -644,7 +644,7 @@ public:
     }
 
     template <typename OtherType>
-    inline operator const Matrix<OtherType> () const
+    sysinline operator const Matrix<OtherType> () const
     {
         MATRIX__CHECK_CONVERSION(Type*, OtherType*);
         COMPILE_ASSERT(sizeof(Matrix<Type>) == sizeof(Matrix<OtherType>));
@@ -653,7 +653,7 @@ public:
 
 public:
 
-    friend inline void exchange(Matrix<Type>& A, Matrix<Type>& B)
+    friend sysinline void exchange(Matrix<Type>& A, Matrix<Type>& B)
     {
         Base& baseA = A;
         Base& baseB = B;
@@ -697,7 +697,7 @@ public:
 //================================================================
 
 template <typename Type>
-inline const MatrixEx<const Type*>& makeConst(const MatrixEx<Type*>& matrix)
+sysinline const MatrixEx<const Type*>& makeConst(const MatrixEx<Type*>& matrix)
 {
     COMPILE_ASSERT(sizeof(MatrixEx<const Type*>) == sizeof(MatrixEx<Type*>));
     return * (const MatrixEx<const Type*>*) &matrix;
@@ -713,7 +713,7 @@ inline const MatrixEx<const Type*>& makeConst(const MatrixEx<Type*>& matrix)
 //================================================================
 
 template <typename Type>
-inline const Matrix<Type>& recastToNonConst(const Matrix<const Type>& matrix)
+sysinline const Matrix<Type>& recastToNonConst(const Matrix<const Type>& matrix)
 {
     COMPILE_ASSERT(sizeof(Matrix<const Type>) == sizeof(Matrix<Type>));
     return * (const Matrix<Type>*) &matrix;
@@ -735,7 +735,7 @@ template <typename Type>
 GET_SIZE_DEFINE(Matrix<Type>, value.size())
 
 template <typename Pointer>
-inline Space getLayerCount(const MatrixEx<Pointer>& matrix)
+sysinline Space getLayerCount(const MatrixEx<Pointer>& matrix)
     {return 1;}
 
 //================================================================
@@ -745,16 +745,16 @@ inline Space getLayerCount(const MatrixEx<Pointer>& matrix)
 //================================================================
 
 template <typename Type>
-inline bool hasData(const MatrixEx<Type>& matrix)
+sysinline bool hasData(const MatrixEx<Type>& matrix)
     {return allv(matrix.size() >= 1);}
 
-inline bool hasData(const Point<Space>& size)
+sysinline bool hasData(const Point<Space>& size)
     {return allv(size >= 1);}
 
 //----------------------------------------------------------------
 
 template <typename Type>
-inline bool empty(const Type& V)
+sysinline bool empty(const Type& V)
     {return !hasData(V);}
 
 //================================================================
@@ -764,7 +764,7 @@ inline bool empty(const Type& V)
 //================================================================
 
 template <typename Type>
-inline Space areaOf(const Type& value)
+sysinline Space areaOf(const Type& value)
 {
     Point<Space> size = GetSize<Type>::func(value);
     return size.X * size.Y;

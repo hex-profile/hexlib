@@ -93,8 +93,8 @@ public:
     inline operator const MatrixBase<OtherType>& () const
     {
         static_assert(CheckConversion<Type, OtherType>::value, "");
-        static_assert(sizeof(MatrixBase<Type>) == sizeof(MatrixBase<OtherType>));
-        static_assert(alignof(MatrixBase<Type>) == alignof(MatrixBase<OtherType>));
+        static_assert(sizeof(MatrixBase<Type>) == sizeof(MatrixBase<OtherType>), "");
+        static_assert(alignof(MatrixBase<Type>) == alignof(MatrixBase<OtherType>), "");
         return * (const MatrixBase<OtherType> *) this;
     }
 
@@ -106,8 +106,8 @@ public:
     inline operator MatrixBase<OtherType> () const
     {
         static_assert(CheckConversion<Type, OtherType>::value, "");
-        static_assert(sizeof(MatrixBase<Type>) == sizeof(MatrixBase<OtherType>));
-        static_assert(alignof(MatrixBase<Type>) == alignof(MatrixBase<OtherType>));
+        static_assert(sizeof(MatrixBase<Type>) == sizeof(MatrixBase<OtherType>), "");
+        static_assert(alignof(MatrixBase<Type>) == alignof(MatrixBase<OtherType>), "");
         return * (const MatrixBase<OtherType> *) this;
     }
 

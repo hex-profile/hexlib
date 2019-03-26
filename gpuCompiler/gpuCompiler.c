@@ -766,9 +766,6 @@ bool compileDevicePartToBin
                 printMsg(kit.msgLog, STR("[NVCC %0] %1"), dec(i, 2), nvccArgs[i]);
         }
 
-        if (1)
-            printMsg(kit.msgLog, STR("[PREP NVCC]"));
-
         require(runProcess(nvccArgs, stdPass));
     }
 
@@ -855,9 +852,6 @@ bool compileDevicePartToBin
             nvccArgs.push_back(cupPath);
 
             addTargetArch(nvccArgs, platformArch);
-
-            if (1)
-                printMsg(kit.msgLog, STR("[COMPILE NVCC]"));
 
             require(runProcess(nvccArgs, stdPass));
         
@@ -1171,7 +1165,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
     if (0)
     {
         for (size_t i = 0; i < cmdArgs.size(); ++i)
-            printMsg(kit.msgLog, STR("[%0] %1"), i, cmdArgs[i]);
+            printMsg(kit.msgLog, STR("%1"), i, cmdArgs[i]);
     }
 
     //----------------------------------------------------------------
