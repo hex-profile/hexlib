@@ -76,7 +76,13 @@ function (hexlibProjectTemplate projectName projectAlias dependentProjects requi
     ###
 
     add_library(${projectName} OBJECT ${sources})
-    add_library(${projectAlias} ALIAS ${projectName})
+
+    if (${projectAlias})
+        add_library(${projectAlias} ALIAS ${projectName})
+    endif()
+
+    ###
+
     set_target_properties(${projectName} PROPERTIES FOLDER hexlib)
 
     target_include_directories(${projectName} PUBLIC .)
@@ -90,6 +96,12 @@ function (hexlibProjectTemplate projectName projectAlias dependentProjects requi
     ###
 
     target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
+
+    ###
+
+    if (MSVC)
+        target_compile_definitions(${projectName} PRIVATE _CRT_SECURE_NO_WARNINGS=1)
+    endif()
 
     ###
 
@@ -145,9 +157,11 @@ add_subdirectory(imgLib)
 add_subdirectory(moduleTools)
 add_subdirectory(shellCommon)
 
+add_subdirectory(gpuCompiler)
+
 add_subdirectory(imgBaseGpu)
 add_subdirectory(moduleToolsGpu)
 add_subdirectory(imgLibGpu)
 add_subdirectory(shellCommonGpu)
 
-add_subdirectory(gpuCompiler)
+add_subdirectory(archive)

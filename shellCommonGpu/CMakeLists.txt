@@ -4,5 +4,5 @@
 #
 #================================================================
 
-set(usedProjects hexlibImgBaseGpu hexlibImgLibGpu hexlibModuleTools hexlibModuleToolsGpu hexlibShellCommon hexlibGpuCompilerInterface)
-hexlibProjectTemplate(hexlibShellCommonGpu hexlib::shellCommonGpu "${usedProjects}" TRUE)
+set(dependencies hexlibImgBaseGpu hexlibImgLibGpu hexlibModuleTools hexlibModuleToolsGpu hexlibShellCommon hexlibGpuCompilerInterface)
+hexlibProjectTemplate(hexlibShellCommonGpu hexlib::shellCommonGpu "${dependencies}" TRUE)
