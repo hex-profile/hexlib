@@ -24,6 +24,10 @@ else()
     message(FATAL_ERROR "HEXLIB_PLATFORM=${HEXLIB_PLATFORM} is not valid")
 endif()
 
+###
+
+set(touchUnusedVars ${HEXLIB_CUDA_ARCH})
+
 #================================================================
 #
 # addSourcesRecursive
@@ -103,7 +107,7 @@ function (hexlibProjectTemplate projectName projectAlias dependentProjects requi
 
             target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
             
-            # add_dependencies(${projectName} hexlibGpuCompiler)
+            target_link_libraries(${projectName} PUBLIC cuda.lib)
 
             set(CMAKE_CXX_COMPILER "${CMAKE_BINARY_DIR}/hexlibGpuCompiler" PARENT_SCOPE)
 

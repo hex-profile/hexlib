@@ -125,7 +125,7 @@ public:
 
     using Type = typename PtrElemType<Pointer>::T;
 
-private:
+public:
 
     template <typename SrcPointer, typename DstPointer>
     struct CheckConversion

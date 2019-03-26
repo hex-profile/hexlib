@@ -44,12 +44,12 @@ sysinline Point<Float> circleCCW(const Float& v);
         return result;
     }
 
-template <>
+    template <>
     sysinline Point<float64> circleCCW(const float64& v)
     {
         float64 angle = v * (2 * pi64);
         Point<float64> result;
-        __sincos(angle, &result.Y, &result.X);
+        sincos(angle, &result.Y, &result.X);
         return result;
     }
 
