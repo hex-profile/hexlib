@@ -104,8 +104,8 @@
     const Point<float32>& name##Texstep = o.name##Texstep; MAKE_VARIABLE_USED(name##Texstep); \
     const InterpType name##Interp = (interp); MAKE_VARIABLE_USED(name##Interp); \
     const BorderMode name##Border = (border); MAKE_VARIABLE_USED(name##Border); \
-    devSamplerParamType(DevSampler2D, DevSamplerFloat, VectorTypeRank< Type >::val) name##Sampler = PREP_PASTE3(prefix, name, Sampler); \
-    MAKE_VARIABLE_USED(name##Sampler);
+    auto name##Sampler = PREP_PASTE3(prefix, name, Sampler); \
+    compileUseVariableByVal(name##Sampler);
 
 #define GPT_EXPOSE_MATRIX(Type, name) \
     GpuMatrixPtr(Type) name = MATRIX_POINTER(o.name, X, Y); MAKE_VARIABLE_USED(name);

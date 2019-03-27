@@ -722,7 +722,8 @@ bool CudaCpuAllocThunk::alloc(const GpuContext& context, CpuAddrU size, CpuAddrU
     if (size == 0)
         {result = 0; owner.clear(); return true;}
 
-    return sysAllocAlignShell<CpuAddrU>(size, alignment, owner, result, CudaCpuAllocCore(), dealloc, stdPassThru);
+    CudaCpuAllocCore coreAlloc;
+    return sysAllocAlignShell<CpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
 }
 
 //================================================================
@@ -781,7 +782,8 @@ bool CudaGpuAllocThunk::alloc(const GpuContext& context, GpuAddrU size, GpuAddrU
     if (size == 0)
         {result = 0; owner.clear(); return true;}
 
-    return sysAllocAlignShell<GpuAddrU>(size, alignment, owner, result, CudaGpuAllocCore(), dealloc, stdPassThru);
+    CudaGpuAllocCore coreAlloc;
+    return sysAllocAlignShell<GpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
 }
 
 //================================================================
@@ -1718,7 +1720,10 @@ bool CudaExecApiThunk::copyArrayCpuGpu(CpuAddrU srcPtr, GpuAddrU dstPtr, Space s
 {
     stdBegin;
     GPU_COVERAGE_BEGIN(0, 0);
-    if_not (gpuEnqueueMode != GpuEnqueueNormal) REQUIRE_CUDA(cuMemcpyHtoDAsync(CUdeviceptr(dstPtr), (void*) srcPtr, size, uncast(stream).cuStream));
+    
+    if (gpuEnqueueMode == GpuEnqueueNormal) 
+        REQUIRE_CUDA(cuMemcpyHtoDAsync(CUdeviceptr(dstPtr), (void*) srcPtr, size, uncast(stream).cuStream));
+
     GPU_COVERAGE_END;
     stdEnd;
 }
@@ -1727,7 +1732,10 @@ bool CudaExecApiThunk::copyArrayGpuCpu(GpuAddrU srcPtr, CpuAddrU dstPtr, Space s
 {
     stdBegin;
     GPU_COVERAGE_BEGIN(0, 0);
-    if_not (gpuEnqueueMode != GpuEnqueueNormal) REQUIRE_CUDA(cuMemcpyDtoHAsync((void*) dstPtr, CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
+
+    if (gpuEnqueueMode == GpuEnqueueNormal)
+        REQUIRE_CUDA(cuMemcpyDtoHAsync((void*) dstPtr, CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
+
     GPU_COVERAGE_END;
     stdEnd;
 }
@@ -1736,7 +1744,10 @@ bool CudaExecApiThunk::copyArrayGpuGpu(GpuAddrU srcPtr, GpuAddrU dstPtr, Space s
 {
     stdBegin;
     GPU_COVERAGE_BEGIN(0, 0);
-    if_not (gpuEnqueueMode != GpuEnqueueNormal) REQUIRE_CUDA(cuMemcpyDtoDAsync(CUdeviceptr(dstPtr), CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
+    
+    if (gpuEnqueueMode == GpuEnqueueNormal) 
+        REQUIRE_CUDA(cuMemcpyDtoDAsync(CUdeviceptr(dstPtr), CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
+
     GPU_COVERAGE_END;
     stdEnd;
 }
@@ -1809,7 +1820,7 @@ inline bool genericMatrixCopy
         \
         GPU_COVERAGE_BEGIN(0, 0); \
         \
-        if_not (gpuEnqueueMode != GpuEnqueueNormal) \
+        if (gpuEnqueueMode == GpuEnqueueNormal) \
         { \
             require \
             ( \
