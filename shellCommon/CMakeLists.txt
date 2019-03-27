@@ -7,4 +7,4 @@
 #
 #================================================================
 
-hexlibProjectTemplate(hexlibShellCommon hexlib::shellCommon "hexlibBaseLib;hexlibImgBase;hexlibModuleTools" FALSE)
+hexlibProjectTemplate(hexlibShellCommon STATIC "hexlibBaseLib;hexlibImgBase;hexlibModuleTools" FALSE)

@@ -4,4 +4,4 @@
 #
 #================================================================
 
-hexlibProjectTemplate(hexlibImgBase hexlib::imgBase "hexlibCppBase" FALSE)
+hexlibProjectTemplate(hexlibImgBase STATIC "hexlibCppBase" FALSE)
