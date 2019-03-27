@@ -4,4 +4,4 @@
 #
 #================================================================
 
-hexlibProjectTemplate(hexlibBaseLib hexlib::baseLib "" FALSE)
+hexlibProjectTemplate(hexlibBaseLib STATIC "" FALSE)

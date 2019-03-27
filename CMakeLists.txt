@@ -69,17 +69,13 @@ endfunction()
 #
 #================================================================
 
-function (hexlibProjectTemplate projectName projectAlias dependentProjects requiresGpuCompiler)
+function (hexlibProjectTemplate projectName libType dependentProjects requiresGpuCompiler)
 
     addSourcesRecursive(sources .)
 
     ###
 
-    add_library(${projectName} OBJECT ${sources})
-
-    if (${projectAlias})
-        add_library(${projectAlias} ALIAS ${projectName})
-    endif()
+    add_library(${projectName} ${libType} ${sources})
 
     ###
 

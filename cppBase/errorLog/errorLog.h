@@ -21,7 +21,7 @@ struct ErrorLog
 public:
 
     inline bool isThreadProtected() const
-        {return threadProtectedFunc(*this);}
+        {return isThreadProtectedFunc(*this);}
 
     inline void addErrorSimple(const CharType* message)
         {addErrorSimpleFunc(*this, message);}
@@ -31,8 +31,8 @@ public:
 
 private:
 
-    typedef bool ThreadProtected(const ErrorLog& self);
-    ThreadProtected* const threadProtectedFunc;
+    typedef bool IsThreadProtectedFunc(const ErrorLog& self);
+    IsThreadProtectedFunc* const isThreadProtectedFunc;
 
     typedef void AddErrorSimple(ErrorLog& self, const CharType* message);
     AddErrorSimple* const addErrorSimpleFunc;
@@ -42,9 +42,9 @@ private:
 
 public:
 
-    inline ErrorLog(ThreadProtected* threadProtectedFunc, AddErrorSimple* addErrorSimpleFunc, AddErrorTrace* addErrorTraceFunc)
+    inline ErrorLog(IsThreadProtectedFunc* isThreadProtectedFunc, AddErrorSimple* addErrorSimpleFunc, AddErrorTrace* addErrorTraceFunc)
         :
-        threadProtectedFunc(threadProtectedFunc),
+        isThreadProtectedFunc(isThreadProtectedFunc),
         addErrorSimpleFunc(addErrorSimpleFunc),
         addErrorTraceFunc(addErrorTraceFunc)
     {

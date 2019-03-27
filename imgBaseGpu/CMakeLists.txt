@@ -4,4 +4,4 @@
 #
 #================================================================
 
-hexlibProjectTemplate(hexlibImgBaseGpu hexlib::ImgBaseGpu "hexlibImgBase" FALSE)
+hexlibProjectTemplate(hexlibImgBaseGpu STATIC "hexlibImgBase" FALSE)

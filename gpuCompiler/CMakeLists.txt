@@ -26,8 +26,4 @@ target_include_directories(hexlibGpuCompilerInterface INTERFACE .)
 #
 #----------------------------------------------------------------
 
-add_custom_command(
-    TARGET hexlibGpuCompiler POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-         $<TARGET_FILE:hexlibGpuCompiler>
-        ${CMAKE_BINARY_DIR}/$<TARGET_FILE_NAME:hexlibGpuCompiler>)
+set_target_properties(hexlibGpuCompiler PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
