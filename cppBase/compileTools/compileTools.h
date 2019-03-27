@@ -361,12 +361,15 @@ static void compileConvertAddr_(Type value)
 //================================================================
 
 template <typename Type>
-sysinline void compileUseVariable(Type&) {}
+sysinline void compileUseVariableByRef(Type&) {}
+
+template <typename Type>
+sysinline void compileUseVariableByVal(Type) {}
 
 //----------------------------------------------------------------
 
 #define MAKE_VARIABLE_USED(var) \
-    compileUseVariable(var)
+    compileUseVariableByRef(var)
 
 //================================================================
 //
