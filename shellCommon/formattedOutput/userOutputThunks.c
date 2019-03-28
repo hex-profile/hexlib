@@ -18,10 +18,9 @@ static const MsgKind errorMsgKind = msgErr;
 //
 //================================================================
 
-bool ErrorLogThunk::isThreadProtected(const ErrorLog& self)
+bool ErrorLogThunk::isThreadProtected() const 
 {
-    const ErrorLogThunk& that = static_cast<const ErrorLogThunk&>(self);
-    return that.msgLog ? that.msgLog->isThreadProtected() : true;
+    return msgLog ? msgLog->isThreadProtected() : true;
 }
 
 //================================================================
@@ -30,12 +29,10 @@ bool ErrorLogThunk::isThreadProtected(const ErrorLog& self)
 //
 //================================================================
 
-void ErrorLogThunk::addErrorSimple(ErrorLog& self, const CharType* message)
+void ErrorLogThunk::addErrorSimple(const CharType* message)
 {
-    ErrorLogThunk& that = static_cast<ErrorLogThunk&>(self);
-
-    if (that.msgLog)
-        printMsg(*that.msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
+    if (msgLog)
+        printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
 }
 
 //================================================================
@@ -44,17 +41,15 @@ void ErrorLogThunk::addErrorSimple(ErrorLog& self, const CharType* message)
 //
 //================================================================
 
-void ErrorLogThunk::addErrorTrace(ErrorLog& self, const CharType* message, TRACE_PARAMS(trace))
+void ErrorLogThunk::addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
 {
     TRACE_REASSEMBLE(trace);
 
-    ErrorLogThunk& that = static_cast<ErrorLogThunk&>(self);
-
-    if (that.msgLog)
+    if (msgLog)
     {
-        MsgLogGuard guard(*that.msgLog);
+        MsgLogGuard guard(*msgLog);
 
-        printMsg(*that.msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
+        printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
 
         int32 depth = 0;
 
@@ -62,33 +57,33 @@ void ErrorLogThunk::addErrorTrace(ErrorLog& self, const CharType* message, TRACE
         {
             if_not (depth < MAX_TRACE_DEPTH)
             {
-                printMsg(*that.msgLog, STR("    ... and so on"), errorMsgKind);
+                printMsg(*msgLog, STR("    ... and so on"), errorMsgKind);
                 break;
             }
 
-            printMsg(*that.msgLog, STR("    %0: called from"), charArrayFromPtr(p->location), errorMsgKind);
+            printMsg(*msgLog, STR("    %0: called from"), charArrayFromPtr(p->location), errorMsgKind);
         }
     }
 }
 
 //================================================================
 //
-// MsgLogTraceThunk::isThreadProtected
+// ErrorLogExThunk::isThreadProtected
 //
 //================================================================
 
-bool MsgLogTraceThunk::isThreadProtected() const
+bool ErrorLogExThunk::isThreadProtected() const
 {
     return msgLog ? msgLog->isThreadProtected() : true;
 }
 
 //================================================================
 //
-// MsgLogTraceThunk::addMsgTrace
+// ErrorLogExThunk::addMsgTrace
 //
 //================================================================
 
-bool MsgLogTraceThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+bool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
 {
     stdNullBegin;
 

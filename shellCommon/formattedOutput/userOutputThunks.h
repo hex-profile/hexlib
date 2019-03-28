@@ -16,21 +16,11 @@ class ErrorLogThunk : public ErrorLog
 public:
 
     inline ErrorLogThunk(MsgLog& msgLog)
-        :
-        ErrorLog(isThreadProtected, addErrorSimple, addErrorTrace),
-        msgLog(&msgLog)
-    {
-    }
+        : msgLog(&msgLog) {}
 
-    inline ErrorLogThunk()
-        :
-        ErrorLog(isThreadProtected, addErrorSimple, addErrorTrace)
-    {
-    }
-
-    static bool isThreadProtected(const ErrorLog& self);
-    static void addErrorSimple(ErrorLog& self, const CharType* message);
-    static void addErrorTrace(ErrorLog& self, const CharType* message, TRACE_PARAMS(trace));
+    bool isThreadProtected() const override;
+    void addErrorSimple(const CharType* message) override;
+    void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) override;
 
 public:
 
@@ -38,7 +28,7 @@ public:
         {this->msgLog = &msgLog;}
 
     inline void reset()
-        {msgLog = 0;}
+        {msgLog = nullptr;}
 
 private:
 
@@ -48,11 +38,11 @@ private:
 
 //================================================================
 //
-// MsgLogTraceThunk
+// ErrorLogExThunk
 //
 //================================================================
 
-class MsgLogTraceThunk : public ErrorLogEx
+class ErrorLogExThunk : public ErrorLogEx
 {
 
 public:
@@ -63,10 +53,10 @@ public:
 
 public:
 
-    inline MsgLogTraceThunk()
+    inline ErrorLogExThunk()
         {}
 
-    inline MsgLogTraceThunk(MsgLog& msgLog)
+    inline ErrorLogExThunk(MsgLog& msgLog)
         : msgLog(&msgLog) {}
 
     inline void setup(MsgLog& msgLog)

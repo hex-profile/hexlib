@@ -28,6 +28,9 @@
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
+constexpr bool initAllocatedBlocks = true;
+constexpr bool reportAllocatedBlocks = true;
+
 //================================================================
 //
 // CUDA_DRVAPI_ERROR_LIST
@@ -707,6 +710,16 @@ struct CudaCpuAllocCore
         COMPILE_ASSERT(sizeof(void*) == sizeof(CpuAddrU));
         result = CpuAddrU(ptr);
 
+        ////
+
+        if (initAllocatedBlocks)
+            memset(ptr, 0xCC, allocSize);
+
+        ////
+
+        if (reportAllocatedBlocks)
+            printMsg(kit.msgLog, STR("Allocated CPU memory range %0 .. %1"), hex(result), hex(result + allocSize - 1));
+
         stdEnd;
     }
 };
@@ -766,6 +779,21 @@ struct CudaGpuAllocCore
 
         COMPILE_ASSERT(sizeof(CUdeviceptr) <= sizeof(GpuAddrU));
         result = GpuAddrU(ptr);
+
+        ////
+
+        if (initAllocatedBlocks)
+        {
+            REQUIRE_CUDA(cuMemsetD8(ptr, 0xCC, allocSize));
+            REQUIRE_CUDA(cuStreamSynchronize(nullptr));
+        }
+
+        ////
+
+        if (reportAllocatedBlocks)
+            printMsg(kit.msgLog, STR("Allocated GPU memory range %0 .. %1"), hex(result), hex(result + allocSize - 1));
+
+        ////
 
         stdEnd;
     }
@@ -1734,7 +1762,10 @@ bool CudaExecApiThunk::copyArrayGpuCpu(GpuAddrU srcPtr, CpuAddrU dstPtr, Space s
     GPU_COVERAGE_BEGIN(0, 0);
 
     if (gpuEnqueueMode == GpuEnqueueNormal)
+    {
+        printMsg(kit.msgLog, STR("Copy GPU %0 .. %1 -> CPU %2 .. %3"), hex(srcPtr), hex(srcPtr + size - 1), hex(dstPtr), hex(dstPtr + size - 1));
         REQUIRE_CUDA(cuMemcpyDtoHAsync((void*) dstPtr, CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
+    }
 
     GPU_COVERAGE_END;
     stdEnd;

@@ -1122,7 +1122,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
 #endif
 
     ErrorLogThunk errorLog(msgLog);
-    MsgLogTraceThunk errorLogEx(msgLog);
+    ErrorLogExThunk errorLogEx(msgLog);
 
     TextKit kit = kitCombine
     (
