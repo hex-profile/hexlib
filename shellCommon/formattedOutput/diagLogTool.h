@@ -92,7 +92,7 @@ private:
 
     DisposableObject<DiagLogMsgLog> msgLog;
     DisposableObject<ErrorLogThunk> errorLog;
-    DisposableObject<MsgLogTraceThunk> errorLogEx;
+    DisposableObject<ErrorLogExThunk> errorLogEx;
 
 };
 

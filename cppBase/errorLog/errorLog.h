@@ -10,46 +10,15 @@
 //
 // Basic error log interface, widely used, ASSERT-like.
 //
-// Custom virtual func implementation: The function call is compiled
-// VERY often, so it should take as little instructions as possible.
-//
 //================================================================
 
 struct ErrorLog
 {
+    virtual bool isThreadProtected() const =0;
 
-public:
+    virtual void addErrorSimple(const CharType* message) =0;
 
-    inline bool isThreadProtected() const
-        {return isThreadProtectedFunc(*this);}
-
-    inline void addErrorSimple(const CharType* message)
-        {addErrorSimpleFunc(*this, message);}
-
-    inline void addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
-        {addErrorTraceFunc(*this, message, TRACE_PASSTHRU(trace));}
-
-private:
-
-    typedef bool IsThreadProtectedFunc(const ErrorLog& self);
-    IsThreadProtectedFunc* const isThreadProtectedFunc;
-
-    typedef void AddErrorSimple(ErrorLog& self, const CharType* message);
-    AddErrorSimple* const addErrorSimpleFunc;
-
-    typedef void AddErrorTrace(ErrorLog& self, const CharType* message, TRACE_PARAMS(trace));
-    AddErrorTrace* const addErrorTraceFunc;
-
-public:
-
-    inline ErrorLog(IsThreadProtectedFunc* isThreadProtectedFunc, AddErrorSimple* addErrorSimpleFunc, AddErrorTrace* addErrorTraceFunc)
-        :
-        isThreadProtectedFunc(isThreadProtectedFunc),
-        addErrorSimpleFunc(addErrorSimpleFunc),
-        addErrorTraceFunc(addErrorTraceFunc)
-    {
-    }
-
+    virtual void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) =0;
 };
 
 //================================================================
@@ -63,16 +32,13 @@ class ErrorLogNull : public ErrorLog
 
 public:
 
-    inline ErrorLogNull()
-        : ErrorLog(isThreadProtected, addErrorSimple, addErrorTrace) {}
-
-    static bool isThreadProtected(const ErrorLog& self)
+    bool isThreadProtected() const override
         {return true;}
 
-    static void addErrorSimple(ErrorLog& self, const CharType* message)
+    void addErrorSimple(const CharType* message) override
         {}
 
-    static void addErrorTrace(ErrorLog& self, const CharType* message, TRACE_PARAMS(trace))
+    void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) override
         {}
 
 };

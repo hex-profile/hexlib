@@ -18,6 +18,7 @@
 struct ErrorLogEx
 {
     virtual bool isThreadProtected() const =0;
+
     virtual bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars) =0;
 };
 
