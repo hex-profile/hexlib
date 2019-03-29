@@ -50,7 +50,10 @@ devDefineSampler(srcSampler, DevSampler2D, DevSamplerFloat, 1)
 //================================================================
 
 template <typename Dst>
-KIT_CREATE1_(DownsampleParams, GpuMatrix<Dst>, dst);
+struct DownsampleParams
+{
+    GpuMatrix<Dst> dst;
+};
 
 //================================================================
 //
@@ -241,7 +244,7 @@ bool downsampleTwiceTent(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& 
             point(threadCountX, threadCountY),
             areaOf(dst),
             downsampleTwiceKernelLink<Dst>(),
-            DownsampleParams<Dst>(dst),
+            DownsampleParams<Dst>{dst},
             kit.gpuCurrentStream,
             stdPass
         )

@@ -118,7 +118,7 @@ struct GpuStreamWaiting
 //----------------------------------------------------------------
 
 template <typename Kit>
-sysinline bool syncCurrentStream(stdPars(Kit))
+sysinline bool gpuSyncCurrentStream(stdPars(Kit))
 {
     stdBegin;
 

@@ -29,7 +29,7 @@
 //================================================================
 
 constexpr bool initAllocatedBlocks = true;
-constexpr bool reportAllocatedBlocks = true;
+constexpr bool reportAllocatedBlocks = false;
 
 //================================================================
 //
@@ -1762,10 +1762,7 @@ bool CudaExecApiThunk::copyArrayGpuCpu(GpuAddrU srcPtr, CpuAddrU dstPtr, Space s
     GPU_COVERAGE_BEGIN(0, 0);
 
     if (gpuEnqueueMode == GpuEnqueueNormal)
-    {
-        printMsg(kit.msgLog, STR("Copy GPU %0 .. %1 -> CPU %2 .. %3"), hex(srcPtr), hex(srcPtr + size - 1), hex(dstPtr), hex(dstPtr + size - 1));
         REQUIRE_CUDA(cuMemcpyDtoHAsync((void*) dstPtr, CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
-    }
 
     GPU_COVERAGE_END;
     stdEnd;

@@ -170,7 +170,7 @@ private:
     template <typename Src, typename Dst>
     struct CheckConversion
     {
-        static constexpr bool value = std::is_same<Src, Dst>::value || std::is_same<const Src, Dst>::value;
+        static constexpr bool value = std::is_convertible<Src, Dst>::value;
     };
 
 private:

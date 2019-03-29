@@ -53,16 +53,17 @@ sysinline Point<Space> threadCount() {return point(Space(threadCountX), Space(th
 //================================================================
 
 template <typename DstPixel>
-KIT_CREATE6_
-(
-    ConvertParamsYuvBgr, 
-    Point<float32>, lumaTexstep,
-    Point<float32>, chromaTexstep,
-    Point<Space>, srcOffsetDiv2,
-    Point<Space>, srcSize,
-    DstPixel, outerColor,
-    GpuMatrix<DstPixel>, dst
-);
+struct ConvertParamsYuvBgr
+{
+    Point<float32> lumaTexstep;
+    Point<float32> chromaTexstep;
+    Point<Space> srcOffsetDiv2;
+    Point<Space> srcSize;
+    DstPixel outerColor;
+    GpuMatrix<DstPixel> dst;
+};
+
+COMPILE_ASSERT(sizeof(ConvertParamsYuvBgr<uint8>) == 8+8+8+8+16+4);
 
 //================================================================
 //

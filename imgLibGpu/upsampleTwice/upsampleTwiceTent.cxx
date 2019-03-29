@@ -39,7 +39,10 @@ devDefineSampler(srcSampler, DevSampler2D, DevSamplerFloat, 1)
 //
 //================================================================
 
-KIT_CREATE1(UpsampleParams, GpuMatrix<uint8>, dst);
+struct UpsampleParams
+{
+    GpuMatrix<uint8> dst;
+};
 
 //================================================================
 //
@@ -99,7 +102,7 @@ bool upsampleTwiceTent(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8>
                 point(threadCountX, threadCountY),
                 areaOf(dst),
                 upsample2KernelTent,
-                UpsampleParams(dst),
+                UpsampleParams{dst},
                 kit.gpuCurrentStream,
                 stdPass
             )
