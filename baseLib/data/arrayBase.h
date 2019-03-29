@@ -66,7 +66,7 @@ public:
         using Src = Type;
         using Dst = OtherType;
 
-        static_assert(std::is_same<Src, Dst>::value || std::is_same<const Src, Dst>::value, "");
+        static_assert(std::is_convertible<Src*, Dst*>::value, "");
         static_assert(sizeof(ArrayBase<Src>) == sizeof(ArrayBase<Dst>), "");
         static_assert(alignof(ArrayBase<Src>) == alignof(ArrayBase<Dst>), "");
         return * (const ArrayBase<Dst>*) this;
@@ -84,7 +84,7 @@ public:
         using Src = Type;
         using Dst = OtherType;
 
-        static_assert(std::is_same<Src, Dst>::value || std::is_same<const Src, Dst>::value, "");
+        static_assert(std::is_convertible<Src*, Dst*>::value, "");
         static_assert(sizeof(ArrayBase<Src>) == sizeof(ArrayBase<Dst>), "");
         static_assert(alignof(ArrayBase<Src>) == alignof(ArrayBase<Dst>), "");
         return * (const ArrayBase<Dst>*) this;

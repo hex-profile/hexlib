@@ -65,7 +65,11 @@ devDefineSampler(srcSampler2, DevSampler2D, DevSamplerFloat, 2)
 //================================================================
 
 template <typename Dst, typename FilterX, typename FilterY>
-KIT_CREATE2_(DownsampleParams, Point<Space>, srcOfs, GpuMatrix<Dst>, dst);
+struct DownsampleParams
+{
+    Point<Space> srcOfs; 
+    GpuMatrix<Dst> dst;
+};
 
 //================================================================
 //
@@ -178,7 +182,7 @@ bool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>&
             point(threadCountX, threadCountY),
             areaOf(dst),
             downsampleTwiceKernelLink<Dst, FilterX, FilterY>(),
-            DownsampleParams<Dst, FilterX, FilterY>(srcOfs, dst),
+            DownsampleParams<Dst, FilterX, FilterY>{srcOfs, dst},
             kit.gpuCurrentStream,
             stdPass
         )

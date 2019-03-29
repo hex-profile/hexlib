@@ -62,7 +62,10 @@ static const Space threadCountY = 8;
 //================================================================
 
 template <typename Dst>
-KIT_CREATE1_(UpsampleParams, GpuMatrix<Dst>, dst);
+struct UpsampleParams
+{
+    GpuMatrix<Dst> dst;
+};
 
 //================================================================
 //
@@ -155,7 +158,7 @@ bool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& d
             point(threadCountX, threadCountY),
             areaOf(dst),
             upsampleTwiceKernelLink<Dst>(),
-            UpsampleParams<Dst>(dst),
+            UpsampleParams<Dst>{dst},
             kit.gpuCurrentStream,
             stdPass
         )

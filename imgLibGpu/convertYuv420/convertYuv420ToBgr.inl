@@ -294,7 +294,7 @@ bool PREP_PASTE(convertYuv420To, SUFFIX)
 
     ////
 
-    ConvertParamsYuvBgr<DST_PIXEL> params(computeTexstep(srcLuma), computeTexstep(srcChroma), srcOffset / 2, srcLuma.size(), outerColor, dst);
+    ConvertParamsYuvBgr<DST_PIXEL> params{computeTexstep(srcLuma), computeTexstep(srcChroma), srcOffset / 2, srcLuma.size(), outerColor, dst};
 
     require
     (

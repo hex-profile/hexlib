@@ -102,18 +102,17 @@ REQUIRE(hasData(example.size()));
 //================================================================
 
 template <typename SrcPointer, typename DstPointer>
-struct Matrix_CheckConversion
+inline auto matrixCheckPointerConversion()
 {
-    using Src = typename PtrElemType<SrcPointer>::T;
-    using Dst = typename PtrElemType<DstPointer>::T;
-
-    static const bool result = TYPE_EQUAL(Src, Dst) || TYPE_EQUAL(const Src, Dst);
-};
+    SrcPointer srcPtr(0);
+    DstPointer dstPtr = srcPtr;
+    return dstPtr;
+}
 
 //----------------------------------------------------------------
 
 #define MATRIX__CHECK_CONVERSION(SrcPointer, DstPointer) \
-    COMPILE_ASSERT((Matrix_CheckConversion<SrcPointer, DstPointer>::result))
+    COMPILE_ASSERT(sizeof(matrixCheckPointerConversion<SrcPointer, DstPointer>()) >= 1)
 
 //================================================================
 //

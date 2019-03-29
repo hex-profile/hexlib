@@ -503,17 +503,16 @@ bool upconvertValueMatrix
 //================================================================
 
 template <typename Type>
-KIT_CREATE7_
-(
-    ScalarVisualizationParams,
-    GpuMatrix<const Type>, img,
-    int, channel, 
-    Point<float32>, coordBackC1,
-    LinearTransform<float32>, valueTransform,
-    InterpType, upsampleType,
-    BorderMode, borderMode, 
-    bool, overlayCentering
-);
+struct ScalarVisualizationParams
+{
+    GpuMatrix<const Type> img;
+    int channel;
+    Point<float32> coordBackC1;
+    LinearTransform<float32> valueTransform;
+    InterpType upsampleType;
+    BorderMode borderMode;
+    bool overlayCentering;
+};
 
 //================================================================
 //
@@ -634,7 +633,7 @@ bool GpuImageConsoleThunk::addMatrixExImpl
     else if (hint.target == ImgOutputOverlay)
     {
 
-        ScalarVisualizationProvider<Type> outputProvider(ScalarVisualizationParams<Type>(img, channel, coordBackC1, valueTransform, upsampleType, borderMode, hint.overlayCentering), kit);
+        ScalarVisualizationProvider<Type> outputProvider(ScalarVisualizationParams<Type>{img, channel, coordBackC1, valueTransform, upsampleType, borderMode, hint.overlayCentering}, kit);
 
         require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, paramMsg(STR("%0 [%1, %2] ~%3 bits"), hint.desc, 
             fltf(minVal, 3), fltf(maxVal, 3), fltf(-nativeLog2(maxVal - minVal), 1)), stdPass));
@@ -723,20 +722,19 @@ IMAGE_CONSOLE_FOREACH_VECTOR_TYPE(TMP_MACRO, _)
 //================================================================
 
 template <typename Vector>
-KIT_CREATE10_
-(
-    VectorVisualizationParams,
-    GpuMatrix<const Vector>, image,
-    float32, valueFactor,
-    float32, textFactor,
-    float32, arrowFactor,
-    Point<float32>, coordBackMul,
-    InterpType, upsampleType,
-    BorderMode, borderMode,
-    bool, overlayCentering,
-    bool, grayMode,
-    bool, textOutputEnabled
-);
+struct VectorVisualizationParams
+{
+    GpuMatrix<const Vector> image;
+    float32 valueFactor;
+    float32 textFactor;
+    float32 arrowFactor;
+    Point<float32> coordBackMul;
+    InterpType upsampleType;
+    BorderMode borderMode;
+    bool overlayCentering;
+    bool grayMode;
+    bool textOutputEnabled;
+};
 
 //================================================================
 //
@@ -922,8 +920,8 @@ bool GpuImageConsoleThunk::addVectorImageGeneric
 
     if (hint.target == ImgOutputOverlay)
     {
-        VectorVisualizationProvider<Vector> sourceBgr(VectorVisualizationParams<Vector>(image, valueFactor, hint.textFactor, hint.arrowFactor, coordBackMul, upsampleType, borderMode, 
-            hint.overlayCentering, vectorDisplayMode == VectorDisplayMagnitude, getTextEnabled()), kit);
+        VectorVisualizationProvider<Vector> sourceBgr(VectorVisualizationParams<Vector>{image, valueFactor, hint.textFactor, hint.arrowFactor, coordBackMul, upsampleType, borderMode, 
+            hint.overlayCentering, vectorDisplayMode == VectorDisplayMagnitude, getTextEnabled()}, kit);
 
         require(baseConsole.overlaySetImageBgr(outputSize, sourceBgr, hint.desc, stdPass));
     }
@@ -1188,7 +1186,7 @@ bool GpuImageConsoleThunk::addColorImageFunc
     {
         UnpackedColorConvertProvider<Type> outputProvider
         (
-            ScalarVisualizationParams<Type>(img, 0, coordBackC1, valueTransform, upsampleType, borderMode, hint.overlayCentering), 
+            ScalarVisualizationParams<Type>{img, 0, coordBackC1, valueTransform, upsampleType, borderMode, hint.overlayCentering}, 
             colorMode, kit
         );
 

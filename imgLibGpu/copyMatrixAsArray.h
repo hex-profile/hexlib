@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "stdFunc/stdFunc.h"
 #include "flipMatrix.h"
@@ -67,7 +69,7 @@ bool copyMatrixAsArray(const MatrixEx<SrcPtr>& srcMatrix, const MatrixEx<DstPtr>
     require(getMatrixMemoryRangeAsArray(src, srcArray, stdPass));
 
     ArrayEx<DstPtr> dstArray;
-    require(getMatrixMemoryRangeAsArray<DstPtr>(dst, dstArray, stdPass));
+    require(getMatrixMemoryRangeAsArray(dst, dstArray, stdPass));
 
     ////
 
