@@ -30,6 +30,16 @@ set(touchUnusedVars ${HEXLIB_CUDA_ARCH} ${HEXLIB_CUDA_BITNESS})
 
 #================================================================
 #
+# HEXLIB_GUARDED_MEMORY
+#
+#================================================================
+
+if (NOT DEFINED HEXLIB_GUARDED_MEMORY)
+    set(HEXLIB_GUARDED_MEMORY 0)
+endif()
+
+#================================================================
+#
 # addSourcesRecursive
 #
 #================================================================
@@ -91,7 +101,7 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
 
     ###
 
-    target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
+    target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM} HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
 
     ###
 

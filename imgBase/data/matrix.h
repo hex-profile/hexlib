@@ -304,7 +304,7 @@ public:
         theSize.Y = sizeY;
     }
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     bool assign(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
@@ -329,7 +329,7 @@ public:
 
     ////
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     bool assign(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         {return assign(unsafePtr(memPtr, sizeX, sizeY), memPitch, sizeX, sizeY);}
@@ -384,7 +384,7 @@ public:
     sysinline Pointer memPtrUnsafeInternalUseOnly() const
         {return theMemPtr;}
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     sysinline typename MatrixPtr(Type) memPtr() const
         {return MatrixPtrCreate(Type, theMemPtr, theMemPitch, theSize.X, theSize.Y, DbgptrMatrixPreconditions());}
@@ -616,7 +616,7 @@ public:
     sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
         : Base(memPtr, memPitch, sizeX, sizeY, preconditions) {}
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     sysinline Matrix(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}

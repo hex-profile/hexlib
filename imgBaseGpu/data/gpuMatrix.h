@@ -37,7 +37,7 @@ public:
     sysinline GpuMatrix(GpuPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
         : Base(memPtr, memPitch, sizeX, sizeY, preconditions) {}
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     sysinline GpuMatrix(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}

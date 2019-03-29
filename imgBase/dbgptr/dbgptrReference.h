@@ -1,13 +1,12 @@
 #pragma once
 
-#include "dbgptr/dbgptrTypeOp.h"
 #include "dbgptr/dbgptrProtos.h"
 
 //================================================================
 //
 // DbgptrReference
 //
-// The object's memory size and layout match exactly "Pointer" argument.
+// The object's memory size and layout match "Pointer" argument exactly.
 //
 //================================================================
 
@@ -99,14 +98,14 @@ private:
 //================================================================
 
 template <typename Pointer>
-inline TYPEOP_UNARY_PREDICT(typename Pointer::Element) operator +(const DbgptrReference<Pointer>& ref)
+inline auto operator +(const DbgptrReference<Pointer>& ref)
 {
     COMPILE_ASSERT(TYPE_EQUAL(TYPEOP_PREFIX(+, typename Pointer::Element), TYPEOP_UNARY_PREDICT(typename Pointer::Element)));
     return +ref.read();
 }
 
 template <typename Pointer>
-inline TYPEOP_UNARY_PREDICT(typename Pointer::Element) operator -(const DbgptrReference<Pointer>& ref)
+inline auto operator -(const DbgptrReference<Pointer>& ref)
 {
     COMPILE_ASSERT(TYPE_EQUAL(TYPEOP_PREFIX(-, typename Pointer::Element), TYPEOP_UNARY_PREDICT(typename Pointer::Element)));
     return -ref.read();
@@ -121,7 +120,7 @@ inline TYPEOP_UNARY_PREDICT(typename Pointer::Element) operator -(const DbgptrRe
 #define TMP_MACRO(OP) \
     \
     template <typename Pointer1, typename Pointer2> \
-    inline TYPEOP_BINARY_PREDICT(typename Pointer1::Element, typename Pointer2::Element) operator OP \
+    inline auto operator OP \
     ( \
         const DbgptrReference<Pointer1>& v1, \
         const DbgptrReference<Pointer2>& v2 \
@@ -130,14 +129,13 @@ inline TYPEOP_UNARY_PREDICT(typename Pointer::Element) operator -(const DbgptrRe
         using Element1 = typename Pointer1::Element; \
         using Element2 = typename Pointer2::Element; \
         \
-        COMPILE_ASSERT(TYPE_EQUAL(TYPEOP_BINARY_PREDICT(Element1, Element2), TYPEOP_BINARY(Element1, OP, Element2))); \
         return v1.read() OP v2.read(); \
     } \
     \
     \
     \
     template <typename Pointer, typename Value> \
-    inline TYPEOP_BINARY_PREDICT(typename Pointer::Element, Value) operator OP \
+    inline auto operator OP \
     ( \
         const DbgptrReference<Pointer>& v1, \
         const Value& v2 \
@@ -146,14 +144,13 @@ inline TYPEOP_UNARY_PREDICT(typename Pointer::Element) operator -(const DbgptrRe
         using Element1 = typename Pointer::Element; \
         using Element2 = Value; \
         \
-        COMPILE_ASSERT(TYPE_EQUAL(TYPEOP_BINARY_PREDICT(Element1, Element2), TYPEOP_BINARY(Element1, OP, Element2))); \
         return v1.read() OP v2; \
     } \
     \
     \
     \
     template <typename Pointer, typename Value> \
-    inline TYPEOP_BINARY_PREDICT(typename Pointer::Element, Value) operator OP \
+    inline auto operator OP \
     ( \
         const Value& v1, \
         const DbgptrReference<Pointer>& v2 \
@@ -162,7 +159,6 @@ inline TYPEOP_UNARY_PREDICT(typename Pointer::Element) operator -(const DbgptrRe
         using Element1 = Value; \
         using Element2 = typename Pointer::Element; \
         \
-        COMPILE_ASSERT(TYPE_EQUAL(TYPEOP_BINARY_PREDICT(Element1, Element2), TYPEOP_BINARY(Element1, OP, Element2))); \
         return v1 OP v2.read(); \
     }
 
@@ -190,16 +186,16 @@ TMP_MACRO(/)
 #define TMP_MACRO(ASGOP) \
     \
     template <typename Value, typename Pointer> \
-    inline void operator ASGOP(Value& L, const DbgptrReference<Pointer>& R) \
-        {L ASGOP R.read();} \
+    inline auto operator ASGOP(Value& L, const DbgptrReference<Pointer>& R) \
+        {return L ASGOP R.read();} \
     \
     template <typename Value, typename Pointer> \
-    inline void operator ASGOP(const DbgptrReference<Pointer>& L, const Value& R) \
-        {L.modify() ASGOP R;} \
+    inline auto operator ASGOP(const DbgptrReference<Pointer>& L, const Value& R) \
+        {return L.modify() ASGOP R;} \
     \
     template <typename Pointer1, typename Pointer2> \
-    inline void operator ASGOP(const DbgptrReference<Pointer1>& L, const DbgptrReference<Pointer2>& R) \
-        {L.modify() ASGOP R.read();}
+    inline auto operator ASGOP(const DbgptrReference<Pointer1>& L, const DbgptrReference<Pointer2>& R) \
+        {return L.modify() ASGOP R.read();}
 
 TMP_MACRO(+=)
 TMP_MACRO(-=)
@@ -266,16 +262,14 @@ TMP_MACRO(!=)
 #define TMP_MACRO(OP) \
     \
     template <typename Pointer> \
-    inline typename Pointer::Element operator OP(const DbgptrReference<Pointer>& ref) \
+    inline auto operator OP(const DbgptrReference<Pointer>& ref) \
     { \
-        COMPILE_ASSERT(TYPE_EQUAL(typename Pointer::Element, TYPEOP_PREFIX(OP, typename Pointer::Element))); \
         return OP ref.modify(); \
     } \
     \
     template <typename Pointer> \
-    inline typename Pointer::Element operator OP(const DbgptrReference<Pointer>& ref, int) \
+    inline auto operator OP(const DbgptrReference<Pointer>& ref, int) \
     { \
-        COMPILE_ASSERT(TYPE_EQUAL(typename Pointer::Element, TYPEOP_POSTFIX(typename Pointer::Element, OP))); \
         return ref.modify() OP; \
     }
 

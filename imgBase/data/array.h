@@ -204,7 +204,7 @@ public:
     sysinline Pointer ptrUnsafeForInternalUseOnly() const
         {return thePtr;}
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     sysinline typename ArrayPtr(Type) ptr() const
         {return ArrayPtrCreate(Type, thePtr, theSize, DbgptrArrayPreconditions());}

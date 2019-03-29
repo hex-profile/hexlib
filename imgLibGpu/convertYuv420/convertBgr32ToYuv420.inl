@@ -125,14 +125,14 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 
     #define DOWNSAMPLE_VERTICAL(bX, srcBuffer) \
         ( \
-            C0 * srcBuffer(bX, bY + 0) + \
-            C1 * srcBuffer(bX, bY + 1) + \
-            C2 * srcBuffer(bX, bY + 2) + \
-            C3 * srcBuffer(bX, bY + 3) + \
-            C4 * srcBuffer(bX, bY + 4) + \
-            C5 * srcBuffer(bX, bY + 5) + \
-            C6 * srcBuffer(bX, bY + 6) + \
-            C7 * srcBuffer(bX, bY + 7) \
+            C0 * helpRead(srcBuffer(bX, bY + 0)) + \
+            C1 * helpRead(srcBuffer(bX, bY + 1)) + \
+            C2 * helpRead(srcBuffer(bX, bY + 2)) + \
+            C3 * helpRead(srcBuffer(bX, bY + 3)) + \
+            C4 * helpRead(srcBuffer(bX, bY + 4)) + \
+            C5 * helpRead(srcBuffer(bX, bY + 5)) + \
+            C6 * helpRead(srcBuffer(bX, bY + 6)) + \
+            C7 * helpRead(srcBuffer(bX, bY + 7)) \
         )
 
     ////
@@ -165,14 +165,14 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 
     #define DOWNSAMPLE_HORIZONTAL(bX, srcBuffer) \
         ( \
-            C0 * srcBuffer(bX + 0, devThreadY) + \
-            C1 * srcBuffer(bX + 1, devThreadY) + \
-            C2 * srcBuffer(bX + 2, devThreadY) + \
-            C3 * srcBuffer(bX + 3, devThreadY) + \
-            C4 * srcBuffer(bX + 4, devThreadY) + \
-            C5 * srcBuffer(bX + 5, devThreadY) + \
-            C6 * srcBuffer(bX + 6, devThreadY) + \
-            C7 * srcBuffer(bX + 7, devThreadY) \
+            C0 * helpRead(srcBuffer(bX + 0, devThreadY)) + \
+            C1 * helpRead(srcBuffer(bX + 1, devThreadY)) + \
+            C2 * helpRead(srcBuffer(bX + 2, devThreadY)) + \
+            C3 * helpRead(srcBuffer(bX + 3, devThreadY)) + \
+            C4 * helpRead(srcBuffer(bX + 4, devThreadY)) + \
+            C5 * helpRead(srcBuffer(bX + 5, devThreadY)) + \
+            C6 * helpRead(srcBuffer(bX + 6, devThreadY)) + \
+            C7 * helpRead(srcBuffer(bX + 7, devThreadY)) \
         )
 
     float32 resultU = DOWNSAMPLE_HORIZONTAL(bX, SRC_BUFFER_U);
