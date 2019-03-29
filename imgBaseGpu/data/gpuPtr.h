@@ -83,7 +83,7 @@ COMPILE_ASSERT(alignof(GpuPtr(int)) == sizeof(GpuAddrU));
 //
 //================================================================
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     COMPILE_ASSERT(HEXLIB_PLATFORM == 0);
 

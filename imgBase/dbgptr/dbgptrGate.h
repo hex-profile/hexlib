@@ -9,7 +9,7 @@
 //
 //================================================================
 
-#ifdef DBGPTR_MODE
+#if HEXLIB_GUARDED_MEMORY
 
     # include "dbgptrArrayPointer.h"
     # include "dbgptrMatrixPointer.h"
