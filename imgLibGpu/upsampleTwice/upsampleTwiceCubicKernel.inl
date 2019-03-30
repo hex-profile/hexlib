@@ -28,7 +28,7 @@ devDefineKernel(PREP_PASTE(upsampleTwiceKernel, DST), UpsampleParams<DST>, o)
     devSramMatrixFor2dAccess(srcBuffer, FloatType, threadCountX + extraLR, threadCountY + extraLR, threadCountX);
 
     #define SRC_BUFFER(X, Y) \
-        (*MATRIX_POINTER(srcBuffer, X, Y))
+        (MATRIX_ELEMENT(srcBuffer, X, Y))
 
     //----------------------------------------------------------------
     //
@@ -80,7 +80,7 @@ devDefineKernel(PREP_PASTE(upsampleTwiceKernel, DST), UpsampleParams<DST>, o)
     devSramMatrixFor2dAccess(tmpBuffer, FloatType, threadCountX + extraLR, 2 * threadCountY, threadCountX);
 
     #define TMP_BUFFER(X, Y) \
-        (*MATRIX_POINTER(tmpBuffer, X, Y))
+        (MATRIX_ELEMENT(tmpBuffer, X, Y))
 
     ////
 

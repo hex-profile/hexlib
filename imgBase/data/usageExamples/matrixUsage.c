@@ -47,7 +47,7 @@ bool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
 
     // Access some element in a decomposed matrix.
     // The macro uses multiplication. No X/Y range checking performed!
-    int value = *MATRIX_POINTER(example, 0, 0);
+    int value = MATRIX_ELEMENT(example, 0, 0);
 
     // Example element loop (not optimized):
     uint32 sum = 0;

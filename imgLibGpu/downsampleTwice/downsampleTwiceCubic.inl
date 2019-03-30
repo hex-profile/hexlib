@@ -37,7 +37,7 @@ devDecl void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Ds
     devSramMatrixFor2dAccess(srcBuffer, FloatType, srcSramSizeX, srcSramSizeY, threadCountX);
 
     #define SRC_BUFFER(X, Y) \
-        (*MATRIX_POINTER(srcBuffer, X, Y))
+        (MATRIX_ELEMENT(srcBuffer, X, Y))
 
     //----------------------------------------------------------------
     //
@@ -96,7 +96,7 @@ devDecl void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Ds
     devSramMatrixFor2dAccess(tmpBuffer, FloatType, srcSramSizeX, threadCountY, threadCountX);
 
     #define TMP_BUFFER(X, Y) \
-        (*MATRIX_POINTER(tmpBuffer, X, Y))
+        (MATRIX_ELEMENT(tmpBuffer, X, Y))
 
     ////
 
@@ -104,14 +104,14 @@ devDecl void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Ds
 
     #define DOWNSAMPLE_VERTICAL(bX) \
         TMP_BUFFER(bX, devThreadY) = \
-            FilterY::C0() * helpRead(SRC_BUFFER(bX, bY + 0)) + \
-            FilterY::C1() * helpRead(SRC_BUFFER(bX, bY + 1)) + \
-            FilterY::C2() * helpRead(SRC_BUFFER(bX, bY + 2)) + \
-            FilterY::C3() * helpRead(SRC_BUFFER(bX, bY + 3)) + \
-            FilterY::C4() * helpRead(SRC_BUFFER(bX, bY + 4)) + \
-            FilterY::C5() * helpRead(SRC_BUFFER(bX, bY + 5)) + \
-            FilterY::C6() * helpRead(SRC_BUFFER(bX, bY + 6)) + \
-            FilterY::C7() * helpRead(SRC_BUFFER(bX, bY + 7));
+            FilterY::C0() * SRC_BUFFER(bX, bY + 0) + \
+            FilterY::C1() * SRC_BUFFER(bX, bY + 1) + \
+            FilterY::C2() * SRC_BUFFER(bX, bY + 2) + \
+            FilterY::C3() * SRC_BUFFER(bX, bY + 3) + \
+            FilterY::C4() * SRC_BUFFER(bX, bY + 4) + \
+            FilterY::C5() * SRC_BUFFER(bX, bY + 5) + \
+            FilterY::C6() * SRC_BUFFER(bX, bY + 6) + \
+            FilterY::C7() * SRC_BUFFER(bX, bY + 7);
 
     DOWNSAMPLE_VERTICAL(devThreadX + 0 * threadCountX);
     DOWNSAMPLE_VERTICAL(devThreadX + 1 * threadCountX);
@@ -132,14 +132,14 @@ devDecl void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Ds
     Space bX = 2 * devThreadX;
 
     FloatType result = 
-        FilterX::C0() * helpRead(TMP_BUFFER(bX + 0, devThreadY)) +
-        FilterX::C1() * helpRead(TMP_BUFFER(bX + 1, devThreadY)) +
-        FilterX::C2() * helpRead(TMP_BUFFER(bX + 2, devThreadY)) +
-        FilterX::C3() * helpRead(TMP_BUFFER(bX + 3, devThreadY)) +
-        FilterX::C4() * helpRead(TMP_BUFFER(bX + 4, devThreadY)) +
-        FilterX::C5() * helpRead(TMP_BUFFER(bX + 5, devThreadY)) +
-        FilterX::C6() * helpRead(TMP_BUFFER(bX + 6, devThreadY)) +
-        FilterX::C7() * helpRead(TMP_BUFFER(bX + 7, devThreadY));
+        FilterX::C0() * TMP_BUFFER(bX + 0, devThreadY) +
+        FilterX::C1() * TMP_BUFFER(bX + 1, devThreadY) +
+        FilterX::C2() * TMP_BUFFER(bX + 2, devThreadY) +
+        FilterX::C3() * TMP_BUFFER(bX + 3, devThreadY) +
+        FilterX::C4() * TMP_BUFFER(bX + 4, devThreadY) +
+        FilterX::C5() * TMP_BUFFER(bX + 5, devThreadY) +
+        FilterX::C6() * TMP_BUFFER(bX + 6, devThreadY) +
+        FilterX::C7() * TMP_BUFFER(bX + 7, devThreadY);
 
     //----------------------------------------------------------------
     //

@@ -25,8 +25,8 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
     devSramMatrixFor2dAccess(srcBufferU, float32, threadCountX + extraLR, threadCountY + extraLR, threadCountX);
     devSramMatrixFor2dAccess(srcBufferV, float32, threadCountX + extraLR, threadCountY + extraLR, threadCountX);
 
-    #define SRC_BUFFERU(X, Y) (*MATRIX_POINTER(srcBufferU, X, Y))
-    #define SRC_BUFFERV(X, Y) (*MATRIX_POINTER(srcBufferV, X, Y))
+    #define SRC_BUFFERU(X, Y) (MATRIX_ELEMENT(srcBufferU, X, Y))
+    #define SRC_BUFFERV(X, Y) (MATRIX_ELEMENT(srcBufferV, X, Y))
 
     //----------------------------------------------------------------
     //
@@ -75,8 +75,8 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
     devSramMatrixDense(tmpBufferU, float32, threadCountX + extraLR, 2 * threadCountY);
     devSramMatrixDense(tmpBufferV, float32, threadCountX + extraLR, 2 * threadCountY);
 
-    #define TMP_BUFFERU(X, Y) (*MATRIX_POINTER(tmpBufferU, X, Y))
-    #define TMP_BUFFERV(X, Y) (*MATRIX_POINTER(tmpBufferV, X, Y))
+    #define TMP_BUFFERU(X, Y) (MATRIX_ELEMENT(tmpBufferU, X, Y))
+    #define TMP_BUFFERV(X, Y) (MATRIX_ELEMENT(tmpBufferV, X, Y))
 
     ////
 
