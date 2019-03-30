@@ -1301,7 +1301,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
 
         ////
 
-        StlString platformBitnessStr = CT("HEXLIB_CUDA_BITNESS=");
+        StlString platformBitnessStr = CT("HEXLIB_GPU_BITNESS=");
 
         if (stringBeginsWith(defines[i], platformBitnessStr))
             platformBitness = defines[i].substr(platformBitnessStr.length());
@@ -1315,7 +1315,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
             STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)"));
 
         REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"), 
-            STR("For CUDA hardware target, HEXLIB_CUDA_BITNESS should be specified (32 or 64)"));
+            STR("For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)"));
     }
 
     //----------------------------------------------------------------

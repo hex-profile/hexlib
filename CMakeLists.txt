@@ -26,7 +26,7 @@ endif()
 
 ###
 
-set(touchUnusedVars ${HEXLIB_CUDA_ARCH} ${HEXLIB_CUDA_BITNESS})
+set(touchUnusedVars ${HEXLIB_CUDA_ARCH} ${HEXLIB_GPU_BITNESS})
 
 #================================================================
 #
@@ -125,6 +125,18 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
 
     ###
 
+    if(${HEXLIB_PLATFORM} EQUAL 1)
+
+        if (NOT DEFINED HEXLIB_GPU_BITNESS)
+            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)")
+        endif()
+
+        target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
+
+    endif()
+
+    ###
+
     if (${requiresGpuCompiler})
 
         if (${HEXLIB_PLATFORM} EQUAL 0)
@@ -138,15 +150,7 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
             endif()
 
             target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
-
-            ###
-
-            if (NOT DEFINED HEXLIB_CUDA_BITNESS)
-                message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_BITNESS should be specified (32 or 64)")
-            endif()
-
-            target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_BITNESS=${HEXLIB_CUDA_BITNESS})
-            
+           
             ###
 
             target_link_libraries(${projectName} PUBLIC cuda.lib)
