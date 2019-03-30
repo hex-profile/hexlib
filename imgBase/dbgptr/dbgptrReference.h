@@ -24,6 +24,10 @@ private:
 
 public:
 
+    DbgptrReference() = delete;
+
+public:
+
     inline const Pointer& asPointer() const
         {return pointer;}
 
@@ -41,13 +45,6 @@ public:
 
     inline Element& modify() const
         {return pointer.modify();}
-
-private:
-
-    DbgptrReference();
-
-    explicit DbgptrReference(const Pointer& that)
-        : pointer(that) {}
 
     //
     // Assignment operator.
@@ -100,14 +97,12 @@ private:
 template <typename Pointer>
 inline auto operator +(const DbgptrReference<Pointer>& ref)
 {
-    COMPILE_ASSERT(TYPE_EQUAL(TYPEOP_PREFIX(+, typename Pointer::Element), TYPEOP_UNARY_PREDICT(typename Pointer::Element)));
     return +ref.read();
 }
 
 template <typename Pointer>
 inline auto operator -(const DbgptrReference<Pointer>& ref)
 {
-    COMPILE_ASSERT(TYPE_EQUAL(TYPEOP_PREFIX(-, typename Pointer::Element), TYPEOP_UNARY_PREDICT(typename Pointer::Element)));
     return -ref.read();
 }
 
@@ -187,15 +182,21 @@ TMP_MACRO(/)
     \
     template <typename Value, typename Pointer> \
     inline auto operator ASGOP(Value& L, const DbgptrReference<Pointer>& R) \
-        {return L ASGOP R.read();} \
+    { \
+        return L ASGOP R.read(); \
+    } \
     \
     template <typename Value, typename Pointer> \
     inline auto operator ASGOP(const DbgptrReference<Pointer>& L, const Value& R) \
-        {return L.modify() ASGOP R;} \
+    { \
+        return L.modify() ASGOP R; \
+    } \
     \
     template <typename Pointer1, typename Pointer2> \
     inline auto operator ASGOP(const DbgptrReference<Pointer1>& L, const DbgptrReference<Pointer2>& R) \
-        {return L.modify() ASGOP R.read();}
+    { \
+        return L.modify() ASGOP R.read(); \
+    }
 
 TMP_MACRO(+=)
 TMP_MACRO(-=)
@@ -219,30 +220,34 @@ TMP_MACRO(/=)
 #define TMP_MACRO(OP) \
     \
     template <typename Pointer> \
-    inline bool operator OP \
+    inline auto operator OP \
     ( \
         const DbgptrReference<Pointer>& A, \
         const DbgptrReference<Pointer>& B \
     ) \
-        {return A.read() OP B.read();} \
-    \
+    { \
+        return A.read() OP B.read(); \
+    } \
     \
     template <typename Value, typename Pointer> \
-    inline bool operator OP \
+    inline auto operator OP \
     ( \
         const DbgptrReference<Pointer>& A, \
         const Value& B \
     ) \
-        {return A.read() OP B;} \
-    \
+    { \
+        return A.read() OP B; \
+    } \
     \
     template <typename Value, typename Pointer> \
-    inline bool operator OP \
+    inline auto operator OP \
     ( \
         const Value& A, \
         const DbgptrReference<Pointer>& B \
     ) \
-        {return A OP B.read();}
+    { \
+        return A OP B.read(); \
+    }
 
 TMP_MACRO(>)
 TMP_MACRO(<)
@@ -280,20 +285,10 @@ TMP_MACRO(--)
 
 //================================================================
 //
-// DbgptrReferenceTarget
-//
 // helpRead
 // helpModify
 //
 //================================================================
-
-template <typename Pointer>
-struct DbgptrReferenceTarget< DbgptrReference<Pointer> >
-{
-    using T = typename Pointer::Element;
-};
-
-////
 
 template <typename Pointer>
 inline const typename Pointer::Element& helpRead(const DbgptrReference<Pointer>& ref)
@@ -312,9 +307,12 @@ inline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref
 //================================================================
 
 #define DBGPTR_DEFINE_FUNC1(func) \
+    \
     template <typename Pointer> \
-    inline typename Pointer::Element func(const DbgptrReference<Pointer>& ref) \
-        {return func(ref.read());} \
+    inline auto func(const DbgptrReference<Pointer>& ref) \
+    { \
+        return func(ref.read()); \
+    }
 
 //================================================================
 //
@@ -325,28 +323,34 @@ inline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref
 #define DBGPTR_DEFINE_FUNC2(func) \
     \
     template <typename Pointer> \
-    inline typename Pointer::Element func \
+    inline auto func \
     ( \
         const DbgptrReference<Pointer>& A, \
         const DbgptrReference<Pointer>& B \
     ) \
-        {return func(A.read(), B.read());} \
+    { \
+        return func(A.read(), B.read()); \
+    } \
     \
     template <typename Pointer> \
-    inline typename Pointer::Element func \
+    inline auto func \
     ( \
         const DbgptrReference<Pointer>& A, \
         const typename Pointer::Element& B \
     ) \
-        {return func(A.read(), B);} \
+    { \
+        return func(A.read(), B); \
+    } \
     \
     template <typename Pointer> \
-    inline typename Pointer::Element func \
+    inline auto func \
     ( \
         const typename Pointer::Element& A, \
         const DbgptrReference<Pointer>& B \
     ) \
-        {return func(A, B.read());}
+    { \
+        return func(A, B.read()); \
+    }
 
 //================================================================
 //

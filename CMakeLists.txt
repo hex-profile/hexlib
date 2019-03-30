@@ -30,6 +30,20 @@ set(touchUnusedVars ${HEXLIB_CUDA_ARCH} ${HEXLIB_CUDA_BITNESS})
 
 #================================================================
 #
+# HEXLIB_CUDA_ARCH
+#
+#================================================================
+
+if (${HEXLIB_PLATFORM} EQUAL 1)
+
+    if (NOT DEFINED HEXLIB_CUDA_ARCH)
+        set(HEXLIB_CUDA_ARCH $ENV{HEXLIB_CUDA_ARCH})
+    endif()
+
+endif()
+
+#================================================================
+#
 # HEXLIB_GUARDED_MEMORY
 #
 #================================================================

@@ -26,6 +26,7 @@ static const Space spaceMax = 0x7FFFFFFF;
 
 using SpaceU = uint32_t;
 static_assert(sizeof(SpaceU) == sizeof(Space), "");
+static_assert(sizeof(SpaceU) <= sizeof(size_t), "");
 
 //----------------------------------------------------------------
 

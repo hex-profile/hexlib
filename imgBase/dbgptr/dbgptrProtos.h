@@ -6,23 +6,14 @@
 
 //================================================================
 //
-// DbgptrReferenceTarget
-//
 // helpRead
 // helpModify
 //
 //================================================================
 
-template <typename Type>
-struct DbgptrReferenceTarget {using T = Type;};
-
-////
-
 template <typename Element>
 sysinline Element& helpModify(Element& ref)
     {return ref;}
-
-////
 
 template <typename Element>
 sysinline Element& helpRead(Element& ref)
