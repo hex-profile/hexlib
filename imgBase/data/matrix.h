@@ -63,7 +63,7 @@ REQUIRE(exampleSizeY != 0);
 
 // Access some element in a decomposed matrix.
 // The macro uses multiplication. No X/Y range checking performed!
-int value = *MATRIX_POINTER(example, 0, 0);
+int value = MATRIX_ELEMENT(example, 0, 0);
 
 // Example element loop (not optimized):
 uint32 sum = 0;
@@ -142,6 +142,11 @@ inline auto matrixCheckPointerConversion()
 
 #define MATRIX_ELEMENT_(matrix, pos) \
     MATRIX_ELEMENT(matrix, (pos).X, (pos).Y)
+
+//----------------------------------------------------------------
+
+#define MATRIX_READ(matrix, X, Y) \
+    helpRead(MATRIX_ELEMENT(matrix, X, Y))
 
 //================================================================
 //

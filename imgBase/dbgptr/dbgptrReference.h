@@ -127,8 +127,6 @@ inline auto operator -(const DbgptrReference<Pointer>& ref)
         return v1.read() OP v2.read(); \
     } \
     \
-    \
-    \
     template <typename Pointer, typename Value> \
     inline auto operator OP \
     ( \
@@ -141,8 +139,6 @@ inline auto operator -(const DbgptrReference<Pointer>& ref)
         \
         return v1.read() OP v2; \
     } \
-    \
-    \
     \
     template <typename Pointer, typename Value> \
     inline auto operator OP \
@@ -219,11 +215,11 @@ TMP_MACRO(/=)
 
 #define TMP_MACRO(OP) \
     \
-    template <typename Pointer> \
+    template <typename PointerA, typename PointerB> \
     inline auto operator OP \
     ( \
-        const DbgptrReference<Pointer>& A, \
-        const DbgptrReference<Pointer>& B \
+        const DbgptrReference<PointerA>& A, \
+        const DbgptrReference<PointerB>& B \
     ) \
     { \
         return A.read() OP B.read(); \

@@ -40,10 +40,10 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
     devSramMatrixDense(srcBufferV, float32, srcSramSizeX, srcSramSizeY);
 
     #define SRC_BUFFER_U(X, Y) \
-        (*MATRIX_POINTER(srcBufferU, X, Y))
+        (MATRIX_ELEMENT(srcBufferU, X, Y))
 
     #define SRC_BUFFER_V(X, Y) \
-        (*MATRIX_POINTER(srcBufferV, X, Y))
+        (MATRIX_ELEMENT(srcBufferV, X, Y))
 
     //----------------------------------------------------------------
     //
@@ -87,7 +87,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
             Space srcY = srcBaseY + tY; \
             \
             if (MATRIX_VALID_ACCESS(dstLuma, srcX, srcY)) \
-                *MATRIX_POINTER(dstLuma, srcX, srcY) = \
+                MATRIX_ELEMENT(dstLuma, srcX, srcY) = \
                     convertNormClamp<DST_PIXEL>(Yf); \
         }
 
@@ -125,14 +125,14 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 
     #define DOWNSAMPLE_VERTICAL(bX, srcBuffer) \
         ( \
-            C0 * helpRead(srcBuffer(bX, bY + 0)) + \
-            C1 * helpRead(srcBuffer(bX, bY + 1)) + \
-            C2 * helpRead(srcBuffer(bX, bY + 2)) + \
-            C3 * helpRead(srcBuffer(bX, bY + 3)) + \
-            C4 * helpRead(srcBuffer(bX, bY + 4)) + \
-            C5 * helpRead(srcBuffer(bX, bY + 5)) + \
-            C6 * helpRead(srcBuffer(bX, bY + 6)) + \
-            C7 * helpRead(srcBuffer(bX, bY + 7)) \
+            C0 * srcBuffer(bX, bY + 0) + \
+            C1 * srcBuffer(bX, bY + 1) + \
+            C2 * srcBuffer(bX, bY + 2) + \
+            C3 * srcBuffer(bX, bY + 3) + \
+            C4 * srcBuffer(bX, bY + 4) + \
+            C5 * srcBuffer(bX, bY + 5) + \
+            C6 * srcBuffer(bX, bY + 6) + \
+            C7 * srcBuffer(bX, bY + 7) \
         )
 
     ////
@@ -165,14 +165,14 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 
     #define DOWNSAMPLE_HORIZONTAL(bX, srcBuffer) \
         ( \
-            C0 * helpRead(srcBuffer(bX + 0, devThreadY)) + \
-            C1 * helpRead(srcBuffer(bX + 1, devThreadY)) + \
-            C2 * helpRead(srcBuffer(bX + 2, devThreadY)) + \
-            C3 * helpRead(srcBuffer(bX + 3, devThreadY)) + \
-            C4 * helpRead(srcBuffer(bX + 4, devThreadY)) + \
-            C5 * helpRead(srcBuffer(bX + 5, devThreadY)) + \
-            C6 * helpRead(srcBuffer(bX + 6, devThreadY)) + \
-            C7 * helpRead(srcBuffer(bX + 7, devThreadY)) \
+            C0 * srcBuffer(bX + 0, devThreadY) + \
+            C1 * srcBuffer(bX + 1, devThreadY) + \
+            C2 * srcBuffer(bX + 2, devThreadY) + \
+            C3 * srcBuffer(bX + 3, devThreadY) + \
+            C4 * srcBuffer(bX + 4, devThreadY) + \
+            C5 * srcBuffer(bX + 5, devThreadY) + \
+            C6 * srcBuffer(bX + 6, devThreadY) + \
+            C7 * srcBuffer(bX + 7, devThreadY) \
         )
 
     float32 resultU = DOWNSAMPLE_HORIZONTAL(bX, SRC_BUFFER_U);
@@ -199,7 +199,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
     if (dstX < chromaSizeX && dstY < chromaSizeY)
     {
         float32_x2 chromaValue = make_float32_x2(resultU, resultV);
-        *MATRIX_POINTER(dstChroma, dstX, dstY) = convertNormClamp<DST_PIXEL2>(chromaValue);
+        MATRIX_ELEMENT(dstChroma, dstX, dstY) = convertNormClamp<DST_PIXEL2>(chromaValue);
     }
 }
 

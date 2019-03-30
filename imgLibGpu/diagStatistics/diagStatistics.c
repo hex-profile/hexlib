@@ -31,7 +31,7 @@ bool computeMeanSquareError(const Matrix<const float32>& error, float32& meanSqu
 
         for (Space X = 0; X < errorSizeX; ++X)
         {
-            float32 value = *MATRIX_POINTER(error, X, Y);
+            float32 value = MATRIX_ELEMENT(error, X, Y);
             locSumErr2 += square(value);
         }
 
@@ -79,7 +79,7 @@ bool computeMeanAbsError(const Matrix<const float32>& error, float32& meanError,
 
         for (Space X = 0; X < errorSizeX; ++X)
         {
-            float32 value = *MATRIX_POINTER(error, X, Y);
+            float32 value = MATRIX_ELEMENT(error, X, Y);
             locSumErr += absv(value);
         }
 
@@ -129,7 +129,7 @@ bool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAvgVa
 
         for (Space X = 0; X < dataSizeX; ++X)
         {
-            float32 value = *MATRIX_POINTER(data, X, Y);
+            float32 value = MATRIX_ELEMENT(data, X, Y);
             locSumValue += value;
             locSumValueSq += square(value);
         }
@@ -188,7 +188,7 @@ bool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsError
 
         for (Space X = 0; X < errorSizeX; ++X)
         {
-            float32 errorValue = *MATRIX_POINTER(error, X, Y);
+            float32 errorValue = MATRIX_ELEMENT(error, X, Y);
             locMaxError = maxv(locMaxError, absv(errorValue));
         }
 

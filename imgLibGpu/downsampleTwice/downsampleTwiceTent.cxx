@@ -92,7 +92,7 @@ inline devDecl void downsampleTwiceKernel(const DownsampleParams<Dst>& o, devPar
     devSramMatrixDense(srcBuffer, float32, srcSramSizeX, srcSramSizeY);
 
     #define SRC_BUFFER(X, Y) \
-        (*MATRIX_POINTER(srcBuffer, X, Y))
+        (MATRIX_ELEMENT(srcBuffer, X, Y))
 
     //----------------------------------------------------------------
     //
@@ -151,7 +151,7 @@ inline devDecl void downsampleTwiceKernel(const DownsampleParams<Dst>& o, devPar
     devSramMatrixDense(tmpBuffer, float32, srcSramSizeX, threadCountY);
 
     #define TMP_BUFFER(X, Y) \
-        (*MATRIX_POINTER(tmpBuffer, X, Y))
+        (MATRIX_ELEMENT(tmpBuffer, X, Y))
 
     ////
 
@@ -159,10 +159,10 @@ inline devDecl void downsampleTwiceKernel(const DownsampleParams<Dst>& o, devPar
 
     #define DOWNSAMPLE_VERTICAL(bX) \
         TMP_BUFFER(bX, devThreadY) = \
-            C0 * helpRead(SRC_BUFFER(bX, bY + 0)) + \
-            C1 * helpRead(SRC_BUFFER(bX, bY + 1)) + \
-            C2 * helpRead(SRC_BUFFER(bX, bY + 2)) + \
-            C3 * helpRead(SRC_BUFFER(bX, bY + 3)) 
+            C0 * SRC_BUFFER(bX, bY + 0) + \
+            C1 * SRC_BUFFER(bX, bY + 1) + \
+            C2 * SRC_BUFFER(bX, bY + 2) + \
+            C3 * SRC_BUFFER(bX, bY + 3) 
 
     DOWNSAMPLE_VERTICAL(devThreadX + 0 * threadCountX);
     DOWNSAMPLE_VERTICAL(devThreadX + 1 * threadCountX);
@@ -183,10 +183,10 @@ inline devDecl void downsampleTwiceKernel(const DownsampleParams<Dst>& o, devPar
     Space bX = 2 * devThreadX;
 
     float32 result = 
-        C0 * helpRead(TMP_BUFFER(bX + 0, devThreadY)) +
-        C1 * helpRead(TMP_BUFFER(bX + 1, devThreadY)) +
-        C2 * helpRead(TMP_BUFFER(bX + 2, devThreadY)) +
-        C3 * helpRead(TMP_BUFFER(bX + 3, devThreadY));
+        C0 * TMP_BUFFER(bX + 0, devThreadY) +
+        C1 * TMP_BUFFER(bX + 1, devThreadY) +
+        C2 * TMP_BUFFER(bX + 2, devThreadY) +
+        C3 * TMP_BUFFER(bX + 3, devThreadY);
 
     //----------------------------------------------------------------
     //

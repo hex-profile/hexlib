@@ -211,7 +211,7 @@ struct ReadBordered<BORDER_WRAP>
 
     readIt:
 
-        result = LoadElement::func(&helpRead(*MATRIX_POINTER(img, X, Y)));
+        result = LoadElement::func(&MATRIX_READ(img, X, Y));
 
     skipReading:
 
