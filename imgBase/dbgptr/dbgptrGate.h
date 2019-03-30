@@ -4,15 +4,14 @@
 
 //================================================================
 //
-// If debug pointers are supported, go to flexible gate,
-// otherwise define fallback macros.
+// Select debug pointers implementation.
 //
 //================================================================
 
 #if HEXLIB_GUARDED_MEMORY
 
-    # include "dbgptrArrayPointer.h"
-    # include "dbgptrMatrixPointer.h"
+    #include "dbgptrArrayPointer.h"
+    #include "dbgptrMatrixPointer.h"
 
     #define ArrayPtr(Type) \
         DebugArrayPointer<Type>
