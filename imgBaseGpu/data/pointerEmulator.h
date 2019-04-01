@@ -103,38 +103,51 @@ public:
     // -=
     //
 
+private:
+
+    template <typename Ofs>
+    struct CheckOfsType
+    {
+        static constexpr bool value = TYPE_IS_BUILTIN_INT(Ofs) && (sizeof(Ofs) <= sizeof(AddrS));
+    };
+
 public:
 
-    #define TMP_MACRO(AddrS) \
-        \
-        inline Self& operator +=(AddrS offs) \
-        { \
-            addr += offs * AddrS(sizeof(Type)); \
-            return *this; \
-        } \
-        \
-        inline Self& operator -=(AddrS offs) \
-        { \
-            addr -= offs * AddrS(sizeof(Type)); \
-            return *this; \
-        } \
-        \
-        inline Self operator +(AddrS offs) const \
-        { \
-            AddrU newAddr = addr + offs * AddrS(sizeof(Type)); \
-            return Self(newAddr); \
-        } \
-        \
-        inline Self operator -(AddrS offs) const \
-        { \
-            AddrU newAddr = addr - offs * AddrS(sizeof(Type)); \
-            return Self(newAddr); \
-        }
+    template <typename Ofs>
+    inline Self& operator +=(Ofs ofs)
+    {
+        COMPILE_ASSERT(CheckOfsType<Ofs>::value);
 
-    TMP_MACRO(AddrS)
-    // TMP_MACRO(Space)
+        addr += AddrS(ofs) * AddrS(sizeof(Type));
+        return *this;
+    }
+   
+    template <typename Ofs>
+    inline Self& operator -=(Ofs ofs)
+    {
+        COMPILE_ASSERT(CheckOfsType<Ofs>::value);
 
-    #undef TMP_MACRO
+        addr -= AddrS(ofs) * AddrS(sizeof(Type));
+        return *this;
+    }
+   
+    template <typename Ofs>
+    inline Self operator +(Ofs ofs) const
+    {
+        COMPILE_ASSERT(CheckOfsType<Ofs>::value);
+
+        AddrU newAddr = addr + AddrS(ofs) * AddrS(sizeof(Type));
+        return Self(newAddr);
+    }
+   
+    template <typename Ofs>
+    inline Self operator -(Ofs ofs) const
+    {
+        COMPILE_ASSERT(CheckOfsType<Ofs>::value);
+
+        AddrU newAddr = addr - AddrS(ofs) * AddrS(sizeof(Type));
+        return Self(newAddr);
+    }
 
     //
     // Operator -(p)

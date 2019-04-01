@@ -260,6 +260,7 @@ bool CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& propertie
 
     bool fermi = (ccMajor >= 2);
 
+    // ``` Fix for newer architectures
     float32 coresPerProcessor = 8;
     if (ccMajor >= 2) coresPerProcessor = 32;
     if (ccMajor >= 3) coresPerProcessor = 192;
@@ -784,7 +785,8 @@ struct CudaGpuAllocCore
 
         if (initAllocatedBlocks)
         {
-            REQUIRE_CUDA(cuMemsetD8(ptr, 0xCC, allocSize));
+            REQUIRE(allocSize <= SIZE_MAX); // workaround quirks of CUDA API
+            REQUIRE_CUDA(cuMemsetD8(ptr, 0xCC, size_t(allocSize)));
             REQUIRE_CUDA(cuStreamSynchronize(nullptr));
         }
 
@@ -1067,7 +1069,9 @@ public:
         using AllocFunc = CUresult CUDAAPI (CUdeviceptr* pp, size_t bytesize);
         AllocFunc* allocFunc = cuMemAlloc; // ensure prototype
 
-        bool ok = (allocFunc(&memPtr, size) == CUDA_SUCCESS);
+        bool ok = true;
+        check_flag(size <= SIZE_MAX, ok); // workaround quirks of CUDA API
+        if (ok) check_flag(allocFunc(&memPtr, size_t(size)) == CUDA_SUCCESS, ok);
 
         if (!ok) memPtr = 0;
         if (ok) memSize = size;
