@@ -99,7 +99,11 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
 
     ###
 
-    add_library(${projectName} ${libType} ${sources})
+    if (${libType} STREQUAL "EXECUTABLE")
+        add_executable(${projectName} ${sources})
+    else()
+        add_library(${projectName} ${libType} ${sources})
+    endif()
 
     ###
 
@@ -116,6 +120,7 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
     ###
 
     target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM} HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
+    target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
 
     ###
 
@@ -130,8 +135,6 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
         if (NOT DEFINED HEXLIB_GPU_BITNESS)
             message(FATAL_ERROR "For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)")
         endif()
-
-        target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
 
     endif()
 

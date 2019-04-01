@@ -63,8 +63,6 @@ struct ConvertParamsYuvBgr
     GpuMatrix<DstPixel> dst;
 };
 
-COMPILE_ASSERT(sizeof(ConvertParamsYuvBgr<uint8>) == 8+8+8+8+16+4);
-
 //================================================================
 //
 // Samplers

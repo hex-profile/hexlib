@@ -70,8 +70,6 @@ struct VisualizeScalar
     GpuMatrix<Dst> dst;
 };
 
-COMPILE_ASSERT(sizeof(VisualizeScalar<uint8>) == 48); // just to check that GPU and CPU have exactly the same layout
-
 //================================================================
 //
 // srcSampler
@@ -304,8 +302,6 @@ struct UpconvertValue
     Point<float32> srcTexstep;
     GpuMatrix<Dst> dst;
 };
-
-COMPILE_ASSERT(sizeof(UpconvertValue<uint8>) == 48);
 
 //================================================================
 //
