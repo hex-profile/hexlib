@@ -83,7 +83,7 @@ TMP_MACRO(DevSamplerUint, 4, uint32_x4)
 #undef devDefineSampler
 
 #define devDefineSampler(sampler, samplerType, readMode, rank) \
-    extern "C" texture<CudaSamplerDeclType<readMode, rank>::T, CudaSamplerType<samplerType>::val, CudaReadMode<readMode>::val> sampler;
+    extern "C" {texture<CudaSamplerDeclType<readMode, rank>::T, CudaSamplerType<samplerType>::val, CudaReadMode<readMode>::val> sampler;}
 
 //----------------------------------------------------------------
 

@@ -3,6 +3,7 @@
 #endif
 
 #include <stdlib.h>
+#include <algorithm>
 
 #include "cmdLine/cmdLine.h"
 #include "parseTools/parseTools.h"
@@ -135,6 +136,7 @@ bool runProcess(StlString cmdLine, stdPars(TextKit))
     ZeroMemory(&pi, sizeof(pi));
 
     // printMsg(kit.msgLog, STR("Run: %0"), cmdLine, msgErr);
+
     bool createOk = CreateProcess(NULL, const_cast<char*>(cmdLine.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi) != 0;
 
     if_not (createOk)
@@ -570,6 +572,7 @@ inline bool tryParseTextureDef(const CharType*& ptr, const CharType* end, vector
 
     require(skipTextThenSpace(p, end, STR("extern")));
     require(skipTextThenSpace(p, end, STR("\"C\"")));
+    require(skipTextThenSpace(p, end, STR("{")));
     require(skipTextThenSpace(p, end, STR("texture")));
     require(skipTextThenSpace(p, end, STR("<")));
 
@@ -596,6 +599,9 @@ inline bool tryParseTextureDef(const CharType*& ptr, const CharType* end, vector
     const CharType* identEnd = p;
 
     StlString samplerName(identBegin, identEnd);
+
+    ////
+
     samplerNames.push_back(samplerName);
     ptr = p;
 
@@ -626,7 +632,6 @@ inline void extractSamplerNames(const CharType* ptr, const CharType* end, vector
 
         if_not (tryParseTextureDef(ptr, end, samplerNames))
             ++ptr; // can do it because next word was found
-
     }
 }
 

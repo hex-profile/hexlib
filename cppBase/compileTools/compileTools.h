@@ -364,12 +364,15 @@ template <typename Type>
 sysinline void compileUseVariableByRef(Type&) {}
 
 template <typename Type>
-sysinline void compileUseVariableByVal(Type) {}
+sysinline void compileUseVariableByValue(Type) {}
 
 //----------------------------------------------------------------
 
 #define MAKE_VARIABLE_USED(var) \
     compileUseVariableByRef(var)
+
+#define MAKE_VARIABLE_USED_BY_VALUE(var) \
+    compileUseVariableByValue(var)
 
 //================================================================
 //
