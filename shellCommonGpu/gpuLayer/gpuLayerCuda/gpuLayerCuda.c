@@ -233,6 +233,77 @@ bool CudaInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
 
 //================================================================
 //
+// getCudaCoresPerMultiprocessor
+//
+// Returns 0 in case of error.
+//
+//================================================================
+
+int getCudaCoresPerMultiprocessor(int version)
+{  
+    int cores = 0;
+
+    switch (version)
+    {
+        // Tesla
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x13:
+            cores = 8; 
+            break;
+
+        // Fermi
+        case 0x20:
+            cores = 32; 
+            break;
+
+        case 0x21:
+            cores = 48;
+            break;
+
+        // Kepler
+        case 0x30:
+        case 0x32:
+        case 0x35:
+        case 0x37:
+            cores = 192;
+            break;
+
+        // Maxwell
+        case 0x50:
+        case 0x52:
+        case 0x53:
+            cores = 128;
+            break;
+
+        // Pascal
+        case 0x60:
+            cores = 64;
+            break;
+
+        case 0x61:
+        case 0x62:
+            cores = 128;
+            break;
+
+        // Volta
+        case 0x70:
+        case 0x72:
+            cores = 64;
+            break;
+
+        // Turing
+        case 0x75:
+            cores = 64;
+            break;
+    }
+
+    return cores;
+}
+ 
+//================================================================
+//
 // CudaInitApiThunk::getProperties
 //
 //================================================================
@@ -252,20 +323,17 @@ bool CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& propertie
 
     int ccMajor = 0;
     int ccMinor = 0;
-    REQUIRE_CUDA(cuDeviceComputeCapability(&ccMajor, &ccMinor, deviceId));
+    REQUIRE_CUDA(cuDeviceGetAttribute(&ccMajor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, deviceId));
+    REQUIRE_CUDA(cuDeviceGetAttribute(&ccMinor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, deviceId));
 
     properties.gpuHardware = true;
     properties.multiprocessorCount = multiprocessorCount;
     properties.clockRate = float32(clockRate) * 1e3f;
 
-    bool fermi = (ccMajor >= 2);
+    int coresPerProcessor = getCudaCoresPerMultiprocessor(ccMajor * 0x10 + ccMinor);
+    REQUIRE(coresPerProcessor >= 1);
 
-    // ``` Fix for newer architectures
-    float32 coresPerProcessor = 8;
-    if (ccMajor >= 2) coresPerProcessor = 32;
-    if (ccMajor >= 3) coresPerProcessor = 192;
-
-    float32 totalCores = float32(multiprocessorCount) * coresPerProcessor;
+    float32 totalCores = float32(multiprocessorCount) * float32(coresPerProcessor);
     properties.totalThroughput = float32(clockRate) * 1e3f * totalCores;
 
     //
