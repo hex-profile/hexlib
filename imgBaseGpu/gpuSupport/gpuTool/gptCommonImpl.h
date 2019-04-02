@@ -96,6 +96,23 @@
 
 //================================================================
 //
+// GPT_MAKE_SAMPLER_USED
+//
+//================================================================
+
+#if defined(__CUDA_ARCH__)
+
+    #define GPT_MAKE_SAMPLER_USED(sampler) \
+        MAKE_VARIABLE_USED_BY_VALUE(sampler)
+
+#else
+
+    #define GPT_MAKE_SAMPLER_USED(sampler)
+
+#endif
+
+//================================================================
+//
 // GPT_EXPOSE_*
 //
 //================================================================
@@ -104,8 +121,7 @@
     const Point<float32>& name##Texstep = o.name##Texstep; MAKE_VARIABLE_USED(name##Texstep); \
     const InterpType name##Interp = (interp); MAKE_VARIABLE_USED(name##Interp); \
     const BorderMode name##Border = (border); MAKE_VARIABLE_USED(name##Border); \
-    auto name##Sampler = PREP_PASTE3(prefix, name, Sampler); \
-    compileUseVariableByVal(name##Sampler);
+    auto name##Sampler = PREP_PASTE3(prefix, name, Sampler); GPT_MAKE_SAMPLER_USED(name##Sampler);
 
 #define GPT_EXPOSE_MATRIX(Type, name) \
     GpuMatrixPtr(Type) name = MATRIX_POINTER(o.name, X, Y); MAKE_VARIABLE_USED(name);
