@@ -1,0 +1,8 @@
+Command: 
+$(HEX_AT_BIN)\at.exe
+
+Command Arguments:
+"client_dll=$(TargetPath)"
+
+Working Directory:
+$(SolutionDir)

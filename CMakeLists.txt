@@ -191,4 +191,6 @@ add_subdirectory(moduleToolsGpu)
 add_subdirectory(imgLibGpu)
 add_subdirectory(shellCommonGpu)
 
+add_subdirectory(testbedAtCommon)
+
 add_subdirectory(archive)
