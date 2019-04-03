@@ -184,7 +184,7 @@ bool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolki
 
     ////
 
-#if HEXLIB_PLATFORM != 0
+#if HEXLIB_PLATFORM == 1
 
     if (kit.gpuInitApi.coverageGetSyncFlag(kit.gpuCurrentStream))
     {
