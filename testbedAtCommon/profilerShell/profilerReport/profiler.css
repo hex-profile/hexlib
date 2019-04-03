@@ -1,0 +1,57 @@
+PREP_STRINGIZE((
+
+body
+{
+  font-family: "Open Sans", sans-serif;
+  font-size: 80%;
+}
+
+pre
+{
+  font-family: "Droid Sans Mono", monospace;
+  margin: 0;
+}
+
+.headerBlock {font-family: "Open Sans", sans-serif;}
+
+table {width: 75%;}
+
+table, td, th
+{
+  text-align: left;
+  vertical-align: middle;
+  border: 1px solid #C0C0C0;
+  border-collapse: collapse;  
+}
+
+th
+{
+  color: white;
+  background: #808080;
+  border: 1px solid gray;
+}
+
+.nodeTotal {font-weight: bold;}
+
+tr:nth-child(2n+1) {background: #EDF8FF;}
+
+a, a:visited, a:active
+{
+  text-decoration: none; 
+  color: #006BB2;
+}
+
+.linkBlock:hover, .headerBlock:hover
+{
+  color: black;
+  background: #80CCFF;
+}
+
+.uplinkTd {text-align: center;}
+
+.nameCell
+{
+  min-width: 75%;
+}
+
+))
