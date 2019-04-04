@@ -1076,7 +1076,7 @@ GPUTOOL_2D_BEG
 #if DEVCODE
 {
     float32_x4 srcValue = loadNorm(src);
-    float32_x4 dstValue = convertYPbPrToBgr(srcValue.x, srcValue.y, srcValue.z);
+    float32_x4 dstValue = convertYPrPbToBgr(srcValue.x, srcValue.y, srcValue.z);
     storeNorm(dst, dstValue);
 }
 #endif

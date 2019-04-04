@@ -15,11 +15,11 @@
 
 //================================================================
 //
-// convertYPbPrToBgr (unclamped)
+// convertYPrPbToBgr (unclamped)
 //
 //================================================================
 
-sysinline float32_x4 convertYPbPrToBgr(float32 Ys, float32 Pb, float32 Pr)
+sysinline float32_x4 convertYPrPbToBgr(float32 Ys, float32 Pr, float32 Pb)
 {
     // ITU-R BT.601, but our components are doubled and Y is in range [-1, +1]
     float32 Yu = Ys * 0.5f + 0.5f;
@@ -33,11 +33,11 @@ sysinline float32_x4 convertYPbPrToBgr(float32 Ys, float32 Pb, float32 Pr)
 
 //================================================================
 //
-// convertBgrToYPbPr
+// convertBgrToYPrPb
 //
 //================================================================
 
-sysinline void convertBgrToYPbPr(const float32_x4& bgrValue, float32& Ys, float32& Pb, float32& Pr)
+sysinline void convertBgrToYPrPb(const float32_x4& bgrValue, float32& Ys, float32& Pr, float32& Pb)
 {
     // BGRx maps to (x, y, z, w)
     float32 R = bgrValue.z;

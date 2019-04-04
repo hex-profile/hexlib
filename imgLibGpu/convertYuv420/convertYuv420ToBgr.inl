@@ -157,10 +157,10 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
 
     #if CONVERT == CONVERT_RGB
 
-        float32_x4 r00 = convertYPbPrToBgr(y00, u00, v00);
-        float32_x4 r01 = convertYPbPrToBgr(y01, u01, v01);
-        float32_x4 r10 = convertYPbPrToBgr(y10, u10, v10);
-        float32_x4 r11 = convertYPbPrToBgr(y11, u11, v11);
+        float32_x4 r00 = convertYPrPbToBgr(y00, u00, v00);
+        float32_x4 r01 = convertYPrPbToBgr(y01, u01, v01);
+        float32_x4 r10 = convertYPrPbToBgr(y10, u10, v10);
+        float32_x4 r11 = convertYPrPbToBgr(y11, u11, v11);
 
     #elif CONVERT == CONVERT_YUV
 
@@ -171,10 +171,10 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
 
     #elif CONVERT == CONVERT_OPPONENT
 
-        float32_x4 r00 = convertBgrToOpponent(convertYPbPrToBgr(y00, u00, v00));
-        float32_x4 r01 = convertBgrToOpponent(convertYPbPrToBgr(y01, u01, v01));
-        float32_x4 r10 = convertBgrToOpponent(convertYPbPrToBgr(y10, u10, v10));
-        float32_x4 r11 = convertBgrToOpponent(convertYPbPrToBgr(y11, u11, v11));
+        float32_x4 r00 = convertBgrToOpponent(convertYPrPbToBgr(y00, u00, v00));
+        float32_x4 r01 = convertBgrToOpponent(convertYPrPbToBgr(y01, u01, v01));
+        float32_x4 r10 = convertBgrToOpponent(convertYPrPbToBgr(y10, u10, v10));
+        float32_x4 r11 = convertBgrToOpponent(convertYPrPbToBgr(y11, u11, v11));
 
     #else
 
@@ -294,7 +294,14 @@ bool PREP_PASTE(convertYuv420To, SUFFIX)
 
     ////
 
-    ConvertParamsYuvBgr<DST_PIXEL> params{computeTexstep(srcLuma), computeTexstep(srcChroma), srcOffset / 2, srcLuma.size(), outerColor, dst};
+    ConvertParamsYuvBgr<DST_PIXEL> params
+    {
+        computeTexstep(srcLuma),
+        computeTexstep(srcChroma),
+        srcOffset / 2, srcLuma.size(), 
+        outerColor, 
+        dst
+    };
 
     require
     (

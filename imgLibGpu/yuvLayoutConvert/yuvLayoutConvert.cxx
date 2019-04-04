@@ -38,7 +38,8 @@ GPUTOOL_2D_BEG
     if (SpaceU(dataOfs) < SpaceU(dataSize))
         value = loadNorm(&dataPtr[dataOfs]);
 
-    storeNorm(dst, 2*value - 1); // to range [-1, +1]
+    COMPILE_ASSERT(TYPE_IS_SIGNED(Luma));
+    storeNorm(dst, 2 * value - 1); // to range [-1, +1]
 }
 #endif
 GPUTOOL_2D_END
@@ -87,6 +88,7 @@ GPUTOOL_2D_BEG
 
     ////
 
+    COMPILE_ASSERT(TYPE_IS_SIGNED(Chroma));
     storeNorm(dst, 2 * make_float32_x2(chromaU, chromaV) - 1);
 }
 #endif
@@ -254,7 +256,9 @@ template <>
 bool convertYuv420ToRaw(const GpuImageYuv<const Luma>& src, const GpuArray<uint16>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
+
     REQUIRE(false); // not implemented
+
     stdEnd;
 }
 

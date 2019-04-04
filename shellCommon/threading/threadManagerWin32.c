@@ -197,8 +197,9 @@ bool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, stdPar
 
     ////
 
-    COMPILE_ASSERT(sizeof(EventWin32) <= sizeof(EventOwner));
+    COMPILE_ASSERT(sizeof(EventWin32) <= sizeof(event.data));
     EventWin32& eventEx = (EventWin32&) event.data;
+
     constructDefault(eventEx);
     require(eventEx.create(manualReset, stdPass));
 
