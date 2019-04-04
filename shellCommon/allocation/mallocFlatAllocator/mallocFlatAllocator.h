@@ -1,3 +1,5 @@
+#pragma once
+
 #include "allocation/flatMemoryAllocator.h"
 #include "errorLog/errorLogKit.h"
 #include "allocation/flatToSpaceAllocatorThunk.h"

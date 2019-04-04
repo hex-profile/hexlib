@@ -36,6 +36,15 @@ public:
     bool update()
         {return true;}
 
+    bool isThreadProtected() const 
+        {return false;}
+
+    void lock()
+        {}
+
+    void unlock()
+        {}
+
 private:
 
     LogBufferWriting* outputInterface = 0;

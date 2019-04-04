@@ -90,6 +90,11 @@ private:
 
 };
 
+//----------------------------------------------------------------
+
+template <typename Type>
+using TemporalFilterStd = TemporalFilter<float32, temporalParamFilter::defaultStageCount>;
+
 //================================================================
 //
 // TemporalWeightedFilter
