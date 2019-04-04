@@ -77,11 +77,11 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
             \
             float32_x4 bgrValue = devTex2D(srcSampler, srcBaseXs + tX, srcBaseYs + tY); \
             \
-            float32 Yf, Pb, Pr; \
-            convertBgrToYPbPr(bgrValue, Yf, Pb, Pr); \
+            float32 Yf, Pr, Pb; \
+            convertBgrToYPrPb(bgrValue, Yf, Pr, Pb); \
             \
-            SRC_BUFFER_U(tX + devThreadX, tY + devThreadY) = Pb; \
-            SRC_BUFFER_V(tX + devThreadX, tY + devThreadY) = Pr; \
+            SRC_BUFFER_U(tX + devThreadX, tY + devThreadY) = Pr; \
+            SRC_BUFFER_V(tX + devThreadX, tY + devThreadY) = Pb; \
             \
             Space srcX = srcBaseX + tX; \
             Space srcY = srcBaseY + tY; \

@@ -160,8 +160,8 @@ struct ConvertImplFlag<LtFamily, LtFamily, rounding, hint>
 //
 //================================================================
 
-template <typename Type>
-sysinline Type ltApply(const Type& value, const LinearTransform<Type>& transform)
+template <typename ValueType, typename CoeffType>
+sysinline ValueType ltApply(const ValueType& value, const LinearTransform<CoeffType>& transform)
 {
     return value * transform.C1 + transform.C0;
 }

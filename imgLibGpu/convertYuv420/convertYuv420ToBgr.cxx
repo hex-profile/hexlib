@@ -13,6 +13,7 @@
 #include "readBordered.h"
 #include "convertYuv420/convertYuvRgbFunc.h"
 #include "gpuSupport/gpuTexTools.h"
+#include "numbers/lt/ltType.h"
 
 //================================================================
 //
