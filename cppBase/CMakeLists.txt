@@ -1,3 +1,5 @@
+include(${HEXLIB_CMAKE_DIR}/common.cmake)
+
 #================================================================
 #
 # General C++ tools.
