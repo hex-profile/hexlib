@@ -76,16 +76,3 @@ KIT_COMBINE2(ModuleSerializeKit, CfgSerializeKit, OverlayTakeoverKit);
 
 #define MODULE_OUTPUT_ENABLED \
     (kit.dataProcessing && kit.outputLevel >= OUTPUT_ENABLED)
-
-//================================================================
-//
-// stdBeginModuleProf
-// stdEnterModuleProf
-//
-//================================================================
-
-#define stdBeginModuleProf(userName) \
-    stdBeginProfName(MODULE_OUTPUT_ENABLED, userName)
-
-#define stdEnterModuleProf(userName) \
-    stdEnterProfName(MODULE_OUTPUT_ENABLED, userName)

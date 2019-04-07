@@ -87,19 +87,18 @@
 //
 //================================================================
 
+// ``` only here
 #define stdBeginEx(elemCount, profName) \
-    { \
-        TRACE_REASSEMBLE(stdTraceName); \
-        PROFILER_SCOPE_EX(TRACE_SCOPE(stdTraceName).location, elemCount, profName)
+    TRACE_REASSEMBLE(stdTraceName); \
+    PROFILER_SCOPE_EX(TRACE_SCOPE(stdTraceName).location, elemCount, profName)
 
 #define stdBegin \
     stdBeginEx(0, 0)
 
+////
+
 #define stdBeginElem(elemCount) \
     stdBeginEx(elemCount, 0)
-
-#define stdBeginProfName(profActive, profName) \
-    stdBeginEx(0, (profActive) ? (profName) : 0)
 
 //----------------------------------------------------------------
 
@@ -110,11 +109,8 @@
 #define stdEnter \
     stdEnterEx(TRACE_AUTO_LOCATION, 0, 0)
 
-#define stdEnterLoc(newLocation) \
+#define stdEnterLocation(newLocation) \
     stdEnterEx(newLocation, 0, 0)
-
-#define stdEnterProfName(profActive, profName) \
-    stdEnterEx(TRACE_AUTO_LOCATION, 0, (profActive) ? (profName) : 0)
 
 //================================================================
 //
@@ -123,16 +119,36 @@
 //================================================================
 
 #define stdEnd \
-        return true; \
-    }
+    return true \
 
 #define stdEndv \
-        return; \
-    }
+    return \
 
 #define stdEndEx(value) \
-        return (value); \
-    }
+    return (value) \
+
+//================================================================
+//
+// Scoped variants, just for convenience.
+//
+//================================================================
+
+#define stdBeginScoped \
+    { stdBegin
+
+#define stdBeginElemScoped \
+    { stdBeginElem
+
+////
+
+#define stdEndScoped \
+    stdEnd; } 
+
+#define stdEndvScoped \
+    stdEndv; }
+
+#define stdEndExScoped(value) \
+    stdEndEx(value); }
 
 //================================================================
 //
@@ -149,8 +165,8 @@ struct NullKit
 //================================================================
 //
 // stdNullPars
-// stdPass
-// stdPassThru
+// stdNullPass
+// stdNullPassThru
 //
 // Standard trace support, no kit.
 //
@@ -167,5 +183,4 @@ struct NullKit
     stdPassThruKit(0)
 
 #define stdNullBegin \
-    { \
-        TRACE_REASSEMBLE(stdTraceName);
+    TRACE_REASSEMBLE(stdTraceName);
