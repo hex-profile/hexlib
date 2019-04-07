@@ -61,10 +61,12 @@
         stdPars(GpuProcessKit) \
     ) \
     { \
+        stdBeginScoped; \
+        \
         if_not (kit.dataProcessing) \
             return true; \
         \
-        stdBeginElem(globSize); \
+        stdEnterElemCount(globSize); \
         \
         REQUIRE(globSize >= 0); \
         \
@@ -94,7 +96,7 @@
             ) \
         ); \
         \
-        stdEnd; \
+        stdEndScoped; \
     } \
 
 //================================================================
