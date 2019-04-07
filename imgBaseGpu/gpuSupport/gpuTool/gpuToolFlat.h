@@ -54,11 +54,13 @@
         stdPars(GpuProcessKit) \
     ) \
     { \
+        stdBeginScoped; \
+        \
         if_not (kit.dataProcessing) \
             return true; \
         \
         uint32 elemCount = areaOf(groupCount) * (groupSizeX) * (groupSizeY); \
-        stdBeginElem(elemCount); \
+        stdEnterElemCount(elemCount); \
         \
         if_not (groupCount.X > 0 && groupCount.Y > 0) \
             return true; \
@@ -83,7 +85,7 @@
             ) \
         ); \
         \
-        stdEnd; \
+        stdEndScoped; \
     } \
 
 //================================================================

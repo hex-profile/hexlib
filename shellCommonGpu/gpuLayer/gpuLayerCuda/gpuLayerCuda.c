@@ -2200,7 +2200,9 @@ bool CudaExecApiThunk::callKernel
     stdNullPars
 )
 {
-    stdBeginElem(dbgElemCount);
+    stdBeginScoped;
+
+    stdEnterElemCount(dbgElemCount);
 
     ////
 
@@ -2302,7 +2304,7 @@ bool CudaExecApiThunk::callKernel
 
     ////
 
-    stdEnd;
+    stdEndScoped;
 }
 
 //================================================================

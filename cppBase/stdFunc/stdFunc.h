@@ -87,7 +87,6 @@
 //
 //================================================================
 
-// ``` only here
 #define stdBeginEx(elemCount, profName) \
     TRACE_REASSEMBLE(stdTraceName); \
     PROFILER_SCOPE_EX(TRACE_SCOPE(stdTraceName).location, elemCount, profName)
@@ -95,22 +94,22 @@
 #define stdBegin \
     stdBeginEx(0, 0)
 
-////
-
-#define stdBeginElem(elemCount) \
-    stdBeginEx(elemCount, 0)
-
 //----------------------------------------------------------------
 
 #define stdEnterEx(newLocation, elemCount, profName) \
     TRACE_ENTER(stdTraceName, newLocation); \
     PROFILER_SCOPE_EX(TRACE_SCOPE(stdTraceName).location, elemCount, profName)
 
+////
+
 #define stdEnter \
     stdEnterEx(TRACE_AUTO_LOCATION, 0, 0)
 
 #define stdEnterLocation(newLocation) \
     stdEnterEx(newLocation, 0, 0)
+
+#define stdEnterElemCount(elemCount) \
+    stdEnterEx(TRACE_AUTO_LOCATION, elemCount, 0)
 
 //================================================================
 //
@@ -134,18 +133,10 @@
 //================================================================
 
 #define stdBeginScoped \
-    { stdBegin
-
-#define stdBeginElemScoped \
-    { stdBeginElem
-
-////
+    stdBegin; {
 
 #define stdEndScoped \
-    stdEnd; } 
-
-#define stdEndvScoped \
-    stdEndv; }
+    stdEnd; }
 
 #define stdEndExScoped(value) \
     stdEndEx(value); }

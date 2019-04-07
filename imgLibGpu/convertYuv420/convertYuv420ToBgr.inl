@@ -249,13 +249,17 @@ bool PREP_PASTE(convertYuv420To, SUFFIX)
     stdPars(GpuProcessKit)
 )
 {
-    stdBeginElem(areaOf(dst.size() >> 1));
-
-    REQUIRE(srcChroma.size() >= srcLuma.size() / 2);
-    REQUIRE(srcOffset % 2 == 0);
+    stdBeginScoped;
 
     if_not (kit.dataProcessing)
         return true;
+
+    stdEnterElemCount(areaOf(dst.size() >> 1));
+
+    ////
+
+    REQUIRE(srcChroma.size() >= srcLuma.size() / 2);
+    REQUIRE(srcOffset % 2 == 0);
 
     //----------------------------------------------------------------
     //
@@ -319,7 +323,7 @@ bool PREP_PASTE(convertYuv420To, SUFFIX)
 
     ////
 
-    stdEnd;
+    stdEndScoped;
 }
 
 #endif
