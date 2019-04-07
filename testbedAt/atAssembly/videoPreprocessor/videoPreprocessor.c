@@ -538,7 +538,7 @@ bool VideoPreprocessorImpl::processTarget
     stdPars(ProcessKit)
 )
 {
-    stdBegin;
+    stdBeginScoped;
 
     //----------------------------------------------------------------
     //
@@ -655,7 +655,7 @@ bool VideoPreprocessorImpl::processTarget
 
     ////
 
-    stdEnd;
+    stdEndScoped;
 }
 
 //================================================================
@@ -672,7 +672,7 @@ bool VideoPreprocessorImpl::processSingleFrame
     stdPars(ProcessKit)
 )
 {
-    stdBegin;
+    stdBeginScoped;
 
     //----------------------------------------------------------------
     //
@@ -713,6 +713,7 @@ bool VideoPreprocessorImpl::processSingleFrame
     //
     //----------------------------------------------------------------
 
+    // ~~~ not exception-safe
     bool ok = processPrepFrontend(target, inputFrame, frameIndex, stdPass);
 
     //----------------------------------------------------------------
@@ -741,7 +742,7 @@ bool VideoPreprocessorImpl::processSingleFrame
 
     ////
 
-    stdEndEx(ok);
+    stdEndExScoped(ok);
 }
 
 //================================================================
@@ -994,7 +995,7 @@ bool VideoPreprocessorImpl::processCropFrontend
 
 bool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(ProcessKit))
 {
-    stdBegin;
+    stdBeginScoped;
 
     Matrix<const uint8_x4> cpuFrame = kit.atVideoFrame;
 
@@ -1143,7 +1144,7 @@ bool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(Proces
 
     ////
 
-    stdEnd;
+    stdEndScoped;
 }
 
 //================================================================

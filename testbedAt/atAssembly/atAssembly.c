@@ -993,7 +993,7 @@ private:
 
 bool AtAssemblyImpl::process(stdPars(ProcessKit))
 {
-    stdBegin;
+    stdBeginScoped;
 
     REQUIRE_EX(initialized, printMsg(kit.localLog, STR("Initialization failed, processing is disabled"), msgWarn));
 
@@ -1131,7 +1131,7 @@ bool AtAssemblyImpl::process(stdPars(ProcessKit))
 
     ////
 
-    stdEnd;
+    stdEndScoped;
 }
 
 //================================================================
