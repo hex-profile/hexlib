@@ -305,7 +305,19 @@ inline void ProfilerImpl::addDeviceTime(ProfilerNode* node, float32 deviceTime, 
 //
 //================================================================
 
-void ProfilerThunk::enterFunc(Profiler& profiler, ProfilerScope& scope, TraceLocation location, uint32 elemCount, const CharArray& userName)
+void ProfilerThunk::enterFunc(Profiler& profiler, ProfilerScope& scope, TraceLocation location)
+{
+    ProfilerThunk& that = static_cast<ProfilerThunk&>(profiler);
+
+    COMPILE_ASSERT(sizeof(ProfilerScopeEx) <= sizeof(ProfilerScope));
+    ProfilerScopeEx& scopeEx = (ProfilerScopeEx&) scope;
+
+    that.impl.enter(scopeEx, location, 0, 0);
+}
+
+//----------------------------------------------------------------
+
+void ProfilerThunk::enterExFunc(Profiler& profiler, ProfilerScope& scope, TraceLocation location, uint32 elemCount, const CharArray& userName)
 {
     ProfilerThunk& that = static_cast<ProfilerThunk&>(profiler);
 

@@ -81,7 +81,7 @@
                 prefix##Kernel, \
                 kernelParams, \
                 kit.gpuCurrentStream, \
-                stdPassLocMsg("Kernel") \
+                stdPassLocationMsg("Kernel") \
             ) \
         ); \
         \

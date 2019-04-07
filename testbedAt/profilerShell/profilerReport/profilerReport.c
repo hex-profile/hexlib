@@ -1825,7 +1825,7 @@ bool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFileKit
         ////
 
         StringArray searchPath;
-        //searchPath.push_back(""); @@@ need to remake this
+        searchPath.push_back("");
 
         SourceCacheThunk sourceCacheThunk(sourceCache, searchPath, kit);
 

@@ -154,7 +154,7 @@
 
 #define GPT_BIND_SAMPLER(Type, name, interp, border, prefix) \
     require(kit.gpuSamplerSetting.setSamplerImage< Type >(PREP_PASTE3(prefix, name, Sampler), name##Matrix, border, interp == INTERP_LINEAR, true, true, \
-        stdPassLocMsg(PREP_STRINGIZE(PREP_PASTE2(name, Sampler)))));
+        stdPassLocationMsg(PREP_STRINGIZE(PREP_PASTE2(name, Sampler)))));
 
 #define GPT_SET_SAMPLER_FIELD(Type, name, interp, border, o) \
     kernelParams.name##Texstep = 1.f / convertFloat32(clampMin(name##Matrix.size(), 1));

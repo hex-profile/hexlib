@@ -1100,7 +1100,7 @@ bool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(Proces
             FrameSnapshot* f = frameHistory[0];
             REQUIRE(f != 0);
 
-            require(processSingleFrame(target, f->frame, movingFrameIndex, stdPassKitLocation(kit, processLocation)));
+            require(processSingleFrame(target, f->frame, movingFrameIndex, stdPassEx(kit, processLocation)));
         }
         else
         {
@@ -1135,7 +1135,7 @@ bool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(Proces
                         target,
                         f->frame,
                         movingFrameIndex - k,
-                        stdPassKitLocation(kitReplace(kit, kitCombine(pipelineControlKit, outputKit, profilerKit)), processLocation)
+                        stdPassEx(kitReplace(kit, kitCombine(pipelineControlKit, outputKit, profilerKit)), processLocation)
                     )
                 );
             }

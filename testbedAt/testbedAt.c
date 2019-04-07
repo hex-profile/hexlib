@@ -358,7 +358,7 @@ public:
         const TraceScope& TRACE_SCOPE(stdTraceName) = self->trace;
 
         COMPILE_ASSERT(sizeof(at_pixel_rgb32) == sizeof(uint8_x4));
-        return self->imageProvider.saveImage(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdPassKit(0));
+        return self->imageProvider.saveImage(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass);
     }
 
 private:

@@ -28,11 +28,19 @@
 //
 // stdPars
 //
-// Standard parameters with trace support and some kit.
+// Declare standard parameters with trace support and some kit.
+//
+//================================================================
+
+#define stdPars(Kit) \
+    const Kit& kit, \
+    TRACE_PARAMS(stdTraceName)
+
+//================================================================
 //
 // stdPass
 //
-// Pass standard parameters, entering trace scope.
+// Pass standard parameters, entering scope.
 //
 // stdPassKit
 //
@@ -41,23 +49,24 @@
 // stdPassThru
 // stdPassThruKit
 //
-// Pass standard parameters, without entering trace scope.
+// Pass standard parameters, without entering scope.
 //
 //================================================================
 
-#define stdPars(Kit) \
-    const Kit& kit, \
-    TRACE_PARAMS(stdTraceName)
+#define stdPassEx(kit, location) \
+    (PROFILER_FRAME_TEMPORARY(kit, location), kit), \
+    TRACE_PASS(stdTraceName, location)
 
 //----------------------------------------------------------------
 
 #define stdPass \
-    kit, \
-    TRACE_PASS(stdTraceName, TRACE_AUTO_LOCATION)
+    stdPassEx(kit, TRACE_AUTO_LOCATION)
 
 #define stdPassKit(kit) \
-    kit, \
-    TRACE_PASS(stdTraceName, TRACE_AUTO_LOCATION)
+    stdPassEx(kit, TRACE_AUTO_LOCATION)
+
+#define stdPassLocationMsg(msg) \
+    stdPassEx(kit, TRACE_AUTO_LOCATION_MSG(msg))
 
 //----------------------------------------------------------------
 
@@ -69,41 +78,33 @@
     kit, \
     TRACE_PASSTHRU(stdTraceName)
 
-//----------------------------------------------------------------
-
-#define stdPassLocMsg(msg) \
-    kit, \
-    TRACE_PASS(stdTraceName, TRACE_AUTO_LOCATION_MSG(msg))
-
-//----------------------------------------------------------------
-
-#define stdPassKitLocation(kit, location) \
-    kit, \
-    TRACE_PASS(stdTraceName, location)
-
 //================================================================
 //
-// Standard begin/end macros with trace stack.
+// stdBegin*
+//
+// Standard beginning of a function.
 //
 //================================================================
 
-#define stdBeginEx(elemCount, profName) \
-    TRACE_REASSEMBLE(stdTraceName); \
-    PROFILER_SCOPE_EX(TRACE_SCOPE(stdTraceName).location, elemCount, profName)
+#define stdBegin 
 
-#define stdBegin \
-    stdBeginEx(0, 0)
-
-//----------------------------------------------------------------
+//================================================================
+//
+// stdEnter*
+//
+// Open a new scope inside a function.
+//
+//================================================================
 
 #define stdEnterEx(newLocation, elemCount, profName) \
     TRACE_ENTER(stdTraceName, newLocation); \
-    PROFILER_SCOPE_EX(TRACE_SCOPE(stdTraceName).location, elemCount, profName)
-
-////
+    PROFILER_FRAME_ENTER_EX(kit, TRACE_SCOPE(stdTraceName).location, elemCount, profName)
 
 #define stdEnter \
-    stdEnterEx(TRACE_AUTO_LOCATION, 0, 0)
+    TRACE_ENTER(stdTraceName, TRACE_AUTO_LOCATION); \
+    PROFILER_FRAME_ENTER(kit, TRACE_SCOPE(stdTraceName).location)
+
+//----------------------------------------------------------------
 
 #define stdEnterLocation(newLocation) \
     stdEnterEx(newLocation, 0, 0)
@@ -112,6 +113,8 @@
     stdEnterEx(TRACE_AUTO_LOCATION, elemCount, 0)
 
 //================================================================
+//
+// stdEnd*
 //
 // Standard return from function -- just for style.
 //
@@ -149,9 +152,13 @@
 
 struct NullKit
 {
+    sysinline NullKit() {}
+
     template <typename AnyType>
     sysinline NullKit(const AnyType&) {}
 };
+
+extern const NullKit nullKit;
 
 //================================================================
 //
@@ -160,7 +167,7 @@ struct NullKit
 // stdNullPassThru
 //
 // Standard trace support, no kit.
-//
+// 
 //================================================================
 
 #define stdNullPars \
@@ -168,10 +175,10 @@ struct NullKit
     TRACE_PARAMS(stdTraceName)
 
 #define stdNullPass \
-    stdPassKit(0)
+    stdPassKit(nullKit)
 
 #define stdNullPassThru \
-    stdPassThruKit(0)
+    stdPassThruKit(nullKit)
 
 #define stdNullBegin \
     TRACE_REASSEMBLE(stdTraceName);

@@ -1,0 +1,7 @@
+What makes it difficult to use for other people?
+
+* CUDA Driver API layer is difficult; custom GPU compiler.
+* Not exception-based, returns bool from each function (but code is generally exception-safe).
+* stdBegin/stdEnd/stdPass function macros are unusual.
+* Kits are unusual and badly supported by IDEs.
+* Reallocation scheme with measure/execute phases is non-standard.
