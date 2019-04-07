@@ -9,4 +9,4 @@ include(${HEXLIB_CMAKE_DIR}/common.cmake)
 #
 #================================================================
 
-hexlibProjectTemplate(hexlibShellCommon STATIC "hexlibBaseLib;hexlibImgBase;hexlibModuleTools" FALSE)
+hexlibProjectTemplate(hexlibShellCommon STATIC . "hexlibBaseLib;hexlibImgBase;hexlibModuleTools" FALSE hexlib)

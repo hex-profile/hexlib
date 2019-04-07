@@ -39,7 +39,7 @@ endfunction()
 #
 #================================================================
 
-function (hexlibProjectTemplate projectName libType dependentProjects requiresGpuCompiler)
+function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects requiresGpuCompiler folderName)
 
     cmake_minimum_required(VERSION 3.13.2 FATAL_ERROR)
 
@@ -49,7 +49,9 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
     #
     #----------------------------------------------------------------
 
-    addSourcesRecursive(sources .)
+    foreach (dir IN LISTS sourceDirs)
+        addSourcesRecursive(sources ${dir})
+    endforeach()
 
     ###
 
@@ -139,8 +141,9 @@ function (hexlibProjectTemplate projectName libType dependentProjects requiresGp
     #
     #----------------------------------------------------------------
 
-    # ```
-    set_target_properties(${projectName} PROPERTIES FOLDER hexlib)
+    if (folderName)
+        set_target_properties(${projectName} PROPERTIES FOLDER ${folderName})
+    endif()
 
     target_include_directories(${projectName} PUBLIC .)
 

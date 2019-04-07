@@ -7,4 +7,4 @@ include(${HEXLIB_CMAKE_DIR}/common.cmake)
 #================================================================
 
 set(dependencies hexlibImgBaseGpu hexlibImgLibGpu hexlibModuleTools hexlibModuleToolsGpu hexlibShellCommon hexlibGpuCompilerInterface)
-hexlibProjectTemplate(hexlibShellCommonGpu STATIC "${dependencies}" TRUE)
+hexlibProjectTemplate(hexlibShellCommonGpu STATIC . "${dependencies}" TRUE hexlib)
