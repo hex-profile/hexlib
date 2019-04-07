@@ -249,9 +249,8 @@ bool ProfilerShell::process(ProfilerTarget& target, float32 processingThroughput
     
         ReportFileKit kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
-        breakRequire(htmlReport.makeReport(
-            MakeReportParams(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, htmlOutputDir().cstr()), 
-            stdPassKit(kitEx)));
+        breakRequire(htmlReport.makeReport(MakeReportParams(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
+            cycleCount, processingThroughput, htmlOutputDir().cstr()), stdPassKit(kitEx)));
 
         float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
 
@@ -268,7 +267,7 @@ bool ProfilerShell::process(ProfilerTarget& target, float32 processingThroughput
     {
         ProfilerThunk profilerThunk(profilerImpl);
         externalScope.profiler = 0;
-        profilerThunk.enterFunc(profilerThunk, externalScope, TRACE_AUTO_LOCATION_MSG("Profiler Outer Scope"), 0, 0);
+        profilerThunk.enterFunc(profilerThunk, externalScope, TRACE_AUTO_LOCATION_MSG("Profiler Outer Scope"));
         externalScopeIsEntered = true;
     }
 

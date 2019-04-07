@@ -117,14 +117,15 @@ public:
 
     inline ProfilerThunk(ProfilerImpl& impl)
         :
-        Profiler(enterFunc, leaveFunc, getCurrentNodeLinkFunc, addDeviceTimeFunc),
+        Profiler(enterFunc, enterExFunc, leaveFunc, getCurrentNodeLinkFunc, addDeviceTimeFunc),
         impl(impl)
     {
     }
 
 public:
 
-    static void enterFunc(Profiler& profiler, ProfilerScope& scope, TraceLocation location, uint32 elemCount, const CharArray& userName);
+    static void enterFunc(Profiler& profiler, ProfilerScope& scope, TraceLocation location);
+    static void enterExFunc(Profiler& profiler, ProfilerScope& scope, TraceLocation location, uint32 elemCount, const CharArray& userName);
     static void leaveFunc(Profiler& profiler, ProfilerScope& scope);
     static void getCurrentNodeLinkFunc(Profiler& profiler, ProfilerNodeLink& result);
     static void addDeviceTimeFunc(const ProfilerNodeLink& node, float32 deviceTime, float32 overheadTime);
