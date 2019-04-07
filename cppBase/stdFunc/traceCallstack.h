@@ -86,12 +86,35 @@ public:
 
 //================================================================
 //
-// TRACE_* macros
+// TRACE_* common macros
 //
 //================================================================
 
+#define TRACE_ROOT_STD \
+    TRACE_ROOT(stdTraceName, TRACE_AUTO_LOCATION)
+
 #define TRACE_SCOPE(trace) \
     PREP_PASTE(trace, Scope)
+
+//================================================================
+//
+// TRACE_REGISTER_FRIENDLY_IMPL
+//
+//================================================================
+
+#define TRACE_REGISTER_FRIENDLY_IMPL 0
+
+//================================================================
+//
+// TRACE_* macros
+//
+// Register-friendly version.
+//
+//================================================================
+
+#if TRACE_REGISTER_FRIENDLY_IMPL
+
+////
 
 #define TRACE_PARAMS(trace) \
     const TraceScope* PREP_PASTE(trace, Prev), \
@@ -116,19 +139,41 @@ public:
     const TraceLocation PREP_PASTE(trace, Location) = (location); \
     const TraceScope PREP_PASTE(trace, Scope)(PREP_PASTE(trace, Location), PREP_PASTE(trace, Prev))
 
-#define TRACE_MEMBER(trace) \
-    const TraceScope* PREP_PASTE(trace, Prev); \
-    const TraceLocation PREP_PASTE(trace, Location);
+////
 
-#define TRACE_CAPTURE(trace) \
-    PREP_PASTE(trace, Prev)(PREP_PASTE(trace, Prev)), \
-    PREP_PASTE(trace, Location)(PREP_PASTE(trace, Location))
+#endif // TRACE_REGISTER_FRIENDLY_IMPL
 
 //================================================================
 //
-// TRACE_ROOT_STD
+// TRACE_* macros
+//
+// General-purpose version.
 //
 //================================================================
 
-#define TRACE_ROOT_STD \
-    TRACE_ROOT(stdTraceName, TRACE_AUTO_LOCATION)
+#if !TRACE_REGISTER_FRIENDLY_IMPL
+
+////
+
+// @@@ is by-value or by-ref more efficent?
+#define TRACE_PARAMS(trace) \
+    const TraceScope& TRACE_SCOPE(trace)
+
+#define TRACE_REASSEMBLE(trace)
+
+#define TRACE_ENTER(trace, location) \
+    const TraceScope* PREP_PASTE(trace, _Prev) = &TRACE_SCOPE(trace); \
+    const TraceScope TRACE_SCOPE(trace)(location, PREP_PASTE(trace, _Prev))
+
+#define TRACE_PASS(trace, location) \
+    TraceScope(location, &TRACE_SCOPE(trace))
+
+#define TRACE_PASSTHRU(trace) \
+    TRACE_SCOPE(trace)
+
+#define TRACE_ROOT(trace, location) \
+    const TraceScope TRACE_SCOPE(trace)(location)
+
+////
+
+#endif // !TRACE_REGISTER_FRIENDLY_IMPL

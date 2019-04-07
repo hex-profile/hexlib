@@ -81,16 +81,6 @@
     kit, \
     TRACE_PASS(stdTraceName, location)
 
-//----------------------------------------------------------------
-
-#define stdParsMember(Kit) \
-    Kit kit; \
-    TRACE_MEMBER(stdTraceName);
-
-#define stdParsCapture \
-    kit(kit), \
-    TRACE_CAPTURE(stdTraceName)
-
 //================================================================
 //
 // Standard begin/end macros with trace stack.
