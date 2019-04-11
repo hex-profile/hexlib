@@ -808,7 +808,7 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     //----------------------------------------------------------------
     //
-    // Give GPU control to the profiler
+    // Give GPU control to the profiler.
     //
     //----------------------------------------------------------------
 
@@ -818,7 +818,7 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     //----------------------------------------------------------------
     //
-    // Tool module state realloc (if needed)
+    // Tool module state realloc (if needed).
     //
     //----------------------------------------------------------------
 
@@ -833,23 +833,25 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     //----------------------------------------------------------------
     //
-    // Engine module state realloc (if needed)
+    // Set engine input parameters.
     //
     //----------------------------------------------------------------
 
     Point<Space> engineFrameSize = toolModule.outputFrameSize();
 
+    engineModule->setInputResolution(engineFrameSize);
+    require(inputMetadataHandler.updateMetadataOnChange(kit.atVideoInfo.videofileName, *engineModule, stdPass));
+
+    //----------------------------------------------------------------
+    //
+    // Engine module state realloc (if needed).
+    //
+    //----------------------------------------------------------------
+
     MemoryUsage engineStateUsage;
     ReallocActivity engineStateActivity;
 
     {
-        engineModule->setInputResolution(engineFrameSize);
-        require(inputMetadataHandler.updateMetadataOnChange(kit.atVideoInfo.videofileName, *engineModule, stdPass));
-
-        printMsgL(kit, STR(""));
-
-        ////
-
         EngineReallocThunk engineModuleThunk(*engineModule, kit);
         require(engineMemory.handleStateRealloc(engineModuleThunk, kit, engineStateUsage, engineStateActivity, stdPass));
     }
@@ -867,7 +869,7 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     //----------------------------------------------------------------
     //
-    // First stage: Count temp memory
+    // First stage: Count temp memory.
     //
     //----------------------------------------------------------------
 
@@ -893,7 +895,7 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     //----------------------------------------------------------------
     //
-    // Reallocate tool temp memory (if necessary)
+    // Reallocate tool temp memory (if necessary).
     //
     //----------------------------------------------------------------
 
@@ -910,7 +912,7 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     //----------------------------------------------------------------
     //
-    // Reallocate engine temp memory (if necessary)
+    // Reallocate engine temp memory (if necessary).
     //
     //----------------------------------------------------------------
 
@@ -927,7 +929,7 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     //----------------------------------------------------------------
     //
-    // Last stage: Real data processing with temp memory distribution
+    // Last stage: Real data processing with temp memory distribution.
     //
     //----------------------------------------------------------------
 
