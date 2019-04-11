@@ -199,10 +199,7 @@ const CharType* SimpleString::cstr() const
     const CharType* result = CT("");
 
     if (theOk && theData)
-    {
-        try {result = theData->c_str();}
-        catch (const std::exception&) {}
-    }
+        result = theData->c_str();
 
     return result;
 }
@@ -217,15 +214,8 @@ size_t SimpleString::length() const
 {
     size_t result = 0;
 
-    ////
-
     if (theOk && theData)
-    {
-        try {result = theData->length();}
-        catch (const std::exception&) {}
-    }
-
-    ////
+        result = theData->length();
 
     return result;
 }

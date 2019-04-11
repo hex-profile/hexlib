@@ -1,5 +1,7 @@
 #include "atAssembly.h"
 
+#include <algorithm>
+
 #include "atAssembly/frameAdvanceKit.h"
 #include "atAssembly/frameChange.h"
 #include "atAssembly/toolModule/toolModule.h"
@@ -25,6 +27,8 @@
 #include "storage/rememberCleanup.h"
 #include "timerImpl/timerImpl.h"
 #include "userOutput/paramMsg.h"
+#include "userOutput/printMsgEx.h"
+#include "charType/strUtils.h"
 
 namespace atStartup {
 
@@ -320,6 +324,213 @@ private:
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
+// InputMetadataHandler
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+struct FileProperties
+{
+    bool exists = false;
+    FileTime changeTime = 0;
+    FileSize fileSize = 0;
+};
+
+inline bool operator==(const FileProperties& a, const FileProperties& b)
+{
+    return 
+        (a.exists == b.exists) &&
+        (a.changeTime == b.changeTime) &&
+        (a.fileSize == b.fileSize);
+}
+
+//================================================================
+//
+// getFileProperties
+//
+//================================================================
+
+template <typename Kit>
+bool getFileProperties(const CharType* filename, FileProperties& result, stdPars(Kit))
+{
+    stdBegin;
+
+    result = FileProperties{};
+
+    if_not (kit.fileTools.fileExists(filename))
+        return true;
+
+    result.exists = true;
+    REQUIRE(kit.fileTools.getChangeTime(filename, result.changeTime));
+    REQUIRE(kit.fileTools.getFileSize(filename, result.fileSize));
+
+    stdEnd;
+}
+
+//================================================================
+//
+// InputMetadataHandler
+//
+//================================================================
+
+class InputMetadataHandler
+{
+
+public:
+
+    KIT_COMBINE2(UpdateKit, DiagnosticKit, FileToolsKit);
+
+    bool checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit));
+    bool updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit));
+
+private:
+
+    SimpleString currentInputName;
+    SimpleString currentConfigName;
+    FileProperties currentProperties;
+
+};
+
+//================================================================
+//
+// InputMetadataHandler::checkSteady
+//
+//================================================================
+
+bool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit))
+{
+    stdBegin;
+
+    steady = false;
+
+    //
+    // The same input name?
+    //
+
+    if_not (strEqual(inputName, currentInputName.charArray()))
+        return true;
+
+    //
+    // Config properties.
+    //
+
+    FileProperties properties;
+    require(getFileProperties(currentConfigName.cstr(), properties, stdPass));
+    
+    if_not (properties == currentProperties)
+        return true;
+
+    ////
+
+    steady = true;
+
+    stdEnd;
+}
+
+//================================================================
+//
+// InputMetadataHandler::updateMetadataOnChange
+//
+//================================================================
+
+bool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit))
+{
+    stdBegin;
+
+    //----------------------------------------------------------------
+    //
+    // Check steadiness.
+    //
+    //----------------------------------------------------------------
+
+    bool steady = false;
+    require(checkSteady(inputName, steady, stdPass));
+
+    if (steady)
+        return true;
+
+    //----------------------------------------------------------------
+    //
+    // Remember to reset in case of error.
+    //
+    //----------------------------------------------------------------
+
+    REMEMBER_CLEANUP_EX(resetState, {currentInputName.clear(); currentConfigName.clear(); currentProperties = FileProperties{};});
+
+    //----------------------------------------------------------------
+    //
+    // Update all metadata.
+    //
+    //----------------------------------------------------------------
+
+    currentInputName = inputName;
+    REQUIRE(currentInputName.ok());
+
+    ////
+
+    auto dot = STR(".");
+    auto dotPos = std::find_end(inputName.ptr, inputName.ptr + inputName.size, dot.ptr, dot.ptr + dot.size);
+    size_t usedLength = dotPos - inputName.ptr;
+
+    currentConfigName.assign(inputName.ptr, usedLength);
+    currentConfigName += ".cfg";
+    REQUIRE(currentConfigName.ok());
+
+    ////
+
+    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
+
+    ////
+
+    if_not (currentProperties.exists)
+        {resetState.cancel(); return true;}
+
+    //----------------------------------------------------------------
+    //
+    // Read metadata config file.
+    //
+    //----------------------------------------------------------------
+
+    ConfigFile metadataConfig;
+    require(metadataConfig.loadFile(currentConfigName, stdPass));
+
+    //----------------------------------------------------------------
+    //
+    // Serialize vars.
+    //
+    //----------------------------------------------------------------
+
+    class SerializeToInputMetadata : public CfgSerialization
+    {
+        void serialize(const CfgSerializeKit& kit) {receiver.setInputMetadata(kit);}
+
+        CLASS_CONTEXT(SerializeToInputMetadata, ((AtEngine&, receiver)));
+    };
+
+    ////
+
+    SerializeToInputMetadata serializer(receiver);
+    metadataConfig.loadVars(serializer);
+
+    metadataConfig.saveVars(serializer, true);
+    metadataConfig.updateFile(true, stdPass); // correct the config
+
+    //----------------------------------------------------------------
+    //
+    // Success.
+    //
+    //----------------------------------------------------------------
+
+    resetState.cancel();
+
+    stdEnd;
+}
+
+//================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
+//
 // AtAssembly
 //
 //----------------------------------------------------------------
@@ -378,6 +589,12 @@ private:
     //
 
     FrameChangeDetector frameChangeDetector;
+
+    //
+    // Input metadata handler.
+    //
+
+    InputMetadataHandler inputMetadataHandler;
 
     //
     // Profiler
@@ -494,7 +711,7 @@ bool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitKit)
     configFile.loadVars(*this);
 
     configFile.saveVars(*this, true);
-    configFile.updateFile(true, stdPassKit(kitCombine(kit, fileToolsKit))); // fix potential cfg errors
+    configFile.updateFile(true, stdPassKit(kitCombine(kit, fileToolsKit))); // fix potential errors
 
     //
     // Register signals
@@ -626,7 +843,13 @@ bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     ReallocActivity engineStateActivity;
 
     {
-        engineModule->setFrameSize(engineFrameSize);
+        engineModule->setInputResolution(engineFrameSize);
+        require(inputMetadataHandler.updateMetadataOnChange(kit.atVideoInfo.videofileName, *engineModule, stdPass));
+
+        printMsgL(kit, STR(""));
+
+        ////
+
         EngineReallocThunk engineModuleThunk(*engineModule, kit);
         require(engineMemory.handleStateRealloc(engineModuleThunk, kit, engineStateUsage, engineStateActivity, stdPass));
     }

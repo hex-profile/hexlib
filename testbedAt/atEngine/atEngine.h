@@ -1,20 +1,13 @@
 #pragma once
 
+#include "data/gpuMatrix.h"
 #include "gpuModuleKit.h"
 #include "kits/alternativeVersionKit.h"
 #include "kits/displayParamsKit.h"
+#include "kits/gpuRgbFrameKit.h"
 #include "kits/processInspector.h"
 #include "storage/smartPtr.h"
-#include "data/gpuMatrix.h"
 #include "vectorTypes/vectorBase.h"
-
-//================================================================
-//
-// GpuRgbFrameKit
-//
-//================================================================
-
-KIT_CREATE1(GpuRgbFrameKit, GpuMatrix<const uint8_x4>, gpuRgbFrame);
 
 //================================================================
 //
@@ -34,8 +27,8 @@ KIT_COMBINE4(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit, Alternativ
 struct AtEngine
 {
     virtual void serialize(const ModuleSerializeKit& kit) =0;
-
-    virtual void setFrameSize(const Point<Space>& frameSize) =0;
+    virtual void setInputResolution(const Point<Space>& frameSize) =0;
+    virtual void setInputMetadata(const CfgSerializeKit& kit) =0;
 
     virtual bool reallocValid() const =0;
     virtual bool realloc(stdPars(AtEngineReallocKit)) =0;

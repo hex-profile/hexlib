@@ -786,7 +786,7 @@ void atClientProcess(void* instance, const at_api_process* api)
 
     AtVideoInfo atVideoInfo
     (
-        CharArray(videofileNamePtr, videofileNameSize),
+        charArrayFromPtr(videofileNamePtr),
         frameIndex, frameCount,
         interlacedMode, interlacedLower,
         frame.size()

@@ -79,7 +79,7 @@ class ConfigFile
 
 public:
 
-    void loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
+    bool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
     void unloadFile();
 
 public:
