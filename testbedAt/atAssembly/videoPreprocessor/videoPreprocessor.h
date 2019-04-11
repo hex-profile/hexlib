@@ -1,25 +1,18 @@
 #pragma once
 
-#include "gpuModuleHeader.h"
-#include "vectorTypes/vectorBase.h"
-#include "atInterface/atInterfaceKit.h"
-#include "kits/userPoint.h"
-#include "interfaces/fileTools.h"
 #include "allocation/mallocKit.h"
-#include "kits/displayParamsKit.h"
-#include "kits/alternativeVersionKit.h"
 #include "atAssembly/frameAdvanceKit.h"
+#include "atInterface/atInterfaceKit.h"
+#include "gpuModuleHeader.h"
+#include "interfaces/fileTools.h"
 #include "interfaces/threadManagerKit.h"
+#include "kits/alternativeVersionKit.h"
+#include "kits/displayParamsKit.h"
+#include "kits/gpuRgbFrameKit.h"
+#include "kits/userPoint.h"
+#include "vectorTypes/vectorBase.h"
 
 namespace videoPreprocessor {
-
-//================================================================
-//
-// GpuRgbFrameKit
-//
-//================================================================
-
-KIT_CREATE1(GpuRgbFrameKit, GpuMatrix<const uint8_x4>, gpuRgbFrame);
 
 //================================================================
 //

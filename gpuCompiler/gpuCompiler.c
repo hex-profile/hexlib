@@ -19,17 +19,17 @@
 #include "formattedOutput/textFiles.h"
 #include "formattedOutput/userOutputThunks.h"
 #include "formattedOutput/logToStlConsole.h"
-#include "fileTools.h"
+#include "fileToolsImpl/fileToolsImpl.h"
 
 using namespace std;
 
 //================================================================
 //
-// TextKit
+// CompilerKit
 //
 //================================================================
 
-KIT_COMBINE3(TextKit, ErrorLogKit, MsgLogKit, ErrorLogExKit);
+KIT_COMBINE4(CompilerKit, ErrorLogKit, MsgLogKit, ErrorLogExKit, FileToolsKit);
 
 //================================================================
 //
@@ -124,7 +124,7 @@ inline StlString filenameToCString(const StlString& str)
 //
 //================================================================
 
-bool runProcess(StlString cmdLine, stdPars(TextKit))
+bool runProcess(StlString cmdLine, stdPars(CompilerKit))
 {
     stdBegin;
 
@@ -163,7 +163,7 @@ bool runProcess(StlString cmdLine, stdPars(TextKit))
 //
 //================================================================
 
-bool runProcess(const vector<StlString>& args, stdPars(TextKit))
+bool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 {
     stdBegin;
 
@@ -204,7 +204,7 @@ bool parseClArgs
     StlString& outputDir,
     StlString& outputFile,
     vector<StlString>& otherArgs,
-    stdPars(TextKit)
+    stdPars(CompilerKit)
 )
 {
     stdBegin;
@@ -297,7 +297,7 @@ bool parseClArgs
 //
 //================================================================
 
-bool prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(TextKit))
+bool prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(CompilerKit))
 {
     stdBegin;
 
@@ -687,7 +687,7 @@ bool compileDevicePartToBin
     const vector<StlString>& defines,
     const StlString& platformArch,
     const StlString& platformBitness,
-    stdPars(TextKit)
+    stdPars(CompilerKit)
 )
 {
     stdBegin;
@@ -797,10 +797,10 @@ bool compileDevicePartToBin
 
     if
     (
-        fileExist(binPath) &&
-        fileExist(asmPath) &&
-        fileExist(cupPath) &&
-        fileExist(cachedPath)
+        kit.fileTools.fileExists(binPath.c_str()) &&
+        kit.fileTools.fileExists(asmPath.c_str()) &&
+        kit.fileTools.fileExists(cupPath.c_str()) &&
+        kit.fileTools.fileExists(cachedPath.c_str())
     )
     {
         //
@@ -888,7 +888,7 @@ bool makeCppBinAssembly
     const StlString& outPath,
     const vector<StlString>& kernelNames,
     const vector<StlString>& samplerNames,
-    stdPars(TextKit)
+    stdPars(CompilerKit)
 )
 {
     stdBegin;
@@ -927,7 +927,7 @@ bool makeCppBinAssembly
     // Include base C++ file
     //
 
-    printMsg(outStream, STR("#include \"%0\""), filenameToCString(cppPath));
+    printMsg(outStream, STR("#" "include \"%0\""), filenameToCString(cppPath));
     printMsg(outStream, STR(""));
 
     //
@@ -1128,12 +1128,14 @@ bool mainFunc(int argCount, const CharType* argStr[])
 
     ErrorLogThunk errorLog(msgLog);
     ErrorLogExThunk errorLogEx(msgLog);
+    FileToolsImpl fileTools;
 
-    TextKit kit = kitCombine
+    CompilerKit kit = kitCombine
     (
         ErrorLogKit(errorLog, 0),
         ErrorLogExKit(errorLogEx, 0),
-        MsgLogKit(msgLog, 0)
+        MsgLogKit(msgLog, 0),
+        FileToolsKit(fileTools, 0)
     );
 
     TRACE_ROOT(stdTraceName, TRACE_AUTO_LOCATION);

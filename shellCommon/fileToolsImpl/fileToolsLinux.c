@@ -14,12 +14,55 @@
 
 //================================================================
 //
+// FileToolsLinux::fileExists
+//
+//================================================================
+
+bool FileToolsLinux::fileExists(const CharType* filename)
+{
+    return access(filename, F_OK ) != -1;
+}
+
+//================================================================
+//
+// FileToolsLinux::getFileSize
+//
+//================================================================
+
+bool FileToolsLinux::getFileSize(const CharType* filename, FileSize& result)
+{
+    struct stat tmp;
+    require(stat(filename, &tmp) == 0);
+
+    require(tmp.st_size >= 0);
+    result = tmp.st_size;
+
+    return true;
+}
+
+//================================================================
+//
+// FileToolsLinux::getChangeTime
+//
+//================================================================
+
+bool FileToolsLinux::getChangeTime(const CharType* filename, FileTime& result)
+{
+    struct stat tmp;
+    require(stat(filename, &tmp) == 0);
+
+    result = tmp.st_mtime;
+    return true;
+}
+
+//================================================================
+//
 // FileToolsLinux::deleteFile
 // FileToolsLinux::renameFile
 //
 //================================================================
 
-bool FileToolsLinux::deleteFile(const CharType* name)
+bool FileToolsLinux::deleteFile(const CharType* filename)
 {
     return remove(name) == 0;
 }

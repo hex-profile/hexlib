@@ -124,19 +124,23 @@ public:
     inline bool ok() const
         {return theOk;}
 
+    size_t length() const;
+
+    const CharType* cstr() const;
+
+    CharArray charArray() const
+        {return CharArray(cstr(), length());}
+
+    //----------------------------------------------------------------
+    //
+    //
+    //
+    //----------------------------------------------------------------
+
 public:
 
     inline void invalidate()
         {theOk = false;}
-
-public:
-
-    size_t length() const;
-
-public:
-
-    const CharType* cstr() const;
-
     //----------------------------------------------------------------
     //
     //

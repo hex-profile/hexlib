@@ -172,7 +172,7 @@ class ConfigFileImpl
 
 public:
 
-    void loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
+    bool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
     void unloadFile();
 
     void loadVars(CfgSerialization& serialization);
@@ -221,7 +221,7 @@ public:
 //
 //================================================================
 
-void ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
+bool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
 {
     stdBegin;
 
@@ -236,7 +236,7 @@ void ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKi
     if (cfgFilename.length() == 0)
     {
         updateFileEnabled = false;
-        return;
+        return false;
     }
 
     ////
@@ -250,19 +250,22 @@ void ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKi
         filename.ok()
     )
     {
-        printMsg(kit.msgLog, STR("Cannot get absolute path of config file '%0', config file updating is stopped"), cfgFilename.cstr(), msgWarn);
+        printMsg(kit.msgLog, STR("Cannot get absolute path of config file '%0'"), cfgFilename.cstr(), msgWarn);
         updateFileEnabled = false;
-        return;
+        return false;
     }
 
     ////
 
     if_not (memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass))
+    {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
+        return false;
+    }
 
     memoryChanged = false;
 
-    stdEndv;
+    stdEnd;
 }
 
 //================================================================
@@ -398,25 +401,29 @@ void ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileK
 //
 //================================================================
 
-CLASSTHUNK_CONSTRUCT_DESTRUCT(ConfigFile)
+ConfigFile::ConfigFile()
+    {}
 
-void ConfigFile::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
-    {if (instance) instance->loadFile(cfgFilename, stdPassThru);}
+ConfigFile::~ConfigFile()
+    {}
+
+bool ConfigFile::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
+    {return instance->loadFile(cfgFilename, stdPassThru);}
 
 void ConfigFile::unloadFile()
-    {if (instance) instance->unloadFile();}
+    {instance->unloadFile();}
 
 void ConfigFile::loadVars(CfgSerialization& serialization)
-    {if (instance) instance->loadVars(serialization);}
+    {instance->loadVars(serialization);}
 
 void ConfigFile::saveVars(CfgSerialization& serialization, bool forceUpdate)
-    {if (instance) instance->saveVars(serialization, forceUpdate);}
+    {instance->saveVars(serialization, forceUpdate);}
 
 void ConfigFile::updateFile(bool forceUpdate, stdPars(CfgFileKit))
-    {if (instance) instance->updateFile(forceUpdate, stdPassThru);}
+    {instance->updateFile(forceUpdate, stdPassThru);}
 
 void ConfigFile::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
-    {if (instance) instance->editFile(configEditor, stdPassThru);}
+    {instance->editFile(configEditor, stdPassThru);}
 
 //----------------------------------------------------------------
 

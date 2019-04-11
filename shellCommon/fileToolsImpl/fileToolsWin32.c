@@ -9,13 +9,64 @@
 
 //================================================================
 //
+// FileToolsWin32::fileExists
+//
+//================================================================
+
+bool FileToolsWin32::fileExists(const CharType* filename)
+{
+    //
+    // only FindFirstFile - GetFileAttributes sees not all files
+    //
+
+    WIN32_FIND_DATA tmp;
+    HANDLE handle = FindFirstFile(filename, &tmp);
+    bool yes = (handle != INVALID_HANDLE_VALUE);
+    if (handle != INVALID_HANDLE_VALUE) FindClose(handle);
+    return yes;
+}
+
+//================================================================
+//
+// FileToolsWin32::getChangeTime
+//
+//================================================================
+
+bool FileToolsWin32::getChangeTime(const CharType* filename, FileTime& result)
+{
+    struct _stati64 tmp;
+    require(_stati64(filename, &tmp) == 0);
+
+    result = tmp.st_mtime;
+    return true;
+}
+
+//================================================================
+//
+// FileToolsWin32::getFileSize
+//
+//================================================================
+
+bool FileToolsWin32::getFileSize(const CharType* filename, FileSize& result)
+{
+    struct _stati64 tmp;
+    require(_stati64(filename, &tmp) == 0);
+
+    require(tmp.st_size >= 0);
+    result = tmp.st_size;
+
+    return true;
+}
+
+//================================================================
+//
 // FileToolsWin32::deleteFile
 // FileToolsWin32::renameFile
 //
 //================================================================
 
-bool FileToolsWin32::deleteFile(const CharType* name)
-    {return DeleteFile(name) != 0;}
+bool FileToolsWin32::deleteFile(const CharType* filename)
+    {return DeleteFile(filename) != 0;}
 
 bool FileToolsWin32::renameFile(const CharType* oldName, const CharType* newName)
     {return MoveFileEx(oldName, newName, MOVEFILE_REPLACE_EXISTING) != 0;}
