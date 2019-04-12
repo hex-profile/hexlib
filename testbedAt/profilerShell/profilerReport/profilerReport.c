@@ -1749,7 +1749,7 @@ void HtmlReportImpl::serialize(const ModuleSerializeKit& kit)
     smartMaxRows.serialize(kit, STR("Smart Cut: Max Rows"));
 
     {
-        CFG_NAMESPACE_MODULE("Time");
+        CFG_NAMESPACE("Time");
         timeThresholdFractionPercents.serialize(kit, STR("Fraction Of Parent To Be Displayed (In Percents)"));
         timeMinSignificantTimeInMs.serialize(kit, STR("Min Significant Time (In Milliseconds)"), STR(""));
         timeMsDigits.serialize(kit, STR("Fractional Digits Of Millisecond"));

@@ -89,7 +89,7 @@ private:
 void GpuShellImpl::serialize(const ModuleSerializeKit& kit)
 {
     {
-        CFG_NAMESPACE_MODULE("GPU Shell");
+        CFG_NAMESPACE("GPU Shell");
 
         gpuEnqueueModeCycle.serialize(kit, STR("GPU Skip Mode"), STR("Alt+."));
         gpuEnqueueModeVar = (gpuEnqueueModeVar + gpuEnqueueModeCycle) % 3;
