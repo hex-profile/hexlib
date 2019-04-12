@@ -27,14 +27,14 @@ public:
 
 //----------------------------------------------------------------
 
-#define CFG_NAMESPACE_EX(name, Kit) \
-    CfgNamespace PREP_PASTE(newFrame, __LINE__)(CT(name), kit.scope); \
-    const Kit& oldKit = kit; \
-    Kit kit = oldKit; \
+#define CFG_NAMESPACE_EX(name) \
+    CfgNamespace PREP_PASTE(newFrame, __LINE__)(name, kit.scope); \
+    auto oldKit = kit; \
+    auto kit = oldKit; \
     kit.scope = &PREP_PASTE(newFrame, __LINE__)
 
-#define CFG_NAMESPACE_BASIC(name) \
-    CFG_NAMESPACE_EX(name, CfgSerializeKit)
+#define CFG_NAMESPACE(name) \
+    CFG_NAMESPACE_EX(CT(name))
 
 //================================================================
 //

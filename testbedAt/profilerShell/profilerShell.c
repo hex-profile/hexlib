@@ -32,7 +32,7 @@ ProfilerShell::ProfilerShell()
 void ProfilerShell::serialize(const ModuleSerializeKit& kit)
 {
     {
-        CFG_NAMESPACE_MODULE("Profiling");
+        CFG_NAMESPACE("Profiling");
         displayFrameTime.serialize(kit, STR("Display Frame Time"), STR("Ctrl+T"));
     
         profilerActiveSteady = profilerActive.serialize(kit, STR("Profiler Active"), STR("Alt+P"));
@@ -44,7 +44,7 @@ void ProfilerShell::serialize(const ModuleSerializeKit& kit)
         htmlReportSignal.serialize(kit, STR("Generate Report"), STR("P"));
 
         {
-            CFG_NAMESPACE_MODULE("HTML Report");
+            CFG_NAMESPACE("HTML Report");
             kit.visitor(kit.scope, SerializeSimpleString(htmlOutputDir, htmlOutputDirName(), STR("Use double backslashes, for example C:\\\\Temp")));
             htmlReport.serialize(kit);
         }

@@ -65,8 +65,8 @@ KIT_COMBINE8(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTak
 
 KIT_COMBINE2(ModuleSerializeKit, CfgSerializeKit, OverlayTakeoverKit);
 
-#define CFG_NAMESPACE_MODULE(name) \
-    CFG_NAMESPACE_EX(name, ModuleSerializeKit)
+#define CFG_NAMESPACE(name) \
+    CFG_NAMESPACE_EX(CT(name))
 
 //================================================================
 //

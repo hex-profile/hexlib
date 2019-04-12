@@ -643,10 +643,10 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
         //
 
         {
-            CFG_NAMESPACE_MODULE("ZTestbed");
+            CFG_NAMESPACE("ZTestbed");
 
             {
-                CFG_NAMESPACE_MODULE("Config");
+                CFG_NAMESPACE("Config");
                 configEditSignal.serialize(kit, STR("Edit"), STR("`"), STR("Press Tilde"));
                 kit.visitor(kit.scope, SerializeSimpleString(configEditor, STR("Editor")));
             }

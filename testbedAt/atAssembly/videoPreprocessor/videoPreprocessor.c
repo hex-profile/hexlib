@@ -365,7 +365,7 @@ VideoPreprocessorImpl::VideoPreprocessorImpl()
 void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 {
     {
-        CFG_NAMESPACE_MODULE("Display Params");
+        CFG_NAMESPACE("Display Params");
 
         check_flag(alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
 
@@ -387,7 +387,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     }
 
     {
-        CFG_NAMESPACE_MODULE("Input Settings");
+        CFG_NAMESPACE("Input Settings");
 
         displaySwitch.serialize
         (
@@ -418,10 +418,10 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     }
 
     {
-        CFG_NAMESPACE_MODULE("Output Settings");
+        CFG_NAMESPACE("Output Settings");
 
         {
-            CFG_NAMESPACE_MODULE("Display Delayer");
+            CFG_NAMESPACE("Display Delayer");
             displayWaitController.serialize(kit);
         }
 
@@ -441,7 +441,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     {
     #if USE_OVERLAY_SMOOTHER
 
-        CFG_NAMESPACE_MODULE("Overlay Smoother");
+        CFG_NAMESPACE("Overlay Smoother");
         overlaySmootherEnabled.serialize(kit, STR("@Enabled"), STR("Alt+O"));
         overlaySmoother.serialize(kit);
 
@@ -449,7 +449,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     }
 
     {
-        CFG_NAMESPACE_MODULE("Saving AVI Files");
+        CFG_NAMESPACE("Saving AVI Files");
         aviConfig.serialize(kit);
     }
 }

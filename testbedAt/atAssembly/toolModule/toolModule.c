@@ -13,12 +13,12 @@
 void ToolModule::serialize(const ModuleSerializeKit& kit)
 {
     {
-        CFG_NAMESPACE_MODULE("Video Preprocessor");
+        CFG_NAMESPACE("Video Preprocessor");
         videoPreprocessor.serialize(kit);
     }
 
     {
-        CFG_NAMESPACE_MODULE("Gpu Overhead Test");
+        CFG_NAMESPACE("Gpu Overhead Test");
         gpuOverheadTest.serialize(kit);
     }
 
