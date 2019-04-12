@@ -6,6 +6,7 @@
 #include "gpuDevice/devSampler/devSampler.h"
 #include "readInterpolate/cubicCoeffs.h"
 #include "numbers/mathIntrinsics.h"
+#include "point/pointMathIntrinsics.h"
 
 #if DEVCODE
 
