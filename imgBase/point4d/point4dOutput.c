@@ -27,7 +27,7 @@ inline void outputPoint(const Point4D<Type>& value, FormatOutputStream& outputSt
 //================================================================
 
 template <typename Type>
-inline void outputPoint(const FormatNumber< Point4D<Type> >& number, FormatOutputStream& outputStream)
+inline void outputPoint(const FormatNumber<Point4D<Type>>& number, FormatOutputStream& outputStream)
 {
     outputStream.write(formatNumber(number.value.X, number.options));
     outputStream.write(STR(", "));
@@ -40,7 +40,7 @@ inline void outputPoint(const FormatNumber< Point4D<Type> >& number, FormatOutpu
 
 //================================================================
 //
-// formatOutput< Point4D<Type> >
+// formatOutput<Point4D<Type>>
 //
 //================================================================
 
@@ -51,7 +51,7 @@ inline void outputPoint(const FormatNumber< Point4D<Type> >& number, FormatOutpu
         {outputPoint(value, outputStream);} \
     \
     template <> \
-    void formatOutput(const FormatNumber< Point4D<Type> >& value, FormatOutputStream& outputStream) \
+    void formatOutput(const FormatNumber<Point4D<Type>>& value, FormatOutputStream& outputStream) \
         {outputPoint(value, outputStream);}
 
 BUILTIN_INT_FOREACH(TMP_MACRO, o)

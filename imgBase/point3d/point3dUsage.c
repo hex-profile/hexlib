@@ -20,7 +20,7 @@ bool point3dUsage()
     COMPILE_ASSERT(TYPE_IS_CONTROLLED(const Point3D<float>));
 
     // Type traits: min and max.
-    Point3D<int> minPoint = typeMin< Point3D<int> >();
+    Point3D<int> minPoint = typeMin<Point3D<int>>();
 
     // Default constructor: uninitialized
     Point3D<int> uninitializedValue;
@@ -34,10 +34,10 @@ bool point3dUsage()
     Point3D<float> c0 = convertNearest<float>(A);
 
     // Convert point->point, vector-guided.
-    Point3D<float> c1 = convertNearest< Point3D<float> >(A);
+    Point3D<float> c1 = convertNearest<Point3D<float>>(A);
 
     // Convert scalar->point.
-    Point3D<float> c2 = convertNearest< Point3D<float> >(1);
+    Point3D<float> c2 = convertNearest<Point3D<float>>(1);
 
     // Convert with success flag.
     Point3D<int> intResult;
@@ -45,7 +45,7 @@ bool point3dUsage()
     intSuccess = convertNearest(25, intResult);
 
     // Make zero
-    Point3D<float32> makeZero = zeroOf< Point3D<float32> >();
+    Point3D<float32> makeZero = zeroOf<Point3D<float32>>();
 
     // Generate NAN
     Point3D<float> pointNan = nanOf<const Point3D<float>&>();
@@ -82,7 +82,7 @@ bool point3dUsage()
     Point3D<int> t2 = maxv(A, B);
     Point3D<int> t3 = clampMin(A, 0);
     Point3D<int> t4 = clampMax(A, 10);
-    Point3D<int> t5 = clampRange(A, 0, 10);
+    // Point3D<int> t5 = clampRange(A, 0, 10);
 
     return true;
 }

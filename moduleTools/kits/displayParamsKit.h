@@ -5,6 +5,7 @@
 #include "charType/charArray.h"
 #include "point/point.h"
 #include "numbers/float/floatBase.h"
+#include "numbers/int/intBase.h"
 
 //================================================================
 //

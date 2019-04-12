@@ -255,7 +255,7 @@ private:
     ////
 
     BoolSwitch<false> cropMode;
-    NumericVar< Point<Space> > cropSizeCfg;
+    NumericVar<Point<Space>> cropSizeCfg;
 
     ////
 

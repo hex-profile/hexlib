@@ -184,9 +184,9 @@ struct CfgRead<Point4DFamily>
 //================================================================
 
 #define TMP_MACRO(Type, o) \
-    template class SerializeNumericVar< Point<Type> >; \
-    template class SerializeNumericVar< Point3D<Type> >; \
-    template class SerializeNumericVar< Point4D<Type> >;
+    template class SerializeNumericVar<Point<Type>>; \
+    template class SerializeNumericVar<Point3D<Type>>; \
+    template class SerializeNumericVar<Point4D<Type>>;
 
 BUILTIN_INT_FOREACH(TMP_MACRO, o)
 BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
