@@ -120,21 +120,18 @@ public:
 
         Space cpuCount = emuMultiProc::getCpuCount();
 
+
         require(emulator.create(cpuCount, stdPassThru));
         REMEMBER_CLEANUP1_EX(emulatorCleanup, emulator.destroy(), emuMultiProc::EmuMultiProc&, emulator);
 
-    #ifndef __aarch64__
         require(kit.threadManager.createCriticalSection(emuLock, stdPass));
         REMEMBER_CLEANUP1_EX(emuLockCleanup, emuLock.clear(), CriticalSection&, emuLock);
-    #endif
 
         this->gpuProperties = gpuProperties;
         emulatorThreadCount = cpuCount;
         emulatorCleanup.cancel();
 
-    #ifndef __aarch64__
         emuLockCleanup.cancel();
-    #endif
 
         stdEnd;
     }
@@ -158,12 +155,8 @@ public:
     {
         stdBegin;
 
-    #if defined(__GNUC__)
-        REQUIRE(false); // not impl
-    #else
         CRITSEC_GUARD(emuLock);
         return emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru);
-    #endif
 
         stdEnd;
     }
@@ -178,10 +171,7 @@ public:
 private:
 
     GpuProperties gpuProperties;
-
-#ifndef __aarch64__
     CriticalSection emuLock;
-#endif
 
     emuMultiProc::EmuMultiProc emulator;
     Space emulatorThreadCount = 0;
