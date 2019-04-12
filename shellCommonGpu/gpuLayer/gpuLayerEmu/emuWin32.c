@@ -92,7 +92,9 @@ static void __stdcall fiberFunc(void* parameter)
         if (that.fiberExitCount == that.fiberCount) // is it the last fiber?
             SwitchToFiber(task.mainFiber);
         else
+        {
             that.switchToNextFiber(fiberIdx);
+        }
 
     }
 
@@ -109,7 +111,9 @@ bool FiberOwner::create(LPFIBER_START_ROUTINE func, void* param)
 {
     destroy();
 
-    fiber = CreateFiberEx(0, 131072, 0, func, param);
+    // Windows doesn't want to allocate less than 64 kilobytes of stack.
+    fiber = CreateFiberEx(0, 64*1024, 0, func, param);
+
     return (fiber != 0);
 }
 
@@ -155,7 +159,7 @@ bool EmuWin32::create(stdPars(CreateKit))
     ARRAY_EXPOSE(fibers);
 
     for (Space i = 0; i < fibersSize; ++i) // can be interrupted in the middle by error
-        require(helpModify(fibersPtr[i]).create(fiberFunc, &helpModify(fiberTasksPtr[i])));
+        REQUIRE(helpModify(fibersPtr[i]).create(fiberFunc, &helpModify(fiberTasksPtr[i])));
 
     //
     // Create shared memory holder.
