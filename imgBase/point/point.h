@@ -2,7 +2,6 @@
 
 #include "point/pointBase.h"
 #include "numbers/interface/numberInterface.h"
-#include "numbers/int/intBase.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -21,7 +20,7 @@
 //================================================================
 
 template <typename Type>
-struct VectorBaseImpl< Point<Type> >
+struct VectorBaseImpl<Point<Type>>
 {
     using T = Type;
 };
@@ -33,7 +32,7 @@ struct VectorBaseImpl< Point<Type> >
 //================================================================
 
 template <typename OldBase, typename NewBase>
-struct VectorRebaseImpl< Point<OldBase>, NewBase >
+struct VectorRebaseImpl<Point<OldBase>, NewBase>
 {
     using T = ::Point<NewBase>;
 };
@@ -45,7 +44,7 @@ struct VectorRebaseImpl< Point<OldBase>, NewBase >
 //================================================================
 
 template <typename Type>
-struct VectorExtendImpl< Point<Type> >
+struct VectorExtendImpl<Point<Type>>
 {
     static sysinline Point<Type> func(const Type& value)
     {
@@ -64,7 +63,11 @@ struct DefImpl<Point<Type>>
 {
     static sysinline Point<bool> func(const Point<Type>& value)
     {
-        return Point<bool>{def(value.X), def(value.Y)};
+        return Point<bool>
+        {
+            def(value.X), 
+            def(value.Y)
+        };
     }
 };
 
@@ -214,7 +217,7 @@ sysinline bool anyv(const Point<Type>& P)
 
 //================================================================
 //
-// ConvertFamilyImpl< Point<T> >
+// ConvertFamilyImpl<Point<T>>
 //
 //================================================================
 
@@ -223,7 +226,7 @@ struct PointFamily;
 //----------------------------------------------------------------
 
 template <typename Type>
-struct ConvertFamilyImpl< Point<Type> >
+struct ConvertFamilyImpl<Point<Type>>
 {
     using T = PointFamily;
 };
@@ -249,7 +252,11 @@ struct ConvertImpl<PointFamily, PointFamily, check, rounding, hint>
 
         static sysinline Point<DstBase> func(const Point<SrcBase>& srcPoint)
         {
-            return point(BaseImpl::func(srcPoint.X), BaseImpl::func(srcPoint.Y));
+            return point
+            (
+                BaseImpl::func(srcPoint.X), 
+                BaseImpl::func(srcPoint.Y)
+            );
         }
     };
 };
@@ -273,10 +280,11 @@ struct ConvertImplFlag<PointFamily, PointFamily, rounding, hint>
 
         static sysinline Point<bool> func(const Point<SrcBase>& src, Point<DstBase>& dst)
         {
-            bool sX = BaseImpl::func(src.X, dst.X);
-            bool sY = BaseImpl::func(src.Y, dst.Y);
-
-            return point(sX, sY);
+            return point
+            (
+                BaseImpl::func(src.X, dst.X),
+                BaseImpl::func(src.Y, dst.Y)
+            );
         };
     };
 };
@@ -319,28 +327,23 @@ sysinline void exchange(Point<Type>& A, Point<Type>& B)
 
 //----------------------------------------------------------------
 
-#define POINT_DEFINE_FUNC2_EX(func, ScalarType) \
+#define POINT_DEFINE_FUNC2(func) \
     \
     template <typename Type> \
     sysinline auto func(const Point<Type>& A, const Point<Type>& B) \
         {return point(func(A.X, B.X), func(A.Y, B.Y));} \
     \
     template <typename Type> \
-    sysinline auto func(const ScalarType& A, const Point<Type>& B) \
+    sysinline auto func(const Type& A, const Point<Type>& B) \
         {return point(func(A, B.X), func(A, B.Y));} \
     \
     template <typename Type> \
-    sysinline auto func(const Point<Type>& A, const ScalarType& B) \
+    sysinline auto func(const Point<Type>& A, const Type& B) \
         {return point(func(A.X, B), func(A.Y, B));}
-
-////
-
-#define POINT_DEFINE_FUNC2(func) \
-    POINT_DEFINE_FUNC2_EX(func, Type)
 
 //----------------------------------------------------------------
 
-#define POINT_DEFINE_FUNC3_EX(func, ScalarType) \
+#define POINT_DEFINE_FUNC3(func) \
     \
     template <typename Type> \
     sysinline auto func(const Point<Type>& A, const Point<Type>& B, const Point<Type>& C) \
@@ -369,11 +372,6 @@ sysinline void exchange(Point<Type>& A, Point<Type>& B)
     template <typename Type> \
     sysinline auto func(const Type& A, const Type& B, const Point<Type>& C) \
         {return point(func(A, B, C.X), func(A, B, C.Y));}
-
-////
-
-#define POINT_DEFINE_FUNC3(func) \
-    POINT_DEFINE_FUNC3_EX(func, Type)
 
 //================================================================
 //

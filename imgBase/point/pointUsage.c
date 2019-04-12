@@ -20,7 +20,7 @@ bool pointUsage()
     COMPILE_ASSERT(TYPE_IS_CONTROLLED(const Point<float>));
 
     // Type traits: min and max.
-    Point<int> minPoint = typeMin< Point<int> >();
+    Point<int> minPoint = typeMin<Point<int>>();
 
     // Default constructor: uninitialized
     Point<int> uninitializedValue;
@@ -35,10 +35,10 @@ bool pointUsage()
     Point<float> c0 = convertNearest<float>(A);
 
     // Convert point->point, vector-guided.
-    Point<float> c1 = convertNearest< Point<float> >(B);
+    Point<float> c1 = convertNearest<Point<float>>(B);
 
     // Convert scalar->point.
-    Point<float> c2 = convertNearest< Point<float> >(1);
+    Point<float> c2 = convertNearest<Point<float>>(1);
 
     // Convert with success flag.
     Point<int> intResult;

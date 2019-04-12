@@ -166,7 +166,7 @@ public:
 //----------------------------------------------------------------
 
 template <typename AddrU, typename Type>
-struct ExchangeCategory< PointerEmulator<AddrU, Type> > {using T = ExchangeSimple;};
+struct ExchangeCategory<PointerEmulator<AddrU, Type>> {using T = ExchangeSimple;};
 
 //================================================================
 //
@@ -175,7 +175,7 @@ struct ExchangeCategory< PointerEmulator<AddrU, Type> > {using T = ExchangeSimpl
 //================================================================
 
 template <typename Addr, typename Type>
-struct PtrElemType< PointerEmulator<Addr, Type> >
+struct PtrElemType<PointerEmulator<Addr, Type>>
 {
     using T = Type;
 };
@@ -187,7 +187,7 @@ struct PtrElemType< PointerEmulator<Addr, Type> >
 //================================================================
 
 template <typename Addr, typename Type>
-struct PtrAddrType< PointerEmulator<Addr, Type> >
+struct PtrAddrType<PointerEmulator<Addr, Type>>
 {
     using AddrU = Addr;
 };
