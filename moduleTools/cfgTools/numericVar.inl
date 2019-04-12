@@ -3,7 +3,6 @@
 #include "numbers/float/floatType.h"
 #include "numbers/int/intType.h"
 #include "point/point.h"
-#include "cfgTools/pointSerialization.h"
 
 //================================================================
 //

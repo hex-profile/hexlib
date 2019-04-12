@@ -2,21 +2,6 @@
 
 //================================================================
 //
-// instantiations
-//
-//================================================================
-
-#define TMP_MACRO(Type, o) \
-    template class SerializeNumericVar< Type >; \
-    template class SerializeNumericVar< Point<Type> >;
-
-BUILTIN_INT_FOREACH(TMP_MACRO, o)
-BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
-
-#undef TMP_MACRO
-
-//================================================================
-//
 // SerializeBoolVar::getTextValue
 // SerializeBoolVar::setTextValue
 //
@@ -38,3 +23,17 @@ bool SerializeBoolVar::setTextValue(CfgReadStream& s)
     var = readValue;
     return true;
 }
+
+//================================================================
+//
+// instantiations
+//
+//================================================================
+
+#define TMP_MACRO(Type, o) \
+    template class SerializeNumericVar<Type>; \
+
+BUILTIN_INT_FOREACH(TMP_MACRO, o)
+BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
+
+#undef TMP_MACRO
