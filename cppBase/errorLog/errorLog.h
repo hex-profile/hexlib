@@ -2,7 +2,6 @@
 
 #include "errorLog/errorLogKit.h"
 #include "stdFunc/stdFunc.h"
-#include "errorLog/debugBreak.h"
 
 //================================================================
 //
@@ -55,7 +54,7 @@ public:
 //================================================================
 
 #define CHECK_EX(condition, failReport) \
-    (allv(condition) || ((failReport, DEBUG_BREAK_INLINE()), false))
+    (allv(condition) || ((failReport), false))
 
 //----------------------------------------------------------------
 
