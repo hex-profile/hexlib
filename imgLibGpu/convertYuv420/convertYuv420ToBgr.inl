@@ -239,7 +239,7 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
 #if HOSTCODE
 
 template <typename SrcPixel, typename SrcPixel2, typename DST_PIXEL>
-bool PREP_PASTE(convertYuv420To, SUFFIX)
+stdbool PREP_PASTE(convertYuv420To, SUFFIX)
 (
     const GpuMatrix<const SrcPixel>& srcLuma, 
     const GpuMatrix<const SrcPixel2>& srcChroma,

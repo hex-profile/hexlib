@@ -12,7 +12,7 @@ namespace gpuShell {
 //
 //================================================================
 
-bool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit))
+stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit))
 {
     stdBegin;
 
@@ -105,7 +105,7 @@ void GpuShellImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-bool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit))
+stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit))
 {
     stdBegin;
 

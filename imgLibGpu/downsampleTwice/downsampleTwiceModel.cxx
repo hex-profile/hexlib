@@ -83,7 +83,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-bool downsampleTwiceModel(const GpuMatrix<const Type>& src, const GpuMatrix<Type>& dst, stdPars(GpuProcessKit))
+stdbool downsampleTwiceModel(const GpuMatrix<const Type>& src, const GpuMatrix<Type>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
 

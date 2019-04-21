@@ -19,7 +19,7 @@ KIT_COMBINE2(ReportKit, ErrorLogKit, MsgLogKit);
 //
 //================================================================
 
-bool namedNodesReport
+stdbool namedNodesReport
 (
     ProfilerNode* rootNode,
     float32 divTicksPerSec,

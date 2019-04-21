@@ -22,7 +22,7 @@ class InputTextFile
 
 public:
 
-    bool open(StlString filename, stdPars(MsgLogKit))
+    stdbool open(StlString filename, stdPars(MsgLogKit))
     {
         stdBegin;
 
@@ -37,7 +37,7 @@ public:
         stdEnd;
     }
 
-    bool getLine(std::basic_string<Type>& s, stdPars(MsgLogKit))
+    stdbool getLine(std::basic_string<Type>& s, stdPars(MsgLogKit))
     {
         getline(stream, s);
 
@@ -51,7 +51,7 @@ public:
 
     bool eof() const {return stream.eof();}
 
-    bool readEntireFileToString(StlString& result, stdPars(MsgLogKit))
+    stdbool readEntireFileToString(StlString& result, stdPars(MsgLogKit))
     {
         basic_stringstream<CharType> strStream;
         strStream << stream.rdbuf();
@@ -85,7 +85,7 @@ class InputTextFileUnicodeToAscii
 
 public:
 
-    bool open(StlString filename, stdPars(MsgLogKit))
+    stdbool open(StlString filename, stdPars(MsgLogKit))
     {
         stdBegin;
 
@@ -104,7 +104,7 @@ public:
         stdEnd;
     }
 
-    bool getLine(StlString& result, stdPars(MsgLogKit))
+    stdbool getLine(StlString& result, stdPars(MsgLogKit))
     {
         std::basic_string<char> wstr;
 
@@ -206,7 +206,7 @@ public:
 
 public:
 
-    bool open(StlString filename, stdPars(MsgLogKit))
+    stdbool open(StlString filename, stdPars(MsgLogKit))
     {
         stdBegin;
 
@@ -221,14 +221,14 @@ public:
         stdEnd;
     }
 
-    bool flush(stdPars(MsgLogKit))
+    stdbool flush(stdPars(MsgLogKit))
     {
         stream.flush();
         REQUIRE_MSG1(!!stream, STR("Cannot write to file %0"), openedFilename);
         return true;
     }
 
-    bool flushClose(stdPars(MsgLogKit))
+    stdbool flushClose(stdPars(MsgLogKit))
     {
         stream.flush();
         bool ok = !!stream;

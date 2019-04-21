@@ -26,13 +26,13 @@ struct FileEnv : public StringEnv
     // If the file cannot be open, does not clear variables in memory.
     //
 
-    virtual bool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) =0;
+    virtual stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) =0;
 
     //
     // Save variables to a file, returns success flag.
     //
 
-    virtual bool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const =0;
+    virtual stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const =0;
 
 };
 
@@ -58,10 +58,10 @@ public:
     void eraseAll()
         {if (impl) impl->eraseAll();}
 
-    bool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
+    stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
         {return !impl ? false : impl->loadFromFile(filename, fileTools, stdPassThru);}
 
-    bool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
+    stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
         {return !impl ? false : impl->saveToFile(filename, fileTools, stdPassThru);}
 
 public:

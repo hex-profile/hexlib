@@ -8,7 +8,7 @@
 //
 //================================================================
 
-bool arrayUsage(stdPars(ErrorLogKit))
+stdbool arrayUsage(stdPars(ErrorLogKit))
 {
     stdBegin;
 

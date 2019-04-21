@@ -31,7 +31,7 @@ KIT_COMBINE7(ProcessTargetKit, GpuImageConsoleKit, GpuRgbFrameKit, PipeControlKi
 struct VideoPrepTarget
 {
     virtual void inspectProcess(ProcessInspector& inspector) =0;
-    virtual bool process(stdPars(ProcessTargetKit)) =0;
+    virtual stdbool process(stdPars(ProcessTargetKit)) =0;
 };
 
 //================================================================
@@ -61,10 +61,10 @@ public:
     void serialize(const ModuleSerializeKit& kit);
 
     bool reallocValid() const;
-    bool realloc(const Point<Space>& frameSize, stdPars(ReallocKit));
+    stdbool realloc(const Point<Space>& frameSize, stdPars(ReallocKit));
 
     Point<Space> outputFrameSize() const;
-    bool processEntry(VideoPrepTarget& target, stdPars(ProcessKit));
+    stdbool processEntry(VideoPrepTarget& target, stdPars(ProcessKit));
 
 private:
 

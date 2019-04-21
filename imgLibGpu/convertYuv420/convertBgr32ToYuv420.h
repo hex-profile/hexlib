@@ -11,7 +11,7 @@
 //================================================================
 
 template <typename DstPixel, typename DstPixel2>
-bool convertBgr32ToYuv420
+stdbool convertBgr32ToYuv420
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<DstPixel>& dstLuma,

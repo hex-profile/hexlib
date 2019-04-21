@@ -13,7 +13,7 @@
 template <typename AddrU>
 struct MallocCore
 {
-    inline bool operator()(AddrU& result, AddrU allocSize, stdPars(ErrorLogKit))
+    inline stdbool operator()(AddrU& result, AddrU allocSize, stdPars(ErrorLogKit))
     {
         stdBegin;
 

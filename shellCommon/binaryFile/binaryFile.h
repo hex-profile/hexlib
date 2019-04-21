@@ -20,7 +20,7 @@ using FileDiagKit = DiagnosticKit;
 
 struct BinaryInputStream
 {
-    virtual bool read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit)) =0;
+    virtual stdbool read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit)) =0;
 };
 
 //================================================================
@@ -31,7 +31,7 @@ struct BinaryInputStream
 
 struct BinaryOutputStream
 {
-    virtual bool write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit)) =0;
+    virtual stdbool write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit)) =0;
 };
 
 //================================================================
@@ -45,7 +45,7 @@ struct FilePositioning
     virtual uint64 getSize() =0;
     virtual uint64 getPosition() =0;
 
-    virtual bool setPosition(uint64 pos, stdPars(FileDiagKit)) =0;
+    virtual stdbool setPosition(uint64 pos, stdPars(FileDiagKit)) =0;
 };
 
 //================================================================
@@ -56,7 +56,7 @@ struct FilePositioning
 
 struct FileTruncation
 {
-    virtual bool truncate(stdPars(FileDiagKit)) =0;
+    virtual stdbool truncate(stdPars(FileDiagKit)) =0;
 };
 
 //================================================================
@@ -72,7 +72,7 @@ struct FileOpening
 {
     virtual bool isOpened() const =0;
 
-    virtual bool open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit)) =0;
+    virtual stdbool open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit)) =0;
 
     virtual void close() =0;
 };

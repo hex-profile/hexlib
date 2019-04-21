@@ -214,7 +214,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 #if HOSTCODE
 
 template <>
-bool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
+stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<DST_PIXEL>& dstLuma,

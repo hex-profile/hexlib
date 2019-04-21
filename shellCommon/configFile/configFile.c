@@ -172,15 +172,15 @@ class ConfigFileImpl
 
 public:
 
-    bool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
+    stdbool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
     void unloadFile();
 
     void loadVars(CfgSerialization& serialization);
     void saveVars(CfgSerialization& serialization, bool forceUpdate);
 
-    void updateFile(bool forceUpdate, stdPars(CfgFileKit));
+    stdvoid updateFile(bool forceUpdate, stdPars(CfgFileKit));
 
-    void editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
+    stdvoid editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
 
 private:
 
@@ -221,7 +221,7 @@ public:
 //
 //================================================================
 
-bool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
+stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
 {
     stdBegin;
 
@@ -315,7 +315,7 @@ void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate)
 //
 //================================================================
 
-void ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
+stdvoid ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 {
     stdBegin;
 
@@ -349,7 +349,7 @@ void ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 //
 //================================================================
 
-bool launchEditor(const SimpleString& configEditor, const SimpleString& filename, stdPars(MsgLogKit))
+stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filename, stdPars(MsgLogKit))
 {
     SimpleString cmdLine = configEditor + CT(" \"") + filename + CT("\"");
     if_not (cmdLine.ok()) return false;
@@ -366,7 +366,7 @@ bool launchEditor(const SimpleString& configEditor, const SimpleString& filename
 //
 //================================================================
 
-void ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
+stdvoid ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
 {
     stdBegin;
 
@@ -407,7 +407,7 @@ ConfigFile::ConfigFile()
 ConfigFile::~ConfigFile()
     {}
 
-bool ConfigFile::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
+stdbool ConfigFile::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
     {return instance->loadFile(cfgFilename, stdPassThru);}
 
 void ConfigFile::unloadFile()
@@ -419,10 +419,10 @@ void ConfigFile::loadVars(CfgSerialization& serialization)
 void ConfigFile::saveVars(CfgSerialization& serialization, bool forceUpdate)
     {instance->saveVars(serialization, forceUpdate);}
 
-void ConfigFile::updateFile(bool forceUpdate, stdPars(CfgFileKit))
+stdvoid ConfigFile::updateFile(bool forceUpdate, stdPars(CfgFileKit))
     {instance->updateFile(forceUpdate, stdPassThru);}
 
-void ConfigFile::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
+stdvoid ConfigFile::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
     {instance->editFile(configEditor, stdPassThru);}
 
 //----------------------------------------------------------------

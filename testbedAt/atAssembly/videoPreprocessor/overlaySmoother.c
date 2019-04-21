@@ -160,7 +160,7 @@ inline void exchange(QueueImage& a, QueueImage& b)
 //================================================================
 
 template <typename Kit>
-bool saveImageToQueue(const Point<Space>& size, AtImageProvider<uint8_x4>& provider, QueueImage& dst, stdPars(Kit))
+stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider<uint8_x4>& provider, QueueImage& dst, stdPars(Kit))
 {
     stdBegin;
 
@@ -307,7 +307,7 @@ struct SharedStruct
     //
     //----------------------------------------------------------------
 
-    bool init(stdPars(InitKit))
+    stdbool init(stdPars(InitKit))
     {
         stdBegin;
 
@@ -388,7 +388,7 @@ public:
 //
 //================================================================
 
-bool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeMoment& lastOutput, Timer& timer, float32& resultWaitTime, uint32 outputFrameCount, stdPars(ErrorLogKit))
+stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeMoment& lastOutput, Timer& timer, float32& resultWaitTime, uint32 outputFrameCount, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -603,7 +603,7 @@ public:
 
 public:
 
-    bool init(stdPars(InitKit));
+    stdbool init(stdPars(InitKit));
     void deinit();
 
 public:
@@ -612,11 +612,11 @@ public:
 
 public:
 
-    virtual bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
-    virtual bool updateImage(stdPars(ProcessKit));
-    virtual bool clearQueue(stdPars(ProcessKit));
-    virtual bool setSmoothing(bool smoothing, stdPars(ProcessKit));
-    virtual bool flushSmoothly(stdPars(ProcessKit));
+    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
+    virtual stdbool updateImage(stdPars(ProcessKit));
+    virtual stdbool clearQueue(stdPars(ProcessKit));
+    virtual stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));
+    virtual stdbool flushSmoothly(stdPars(ProcessKit));
 
 private:
 
@@ -727,7 +727,7 @@ void OverlaySmootherImpl::deinit()
 //
 //================================================================
 
-bool OverlaySmootherImpl::init(stdPars(InitKit))
+stdbool OverlaySmootherImpl::init(stdPars(InitKit))
 {
     stdBegin;
 
@@ -801,7 +801,7 @@ void OverlaySmootherImpl::setOutputInterface(AtAsyncOverlay* output)
 //
 //================================================================
 
-bool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
+stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -1027,7 +1027,7 @@ bool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider<uin
 //
 //================================================================
 
-bool OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
+stdbool OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
 {
     stdBegin;
     stdEnd;
@@ -1039,7 +1039,7 @@ bool OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
 //
 //================================================================
 
-bool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
+stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -1059,7 +1059,7 @@ bool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
 //
 //================================================================
 
-bool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
+stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -1087,7 +1087,7 @@ bool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
 //
 //================================================================
 
-bool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
+stdbool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
 {
     stdBegin;
 

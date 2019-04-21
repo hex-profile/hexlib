@@ -52,7 +52,7 @@ public:
 
 public:
 
-    sysinline bool resize(Space newSize, stdPars(ErrorLogKit))
+    sysinline stdbool resize(Space newSize, stdPars(ErrorLogKit))
     {
         stdBegin;
 

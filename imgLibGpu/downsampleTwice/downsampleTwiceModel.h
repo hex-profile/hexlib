@@ -18,7 +18,7 @@ using Type = float16;
 //
 //================================================================
 
-bool downsampleTwiceModel(const GpuMatrix<const Type>& src, const GpuMatrix<Type>& dst, stdPars(GpuProcessKit));
+stdbool downsampleTwiceModel(const GpuMatrix<const Type>& src, const GpuMatrix<Type>& dst, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 

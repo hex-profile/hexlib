@@ -182,3 +182,15 @@ extern const NullKit nullKit;
 
 #define stdNullBegin \
     TRACE_REASSEMBLE(stdTraceName);
+
+//================================================================
+//
+// Preparing for the remake of all hexlib projects 
+// to exception-based error handling.
+//
+// Temporary types to find all error recovering places in code.
+//
+//================================================================
+
+using stdbool = bool;
+using stdvoid = void;

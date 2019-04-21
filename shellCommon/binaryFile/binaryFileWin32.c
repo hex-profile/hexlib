@@ -93,7 +93,7 @@ void BinaryFileWin32::close()
 //
 //================================================================
 
-bool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
+stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
 {
     stdBegin;
 
@@ -142,7 +142,7 @@ bool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool cre
 //
 //================================================================
 
-bool BinaryFileWin32::truncate(stdPars(FileDiagKit))
+stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 {
     stdBegin;
 
@@ -162,7 +162,7 @@ bool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 //
 //================================================================
 
-bool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
+stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 {
     stdBegin;
 
@@ -190,7 +190,7 @@ bool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 //
 //================================================================
 
-bool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
     stdBegin;
 
@@ -241,7 +241,7 @@ bool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit
 //
 //================================================================
 
-bool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
     stdBegin;
 

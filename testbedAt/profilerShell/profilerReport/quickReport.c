@@ -53,7 +53,7 @@ KIT_CREATE4(
 //
 //================================================================
 
-bool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Space treeLevel, const TraceScope* nodeScope, stdPars(ErrorLogKit))
+stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Space treeLevel, const TraceScope* nodeScope, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -205,7 +205,7 @@ private:
 //
 //================================================================
 
-bool namedNodesReport
+stdbool namedNodesReport
 (
     ProfilerNode* rootNode, 
     float32 divTicksPerSec, 

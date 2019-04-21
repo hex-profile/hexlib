@@ -96,7 +96,7 @@ void MemController::deinit()
 //================================================================
 
 template <typename AddrU, typename Kit>
-inline void memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignment, stdPars(Kit))
+inline stdvoid memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignment, stdPars(Kit))
 {
     printMsg
     (
@@ -115,7 +115,7 @@ inline void memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignm
 //
 //================================================================
 
-bool MemController::handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit))
+stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -384,7 +384,7 @@ bool MemController::handleStateRealloc(MemControllerReallocTarget& target, const
 //
 //================================================================
 
-bool MemController::processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, stdPars(ProcessKit))
+stdbool MemController::processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -463,7 +463,7 @@ bool MemController::processCountTemp(MemControllerProcessTarget& target, MemoryU
 //
 //================================================================
 
-bool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit))
+stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -560,7 +560,7 @@ bool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const BaseAl
 //
 //================================================================
 
-bool MemController::processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit))
+stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit))
 {
     stdBegin;
 

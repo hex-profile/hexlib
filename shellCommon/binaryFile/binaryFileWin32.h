@@ -19,9 +19,9 @@ public:
     inline bool isOpened() const {return handle != 0;}
 
     void close();
-    bool open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit));
+    stdbool open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit));
 
-    bool truncate(stdPars(FileDiagKit));
+    stdbool truncate(stdPars(FileDiagKit));
 
 public:
 
@@ -31,12 +31,12 @@ public:
     uint64 getPosition()
         {return currentPosition;}
 
-    bool setPosition(uint64 pos, stdPars(FileDiagKit));
+    stdbool setPosition(uint64 pos, stdPars(FileDiagKit));
 
 public:
 
-    bool read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit));
-    bool write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit));
+    stdbool read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit));
+    stdbool write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit));
 
 public:
 

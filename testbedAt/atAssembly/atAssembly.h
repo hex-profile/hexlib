@@ -43,10 +43,10 @@ public:
 
 public:
 
-    bool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
-    void finalize(stdPars(InitKit));
+    stdbool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
+    stdvoid finalize(stdPars(InitKit));
 
-    bool process(stdPars(ProcessKit));
+    stdbool process(stdPars(ProcessKit));
 
 private:
 

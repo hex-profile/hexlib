@@ -51,7 +51,7 @@ class EmuMultiProcFake
 
 public:
 
-    bool create(Space streamCount, stdPars(CreateKit))
+    stdbool create(Space streamCount, stdPars(CreateKit))
         {return true;}
 
     void destroy()
@@ -60,7 +60,7 @@ public:
     bool created() const
         {return true;}
 
-    bool launchKernel
+    stdbool launchKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,

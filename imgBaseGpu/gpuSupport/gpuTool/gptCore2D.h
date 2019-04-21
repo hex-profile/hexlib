@@ -71,7 +71,7 @@
     \
     hostDeclareKernel(prefix##Kernel, prefix##Params, o); \
     \
-    bool prefix \
+    stdbool prefix \
     ( \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
         GPT_FOREACH(matrixList, GPT_DECLARE_MATRIX_ARG) \
@@ -129,7 +129,7 @@
 
 #define GPT_CALLER_PROTO_2D(prefix, samplerList, matrixList, paramList) \
     \
-    bool prefix \
+    stdbool prefix \
     ( \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
         GPT_FOREACH(matrixList, GPT_DECLARE_MATRIX_ARG) \

@@ -56,7 +56,7 @@ public:
     //----------------------------------------------------------------
 
     template <typename Kit>
-    bool realloc(Space size, stdPars(Kit))
+    stdbool realloc(Space size, stdPars(Kit))
     {
         dealloc(); // also resets queue
         return buffer.realloc(size, stdPassThru);

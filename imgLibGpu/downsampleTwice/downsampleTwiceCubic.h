@@ -20,4 +20,4 @@ struct FilterGauss;
 //================================================================
 
 template <typename Src, typename Dst, typename FilterX, typename FilterY>
-bool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, const Point<Space>& srcOfs, stdPars(GpuProcessKit));
+stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, const Point<Space>& srcOfs, stdPars(GpuProcessKit));

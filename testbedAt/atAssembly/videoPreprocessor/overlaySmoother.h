@@ -37,17 +37,17 @@ public:
     OverlaySmoother();
     ~OverlaySmoother();
 
-    bool init(stdPars(InitKit));
+    stdbool init(stdPars(InitKit));
     void deinit();
 
 public:
 
-    bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
-    bool setFakeImage(stdPars(ProcessKit)) {return true;}
-    bool updateImage(stdPars(ProcessKit));
-    bool clearQueue(stdPars(ProcessKit));
-    bool setSmoothing(bool smoothing, stdPars(ProcessKit));
-    bool flushSmoothly(stdPars(ProcessKit));
+    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
+    stdbool setFakeImage(stdPars(ProcessKit)) {return true;}
+    stdbool updateImage(stdPars(ProcessKit));
+    stdbool clearQueue(stdPars(ProcessKit));
+    stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));
+    stdbool flushSmoothly(stdPars(ProcessKit));
 
 public:
 

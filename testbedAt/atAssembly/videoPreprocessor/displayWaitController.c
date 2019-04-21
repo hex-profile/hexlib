@@ -21,7 +21,7 @@ void DisplayWaitController::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-bool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
+stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
 {
     stdBegin;
 

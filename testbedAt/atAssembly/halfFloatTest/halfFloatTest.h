@@ -33,8 +33,8 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool reallocValid() const;
-    bool realloc(stdPars(ReallocKit));
-    bool process(const Process& o, stdPars(ProcessKit));
+    stdbool realloc(stdPars(ReallocKit));
+    stdbool process(const Process& o, stdPars(ProcessKit));
 
 private:
 

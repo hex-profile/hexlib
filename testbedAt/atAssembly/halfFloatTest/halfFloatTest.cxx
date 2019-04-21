@@ -105,7 +105,7 @@ GPUTOOL_2D
 //
 //================================================================
 
-bool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst, stdPars(CpuFuncKit))
+stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst, stdPars(CpuFuncKit))
 {
     stdBegin;
 
@@ -138,7 +138,7 @@ bool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst, s
 //
 //================================================================
 
-bool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& dst, stdPars(CpuFuncKit))
+stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& dst, stdPars(CpuFuncKit))
 {
     stdBegin;
 
@@ -183,7 +183,7 @@ sysinline bool operator ==(const float16& A, const float16& B)
 //================================================================
 
 template <typename Type>
-bool compareResults(const Array<const Type>& ref, const Array<const Type>& tst, Space& badIndex, stdPars(CpuFuncKit))
+stdbool compareResults(const Array<const Type>& ref, const Array<const Type>& tst, Space& badIndex, stdPars(CpuFuncKit))
 {
     stdBegin;
   
@@ -244,13 +244,13 @@ public:
 
     void serialize(const ModuleSerializeKit& kit) {}
     bool reallocValid() const {return true;}
-    bool realloc(stdPars(ReallocKit));
-    bool process(const Process& o, stdPars(ProcessKit));
+    stdbool realloc(stdPars(ReallocKit));
+    stdbool process(const Process& o, stdPars(ProcessKit));
 
 private:
 
-    bool testPacking(stdPars(ProcessKit));
-    bool testUnpacking(stdPars(ProcessKit));
+    stdbool testPacking(stdPars(ProcessKit));
+    stdbool testUnpacking(stdPars(ProcessKit));
 
 private:
 
@@ -269,7 +269,7 @@ private:
 //
 //================================================================
 
-bool HalfFloatTestImpl::realloc(stdPars(ReallocKit))
+stdbool HalfFloatTestImpl::realloc(stdPars(ReallocKit))
 {
     stdBegin;
     stdEnd;
@@ -281,7 +281,7 @@ bool HalfFloatTestImpl::realloc(stdPars(ReallocKit))
 //
 //================================================================
 
-bool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
+stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -397,7 +397,7 @@ bool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 //
 //================================================================
 
-bool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
+stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 {
     stdBegin;
 
@@ -487,7 +487,7 @@ bool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 //
 //================================================================
 
-bool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
+stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
 {
     stdBegin;
 

@@ -456,7 +456,7 @@ public:
 
     KIT_COMBINE2(InitKit, ThreadManagerKit, ThreadToolKit);
 
-    bool init(stdPars(InitKit))
+    stdbool init(stdPars(InitKit))
     {
         stdBegin;
         require(kit.threadManager.createCriticalSection(lock, stdPass));
@@ -511,7 +511,7 @@ private:
 //
 //================================================================
 
-bool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, AllocatorObject<CpuAddrU>& allocator, stdPars(ErrorLogKit))
+stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, AllocatorObject<CpuAddrU>& allocator, stdPars(ErrorLogKit))
 {
     stdBegin;
 

@@ -120,7 +120,7 @@ struct GpuSamplerSetup
     =0;
 
     template <typename Type, typename Kit>
-    inline bool setSamplerArray
+    inline stdbool setSamplerArray
     (
         const GpuSamplerLink& sampler,
         const GpuArray<const Type>& array,
@@ -169,7 +169,7 @@ struct GpuSamplerSetup
     =0;
 
     template <typename Type, typename Kit>
-    inline bool setSamplerImage
+    inline stdbool setSamplerImage
     (
         const GpuSamplerLink& sampler,
         const GpuMatrix<const Type>& image,

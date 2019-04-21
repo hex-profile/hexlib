@@ -132,7 +132,7 @@ void FiberOwner::destroy()
 //
 //================================================================
 
-bool EmuWin32::create(stdPars(CreateKit))
+stdbool EmuWin32::create(stdPars(CreateKit))
 {
     stdBegin;
 

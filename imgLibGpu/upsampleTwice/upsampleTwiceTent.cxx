@@ -81,7 +81,7 @@ devDefineKernel(upsample2KernelTent, UpsampleParams, o)
 
 #if HOSTCODE
 
-bool upsampleTwiceTent(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8>& dst, stdPars(GpuProcessKit))
+stdbool upsampleTwiceTent(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
 

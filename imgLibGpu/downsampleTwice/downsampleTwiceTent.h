@@ -11,4 +11,4 @@
 //================================================================
 
 template <typename Src, typename Dst>
-bool downsampleTwiceTent(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, stdPars(GpuProcessKit));
+stdbool downsampleTwiceTent(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, stdPars(GpuProcessKit));

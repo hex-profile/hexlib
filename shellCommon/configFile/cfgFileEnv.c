@@ -287,7 +287,7 @@ static const CharType valueSeparator = '=';
 
 //----------------------------------------------------------------
 
-bool loadFile(const CharType* filename, Memory& memory, FileTools& fileTools, stdPars(ErrorLogKit))
+stdbool loadFile(const CharType* filename, Memory& memory, FileTools& fileTools, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -902,7 +902,7 @@ static void saveTree
 //
 //================================================================
 
-bool saveFile(const Memory& memory, const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
+stdbool saveFile(const Memory& memory, const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -972,10 +972,10 @@ class FileEnvSTLImpl : public FileEnv
 
 public:
 
-    bool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
+    stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
         {return loadFile(filename, memory, fileTools, stdPassThru);}
 
-    bool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
+    stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
         {return saveFile(memory, filename, fileTools, stdPassThru);}
 
     void eraseAll()

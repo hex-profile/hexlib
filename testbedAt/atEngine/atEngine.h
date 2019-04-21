@@ -31,10 +31,10 @@ struct AtEngine
     virtual void setInputMetadata(const CfgSerializeKit& kit) =0;
 
     virtual bool reallocValid() const =0;
-    virtual bool realloc(stdPars(AtEngineReallocKit)) =0;
+    virtual stdbool realloc(stdPars(AtEngineReallocKit)) =0;
 
     virtual void inspectProcess(ProcessInspector& inspector) =0;
-    virtual bool process(stdPars(AtEngineProcessKit)) =0;
+    virtual stdbool process(stdPars(AtEngineProcessKit)) =0;
 
     virtual ~AtEngine() {}
 };

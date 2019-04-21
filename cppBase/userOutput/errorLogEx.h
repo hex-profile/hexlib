@@ -35,7 +35,7 @@ struct ErrorLogEx
 //----------------------------------------------------------------
 
 template <typename Kit>
-inline bool printMsgTrace(ErrorLogEx& errorLogEx, const CharArray& format, MsgKind msgKind, stdPars(Kit))
+inline stdbool printMsgTrace(ErrorLogEx& errorLogEx, const CharArray& format, MsgKind msgKind, stdPars(Kit))
 {
     return errorLogEx.addMsgTrace(format, msgKind, stdPassThru);
 }
@@ -48,7 +48,7 @@ inline bool printMsgTrace(ErrorLogEx& errorLogEx, const CharArray& format, MsgKi
 #define PRINTTRACE__FUNC(n, _) \
     \
     template <PREP_ENUM_INDEXED(n, typename T), typename Kit> \
-    inline bool printMsgTrace \
+    inline stdbool printMsgTrace \
     ( \
         ErrorLogEx& errorLogEx, \
         const CharArray& format, \

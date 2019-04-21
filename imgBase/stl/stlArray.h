@@ -41,7 +41,7 @@ public:
 
 public:
 
-    sysinline bool realloc(Space newSize, stdPars(ErrorLogKit))
+    sysinline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
     {
         stdBegin;
 

@@ -32,7 +32,7 @@ private:
 
 public:
 
-    bool reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
+    stdbool reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
 
 public:
 
@@ -128,7 +128,7 @@ public:
     //
 
     template <typename Kit>
-    inline bool realloc(Space layerCount, const Point<Space>& size, stdPars(Kit))
+    inline stdbool realloc(Space layerCount, const Point<Space>& size, stdPars(Kit))
         {return reallocEx(layerCount, size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:

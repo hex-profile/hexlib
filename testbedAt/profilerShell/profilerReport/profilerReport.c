@@ -43,7 +43,7 @@ struct SourceCache
 //
 //================================================================
 
-bool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
+stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 {
     stdBegin;
 
@@ -76,7 +76,7 @@ bool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 //
 //================================================================
 
-bool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
+stdbool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
 {
     stdBegin;
 
@@ -246,7 +246,7 @@ bool getIndent(const StlString& str, Space& result)
 //
 //================================================================
 
-bool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& result, Space maxScanDistance, stdPars(ErrorLogKit))
+stdbool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& result, Space maxScanDistance, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -604,7 +604,7 @@ KIT_CREATE3
 //
 //================================================================
 
-bool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
+stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
     stdBegin;
 
@@ -685,7 +685,7 @@ bool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, Sourc
 //
 //================================================================
 
-void getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
+stdvoid getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
     if_not (getCodeBlockCore(location, o, sourceCache, result, stdPassThru))
     {
@@ -1029,7 +1029,7 @@ inline FormatNumber<float32> formatTime(const float32& value, const DisplayParam
 //
 //================================================================
 
-bool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisInfo, const StlString& parentHtml, const HtmlReportParams& o, stdPars(ReportKit))
+stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisInfo, const StlString& parentHtml, const HtmlReportParams& o, stdPars(ReportKit))
 {
     stdBegin;
 
@@ -1577,7 +1577,7 @@ public:
 
 public:
 
-    bool getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit));
+    stdbool getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit));
 
 private:
 
@@ -1594,7 +1594,7 @@ private:
 //
 //================================================================
 
-bool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit))
+stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit))
 {
     stdBegin;
 
@@ -1697,7 +1697,7 @@ public:
 
     HtmlReportImpl();
     void serialize(const ModuleSerializeKit& kit);
-    bool makeReport(const MakeReportParams& o, stdPars(ReportFileKit));
+    stdbool makeReport(const MakeReportParams& o, stdPars(ReportFileKit));
 
 private:
 
@@ -1767,7 +1767,7 @@ void HtmlReportImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-bool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFileKit))
+stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFileKit))
 {
     stdBegin;
 

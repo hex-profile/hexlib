@@ -124,7 +124,7 @@ inline StlString filenameToCString(const StlString& str)
 //
 //================================================================
 
-bool runProcess(StlString cmdLine, stdPars(CompilerKit))
+stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
 {
     stdBegin;
 
@@ -163,7 +163,7 @@ bool runProcess(StlString cmdLine, stdPars(CompilerKit))
 //
 //================================================================
 
-bool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
+stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 {
     stdBegin;
 
@@ -194,7 +194,7 @@ bool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 //
 //================================================================
 
-bool parseClArgs
+stdbool parseClArgs
 (
     const vector<StlString>& args,
     vector<StlString>& includes,
@@ -297,7 +297,7 @@ bool parseClArgs
 //
 //================================================================
 
-bool prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(CompilerKit))
+stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(CompilerKit))
 {
     stdBegin;
 
@@ -676,7 +676,7 @@ void addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch)
 //
 //================================================================
 
-bool compileDevicePartToBin
+stdbool compileDevicePartToBin
 (
     const StlString& inputPath,
     const StlString& binPath,
@@ -881,7 +881,7 @@ bool compileDevicePartToBin
 //
 //================================================================
 
-bool makeCppBinAssembly
+stdbool makeCppBinAssembly
 (
     const StlString& cppPath,
     const StlString& binPath,

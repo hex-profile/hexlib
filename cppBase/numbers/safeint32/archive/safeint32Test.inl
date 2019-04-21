@@ -19,7 +19,7 @@ namespace safeint32TestImpl {
 //================================================================
 
 template <typename Perk>
-bool typeTest1
+stdbool typeTest1
 (
     const typename Perk::Type sample[],
     int32 N,
@@ -47,7 +47,7 @@ bool typeTest1
 //================================================================
 
 template <typename Perk>
-bool typeTest2
+stdbool typeTest2
 (
     const typename Perk::Type sampleA[],
     int32 countA,
@@ -306,7 +306,7 @@ struct UnaryPlus : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk, typename Test>
-bool testUnaryPlusMinus
+stdbool testUnaryPlusMinus
 (
     RndgenState& rndgen,
     stdPars(ErrorLogKit)
@@ -374,7 +374,7 @@ struct Name : StdTest<Perk> \
 //================================================================
 
 template <typename Perk, typename Test>
-bool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -416,7 +416,7 @@ DEFINE_SIMPLE_BINARY_TRAIT(Multiplication, *)
 //----------------------------------------------------------------
 
 template <typename Perk>
-bool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -518,7 +518,7 @@ struct Division : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk>
-bool testDivision(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool testDivision(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -576,7 +576,7 @@ struct Remainder : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk>
-bool testRemainder(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool testRemainder(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -597,7 +597,7 @@ DEFINE_SIMPLE_BINARY_TRAIT(Addition, +)
 //----------------------------------------------------------------
 
 template <typename Perk>
-bool testAddition(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool testAddition(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -618,7 +618,7 @@ DEFINE_SIMPLE_BINARY_TRAIT(Subtraction, -)
 //----------------------------------------------------------------
 
 template <typename Perk>
-bool testSubtraction(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool testSubtraction(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -719,7 +719,7 @@ struct ShiftLeft : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk, typename Test>
-bool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -755,7 +755,7 @@ bool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 //================================================================
 
 template <typename Perk>
-bool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
+stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -782,7 +782,7 @@ bool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 //
 //================================================================
 
-bool safeint32Test(stdPars(ErrorLogKit))
+stdbool safeint32Test(stdPars(ErrorLogKit))
 {
     stdBegin;
 

@@ -43,7 +43,7 @@ bool ToolModule::reallocValid() const
 //
 //================================================================
 
-bool ToolModule::realloc(stdPars(ReallocKit))
+stdbool ToolModule::realloc(stdPars(ReallocKit))
 {
     stdBegin;
     allocFrameSize = point(0);
@@ -58,7 +58,7 @@ bool ToolModule::realloc(stdPars(ReallocKit))
 //
 //================================================================
 
-bool ToolModule::process(ToolTarget& toolTarget, stdPars(ProcessKit))
+stdbool ToolModule::process(ToolTarget& toolTarget, stdPars(ProcessKit))
 {
     stdBegin;
 

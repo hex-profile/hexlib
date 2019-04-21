@@ -116,30 +116,30 @@
 //----------------------------------------------------------------
 
 #define CLASSTHUNK_BOOL_STD0(Class, func, Kit) \
-    CLASSTHUNK_STDEX0(Class, bool, false, func, PREP_EMPTY, Kit)
+    CLASSTHUNK_STDEX0(Class, stdbool, false, func, PREP_EMPTY, Kit)
 
 #define CLASSTHUNK_BOOL_STD1(Class, func, Type0, Kit) \
-    CLASSTHUNK_STDEX1(Class, bool, false, func, PREP_EMPTY, Type0, Kit)
+    CLASSTHUNK_STDEX1(Class, stdbool, false, func, PREP_EMPTY, Type0, Kit)
 
 #define CLASSTHUNK_BOOL_STD2(Class, func, Type0, Type1, Kit) \
-    CLASSTHUNK_STDEX2(Class, bool, false, func, PREP_EMPTY, Type0, Type1, Kit)
+    CLASSTHUNK_STDEX2(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Kit)
 
 #define CLASSTHUNK_BOOL_STD3(Class, func, Type0, Type1, Type2, Kit) \
-    CLASSTHUNK_STDEX3(Class, bool, false, func, PREP_EMPTY, Type0, Type1, Type2, Kit)
+    CLASSTHUNK_STDEX3(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Type2, Kit)
 
 #define CLASSTHUNK_BOOL_STD4(Class, func, Type0, Type1, Type2, Type3, Kit) \
-    CLASSTHUNK_STDEX4(Class, bool, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Kit)
+    CLASSTHUNK_STDEX4(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Kit)
 
 #define CLASSTHUNK_BOOL_STD5(Class, func, Type0, Type1, Type2, Type3, Type4, Kit) \
-    CLASSTHUNK_STDEX5(Class, bool, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Type4, Kit)
+    CLASSTHUNK_STDEX5(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Type4, Kit)
 
 //----------------------------------------------------------------
 
 #define CLASSTHUNK_VOID_STD0(Class, func, Kit) \
-    CLASSTHUNK_STDEX0(Class, void, void(), func, PREP_EMPTY, Kit)
+    CLASSTHUNK_STDEX0(Class, stdvoid, void(), func, PREP_EMPTY, Kit)
 
 #define CLASSTHUNK_VOID_STD1(Class, func, Type0, Kit) \
-    CLASSTHUNK_STDEX1(Class, void, void(), func, Type0, Kit)
+    CLASSTHUNK_STDEX1(Class, stdvoid, void(), func, Type0, Kit)
 
 #define CLASSTHUNK_VOID_STD2(Class, func, Type0, Type1, Kit) \
-    CLASSTHUNK_STDEX2(Class, void, void(), func, Type0, Type1, Kit)
+    CLASSTHUNK_STDEX2(Class, stdvoid, void(), func, Type0, Type1, Kit)

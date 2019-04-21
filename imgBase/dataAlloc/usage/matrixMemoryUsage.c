@@ -13,7 +13,7 @@ KIT_COMBINE2(TestKit, CpuFastAllocKit, ErrorLogKit);
 
 //----------------------------------------------------------------
 
-bool matrixMemoryUsage(stdPars(TestKit))
+stdbool matrixMemoryUsage(stdPars(TestKit))
 {
     stdBegin;
 
