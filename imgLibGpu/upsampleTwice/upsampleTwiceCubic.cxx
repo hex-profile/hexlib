@@ -115,7 +115,7 @@ devDefineSampler(srcSampler2, DevSampler2D, DevSamplerFloat, 2)
 #if HOSTCODE
 
 template <typename Src, typename Dst>
-bool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, stdPars(GpuProcessKit))
+stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
 

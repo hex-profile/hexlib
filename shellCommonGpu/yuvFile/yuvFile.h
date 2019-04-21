@@ -23,7 +23,7 @@ class YuvFile
 public:
 
     // Any of the interfaces may be omitted
-    bool setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit));
+    stdbool setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit));
 
     void reset()
     {
@@ -50,12 +50,12 @@ public:
 
 public:
 
-    bool setPosition(int32 frameIndex, stdPars(DiagnosticKit));
+    stdbool setPosition(int32 frameIndex, stdPars(DiagnosticKit));
 
 public:
 
-    bool readFrame(const Array<RawPixel>& frame, stdPars(DiagnosticKit));
-    bool writeFrame(const Array<const RawPixel>& frame, stdPars(DiagnosticKit));
+    stdbool readFrame(const Array<RawPixel>& frame, stdPars(DiagnosticKit));
+    stdbool writeFrame(const Array<const RawPixel>& frame, stdPars(DiagnosticKit));
 
 public:
 

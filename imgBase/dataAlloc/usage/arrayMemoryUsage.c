@@ -11,7 +11,7 @@ KIT_COMBINE2(TestKit, CpuFastAllocKit, ErrorLogKit);
 
 //----------------------------------------------------------------
 
-bool arrayMemoryUsage(stdPars(TestKit))
+stdbool arrayMemoryUsage(stdPars(TestKit))
 {
     stdBegin;
 

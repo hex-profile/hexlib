@@ -9,7 +9,7 @@
 //================================================================
 
 template <typename Type>
-bool ArrayObjMem<Type>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit))
+stdbool ArrayObjMem<Type>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit))
 {
     dealloc(); // Call destructors and dealloc memory
 

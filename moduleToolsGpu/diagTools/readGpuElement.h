@@ -11,7 +11,7 @@
 //================================================================
 
 template <typename Type>
-bool readGpuElement(const GpuMatrix<const Type>& image, const Point<Space>& pos, Type& result, stdPars(GpuProcessKit))
+stdbool readGpuElement(const GpuMatrix<const Type>& image, const Point<Space>& pos, Type& result, stdPars(GpuProcessKit))
 {
     stdBegin;
 

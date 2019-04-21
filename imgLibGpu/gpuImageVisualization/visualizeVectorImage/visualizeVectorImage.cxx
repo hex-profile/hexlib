@@ -259,7 +259,7 @@ FOREACH_VISUALIZATION_TYPE(TMP_MACRO)
 #define TMP_MACRO(VectorType) \
     \
     template <> \
-    bool visualizeVectorImage \
+    stdbool visualizeVectorImage \
     ( \
         const GpuMatrix<const VectorType>& src, \
         const GpuMatrix<uint8_x4>& dst, \

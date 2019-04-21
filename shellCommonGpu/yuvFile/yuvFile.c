@@ -14,7 +14,7 @@ namespace yuvFile {
 //================================================================
 
 template <typename RawPixel>
-bool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit))
+stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit))
 {
     stdBegin;
 
@@ -72,7 +72,7 @@ bool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStream
 //================================================================
 
 template <typename RawPixel>
-bool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
+stdbool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
 {
     stdBegin;
 
@@ -95,7 +95,7 @@ bool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
 //================================================================
 
 template <typename RawPixel>
-bool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(DiagnosticKit))
+stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(DiagnosticKit))
 {
     stdBegin;
 
@@ -119,7 +119,7 @@ bool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(Diagnost
 //================================================================
 
 template <typename RawPixel>
-bool YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPars(DiagnosticKit))
+stdbool YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPars(DiagnosticKit))
 {
     stdBegin;
 

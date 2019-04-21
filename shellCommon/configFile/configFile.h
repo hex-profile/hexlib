@@ -79,7 +79,7 @@ class ConfigFile
 
 public:
 
-    bool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
+    stdbool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
     void unloadFile();
 
 public:
@@ -87,11 +87,11 @@ public:
     void loadVars(CfgSerialization& serialization);
     void saveVars(CfgSerialization& serialization, bool forceUpdate);
 
-    void updateFile(bool forceUpdate, stdPars(CfgFileKit));
+    stdvoid updateFile(bool forceUpdate, stdPars(CfgFileKit));
 
 public:
 
-    void editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
+    stdvoid editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
 
 public:
 

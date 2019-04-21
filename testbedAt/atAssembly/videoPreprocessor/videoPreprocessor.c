@@ -196,13 +196,13 @@ public:
     void serialize(const ModuleSerializeKit& kit);
 
     bool reallocValid() const;
-    bool realloc(const Point<Space>& frameSize, stdPars(ReallocKit));
+    stdbool realloc(const Point<Space>& frameSize, stdPars(ReallocKit));
 
     Point<Space> outputFrameSize() const;
 
-    bool processEntry(VideoPrepTarget& target, stdPars(ProcessKit));
+    stdbool processEntry(VideoPrepTarget& target, stdPars(ProcessKit));
 
-    bool processSingleFrame
+    stdbool processSingleFrame
     (
         VideoPrepTarget& target,
         const GpuMatrix<const uint8_x4>& inputFrame,
@@ -210,7 +210,7 @@ public:
         stdPars(ProcessKit)
     );
 
-    bool processPrepFrontend
+    stdbool processPrepFrontend
     (
         VideoPrepTarget& target,
         const GpuMatrix<const uint8_x4>& inputFrame,
@@ -218,7 +218,7 @@ public:
         stdPars(ProcessKit)
     );
 
-    bool processCropFrontend
+    stdbool processCropFrontend
     (
         VideoPrepTarget& target,
         const GpuMatrix<const uint8_x4>& inputFrame,
@@ -226,7 +226,7 @@ public:
         stdPars(ProcessKit)
     );
 
-    bool processTarget
+    stdbool processTarget
     (
         VideoPrepTarget& target,
         const GpuMatrix<const uint8_x4>& inputFrame,
@@ -473,7 +473,7 @@ bool VideoPreprocessorImpl::reallocValid() const
 //
 //================================================================
 
-bool VideoPreprocessorImpl::realloc(const Point<Space>& frameSize, stdPars(ReallocKit))
+stdbool VideoPreprocessorImpl::realloc(const Point<Space>& frameSize, stdPars(ReallocKit))
 {
     stdBegin;
 
@@ -530,7 +530,7 @@ Point<Space> VideoPreprocessorImpl::outputFrameSize() const
 //
 //================================================================
 
-bool VideoPreprocessorImpl::processTarget
+stdbool VideoPreprocessorImpl::processTarget
 (
     VideoPrepTarget& target,
     const GpuMatrix<const uint8_x4>& inputFrame,
@@ -664,7 +664,7 @@ bool VideoPreprocessorImpl::processTarget
 //
 //================================================================
 
-bool VideoPreprocessorImpl::processSingleFrame
+stdbool VideoPreprocessorImpl::processSingleFrame
 (
     VideoPrepTarget& target,
     const GpuMatrix<const uint8_x4>& inputFrame,
@@ -751,7 +751,7 @@ bool VideoPreprocessorImpl::processSingleFrame
 //
 //================================================================
 
-bool VideoPreprocessorImpl::processPrepFrontend
+stdbool VideoPreprocessorImpl::processPrepFrontend
 (
     VideoPrepTarget& target,
     const GpuMatrix<const uint8_x4>& inputFrame,
@@ -906,7 +906,7 @@ bool VideoPreprocessorImpl::processPrepFrontend
 //
 //================================================================
 
-bool VideoPreprocessorImpl::processCropFrontend
+stdbool VideoPreprocessorImpl::processCropFrontend
 (
     VideoPrepTarget& target,
     const GpuMatrix<const uint8_x4>& inputFrame,
@@ -993,7 +993,7 @@ bool VideoPreprocessorImpl::processCropFrontend
 //
 //================================================================
 
-bool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(ProcessKit))
+stdbool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(ProcessKit))
 {
     stdBeginScoped;
 

@@ -8,7 +8,7 @@
 //
 //================================================================
 
-bool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
+stdbool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
 {
     stdBegin;
 

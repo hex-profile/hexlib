@@ -31,12 +31,12 @@ typedef void ThreadFunc(void* params);
 struct ThreadManager
 {
 
-    virtual bool createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit)) =0;
+    virtual stdbool createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit)) =0;
 
-    virtual bool createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit)) =0;
+    virtual stdbool createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit)) =0;
 
-    virtual bool createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit)) =0;
+    virtual stdbool createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit)) =0;
 
-    virtual bool getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit)) =0;
+    virtual stdbool getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit)) =0;
 
 };

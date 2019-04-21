@@ -46,7 +46,7 @@ public:
     }
 
     template <typename Kit>
-    sysinline bool realloc
+    inline stdbool realloc
     (
         const Point<Space>& size,
         Space baseByteAlignment,
@@ -67,7 +67,7 @@ public:
     }
 
     template <typename Kit>
-    sysinline bool realloc(const Point<Space>& size, Rounding sizeRounding, stdPars(Kit))
+    sysinline stdbool realloc(const Point<Space>& size, Rounding sizeRounding, stdPars(Kit))
     {
         return realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, sizeRounding, stdPassThru);
     }

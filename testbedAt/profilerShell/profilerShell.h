@@ -35,7 +35,7 @@ public:
     ProfilerShell();
     void serialize(const ModuleSerializeKit& kit);
 
-    bool init(stdPars(InitKit));
+    stdbool init(stdPars(InitKit));
     void deinit();
 
 public:
@@ -45,7 +45,7 @@ public:
 
 public:
 
-    bool process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit));
+    stdbool process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit));
 
 private:
 

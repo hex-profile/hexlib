@@ -19,10 +19,10 @@
 //================================================================
 
 template <typename Type>
-inline bool gpuMatrixSetFunc(const GpuMatrix<Type>& dst, const Type& value, stdPars(GpuProcessKit));
+inline stdbool gpuMatrixSetFunc(const GpuMatrix<Type>& dst, const Type& value, stdPars(GpuProcessKit));
 
 template <typename Type, typename Matrix>
-inline bool gpuMatrixSet(const Matrix& dst, const Type& value, stdPars(GpuProcessKit))
+inline stdbool gpuMatrixSet(const Matrix& dst, const Type& value, stdPars(GpuProcessKit))
     {return gpuMatrixSetFunc<Type>(dst, value, stdPassThru);}
 
 //================================================================
@@ -33,10 +33,10 @@ inline bool gpuMatrixSet(const Matrix& dst, const Type& value, stdPars(GpuProces
 
 #define TMP_MACRO(Type, o) \
     \
-    bool gpuMatrixSetFunc_##Type(const GpuMatrix<Type>& dst, const Type& value, stdPars(GpuProcessKit)); \
+    stdbool gpuMatrixSetFunc_##Type(const GpuMatrix<Type>& dst, const Type& value, stdPars(GpuProcessKit)); \
     \
     template <> \
-    inline bool gpuMatrixSetFunc(const GpuMatrix<Type>& dst, const Type& value, stdPars(GpuProcessKit)) \
+    inline stdbool gpuMatrixSetFunc(const GpuMatrix<Type>& dst, const Type& value, stdPars(GpuProcessKit)) \
         {return gpuMatrixSetFunc_##Type(dst, value, stdPassThru);}
 
 GPU_MATRIX_SET_FOREACH(TMP_MACRO, o)

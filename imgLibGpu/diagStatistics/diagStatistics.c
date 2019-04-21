@@ -10,7 +10,7 @@
 //
 //================================================================
 
-bool computeMeanSquareError(const Matrix<const float32>& error, float32& meanSquareError, stdPars(CpuFuncKit))
+stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& meanSquareError, stdPars(CpuFuncKit))
 {
     stdBegin;
 
@@ -58,7 +58,7 @@ bool computeMeanSquareError(const Matrix<const float32>& error, float32& meanSqu
 //
 //================================================================
 
-bool computeMeanAbsError(const Matrix<const float32>& error, float32& meanError, stdPars(CpuFuncKit))
+stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanError, stdPars(CpuFuncKit))
 {
     stdBegin;
 
@@ -106,7 +106,7 @@ bool computeMeanAbsError(const Matrix<const float32>& error, float32& meanError,
 //
 //================================================================
 
-bool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAvgValue, float32& resultAvgStdev, stdPars(CpuFuncKit))
+stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAvgValue, float32& resultAvgStdev, stdPars(CpuFuncKit))
 {
     stdBegin;
 
@@ -167,7 +167,7 @@ bool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAvgVa
 //
 //================================================================
 
-bool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsError, stdPars(CpuFuncKit))
+stdbool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsError, stdPars(CpuFuncKit))
 {
     stdBegin;
 

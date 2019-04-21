@@ -40,7 +40,7 @@ KIT_COMBINE3(TestKit, CpuFastAllocKit, ErrorLogKit, DataProcessingKit);
 //
 //================================================================
 
-bool arrayObjMemUsage(stdPars(TestKit))
+stdbool arrayObjMemUsage(stdPars(TestKit))
 {
     stdBegin;
 

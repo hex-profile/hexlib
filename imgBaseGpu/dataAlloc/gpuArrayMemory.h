@@ -31,15 +31,15 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    bool realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+    stdbool realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
         {return Base::realloc(size, byteAlignment, allocator, stdPassThru);}
 
     template <typename Kit>
-    inline bool realloc(Space size, Space byteAlignment, stdPars(Kit))
+    inline stdbool realloc(Space size, Space byteAlignment, stdPars(Kit))
         {return Base::realloc(size, byteAlignment, kit.gpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
-    inline bool realloc(Space size, stdPars(Kit))
+    inline stdbool realloc(Space size, stdPars(Kit))
         {return Base::realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuFastAlloc, stdPassThru);}
 
     //

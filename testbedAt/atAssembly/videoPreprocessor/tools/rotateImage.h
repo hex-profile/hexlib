@@ -40,7 +40,7 @@ sysinline void centerMatchedSpaceRotation
 //
 //================================================================
 
-bool rotateImageLinearZero
+stdbool rotateImageLinearZero
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<uint8_x4>& dst,
@@ -54,7 +54,7 @@ bool rotateImageLinearZero
 //
 //================================================================
 
-bool rotateImageLinearMirror
+stdbool rotateImageLinearMirror
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<uint8_x4>& dst,
@@ -68,7 +68,7 @@ bool rotateImageLinearMirror
 //
 //================================================================
 
-bool rotateImageCubicZero
+stdbool rotateImageCubicZero
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<uint8_x4>& dst,
@@ -82,7 +82,7 @@ bool rotateImageCubicZero
 //
 //================================================================
 
-bool rotateImageCubicMirror
+stdbool rotateImageCubicMirror
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<uint8_x4>& dst,

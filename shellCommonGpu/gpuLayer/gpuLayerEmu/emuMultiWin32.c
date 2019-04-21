@@ -178,7 +178,7 @@ public:
     inline ~ServerKeeper()
         {destroy();}
 
-    bool create(stdPars(CreateKit));
+    stdbool create(stdPars(CreateKit));
     void destroy();
     bool created() {return threadControl.created();}
 
@@ -206,7 +206,7 @@ private:
 //
 //================================================================
 
-bool ServerKeeper::create(stdPars(CreateKit))
+stdbool ServerKeeper::create(stdPars(CreateKit))
 {
     stdBegin;
 
@@ -331,7 +331,7 @@ void EmuMultiWin32::destroy()
 //
 //================================================================
 
-bool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
+stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
 {
     stdBegin;
 
@@ -369,7 +369,7 @@ bool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
 //
 //================================================================
 
-bool EmuMultiWin32::launchKernel
+stdbool EmuMultiWin32::launchKernel
 (
     const Point3D<Space>& groupCount,
     const Point<Space>& threadCount,

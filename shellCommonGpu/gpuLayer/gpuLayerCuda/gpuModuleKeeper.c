@@ -44,7 +44,7 @@
 //
 //================================================================
 
-bool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
+stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 {
     stdBegin;
 
@@ -263,7 +263,7 @@ void GpuModuleKeeper::destroy()
 //
 //================================================================
 
-bool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const
+stdbool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const
 {
     stdBegin;
 
@@ -296,7 +296,7 @@ bool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, 
 //
 //================================================================
 
-bool GpuModuleKeeper::fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const
+stdbool GpuModuleKeeper::fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const
 {
     stdBegin;
 

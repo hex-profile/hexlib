@@ -352,7 +352,7 @@ static void EMU_SAMPLER_TEX_DECL emuSamplerLinear2D(const EmuSamplerData& data, 
 //================================================================
 
 template <typename MemType>
-static bool setupSamplerImage
+static stdbool setupSamplerImage
 (
     EmuSamplerState& state,
     GpuAddrU imageBaseAddr,
@@ -448,7 +448,7 @@ static bool setupSamplerImage
 //
 //================================================================
 
-using SetupEmuSamplerImage = bool
+using SetupEmuSamplerImage = stdbool
 (
     EmuSamplerState& state,
     GpuAddrU imageBaseAddr,
@@ -467,7 +467,7 @@ using SetupEmuSamplerImage = bool
 //
 //================================================================
 
-bool emuSetSamplerImage
+stdbool emuSetSamplerImage
 (
     const GpuSamplerLink& sampler,
     GpuAddrU imageBaseAddr,
@@ -588,7 +588,7 @@ void emuSamplerRead1Dfetch(const EmuSamplerData& data, Space offset, void* resul
 //================================================================
 
 template <typename MemType>
-static bool setupSamplerArray
+static stdbool setupSamplerArray
 (
     EmuSamplerState& state,
     GpuAddrU arrayAddr,
@@ -662,7 +662,7 @@ static bool setupSamplerArray
 //
 //================================================================
 
-using SetupEmuSamplerArray = bool
+using SetupEmuSamplerArray = stdbool
 (
     EmuSamplerState& state,
     GpuAddrU arrayAddr,
@@ -680,7 +680,7 @@ using SetupEmuSamplerArray = bool
 //
 //================================================================
 
-bool emuSetSamplerArray
+stdbool emuSetSamplerArray
 (
     const GpuSamplerLink& sampler,
     GpuAddrU arrayAddr,

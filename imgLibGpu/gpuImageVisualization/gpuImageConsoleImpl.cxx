@@ -161,7 +161,7 @@ VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_3, texCubic2D(visualizeScalarS
 #if HOSTCODE
 
 template <typename Type, typename Dst>
-bool visualizeScalarMatrix
+stdbool visualizeScalarMatrix
 (
     const GpuMatrix<const Type>& src,
     const LinearTransform<Point<float32> >& coordBackTransform,
@@ -386,7 +386,7 @@ UPCONVERT_VALUE_KERNEL_ALL(upconvertValueCubic, UPCONVERT_VALUE_READ_CUBIC)
 #if HOSTCODE
 
 template <typename Type, typename Dst>
-bool upconvertValueMatrix
+stdbool upconvertValueMatrix
 (
     const GpuMatrix<const Type>& src,
     const LinearTransform<Point<float32> >& coordBackTransform,

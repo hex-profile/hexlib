@@ -148,7 +148,7 @@ devDefineSampler(chromaSampler, DevSampler2D, DevSamplerFloat, 2)
 #define MAKE_FUNCTION(baseFunc, SrcPixel, SrcPixel2, DstPixel, suffix) \
     \
     template <> \
-    bool baseFunc \
+    stdbool baseFunc \
     ( \
         const GpuMatrix<const SrcPixel>& srcLuma, \
         const GpuMatrix<const SrcPixel2>& srcChroma, \

@@ -101,7 +101,7 @@ public:
 
     KIT_COMBINE2(CreateKit, ErrorLogKit, MallocKit);
 
-    bool create(stdPars(CreateKit));
+    stdbool create(stdPars(CreateKit));
     void destroy();
 
     inline EmuWin32()

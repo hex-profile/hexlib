@@ -396,7 +396,7 @@ class ContextEx
 public:
 
     ~ContextEx() {destroy();}
-    bool create(int32 deviceIndex, const GpuProperties& gpuProperties, void*& baseContext, stdPars(ErrorLogExKit));
+    stdbool create(int32 deviceIndex, const GpuProperties& gpuProperties, void*& baseContext, stdPars(ErrorLogExKit));
     void destroy();
 
     //----------------------------------------------------------------
@@ -447,7 +447,7 @@ public:
 //
 //================================================================
 
-bool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, void*& baseContext, stdPars(ErrorLogExKit))
+stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, void*& baseContext, stdPars(ErrorLogExKit))
 {
     stdBegin;
 
@@ -764,7 +764,7 @@ bool CudaInitApiThunk::getSamplerFromModule(const GpuModule& module, const char*
 
 struct CudaCpuAllocCore
 {
-    inline bool operator()(CpuAddrU& result, CpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
+    inline stdbool operator()(CpuAddrU& result, CpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
     {
         stdBegin;
 
@@ -834,7 +834,7 @@ void CudaCpuAllocThunk::dealloc(MemoryDeallocContext& deallocContext)
 
 struct CudaGpuAllocCore
 {
-    inline bool operator()(GpuAddrU& result, GpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
+    inline stdbool operator()(GpuAddrU& result, GpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
     {
         stdBegin;
 
@@ -1064,7 +1064,7 @@ struct CoverageRecord
 //
 //================================================================
 
-sysinline bool flushCoverageRecord(CoverageRecord& r, bool& syncFlagLatch, Profiler* profiler, stdPars(GpuCoverageKit))
+sysinline stdbool flushCoverageRecord(CoverageRecord& r, bool& syncFlagLatch, Profiler* profiler, stdPars(GpuCoverageKit))
 {
     stdBegin;
 
@@ -1183,7 +1183,7 @@ public:
 
 public:
 
-    bool allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit));
+    stdbool allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit));
 
     void deallocate() {history.dealloc(); allocated = false;}
     bool isAllocated() const {return allocated;}
@@ -1191,7 +1191,7 @@ public:
 
 public:
 
-    bool getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit));
+    stdbool getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit));
 
     inline void advanceCoverageSlot()
         {history.addAdvance();}
@@ -1200,7 +1200,7 @@ public:
 
     void discardAll();
 
-    bool flushAll(Profiler* profiler, stdPars(GpuCoverageKit));
+    stdbool flushAll(Profiler* profiler, stdPars(GpuCoverageKit));
 
 public:
 
@@ -1224,7 +1224,7 @@ public:
 //
 //================================================================
 
-bool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit))
+stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit))
 {
     stdBegin;
 
@@ -1278,7 +1278,7 @@ bool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& cont
 //
 //================================================================
 
-bool CoverageQueue::getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit))
+stdbool CoverageQueue::getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit))
 {
     stdBegin;
 
@@ -1321,7 +1321,7 @@ void CoverageQueue::discardAll()
 //
 //================================================================
 
-bool CoverageQueue::flushAll(Profiler* profiler, stdPars(GpuCoverageKit))
+stdbool CoverageQueue::flushAll(Profiler* profiler, stdPars(GpuCoverageKit))
 {
     stdBegin;
 
@@ -1361,7 +1361,7 @@ public:
 
     ~StreamEx() {destroy();}
 
-    bool create(const GpuContext& context, bool nullStream, void*& baseStream, stdPars(AllocKit));
+    stdbool create(const GpuContext& context, bool nullStream, void*& baseStream, stdPars(AllocKit));
     void destroy();
 
 public:
@@ -1401,7 +1401,7 @@ void StreamEx::destroy()
 //
 //================================================================
 
-bool StreamEx::create(const GpuContext& context, bool nullStream, void*& baseStream, stdPars(AllocKit))
+stdbool StreamEx::create(const GpuContext& context, bool nullStream, void*& baseStream, stdPars(AllocKit))
 {
     stdBegin;
 
@@ -1577,7 +1577,7 @@ void CudaInitApiThunk::destroyStream(GpuStreamDeallocContext& deallocContext)
 //================================================================
 
 template <typename KernelParams>
-bool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& threadCount, const GpuKernelLink& kernelLink, const KernelParams& kernelParams, const GpuStream& stream, stdPars(GpuCoverageKit))
+stdbool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& threadCount, const GpuKernelLink& kernelLink, const KernelParams& kernelParams, const GpuStream& stream, stdPars(GpuCoverageKit))
 {
     stdBegin;
 
@@ -1633,7 +1633,7 @@ bool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& thre
 //
 //================================================================
 
-bool callEmptyKernel(const GpuStream& stream, stdPars(GpuCoverageKit))
+stdbool callEmptyKernel(const GpuStream& stream, stdPars(GpuCoverageKit))
 {
     stdBegin;
     require(callCudaKernel(point3D(1), point3D(1), getEmptyKernelLink(), EmptyKernelParams(), stream, stdPass));
@@ -1646,7 +1646,7 @@ bool callEmptyKernel(const GpuStream& stream, stdPars(GpuCoverageKit))
 //
 //================================================================
 
-bool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& readMemory, stdPars(GpuCoverageKit))
+stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& readMemory, stdPars(GpuCoverageKit))
 {
     stdBegin;
 
@@ -1859,7 +1859,7 @@ bool CudaExecApiThunk::copyArrayGpuGpu(GpuAddrU srcPtr, GpuAddrU dstPtr, Space s
 //================================================================
 
 template <typename SrcAddrU, typename DstAddrU>
-inline bool genericMatrixCopy
+inline stdbool genericMatrixCopy
 (
     CUmemorytype srcType, SrcAddrU srcPtr, Space srcBytePitch,
     CUmemorytype dstType, DstAddrU dstPtr, Space dstBytePitch,

@@ -114,7 +114,7 @@ void GpuOverheadTest::serialize(const ModuleSerializeKit& kit)
 
 #if HOSTCODE
 
-bool GpuOverheadTest::process(stdPars(ProcessKit))
+stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 {
     stdBegin;
 

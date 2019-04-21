@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename Pointer>
-bool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     stdBegin;
 

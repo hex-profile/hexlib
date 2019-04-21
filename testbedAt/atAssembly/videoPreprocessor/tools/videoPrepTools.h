@@ -9,7 +9,7 @@
 //
 //================================================================
 
-bool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
+stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -17,7 +17,7 @@ bool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& ofs
 //
 //================================================================
 
-bool generateGrating
+stdbool generateGrating
 (
     const GpuMatrix<uint8_x4>& dst,
     const float32& period,
@@ -32,7 +32,7 @@ bool generateGrating
 //
 //================================================================
 
-bool generatePulse(const GpuMatrix<uint8_x4>& dst, const Point<Space>& ofs, const Space& period, stdPars(GpuProcessKit));
+stdbool generatePulse(const GpuMatrix<uint8_x4>& dst, const Point<Space>& ofs, const Space& period, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -40,7 +40,7 @@ bool generatePulse(const GpuMatrix<uint8_x4>& dst, const Point<Space>& ofs, cons
 //
 //================================================================
 
-bool generateRandom(const GpuMatrix<uint8_x4>& dst, const GpuMatrix<RndgenState>& rndgenMatrix, stdPars(GpuProcessKit));
+stdbool generateRandom(const GpuMatrix<uint8_x4>& dst, const GpuMatrix<RndgenState>& rndgenMatrix, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -48,7 +48,7 @@ bool generateRandom(const GpuMatrix<uint8_x4>& dst, const GpuMatrix<RndgenState>
 //
 //================================================================
 
-bool generateAdditionalGaussNoise
+stdbool generateAdditionalGaussNoise
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<uint8_x4>& dst,

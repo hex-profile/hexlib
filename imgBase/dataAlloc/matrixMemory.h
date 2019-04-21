@@ -79,7 +79,7 @@ private:
 
 public:
 
-    bool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
+    stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////
 
@@ -179,15 +179,15 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    inline bool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, stdPars(Kit))
+    inline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, stdPars(Kit))
         {return Base::realloc(size, baseByteAlignment, rowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
-    inline bool reallocForGpuExch(const Point<Space>& size, stdPars(Kit))
+    inline stdbool reallocForGpuExch(const Point<Space>& size, stdPars(Kit))
         {return Base::realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
-    inline bool reallocForCpuOnly(const Point<Space>& size, stdPars(Kit))
+    inline stdbool reallocForCpuOnly(const Point<Space>& size, stdPars(Kit))
         {return Base::realloc(size, cpuBaseByteAlignment, cpuRowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
 };

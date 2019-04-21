@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename Pointer, typename Kit>
-inline bool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx<Pointer>& result, stdPars(Kit))
+inline stdbool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx<Pointer>& result, stdPars(Kit))
 {
     stdBegin;
 
@@ -34,7 +34,7 @@ inline bool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx<Po
 //================================================================
 
 template <typename SrcPtr, typename DstPtr, typename Kit>
-bool copyMatrixAsArray(const MatrixEx<SrcPtr>& srcMatrix, const MatrixEx<DstPtr>& dstMatrix, GpuCopyThunk& gpuCopy, stdPars(Kit))
+stdbool copyMatrixAsArray(const MatrixEx<SrcPtr>& srcMatrix, const MatrixEx<DstPtr>& dstMatrix, GpuCopyThunk& gpuCopy, stdPars(Kit))
 {
     stdBegin;
 

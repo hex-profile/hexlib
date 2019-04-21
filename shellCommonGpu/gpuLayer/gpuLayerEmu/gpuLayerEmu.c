@@ -114,7 +114,7 @@ private:
 
 public:
 
-    bool create(const GpuProperties& gpuProperties, stdPars(CreateKit))
+    stdbool create(const GpuProperties& gpuProperties, stdPars(CreateKit))
     {
         stdBegin;
 
@@ -144,7 +144,7 @@ public:
 
 public:
 
-    bool emuLaunchKernel
+    stdbool emuLaunchKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,
@@ -293,7 +293,7 @@ struct EmuTexture
 //
 //================================================================
 
-bool emuAllocateTexture(Space sizeX, Space sizeY, GpuChannelType chanType, int rank, Byte*& sysAllocPtr, EmuTexture& result, stdPars(ErrorLogKit))
+stdbool emuAllocateTexture(Space sizeX, Space sizeY, GpuChannelType chanType, int rank, Byte*& sysAllocPtr, EmuTexture& result, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -470,7 +470,7 @@ public:
 
     ~StreamEx() {destroy();}
 
-    bool create(const GpuContext& context, stdPars(ErrorLogExKit))
+    stdbool create(const GpuContext& context, stdPars(ErrorLogExKit))
         {this->context = context; return true;}
 
     void destroy()
@@ -639,7 +639,7 @@ devDefineKernel(copyArrayKernel, CopyArrayParams, o)
 //
 //================================================================
 
-inline bool genericArrayCopy
+inline stdbool genericArrayCopy
 (
     CpuAddrU srcAddr, CpuAddrU dstAddr, Space byteSize,
     ContextEx& ctx,
@@ -746,7 +746,7 @@ devDefineKernel(copyMatrixKernel, CopyMatrixParams, o)
 //
 //================================================================
 
-inline bool genericMatrixCopy
+inline stdbool genericMatrixCopy
 (
     CpuAddrU srcPtr, Space srcBytePitch,
     CpuAddrU dstPtr, Space dstBytePitch,

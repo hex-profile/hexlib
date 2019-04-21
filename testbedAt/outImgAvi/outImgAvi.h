@@ -45,14 +45,14 @@ public:
     OutImgAvi();
     ~OutImgAvi();
 
-    bool saveImage(const Matrix<const uint8>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    bool saveImage(const Matrix<const uint8_x4>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    bool saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Matrix<const uint8>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Matrix<const uint8_x4>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
-    bool setOutputDir(const CharType* outputDir, stdPars(Kit));
-    bool setFps(const FPS& fps, stdPars(Kit));
-    bool setCodec(const Codec& codec, stdPars(Kit));
-    bool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit));
+    stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
+    stdbool setFps(const FPS& fps, stdPars(Kit));
+    stdbool setCodec(const Codec& codec, stdPars(Kit));
+    stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit));
 
 private:
 

@@ -28,7 +28,7 @@ inline bool computeAlignedSize(Space size, Space alignmentMask, Space& result)
 //================================================================
 
 template <typename Type>
-bool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     stdBegin;
 

@@ -22,7 +22,7 @@ public:
 
 public:
 
-    bool process(stdPars(ProcessKit));
+    stdbool process(stdPars(ProcessKit));
 
 private:
 

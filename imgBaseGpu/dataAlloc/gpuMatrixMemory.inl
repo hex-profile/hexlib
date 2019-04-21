@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename Type>
-bool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     stdBegin;
 

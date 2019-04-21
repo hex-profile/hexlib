@@ -14,7 +14,7 @@
 //================================================================
 
 template <typename Pointer>
-bool MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     stdBegin;
 

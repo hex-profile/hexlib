@@ -39,7 +39,7 @@ private:
 
 public:
 
-    bool reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
+    stdbool reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////
 
@@ -81,7 +81,7 @@ public:
     //
 
     template <typename Kit>
-    sysinline bool realloc(const Point<Space>& size, stdPars(Kit))
+    sysinline stdbool realloc(const Point<Space>& size, stdPars(Kit))
         {return reallocEx(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:

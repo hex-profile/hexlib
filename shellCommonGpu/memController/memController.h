@@ -76,7 +76,7 @@ struct ReallocActivity
 struct MemControllerReallocTarget
 {
     virtual bool reallocValid() const =0;
-    virtual bool realloc(stdPars(FastAllocToolkit)) =0;
+    virtual stdbool realloc(stdPars(FastAllocToolkit)) =0;
 };
 
 //================================================================
@@ -87,7 +87,7 @@ struct MemControllerReallocTarget
 
 struct MemControllerProcessTarget
 {
-    virtual bool process(stdPars(FastAllocToolkit)) =0;
+    virtual stdbool process(stdPars(FastAllocToolkit)) =0;
 };
 
 //================================================================
@@ -140,25 +140,25 @@ public:
     // and reallocates the module state with real memory distribution.
     //
 
-    bool handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit));
+    stdbool handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit));
 
     //
     // Counts temporary memory required for processing.
     //
 
-    bool processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, stdPars(ProcessKit));
+    stdbool processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, stdPars(ProcessKit));
 
     //
     // Given the required temp memory size, reallocates memory pools if necessary.
     //
 
-    bool handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit));
+    stdbool handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit));
 
     //
     // Calls processing with real memory distribution.
     //
 
-    bool processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit));
+    stdbool processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit));
 
 private:
 

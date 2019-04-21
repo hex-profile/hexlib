@@ -46,7 +46,7 @@
     \
     hostDeclareKernel(prefix##Kernel, prefix##Params, o); \
     \
-    bool prefix \
+    stdbool prefix \
     ( \
         const Point<Space>& groupCount, \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
@@ -96,7 +96,7 @@
 
 #define GPT_FLAT_CALLER_PROTO(prefix, samplerList, paramList) \
     \
-    bool prefix \
+    stdbool prefix \
     ( \
         const Point<Space>& groupCount, \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \

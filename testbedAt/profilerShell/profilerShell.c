@@ -57,7 +57,7 @@ void ProfilerShell::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-bool ProfilerShell::init(stdPars(InitKit))
+stdbool ProfilerShell::init(stdPars(InitKit))
 {
     stdBegin;
 
@@ -89,7 +89,7 @@ void ProfilerShell::deinit()
 //
 //================================================================
 
-bool ProfilerShell::process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit))
+stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit))
 {
     stdBegin;
 

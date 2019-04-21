@@ -117,7 +117,7 @@ String mapToFilename(const String& s)
 //
 //================================================================
 
-bool formatAtomToString(const FormatOutputAtom& v, String& result, stdPars(ErrorLogKit))
+stdbool formatAtomToString(const FormatOutputAtom& v, String& result, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -148,7 +148,7 @@ static const size_t bmpAlignmentMask = 3;
 //================================================================
 
 template <typename Element>
-bool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
+stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -186,7 +186,7 @@ struct BitmapinfoPalette : public BITMAPINFO
 //================================================================
 
 template <typename Element>
-bool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, stdPars(ErrorLogKit))
+stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, stdPars(ErrorLogKit))
 {
     stdBegin;
 
@@ -374,7 +374,7 @@ public:
     }
 
     template <typename Element>
-    bool writeImage
+    stdbool writeImage
     (
         const CharType* basename,
         uint32 id,
@@ -390,7 +390,7 @@ public:
 private:
 
     template <typename Element>
-    bool open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit));
+    stdbool open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit));
 
 private:
 
@@ -443,7 +443,7 @@ private:
 //================================================================
 
 template <typename Element>
-bool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit))
+stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit))
 {
     stdBegin;
 
@@ -533,7 +533,7 @@ bool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS fps
 //================================================================
 
 template <typename Element>
-bool AviWriter::writeImage
+stdbool AviWriter::writeImage
 (
     const CharType* basename,
     uint32 id,
@@ -706,17 +706,17 @@ public:
     OutImgAviImpl() {CoInitialize(0);} // for VFW
 
     template <typename Element>
-    bool saveImageGeneric(const Point<Space>& imageSize, AtImageProvider<Element>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImageGeneric(const Point<Space>& imageSize, AtImageProvider<Element>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     template <typename Element>
-    bool saveImage(const Matrix<const Element>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Matrix<const Element>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
-    bool saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
-    bool setOutputDir(const CharType* outputDir, stdPars(Kit));
-    bool setFps(FPS fps, stdPars(Kit));
-    bool setCodec(Codec codec, stdPars(Kit)) {currentCodec = codec; return true;}
-    bool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit)) {currentMaxSegmentFrames = maxSegmentFrames; return true;}
+    stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
+    stdbool setFps(FPS fps, stdPars(Kit));
+    stdbool setCodec(Codec codec, stdPars(Kit)) {currentCodec = codec; return true;}
+    stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit)) {currentMaxSegmentFrames = maxSegmentFrames; return true;}
 
 private:
 
@@ -758,27 +758,27 @@ OutImgAvi::~OutImgAvi()
 
 ////
 
-bool OutImgAvi::saveImage(const Matrix<const uint8>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAvi::saveImage(const Matrix<const uint8>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return !instance ? false : instance->saveImage(img, desc, id, stdPassThru);}
 
-bool OutImgAvi::saveImage(const Matrix<const uint8_x4>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAvi::saveImage(const Matrix<const uint8_x4>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return !instance ? false : instance->saveImage(img, desc, id, stdPassThru);}
 
-bool OutImgAvi::saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAvi::saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return !instance ? false : instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
 
 ////
 
-bool OutImgAvi::setOutputDir(const CharType* outputDir, stdPars(Kit))
+stdbool OutImgAvi::setOutputDir(const CharType* outputDir, stdPars(Kit))
     {return !instance ? false : instance->setOutputDir(outputDir, stdPassThru);}
 
-bool OutImgAvi::setFps(const FPS& fps, stdPars(Kit))
+stdbool OutImgAvi::setFps(const FPS& fps, stdPars(Kit))
     {return !instance ? false : instance->setFps(fps, stdPassThru);}
 
-bool OutImgAvi::setCodec(const Codec& codec, stdPars(Kit))
+stdbool OutImgAvi::setCodec(const Codec& codec, stdPars(Kit))
     {return !instance ? false : instance->setCodec(codec, stdPassThru);}
 
-bool OutImgAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
+stdbool OutImgAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
     {return !instance ? false : instance->setMaxSegmentFrames(maxSegmentFrames, stdPassThru);}
 
 //================================================================
@@ -787,7 +787,7 @@ bool OutImgAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
 //
 //================================================================
 
-bool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
+stdbool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 {
     try
     {
@@ -818,7 +818,7 @@ bool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 //
 //================================================================
 
-bool OutImgAviImpl::setFps(FPS fps, stdPars(Kit))
+stdbool OutImgAviImpl::setFps(FPS fps, stdPars(Kit))
 {
     stdBegin;
 
@@ -894,7 +894,7 @@ bool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, stdNul
 //================================================================
 
 template <typename Element>
-bool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImageProvider<Element>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImageProvider<Element>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     stdBegin;
 
@@ -930,7 +930,7 @@ bool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImageProvi
 //================================================================
 
 template <typename Element>
-bool OutImgAviImpl::saveImage(const Matrix<const Element>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAviImpl::saveImage(const Matrix<const Element>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     ImageProviderMemcpy<Element> imageProvider(image, kit);
     return saveImageGeneric(image.size(), imageProvider, desc, id, stdPassThru);
@@ -942,7 +942,7 @@ bool OutImgAviImpl::saveImage(const Matrix<const Element>& image, const FormatOu
 //
 //================================================================
 
-bool OutImgAviImpl::saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAviImpl::saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     return saveImageGeneric(imageSize, imageProvider, desc, id, stdPassThru);
 }

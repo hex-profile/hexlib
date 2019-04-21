@@ -39,8 +39,8 @@ public:
 public:
 
     bool reallocValid() const;
-    bool realloc(stdPars(ReallocKit));
-    bool process(ToolTarget& toolTarget, stdPars(ProcessKit));
+    stdbool realloc(stdPars(ReallocKit));
+    stdbool process(ToolTarget& toolTarget, stdPars(ProcessKit));
 
 private:
 

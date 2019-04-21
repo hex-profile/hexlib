@@ -63,7 +63,7 @@ public:
 
 public:
 
-    bool create(const GpuContext& context, stdPars(CreateKit));
+    stdbool create(const GpuContext& context, stdPars(CreateKit));
     void destroy();
 
     //----------------------------------------------------------------
@@ -74,8 +74,8 @@ public:
 
 public:
 
-    bool fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const;
-    bool fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const;
+    stdbool fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const;
+    stdbool fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const;
 
     //----------------------------------------------------------------
     //

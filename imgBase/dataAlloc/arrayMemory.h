@@ -97,7 +97,7 @@ public:
 
 public:
 
-    bool realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
+    stdbool realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////
 
@@ -193,11 +193,11 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    inline bool realloc(Space size, Space byteAlignment, stdPars(Kit))
+    inline stdbool realloc(Space size, Space byteAlignment, stdPars(Kit))
         {return Base::realloc(size, byteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
-    inline bool reallocForGpuExch(Space size, stdPars(Kit))
+    inline stdbool reallocForGpuExch(Space size, stdPars(Kit))
         {return Base::realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     //

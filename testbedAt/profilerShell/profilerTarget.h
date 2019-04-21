@@ -12,5 +12,5 @@
 
 struct ProfilerTarget
 {
-    virtual bool process(stdPars(ProfilerKit)) =0;
+    virtual stdbool process(stdPars(ProfilerKit)) =0;
 };

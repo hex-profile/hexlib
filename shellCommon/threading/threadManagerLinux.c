@@ -86,7 +86,7 @@ private:
 //
 //================================================================
 
-bool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
+stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
 {
     section.clear();
 
@@ -116,7 +116,7 @@ bool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdPars
 //
 //================================================================
 
-bool ThreadManagerLinux::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
+stdbool ThreadManagerLinux::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
 {
     stdBegin;
 
@@ -147,7 +147,7 @@ bool ThreadManagerLinux::createEvent(bool manualReset, EventOwner& event, stdPar
 //
 //================================================================
 
-bool ThreadManagerLinux::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool ThreadManagerLinux::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
     REQUIRE(false); // not impl
@@ -160,7 +160,7 @@ bool ThreadManagerLinux::createThread(ThreadFunc* threadFunc, void* threadParams
 //
 //================================================================
 
-bool ThreadManagerLinux::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool ThreadManagerLinux::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
     REQUIRE(false); // not impl

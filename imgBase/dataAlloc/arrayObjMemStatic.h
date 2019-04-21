@@ -63,7 +63,7 @@ public:
         return true;
     }
 
-    inline bool realloc(Space newSize, stdPars(ErrorLogKit))
+    inline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
     {
         stdBegin;
         REQUIRE(reallocStatic(newSize));

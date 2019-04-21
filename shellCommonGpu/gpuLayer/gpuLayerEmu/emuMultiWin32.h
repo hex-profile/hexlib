@@ -45,7 +45,7 @@ public:
 
 public:
 
-    bool create(Space streamCount, stdPars(CreateKit));
+    stdbool create(Space streamCount, stdPars(CreateKit));
     void destroy();
     bool created() const {return serverArray.allocated();}
 
@@ -53,7 +53,7 @@ public:
 
 public:
 
-    bool launchKernel
+    stdbool launchKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,

@@ -30,7 +30,7 @@ public:
 public:
 
     KIT_COMBINE3(InitKit, GpuInitKit, ErrorLogKit, MsgLogKit);
-    bool createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit));
+    stdbool createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit));
 
 private:
 
@@ -46,7 +46,7 @@ private:
 
 struct GpuShellTarget
 {
-    virtual bool exec(stdPars(GpuShellKit)) =0;
+    virtual stdbool exec(stdPars(GpuShellKit)) =0;
 };
 
 //================================================================
@@ -75,7 +75,7 @@ public:
 
 public:
 
-    bool execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit));
+    stdbool execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit));
 
 private:
 

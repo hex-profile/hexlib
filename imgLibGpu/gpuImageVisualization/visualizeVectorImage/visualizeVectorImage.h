@@ -12,7 +12,7 @@
 //================================================================
 
 template <typename VectorType>
-bool visualizeVectorImage
+stdbool visualizeVectorImage
 (
     const GpuMatrix<const VectorType>& src,
     const GpuMatrix<uint8_x4>& dst,
@@ -30,7 +30,7 @@ bool visualizeVectorImage
 //
 //================================================================
 
-bool imposeVectorArrow
+stdbool imposeVectorArrow
 (
     const GpuMatrix<uint8_x4>& dst,
     const Point<float32>& vectorBegin,

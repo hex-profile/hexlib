@@ -73,7 +73,7 @@ public:
 
 public:
 
-    bool realloc(stdPars(memController::FastAllocToolkit))
+    stdbool realloc(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         ModuleReallocKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
@@ -104,7 +104,7 @@ class ToolModuleProcessThunk : public MemControllerProcessTarget
 
 public:
 
-    bool process(stdPars(memController::FastAllocToolkit))
+    stdbool process(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         ModuleProcessKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
@@ -156,7 +156,7 @@ public:
 
     bool reallocValid() const {return engine.reallocValid();}
 
-    bool realloc(stdPars(memController::FastAllocToolkit))
+    stdbool realloc(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseGpuKit);
         EngineBaseKit gpuKit = kit.dataProcessing ? baseGpuKit : kitReplace(baseGpuKit, prohibitedApi.getKit());
@@ -191,7 +191,7 @@ public:
 
     bool reallocValid() const {return engine.reallocValid();}
 
-    bool process(stdPars(memController::FastAllocToolkit))
+    stdbool process(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         EngineBaseKit gpuKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
@@ -228,7 +228,7 @@ public:
 
 public:
 
-    bool process(stdPars(ToolTargetProcessKit))
+    stdbool process(stdPars(ToolTargetProcessKit))
     {
         stdBegin;
 
@@ -280,7 +280,7 @@ public:
 
 public:
 
-    bool process(stdPars(ToolTargetProcessKit))
+    stdbool process(stdPars(ToolTargetProcessKit))
     {
         stdBegin;
 
@@ -352,7 +352,7 @@ inline bool operator==(const FileProperties& a, const FileProperties& b)
 //================================================================
 
 template <typename Kit>
-bool getFileProperties(const CharType* filename, FileProperties& result, stdPars(Kit))
+stdbool getFileProperties(const CharType* filename, FileProperties& result, stdPars(Kit))
 {
     stdBegin;
 
@@ -381,8 +381,8 @@ public:
 
     KIT_COMBINE2(UpdateKit, DiagnosticKit, FileToolsKit);
 
-    bool checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit));
-    bool updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit));
+    stdbool checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit));
+    stdbool updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit));
 
 private:
 
@@ -398,7 +398,7 @@ private:
 //
 //================================================================
 
-bool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit))
+stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit))
 {
     stdBegin;
 
@@ -434,7 +434,7 @@ bool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& steady,
 //
 //================================================================
 
-bool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit))
+stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit))
 {
     stdBegin;
 
@@ -548,15 +548,15 @@ class AtAssemblyImpl : public CfgSerialization
 
 public:
 
-    bool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
-    void finalize(stdPars(InitKit));
-    bool process(stdPars(ProcessKit));
+    stdbool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
+    stdvoid finalize(stdPars(InitKit));
+    stdbool process(stdPars(ProcessKit));
     void serialize(const CfgSerializeKit& kit);
 
 public:
 
-    bool processWithProfiler(stdPars(ProcessProfilerKit));
-    bool processFinal(stdPars(ProcessFinalKit));
+    stdbool processWithProfiler(stdPars(ProcessProfilerKit));
+    stdbool processFinal(stdPars(ProcessFinalKit));
 
 private:
 
@@ -675,7 +675,7 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-bool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
+stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
 {
     stdBegin;
 
@@ -767,7 +767,7 @@ bool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitKit)
 //
 //================================================================
 
-void AtAssemblyImpl::finalize(stdPars(InitKit))
+stdvoid AtAssemblyImpl::finalize(stdPars(InitKit))
 {
     stdBegin;
 
@@ -797,7 +797,7 @@ void AtAssemblyImpl::finalize(stdPars(InitKit))
 //
 //================================================================
 
-bool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
+stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 {
     stdBegin;
 
@@ -972,7 +972,7 @@ class GpuShellExecAppImpl : public gpuShell::GpuShellTarget
 
 public:
 
-    bool exec(stdPars(gpuShell::GpuShellKit))
+    stdbool exec(stdPars(gpuShell::GpuShellKit))
         {return base.processFinal(stdPassThruKit(kitCombine(baseKit, kit)));}
 
     inline GpuShellExecAppImpl(AtAssemblyImpl& base, const BaseKit& baseKit)
@@ -1005,7 +1005,7 @@ void profilerGpuFlush(void* context)
 //
 //================================================================
 
-bool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
+stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 {
     stdBegin;
 
@@ -1085,7 +1085,7 @@ class ProfilerTargetToAssembly : public ProfilerTarget
 
 public:
 
-    bool process(stdPars(ProfilerKit))
+    stdbool process(stdPars(ProfilerKit))
         {return base.processWithProfiler(stdPassThruKit(kitCombine(kit, baseKit)));}
 
     inline ProfilerTargetToAssembly(AtAssemblyImpl& base, const BaseKit& baseKit)
@@ -1216,7 +1216,7 @@ private:
 //
 //================================================================
 
-bool AtAssemblyImpl::process(stdPars(ProcessKit))
+stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 {
     stdBeginScoped;
 
@@ -1371,13 +1371,13 @@ AtAssembly::AtAssembly()
 AtAssembly::~AtAssembly()
     {}
 
-bool AtAssembly::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
+stdbool AtAssembly::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
     {return instance->init(engineFactory, stdPassThru);}
 
-void AtAssembly::finalize(stdPars(InitKit))
+stdvoid AtAssembly::finalize(stdPars(InitKit))
     {return instance->finalize(stdPassThru);}
 
-bool AtAssembly::process(stdPars(ProcessKit))
+stdbool AtAssembly::process(stdPars(ProcessKit))
     {return instance->process(stdPassThru);}
 
 //----------------------------------------------------------------

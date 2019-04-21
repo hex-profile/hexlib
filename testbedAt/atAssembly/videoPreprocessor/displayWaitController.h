@@ -36,7 +36,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
 
-    bool waitForDisplayTime(stdPars(Kit));
+    stdbool waitForDisplayTime(stdPars(Kit));
 
 private:
 

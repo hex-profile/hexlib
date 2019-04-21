@@ -103,7 +103,7 @@ GPUTOOL_2D_END
 #if HOSTCODE
 
 template <>
-bool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuImageYuv<Luma>& dst, stdPars(GpuProcessKit))
+stdbool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuImageYuv<Luma>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
 
@@ -134,7 +134,7 @@ bool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuImageYuv<Luma
 #if HOSTCODE
 
 template <>
-bool convertRawToYuv420(const GpuArray<const uint16>& src, const GpuImageYuv<Luma>& dst, stdPars(GpuProcessKit))
+stdbool convertRawToYuv420(const GpuArray<const uint16>& src, const GpuImageYuv<Luma>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
     REQUIRE(false); // not implemented
@@ -222,7 +222,7 @@ GPUTOOL_2D_END
 #if HOSTCODE
 
 template <>
-bool convertYuv420ToRaw(const GpuImageYuv<const Luma>& src, const GpuArray<uint8>& dst, stdPars(GpuProcessKit))
+stdbool convertYuv420ToRaw(const GpuImageYuv<const Luma>& src, const GpuArray<uint8>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
 
@@ -253,7 +253,7 @@ bool convertYuv420ToRaw(const GpuImageYuv<const Luma>& src, const GpuArray<uint8
 #if HOSTCODE
 
 template <>
-bool convertYuv420ToRaw(const GpuImageYuv<const Luma>& src, const GpuArray<uint16>& dst, stdPars(GpuProcessKit))
+stdbool convertYuv420ToRaw(const GpuImageYuv<const Luma>& src, const GpuArray<uint16>& dst, stdPars(GpuProcessKit))
 {
     stdBegin;
 

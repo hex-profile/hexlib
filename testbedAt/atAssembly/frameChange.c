@@ -29,7 +29,7 @@ void resetFrameDesc(FrameDesc& desc)
 //
 //================================================================
 
-bool updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(FrameChangeDetector::Kit))
+stdbool updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(FrameChangeDetector::Kit))
 {
     stdBegin;
 
@@ -133,7 +133,7 @@ void FrameChangeDetector::reset()
 //
 //================================================================
 
-bool FrameChangeDetector::check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit))
+stdbool FrameChangeDetector::check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit))
 {
     stdBegin;
 

@@ -81,7 +81,7 @@ private:
 //
 //================================================================
 
-bool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
+stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
 {
     section.clear();
 
@@ -138,7 +138,7 @@ public:
 
 public:
 
-    bool create(bool manualReset, stdPars(ThreadToolKit))
+    stdbool create(bool manualReset, stdPars(ThreadToolKit))
     {
         stdBegin;
 
@@ -189,7 +189,7 @@ private:
 //
 //================================================================
 
-bool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
+stdbool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
 {
     stdBegin;
 
@@ -297,7 +297,7 @@ public:
 
 public:
 
-    ThreadControllerWin32(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, bool& ok, stdPars(ErrorLogKit))
+    ThreadControllerWin32(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, stdbool& ok, stdPars(ErrorLogKit))
     {
         stdBegin;
         ok = false;
@@ -364,7 +364,7 @@ public:
 //
 //================================================================
 
-bool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
 
@@ -385,7 +385,7 @@ bool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadParams
 //
 //================================================================
 
-bool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
 

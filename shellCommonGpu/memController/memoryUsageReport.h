@@ -9,7 +9,7 @@
 //================================================================
 
 template <typename Kit>
-inline void memoryUsageReport
+inline stdvoid memoryUsageReport
 (
     const CharArray& name,
     const MemoryUsage& stateUsage,

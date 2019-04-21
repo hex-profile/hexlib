@@ -12,7 +12,7 @@ namespace upsampleTwiceModelSpace {
 
 using Type = float16;
 
-bool upsampleTwiceModel(const GpuMatrix<const Type>& src, const GpuMatrix<Type>& dst, stdPars(GpuProcessKit));
+stdbool upsampleTwiceModel(const GpuMatrix<const Type>& src, const GpuMatrix<Type>& dst, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 
