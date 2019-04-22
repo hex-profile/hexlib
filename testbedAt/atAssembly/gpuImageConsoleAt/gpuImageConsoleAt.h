@@ -59,11 +59,6 @@ public:
 
 public:
 
-    bool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-        {return addImageCopyImpl(img, hint, stdPassThru);}
-
-public:
-
     bool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
         {return addImageCopyImpl(img, hint, stdPassThru);}
 

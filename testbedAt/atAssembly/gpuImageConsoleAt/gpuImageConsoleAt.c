@@ -54,39 +54,52 @@ bool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMat
 {
     stdBegin;
 
-    //
-    // Allocate CPU matrix
-    //
-
-    MatrixMemory<Type> cpuMatrixMemory;
-    require(cpuMatrixMemory.reallocForGpuExch(gpuMatrix.size(), stdPass));
-    Matrix<Type> cpuMatrix = cpuMatrixMemory;
-
-    //
-    // Copy the matrix to CPU
-    //
-
+    if (hint.target == ImgOutputOverlay)
     {
-        GpuCopyThunk gpuCopy;
-
-        if (gpuMatrix.memPitch() >= 0)
-            require(copyMatrixAsArray(gpuMatrix, cpuMatrixMemory, gpuCopy, stdPass));
-        else
+        if (kit.dataProcessing)
         {
-            require(copyMatrixAsArray(flipMatrix(gpuMatrix), cpuMatrixMemory, gpuCopy, stdPass));
-            cpuMatrix = flipMatrix(cpuMatrixMemory);
+            AtProviderFromGpuImage imageProvider(gpuMatrix, kit);
+            require(atVideoOverlay.setImage(gpuMatrix.size(), imageProvider, hint.desc, hint.id, textEnabled, stdPass));
         }
+
+        overlaySet = true;
     }
-
-    //
-    // Output the CPU matrix
-    //
-
-    if (kit.dataProcessing)
+    else
     {
-        stdEnter;
 
-        require(atImgConsole.addImage(cpuMatrix, hint, stdPass));
+        //
+        // Allocate CPU matrix
+        //
+
+        MatrixMemory<Type> cpuMatrixMemory;
+        require(cpuMatrixMemory.reallocForGpuExch(gpuMatrix.size(), stdPass));
+        Matrix<Type> cpuMatrix = cpuMatrixMemory;
+
+        //
+        // Copy the matrix to CPU
+        //
+
+        {
+            GpuCopyThunk gpuCopy;
+
+            if (gpuMatrix.memPitch() >= 0)
+                require(copyMatrixAsArray(gpuMatrix, cpuMatrixMemory, gpuCopy, stdPass));
+            else
+            {
+                require(copyMatrixAsArray(flipMatrix(gpuMatrix), cpuMatrixMemory, gpuCopy, stdPass));
+                cpuMatrix = flipMatrix(cpuMatrixMemory);
+            }
+        }
+
+        //
+        // Output the CPU matrix
+        //
+
+        if (kit.dataProcessing)
+        {
+            stdEnter;
+            require(atImgConsole.addImage(cpuMatrix, hint, stdPass));
+        }
     }
 
     stdEnd;
@@ -94,7 +107,6 @@ bool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMat
 
 //----------------------------------------------------------------
 
-INSTANTIATE_FUNC(GpuBaseAtConsoleThunk::addImageCopyImpl<uint8>)
 INSTANTIATE_FUNC(GpuBaseAtConsoleThunk::addImageCopyImpl<uint8_x4>)
 
 //================================================================

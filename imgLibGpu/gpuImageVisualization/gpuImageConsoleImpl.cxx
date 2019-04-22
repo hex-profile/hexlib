@@ -116,12 +116,10 @@ devDefineSampler(visualizeScalarSampler4, DevSampler2D, DevSamplerFloat, 4)
 //----------------------------------------------------------------
 
 #define VISUALIZE_SCALAR_KERNEL_INSTANCES(name, readTerm) \
-    VISUALIZE_SCALAR_KERNEL_BODY(name##_uint8, readTerm, uint8) \
     VISUALIZE_SCALAR_KERNEL_BODY(name##_uint8_x4, readTerm, uint8_x4) \
 
 #define VISUALIZE_SCALAR_KERNEL_SELECTOR(name) \
     template <typename Dst> inline const GpuKernelLink& name(); \
-    template <> inline const GpuKernelLink& name<uint8>() {return name##_uint8;} \
     template <> inline const GpuKernelLink& name<uint8_x4>() {return name##_uint8_x4;} \
 
 #define VISUALIZE_SCALAR_KERNEL_ALL(name, readTerm) \
@@ -615,15 +613,15 @@ bool GpuImageConsoleThunk::addMatrixExImpl
 
     if (hint.target == ImgOutputConsole)
     {
-        GPU_MATRIX_ALLOC(gpuMatrix, uint8, outputSize);
+        GPU_MATRIX_ALLOC(gpuMatrix, uint8_x4, outputSize);
 
         ////
 
-        require((visualizeScalarMatrix<Type, uint8>(img, linearTransform(coordBackC1, point(0.f)), channel, valueTransform, upsampleType, borderMode, gpuMatrix, stdPass)));
+        require((visualizeScalarMatrix<Type, uint8_x4>(img, linearTransform(coordBackC1, point(0.f)), channel, valueTransform, upsampleType, borderMode, gpuMatrix, stdPass)));
 
         ////
 
-        require(baseConsole.addImage(gpuMatrix, ImgOutputHint(hint).setDesc(paramMsg(STR("%0 [%1, %2]"), hint.desc, fltf(minVal, 3), fltf(maxVal, 3))), stdPass));
+        require(baseConsole.addImageBgr(gpuMatrix, ImgOutputHint(hint).setDesc(paramMsg(STR("%0 [%1, %2]"), hint.desc, fltf(minVal, 3), fltf(maxVal, 3))), stdPass));
 
     }
     else if (hint.target == ImgOutputOverlay)

@@ -43,7 +43,6 @@ struct GpuBaseConsole
     // Basic output interaces.
     //
 
-    virtual bool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars) =0;
     virtual bool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
 
     //
