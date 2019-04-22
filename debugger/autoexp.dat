@@ -1,0 +1,102 @@
+[Visualizer]
+
+;================================================================
+;
+; Misc
+;
+;================================================================
+
+Point<*> {preview(#("{", $e.X, ", ", $e.Y, "}"))}
+
+BoolSwitch<*> {preview($e.value.value)}
+NumericVar<*> {preview($e.value)}
+NumericVarStatic<*,*,*,*> {preview($e.value)}
+
+ExclusiveMultiSwitch<*,*,*> {preview($e.base)}
+MultiSwitch<*,*,*> {preview($e.value)}
+
+;================================================================
+;
+; Array
+;
+;================================================================
+
+ArrayEx<*>|ArrayMemoryEx<*>|Array<*>|ArrayMemory<*>|ArrayObjMem<*>|GpuArray<*>|GpuArrayMemory<*>|ArrayObjMemStatic<*,*> {
+  preview
+  ( 
+    #
+    (
+      "[", 
+      $e.theSize,
+      "](",
+      #array
+      (
+         expr :   ($c.thePtr)[$i],  
+         size :   $c.theSize
+      ), 
+      ")"
+    )
+  )
+  children
+  (
+    #
+    (
+      [raw members]: [$c,!],
+      #array
+      (
+        expr :  ($c.thePtr)[$i],  
+        size :  $c.theSize
+      )
+    )
+  )
+}
+
+;================================================================
+;
+; Matrix
+;
+;================================================================
+
+MatrixEx<*>|Matrix<*>|MatrixMemoryEx<*>|MatrixMemory<*> {
+  preview
+  ( 
+    #
+    ( 
+      $e.theSize.X, " x ", $e.theSize.Y,
+      ", ptr = ", [$e.theMemPtr, x],
+      ", pitch = ", $e.theMemPitch
+    )
+  )
+  children
+  (
+    #
+    (
+      [raw members]: [$c,!],
+      #array
+      (
+        expr :  [$c.theMemPtr + $i * $c.theMemPitch, 32],
+        size :  $c.theSize.Y
+      )
+    )
+  )
+}
+
+GpuMatrix<*>|GpuMatrixMemory<*> {
+  preview
+  ( 
+    #
+    ( 
+      $e.theSize.X, " x ", $e.theSize.Y,
+      ", ptr = ", [$e.theMemPtr, x],
+      ", pitch = ", $e.theMemPitch
+    )
+  )
+  children
+  (
+    #
+    (
+      [raw members]: [$c,!]
+    )
+  )
+}
+

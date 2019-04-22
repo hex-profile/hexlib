@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+    <Type Name="Point&lt;*&gt;">
+        <DisplayString>{{{X}, {Y}}}</DisplayString>
+    </Type>
+
+    <Type Name="BoolSwitch&lt;*&gt;">
+        <DisplayString>{value.value}</DisplayString>
+    </Type>
+
+    <Type Name="NumericVar&lt;*&gt;">
+        <DisplayString>{value} // range {minVal}..{maxVal}</DisplayString>
+    </Type>
+
+    <Type Name="MultiSwitch&lt;*, *, *&gt;">
+        <AlternativeType Name="ExclusiveMultiSwitch&lt;*, *, *&gt;"/>
+        <DisplayString>{base.value}</DisplayString>
+    </Type>
+
+    <Type Name="PointerEmulator&lt;*, *&gt;">
+        <DisplayString>{addr}</DisplayString>
+    </Type>
+    
+    <Type Name="GpuMatrix&lt;*&gt;">
+        <AlternativeType Name="GpuMatrixMemory&lt;*&gt;"/>
+        <DisplayString>{theSize.X} x {theSize.Y}, ptr = {theMemPtr,Xb}, pitch = {theMemPitch}</DisplayString>
+    </Type>
+
+    <Type Name="Array&lt;*&gt;">
+        <AlternativeType Name="ArrayEx&lt;*&gt;"/>
+        <AlternativeType Name="ArrayMemory&lt;*&gt;"/>
+        <AlternativeType Name="ArrayMemoryEx&lt;*&gt;"/>
+        <AlternativeType Name="ArrayObjMem&lt;*&gt;"/>
+        <AlternativeType Name="ArrayObjMemStatic&lt;*, *&gt;"/>
+        <AlternativeType Name="GpuArray&lt;*&gt;"/>
+        <AlternativeType Name="GpuArrayMemory&lt;*&gt;"/>
+
+        <DisplayString>[{theSize}] {thePtr,[theSize]na}</DisplayString>
+        <Expand>
+            <Item Name="[ptr]">thePtr,Xb</Item>
+            <ArrayItems>
+                <Size>theSize</Size>
+                <ValuePointer>thePtr</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="Matrix&lt;*&gt;">
+        <AlternativeType Name="MatrixEx&lt;*&gt;"/>
+        <AlternativeType Name="MatrixMemory&lt;*&gt;"/>
+        <AlternativeType Name="MatrixMemoryEx&lt;*&gt;"/>
+        <DisplayString>{theSize.X} x {theSize.Y}, ptr = {theMemPtr,Xb}, pitch = {theMemPitch}</DisplayString>
+        <Expand>
+            <IndexListItems>
+                <Size>theSize.Y</Size>
+                <ValueNode>theMemPtr == 0 ? nullptr : theMemPtr + theMemPitch * $i, [theSize.X]na</ValueNode>
+            </IndexListItems>
+        </Expand>
+    </Type>
+
+</AutoVisualizer>
