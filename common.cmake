@@ -67,7 +67,13 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #
     #----------------------------------------------------------------
 
-    set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
+    if (${HEXLIB_PLATFORM} EQUAL 0)
+        target_compile_options(${projectName} PRIVATE "/std:c++17") 
+    else()
+        target_compile_options(${projectName} PRIVATE "/std:c++14")
+    endif()
+
+    ###
 
     if (MSVC)
         target_compile_options(${projectName} PRIVATE "/wd5040")

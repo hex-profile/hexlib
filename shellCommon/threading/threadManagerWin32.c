@@ -371,7 +371,7 @@ stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadPar
     COMPILE_ASSERT(sizeof(ThreadControllerWin32) <= sizeof(ThreadControlData));
     ThreadControllerWin32& threadControlEx = (ThreadControllerWin32&) threadControl.data;
 
-    bool ok = false;
+    stdbool ok = false;
     constructParams(threadControlEx, ThreadControllerWin32, (threadFunc, threadParams, stackSize, ok, stdPassThru));
     require(ok);
 

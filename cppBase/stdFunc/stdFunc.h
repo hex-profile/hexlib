@@ -192,5 +192,23 @@ extern const NullKit nullKit;
 //
 //================================================================
 
-using stdbool = bool;
 using stdvoid = void;
+
+////
+
+class stdbool // [[nodiscard]]
+{
+
+public:
+    
+    stdbool(bool value)
+        : value(value) {}
+
+    operator bool ()
+        {return value;}
+
+private:
+
+    bool value;
+
+};
