@@ -705,7 +705,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     configEditor = defaultEditor;
     REMEMBER_CLEANUP1_EX(configEditorCleanup, configEditor.clear(), SimpleString&, configEditor);
 
-    configFile.loadFile(CT("testbed.cfg"), stdPassKit(kitCombine(kit, fileToolsKit)));
+    configFile.loadFile(SimpleString(engineModule->getName()) + ".cfg", stdPassKit(kitCombine(kit, fileToolsKit)));
     REMEMBER_CLEANUP1_EX(configFileCleanup, configFile.unloadFile(), ConfigFile&, configFile);
 
     configFile.loadVars(*this);

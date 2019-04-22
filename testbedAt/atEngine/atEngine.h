@@ -26,6 +26,8 @@ KIT_COMBINE4(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit, Alternativ
 
 struct AtEngine
 {
+    virtual CharType* getName() const =0;
+
     virtual void serialize(const ModuleSerializeKit& kit) =0;
     virtual void setInputResolution(const Point<Space>& frameSize) =0;
     virtual void setInputMetadata(const CfgSerializeKit& kit) =0;
