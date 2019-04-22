@@ -87,15 +87,6 @@ public:
 
 public:
 
-    bool addImageFunc(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-    {
-        stdBegin;
-        bool ok1 = outAvi.saveImage(img, hint.desc, hint.id, stdPass);
-        bool ok2 = baseConsole.addImage(img, hint, stdPass);
-        require(ok1 && ok2);
-        stdEnd;
-    }
-
     bool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
     {
         stdBegin;

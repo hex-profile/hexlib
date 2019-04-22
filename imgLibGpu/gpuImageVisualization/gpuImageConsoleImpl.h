@@ -149,9 +149,6 @@ public:
     bool update(stdNullPars)
         {return baseConsole.update(stdPassThru);}
 
-    bool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-        {return baseConsole.addImage(img, hint, stdPassThru);}
-
     bool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
         {return baseConsole.addImageBgr(img, hint, stdPassThru);}
 

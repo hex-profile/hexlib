@@ -58,7 +58,6 @@ struct AtAsyncOverlay
 
 struct AtImgConsole
 {
-    virtual bool addImageFunc(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars) =0;
     virtual bool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
 
     virtual bool clear(stdNullPars) =0;
