@@ -5,4 +5,4 @@ What makes it difficult to use?
 * Not exception-based, returns bool from each function (but code is generally exception-safe).
 * stdBegin/stdEnd/stdPass function macros are unusual.
 * Kits are unusual and badly supported by IDEs.
-* Reallocation scheme with measure/execute phases is non-standard.
+* Reallocation scheme with measure/execute phases is unusal.

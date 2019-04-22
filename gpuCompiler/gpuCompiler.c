@@ -1247,7 +1247,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
     StlString outputFile;
     vector<StlString> otherArgs;
 
-    parseClArgs(args, includes, defines, cppFiles, cudaFiles, outputDir, outputFile, otherArgs, stdPass);
+    require(parseClArgs(args, includes, defines, cppFiles, cudaFiles, outputDir, outputFile, otherArgs, stdPass));
 
     bool gpuDetected = cudaFiles.size() > 0;
 

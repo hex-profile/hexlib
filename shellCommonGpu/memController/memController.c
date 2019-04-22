@@ -49,7 +49,7 @@ public:
     bool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
     {
         result.clear();
-        printMsgTrace(kit.errorLogEx, STR("Texture allocation is too slow for temporary memory"), msgErr, stdPassThru);
+        require(printMsgTrace(kit.errorLogEx, STR("Texture allocation is too slow for temporary memory"), msgErr, stdPassThru));
         return false;
     }
 
