@@ -308,10 +308,11 @@ private:
 
     BoolSwitch<false> alternativeVersion;
 
-    RangeValueControl<Space> displayedTemporalIndex;
+    RangeValueControl<int32> displayedViewIndex;
+    RangeValueControl<int32> displayedTemporalIndex;
     RangeValueControl<int32> displayedCircularIndex;
-    MultiSwitch<DisplaySide, DisplaySide_Count, DisplayOld> displayedSide;
-    RangeValueControl<Space> displayedScaleIndex;
+    RangeValueControl<int32> displayedScaleIndex;
+
     RingSwitch<DisplayMethod, DISPLAY_METHOD_COUNT, DISPLAY_FULLSCREEN> displayMethod;
 
 private:
@@ -348,6 +349,7 @@ VideoPreprocessorImpl::VideoPreprocessorImpl()
     genGratingPeriod(2, 2048, 6, 1.02189714865411668f, RangeValueLogscale),
     userDisplayFactor(1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale),
 
+    displayedViewIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
     displayedTemporalIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
     displayedCircularIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
     displayedScaleIndex(0, 0x7F, 0, 1, RangeValueLinear)
@@ -369,21 +371,12 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 
         check_flag(alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
 
-        ////
-
-        displayedTemporalIndex.serialize(kit, STR("Displayed Time Index"), STR(","), STR("."));
+        displayedViewIndex.serialize(kit, STR("Displayed View Index"), STR("9"), STR("0"));
+        displayedTemporalIndex.serialize(kit, STR("Displayed Temporal Index"), STR(","), STR("."));
         displayedCircularIndex.serialize(kit, STR("Displayed Circular Index"), STR(";"), STR("'"));
         displayedScaleIndex.serialize(kit, STR("Displayed Scale Index"), STR("="), STR("-"));
+
         displayMethod.serialize(kit, STR("Display Method"), STR("Ctrl+D"));
-
-        ////
-
-        displayedSide.serialize
-        (
-            kit, STR("Displayed Direction"),
-            {STR("Forward"), STR("9")},
-            {STR("Backward"), STR("0")}
-        );
     }
 
     {
@@ -609,14 +602,24 @@ stdbool VideoPreprocessorImpl::processTarget
     //
     //----------------------------------------------------------------
 
+    DisplayedRangeIndex displayedViewIndexVar(displayedViewIndex);
+    REMEMBER_CLEANUP(displayedViewIndex = displayedViewIndexVar);
+
     DisplayedRangeIndex displayedScaleIndexVar(displayedScaleIndex);
-    DisplayedRangeIndex displayedTimeIndexVar(displayedTemporalIndex);
+    REMEMBER_CLEANUP(displayedScaleIndex = displayedScaleIndexVar);
 
-    DisplayParamsKit displayKit(inputFrame.size(), displayedSide, displayedTimeIndexVar, displayedScaleIndexVar,
-        DisplayedCircularIndex(displayedCircularIndex), displayMethod);
+    DisplayedRangeIndex displayedTemporalIndexVar(displayedTemporalIndex);
+    REMEMBER_CLEANUP(displayedTemporalIndex = displayedTemporalIndexVar);
 
-    REMEMBER_CLEANUP2(displayedScaleIndex = displayedScaleIndexVar, RangeValueControl<Space>&, displayedScaleIndex, DisplayedRangeIndex&, displayedScaleIndexVar);
-    REMEMBER_CLEANUP2(displayedTemporalIndex = displayedTimeIndexVar, RangeValueControl<Space>&, displayedTemporalIndex, DisplayedRangeIndex&, displayedTimeIndexVar);
+    DisplayParamsKit displayKit
+    (
+        inputFrame.size(), 
+        displayedViewIndexVar, 
+        displayedTemporalIndexVar, 
+        displayedScaleIndexVar,
+        DisplayedCircularIndex(displayedCircularIndex), 
+        displayMethod
+    );
 
     ProcessKit oldKit = kit;
     ProcessExKit kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole, userDisplayFactor), displayKit, AlternativeVersionKit(alternativeVersion, 0));

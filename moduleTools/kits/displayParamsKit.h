@@ -48,8 +48,38 @@ public:
 
 private:
 
-    volatile int32 nonnegValue; // fix compiler bug
+    int32 nonnegValue;
     bool inverted;
+
+};
+
+//================================================================
+//
+// DisplayedRangeIndex
+//
+//================================================================
+
+class DisplayedRangeIndex
+{
+
+public:
+
+    inline DisplayedRangeIndex(int32 index)
+        : index(index) {}
+
+    inline operator int32 ()
+        {return index;}
+
+    inline int32 operator () (int32 minVal, int32 maxVal)
+    {
+        if (index < minVal) index = minVal;
+        if (index > maxVal) index = maxVal;
+        return index;
+    }
+
+private:
+
+    int32 index;
 
 };
 
@@ -65,37 +95,11 @@ enum DisplaySide {DisplayOld, DisplayNew, DisplaySide_Count};
 
 template <typename Type, typename Kit>
 inline const Type& displaySide(const Kit& kit, const Type& oldValue, const Type& newValue)
-    {return kit.displaySide == DisplayOld ? oldValue : newValue;}
+    {return kit.displayedViewIndex(0, DisplaySide_Count-1) == DisplayOld ? oldValue : newValue;}
 
-//================================================================
-//
-// DisplayedRangeIndex
-//
-//================================================================
-
-class DisplayedRangeIndex
-{
-
-public:
-
-    inline DisplayedRangeIndex(Space index)
-        : index(index) {}
-
-    inline operator Space ()
-        {return index;}
-
-    inline Space operator () (Space minVal, Space maxVal)
-    {
-        if (index < minVal) index = minVal;
-        if (index > maxVal) index = maxVal;
-        return index;
-    }
-
-private:
-
-    Space index;
-
-};
+template <typename Kit>
+inline DisplaySide displaySide(const Kit& kit)
+    {return DisplaySide(kit.displayedViewIndex(0, DisplaySide_Count-1));}
 
 //================================================================
 //
@@ -114,7 +118,7 @@ enum DisplayMethod {DISPLAY_FULLSCREEN, DISPLAY_CENTERED, DISPLAY_ORIGINAL, DISP
 KIT_CREATE6(
     DisplayParamsKit,
     Point<Space>, displayFrameSize,
-    DisplaySide, displaySide,
+    DisplayedRangeIndex&, displayedViewIndex,
     DisplayedRangeIndex&, displayedTemporalIndex,
     DisplayedRangeIndex&, displayedScaleIndex,
     const DisplayedCircularIndex&, displayedCircularIndex,
