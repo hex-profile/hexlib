@@ -7,6 +7,8 @@
 
 #include <sys/stat.h>
 #include <linux/limits.h>
+#include <unistd.h>
+
 #include <string.h>
 
 #include "storage/rememberCleanup.h"
@@ -20,7 +22,7 @@
 
 bool FileToolsLinux::fileExists(const CharType* filename)
 {
-    return access(filename, F_OK ) != -1;
+    return access(filename, F_OK) != -1;
 }
 
 //================================================================
@@ -64,7 +66,7 @@ bool FileToolsLinux::getChangeTime(const CharType* filename, FileTime& result)
 
 bool FileToolsLinux::deleteFile(const CharType* filename)
 {
-    return remove(name) == 0;
+    return remove(filename) == 0;
 }
 
 bool FileToolsLinux::renameFile(const CharType* oldName, const CharType* newName)

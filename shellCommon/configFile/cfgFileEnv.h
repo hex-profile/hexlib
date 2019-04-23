@@ -59,10 +59,10 @@ public:
         {if (impl) impl->eraseAll();}
 
     stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
-        {return !impl ? false : impl->loadFromFile(filename, fileTools, stdPassThru);}
+        {return !impl ? stdbool(false) : impl->loadFromFile(filename, fileTools, stdPassThru);}
 
     stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
-        {return !impl ? false : impl->saveToFile(filename, fileTools, stdPassThru);}
+        {return !impl ? stdbool(false) : impl->saveToFile(filename, fileTools, stdPassThru);}
 
 public:
 

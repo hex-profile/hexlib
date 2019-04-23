@@ -4,6 +4,7 @@
 #define HEXLIB_SPACE
 
 #include <cstdint>
+#include <cstddef>
 
 //================================================================
 //
