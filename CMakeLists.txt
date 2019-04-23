@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12.1 FATAL_ERROR)
 
 #================================================================
 #
@@ -31,4 +31,6 @@ add_subdirectory(shellCommonGpu)
 
 add_subdirectory(testbedAt)
 
-add_subdirectory(archive)
+if ($ENV{HEXLIB_ARCHIVE_PROJECTS})
+    add_subdirectory(archive)
+endif()

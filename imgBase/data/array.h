@@ -98,6 +98,25 @@ sysinline ArrayPreconditions arrayPreconditionsAreVerified()
 
 //================================================================
 //
+// ARRAY__CHECK_CONVERSION
+//
+//================================================================
+
+template <typename SrcPointer, typename DstPointer>
+inline auto arrayCheckPointerConversion()
+{
+    SrcPointer srcPtr(0);
+    DstPointer dstPtr = srcPtr;
+    return dstPtr;
+}
+
+//----------------------------------------------------------------
+
+#define ARRAY__CHECK_CONVERSION(SrcPointer, DstPointer) \
+    COMPILE_ASSERT(sizeof(arrayCheckPointerConversion<SrcPointer, DstPointer>()) >= 1)
+
+//================================================================
+//
 // ArrayEx<Pointer>
 //
 // Supports custom address space.
@@ -124,17 +143,6 @@ private:
 public:
 
     using Type = typename PtrElemType<Pointer>::T;
-
-public:
-
-    template <typename SrcPointer, typename DstPointer>
-    struct CheckConversion
-    {
-        using Src = typename PtrElemType<SrcPointer>::T; 
-        using Dst = typename PtrElemType<DstPointer>::T;
-
-        static constexpr bool value = TYPE_EQUAL(Src, Dst) || TYPE_EQUAL(const Src, Dst);
-    };
 
     //
     // Creation
@@ -184,7 +192,7 @@ public:
     template <typename OtherPointer>
     sysinline operator const ArrayEx<OtherPointer>& () const
     {
-        COMPILE_ASSERT(CheckConversion(Pointer, OtherPointer)::value);
+        ARRAY__CHECK_CONVERSION(Pointer, OtherPointer);
         return * (const ArrayEx<OtherPointer>*) this;
     }
 
@@ -226,7 +234,7 @@ public:
     template <typename OtherPointer>
     sysinline bool subr(Space org, Space end, ArrayEx<OtherPointer>& result) const
     {
-        COMPILE_ASSERT((CheckConversion<Pointer, OtherPointer>::value));
+        ARRAY__CHECK_CONVERSION(Pointer, OtherPointer);
 
         Space clOrg = clampRange(org, 0, theSize);
         Space clEnd = clampRange(end, clOrg, theSize);
@@ -247,7 +255,7 @@ public:
     template <typename OtherPointer>
     sysinline bool subs(Space org, Space size, ArrayEx<OtherPointer>& result) const
     {
-        COMPILE_ASSERT((CheckConversion<Pointer, OtherPointer>::value));
+        ARRAY__CHECK_CONVERSION(Pointer, OtherPointer);
 
         Space clOrg = clampRange(org, 0, theSize);
         Space clSize = clampRange(size, 0, theSize - clOrg);
@@ -318,7 +326,7 @@ public:
     template <typename OtherType>
     sysinline operator const Array<OtherType>& () const
     {
-        COMPILE_ASSERT((CheckConversion<Type*, OtherType*>::value));
+        ARRAY__CHECK_CONVERSION(Type*, OtherType*);
         COMPILE_ASSERT(sizeof(Array<Type>) == sizeof(Array<OtherType>));
         return * (const Array<OtherType>*) this;
     }
@@ -326,11 +334,10 @@ public:
     template <typename OtherType>
     sysinline operator const Array<OtherType> () const
     {
-        COMPILE_ASSERT((CheckConversion<Type*, OtherType*>::value));
+        ARRAY__CHECK_CONVERSION(Type*, OtherType*);
         COMPILE_ASSERT(sizeof(Array<Type>) == sizeof(Array<OtherType>));
         return * (const Array<OtherType>*) this;
     }
-
 
 };
 

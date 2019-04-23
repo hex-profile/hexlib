@@ -41,7 +41,7 @@ endfunction()
 
 function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects requiresGpuCompiler folderName)
 
-    cmake_minimum_required(VERSION 3.13.2 FATAL_ERROR)
+    cmake_minimum_required(VERSION 3.12.1 FATAL_ERROR)
 
     #----------------------------------------------------------------
     #
@@ -67,10 +67,16 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #
     #----------------------------------------------------------------
 
-    if (${HEXLIB_PLATFORM} EQUAL 0)
-        target_compile_options(${projectName} PRIVATE "/std:c++17") 
+    if (${HEXLIB_PLATFORM} EQUAL 1)
+        set(cppStd 14)
     else()
-        target_compile_options(${projectName} PRIVATE "/std:c++14")
+        set(cppStd 17)
+    endif()
+
+    if (WIN32)
+        target_compile_options(${projectName} PRIVATE "/std:c++${cppStd}") 
+    else()
+        target_compile_options(${projectName} PRIVATE "-std=c++${cppStd}") 
     endif()
 
     ###
