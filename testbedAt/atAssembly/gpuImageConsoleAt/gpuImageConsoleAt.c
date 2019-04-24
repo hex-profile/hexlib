@@ -3,6 +3,9 @@
 #include "copyMatrixAsArray.h"
 #include "dataAlloc/gpuMatrixMemory.h"
 #include "dataAlloc/matrixMemory.h"
+#include "dataAlloc/gpuArrayMemory.h"
+#include "gpuMatrixCopy/gpuMatrixCopy.h"
+#include "errorLog/debugBreak.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -16,6 +19,25 @@
 
 //================================================================
 //
+// AtProviderFromGpuImage::setImage
+//
+//================================================================
+
+bool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
+{
+    stdBegin;
+
+    Space absPitch = absv(image.memPitch());
+    REQUIRE(image.sizeX() <= absPitch);
+
+    require(buffer.realloc(absPitch * image.sizeY(), stdPass));
+    gpuImage = image;
+
+    stdEnd;
+}
+
+//================================================================
+//
 // AtProviderFromGpuImage::saveImage
 //
 //================================================================
@@ -25,19 +47,46 @@ bool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullPars
     stdBegin;
 
     GpuMatrix<const uint8_x4> src = gpuImage;
+    Matrix<uint8_x4> dst = dest;
+
+    ////
 
     GpuCopyThunk copyToAtBuffer;
 
-    if (src.memPitch() == dest.memPitch())
-        require(copyMatrixAsArray(src, dest, copyToAtBuffer, stdPass));
+    ////
+
+    if (src.memPitch() == dst.memPitch())
+    {
+
+        require(copyMatrixAsArray(src, dst, copyToAtBuffer, stdPass));
+
+    }
     else
     {
-        if (src.memPitch() >= 0 && dest.memPitch() >= 0)
-            require(copyToAtBuffer(src, dest, stdPass));
-        else if (src.memPitch() < 0 && dest.memPitch() < 0)
-            require(copyToAtBuffer(flipMatrix(src), flipMatrix(dest), stdPass));
-        else
-            REQUIRE(false);
+        REQUIRE(src.size() == dst.size());
+
+        ////
+
+        Space absPitch = absv(dst.memPitch());
+
+        ARRAY_EXPOSE(buffer);
+        REQUIRE(dest.sizeX() <= absPitch);
+        REQUIRE(absPitch * dest.sizeY() <= bufferSize);
+
+        GpuMatrix<uint8_x4> srcProper(bufferPtr, absPitch, dest.sizeX(), dest.sizeY());
+
+        ////
+
+        if (dst.memPitch() < 0)
+            srcProper = flipMatrix(srcProper);
+
+        ////
+
+        require(gpuMatrixCopy(src, srcProper, stdPass));
+
+        ////
+
+        require(copyMatrixAsArray(srcProper, dst, copyToAtBuffer, stdPass));
     }
 
     stdEnd;
@@ -56,11 +105,11 @@ bool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMat
 
     if (hint.target == ImgOutputOverlay)
     {
+        AtProviderFromGpuImage imageProvider(kit);
+        require(imageProvider.setImage(gpuMatrix, stdPass));
+
         if (kit.dataProcessing)
-        {
-            AtProviderFromGpuImage imageProvider(gpuMatrix, kit);
             require(atVideoOverlay.setImage(gpuMatrix.size(), imageProvider, hint.desc, hint.id, textEnabled, stdPass));
-        }
 
         overlaySet = true;
     }
@@ -71,8 +120,7 @@ bool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMat
         // Allocate CPU matrix
         //
 
-        MatrixMemory<Type> cpuMatrixMemory;
-        require(cpuMatrixMemory.reallocForGpuExch(gpuMatrix.size(), stdPass));
+        MATRIX_ALLOC_FOR_GPU_EXCH(cpuMatrixMemory, Type, gpuMatrix.size());
         Matrix<Type> cpuMatrix = cpuMatrixMemory;
 
         //
@@ -127,11 +175,11 @@ bool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, const G
 
     ////
 
+    AtProviderFromGpuImage imageProvider(kit);
+    require(imageProvider.setImage(gpuImage, stdPass));
+
     if (kit.dataProcessing)
-    {
-        AtProviderFromGpuImage imageProvider(gpuImage, kit);
         require(atVideoOverlay.setImage(size, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
-    }
 
     overlaySet = true;
 

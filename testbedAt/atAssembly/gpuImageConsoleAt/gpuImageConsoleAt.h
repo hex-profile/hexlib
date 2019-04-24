@@ -1,9 +1,10 @@
 #pragma once
 
-#include "imageConsole/gpuImageConsole.h"
 #include "atInterface/atInterface.h"
-#include "gpuProcessKit.h"
+#include "dataAlloc/gpuArrayMemory.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
+#include "gpuProcessKit.h"
+#include "imageConsole/gpuImageConsole.h"
 #include "kits/msgLogsKit.h"
 
 //================================================================
@@ -17,8 +18,10 @@ class AtProviderFromGpuImage : public AtImageProvider<uint8_x4>
 
 public:
 
-    AtProviderFromGpuImage(const GpuMatrix<const uint8_x4>& gpuImage, const GpuProcessKit& kit)
-        : gpuImage(gpuImage), kit(kit) {}
+    AtProviderFromGpuImage(const GpuProcessKit& kit)
+        : kit(kit) {}
+
+    bool setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars);
 
     Space getPitch() const
         {return gpuImage.memPitch();}
@@ -31,6 +34,8 @@ public:
 private:
 
     GpuMatrix<const uint8_x4> gpuImage;
+    GpuArrayMemory<uint8_x4> buffer;
+
     GpuProcessKit kit;
 
 };
