@@ -518,10 +518,21 @@ template <typename Type>
 class ScalarVisualizationProvider : public GpuImageProviderBgr32, private ScalarVisualizationParams<Type>
 {
 
+    using Base = ScalarVisualizationParams<Type>;
+
+    // Thanks GCC 5.4
+    using Base::img;
+    using Base::channel;
+    using Base::coordBackC1;
+    using Base::valueTransform;
+    using Base::upsampleType;
+    using Base::borderMode;
+    using Base::overlayCentering;
+
 public:
 
-    ScalarVisualizationProvider(const ScalarVisualizationParams& params, const GpuProcessKit& kit)
-        : ScalarVisualizationParams<Type>(params), kit(kit) {}
+    ScalarVisualizationProvider(const ScalarVisualizationParams<Type>& params, const GpuProcessKit& kit)
+        : Base(params), kit(kit) {}
 
     bool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
 
@@ -740,6 +751,20 @@ template <typename Vector>
 class VectorVisualizationProvider : public GpuImageProviderBgr32, private VectorVisualizationParams<Vector>
 {
 
+    using Base = VectorVisualizationParams<Vector>;
+
+    // Thanks GCC 5.4
+    using Base::image;
+    using Base::valueFactor;
+    using Base::textFactor;
+    using Base::arrowFactor;
+    using Base::coordBackMul;
+    using Base::upsampleType;
+    using Base::borderMode;
+    using Base::overlayCentering;
+    using Base::grayMode;
+    using Base::textOutputEnabled;
+
 public:
 
     bool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
@@ -747,7 +772,7 @@ public:
     UseType(GpuImageConsoleThunk, Kit);
 
     VectorVisualizationProvider(const VectorVisualizationParams<Vector>& params, const Kit& kit)
-        : VectorVisualizationParams<Vector>(params), kit(kit) {}
+        : Base(params), kit(kit) {}
 
 private:
 
@@ -1041,10 +1066,21 @@ template <typename Type>
 class UnpackedColorConvertProvider : public GpuImageProviderBgr32, private ScalarVisualizationParams<Type>
 {
 
+    using Base = ScalarVisualizationParams<Type>;
+
+    // Thanks GCC 5.4
+    using Base::img;
+    using Base::channel;
+    using Base::coordBackC1;
+    using Base::valueTransform;
+    using Base::upsampleType;
+    using Base::borderMode;
+    using Base::overlayCentering;
+
 public:
 
-    UnpackedColorConvertProvider(const ScalarVisualizationParams& params, ColorMode colorMode, const GpuProcessKit& kit)
-        : ScalarVisualizationParams<Type>(params), colorMode(colorMode), kit(kit) {}
+    UnpackedColorConvertProvider(const ScalarVisualizationParams<Type>& params, ColorMode colorMode, const GpuProcessKit& kit)
+        : Base(params), colorMode(colorMode), kit(kit) {}
 
     bool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
 
