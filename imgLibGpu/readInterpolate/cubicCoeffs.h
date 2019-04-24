@@ -11,13 +11,13 @@
 template <typename DstFloat>
 sysinline void cubicCoeffs(float32 s, DstFloat& c0, DstFloat& c1, DstFloat& c2, DstFloat& c3)
 {
-    float32 s2 = s*s;
-    float32 s3 = s2*s;
+    float32 s2 = s * s;
+    float32 s3 = s2 * s;
 
-    c0 = s2 + (-0.5f)*s3 + (-0.5f)*s;
-    c1 = 1 + 1.5f*s3 + (-2.5f)*s2;
-    c2 = (-1.5f)*s3 + 2*s2 + 0.5f*s;
-    c3 = 0.5f*s3 + (-0.5f)*s2;
+    c0 = s2 + (-0.5f) * s3 + (-0.5f) * s;
+    c1 = 1 + 1.5f * s3 + (-2.5f) * s2;
+    c2 = (-1.5f) * s3 + 2 * s2 + 0.5f * s;
+    c3 = 0.5f * s3 + (-0.5f) * s2;
 }
 
 //================================================================

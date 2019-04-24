@@ -33,7 +33,7 @@
 #include "userOutput/printMsgEx.h"
 #include "atAssembly/gpuImageConsoleAt/gpuImageConsoleAt.h"
 
-#define USE_OVERLAY_SMOOTHER 1
+#define USE_OVERLAY_SMOOTHER 0
 
 #if USE_OVERLAY_SMOOTHER
     #include "atAssembly/videoPreprocessor/overlaySmoother.h"
@@ -729,10 +729,13 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 
     if_not (overlaySmootherThunk.overlayIsSet)
     {
-        if (kit.dataProcessing && kit.outputLevel >= OUTPUT_ENABLED)
+        if (kit.outputLevel >= OUTPUT_ENABLED)
         {
-            AtProviderFromGpuImage imageProvider(inputFrame, kit);
-            require(overlaySmootherThunk.setImage(inputFrame.size(), imageProvider, STR("Input Frame"), 0, true, stdPass));
+            AtProviderFromGpuImage imageProvider(kit);
+            require(imageProvider.setImage(inputFrame, stdPass));
+
+            if (kit.dataProcessing)
+                require(overlaySmootherThunk.setImage(inputFrame.size(), imageProvider, STR("Input Frame"), 0, true, stdPass));
         }
     }
 
@@ -891,11 +894,11 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 
     if (kit.outputLevel >= OUTPUT_ENABLED && !atOverlayMonitor.overlayIsSet)
     {
+        AtProviderFromGpuImage imageProvider(kit);
+        require(imageProvider.setImage(processedFrame, stdPass));
+
         if (kit.dataProcessing)
-        {
-            AtProviderFromGpuImage imageProvider(processedFrame, kit);
             require(kit.atVideoOverlay.setImage(processedFrame.size(), imageProvider, STR("Rotated Frame"), 0, true, stdPass));
-        }
     }
 
     ////
@@ -978,11 +981,11 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
     if (kit.outputLevel >= OUTPUT_ENABLED && !atOverlayMonitor.overlayIsSet)
     {
+        AtProviderFromGpuImage imageProvider(kit);
+        require(imageProvider.setImage(croppedFrame, stdPass));
+
         if (kit.dataProcessing)
-        {
-            AtProviderFromGpuImage imageProvider(croppedFrame, kit);
             require(kit.atVideoOverlay.setImage(croppedFrame.size(), imageProvider, STR("Cropped Frame"), 0, true, stdPass));
-        }
     }
 
     ////
@@ -1041,7 +1044,7 @@ stdbool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(Pro
 
     //----------------------------------------------------------------
     //
-    // Add the video frame to the queue
+    // Add the video frame to the queue.
     //
     //----------------------------------------------------------------
 
@@ -1069,7 +1072,7 @@ stdbool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(Pro
 
     //----------------------------------------------------------------
     //
-    // Core processing
+    // Core processing.
     //
     //----------------------------------------------------------------
 

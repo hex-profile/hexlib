@@ -11,6 +11,8 @@
 //
 // testKernel
 //
+// Place to compile and look the assembly code.
+//
 //================================================================
 
 #if __CUDA_ARCH__
