@@ -219,17 +219,19 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     AllocatorObject<CpuAddrU> cpuCounterObject(cpuCounterState, cpuCounterInterface);
     AllocatorObject<GpuAddrU> gpuCounterObject(gpuCounterState, gpuCounterInterface);
 
-    auto reallocKit = kitCombine
-    (
-        DataProcessingKit(false, 0),
-        CpuFastAllocKit(cpuCounterObject, 0),
-        CpuBlockAllocatorKit(cpuCounterInterface, 0),
-        GpuFastAllocKit(gpuCounterObject, 0),
-        GpuBlockAllocatorKit(gpuCounterInterface, 0),
-        GpuTextureAllocKit(gpuTextureCounter, 0)
-    );
+    {
+        auto reallocKit = kitCombine
+        (
+            DataProcessingKit(false, 0),
+            CpuFastAllocKit(cpuCounterObject, 0),
+            CpuBlockAllocatorKit(cpuCounterInterface, 0),
+            GpuFastAllocKit(gpuCounterObject, 0),
+            GpuBlockAllocatorKit(gpuCounterInterface, 0),
+            GpuTextureAllocKit(gpuTextureCounter, 0)
+        );
 
-    require(target.realloc(stdPassKit(reallocKit)));
+        require(target.realloc(stdPassKit(reallocKit)));
+    }
 
     ////
 
@@ -321,24 +323,19 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     AllocatorObject<CpuAddrU> cpuDistributorObject(cpuDistributorState, cpuDistributorInterface);
     AllocatorObject<GpuAddrU> gpuDistributorObject(gpuDistributorState, gpuDistributorInterface);
 
-    require
-    (
-        target.realloc
+    {
+        auto reallocKit = kitCombine
         (
-            stdPassKit
-            (
-                kitCombine
-                (
-                    DataProcessingKit(true, 0),
-                    CpuFastAllocKit(cpuDistributorObject, 0),
-                    CpuBlockAllocatorKit(cpuDistributorInterface, 0),
-                    GpuFastAllocKit(gpuDistributorObject, 0),
-                    GpuBlockAllocatorKit(gpuDistributorInterface, 0),
-                    GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
-                )
-            )
-        )
-    );
+            DataProcessingKit(true, 0),
+            CpuFastAllocKit(cpuDistributorObject, 0),
+            CpuBlockAllocatorKit(cpuDistributorInterface, 0),
+            GpuFastAllocKit(gpuDistributorObject, 0),
+            GpuBlockAllocatorKit(gpuDistributorInterface, 0),
+            GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
+        );
+
+        require(target.realloc(stdPassKit(reallocKit)));
+    }
 
     ////
 
@@ -409,24 +406,19 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
     AllocatorObject<CpuAddrU> cpuCounterObject(cpuCounterState, cpuCounterInterface);
     AllocatorObject<GpuAddrU> gpuCounterObject(gpuCounterState, gpuCounterInterface);
 
-    require
-    (
-        target.process
+    {
+        auto processKit = kitCombine
         (
-            stdPassKit
-            (
-                kitCombine
-                (
-                    DataProcessingKit(false, 0),
-                    CpuFastAllocKit(cpuCounterObject, 0),
-                    CpuBlockAllocatorKit(cpuCounterInterface, 0),
-                    GpuFastAllocKit(gpuCounterObject, 0),
-                    GpuBlockAllocatorKit(gpuCounterInterface, 0),
-                    GpuTextureAllocKit(gpuTextureCounter, 0)
-                )
-            )
-        )
-    );
+            DataProcessingKit(false, 0),
+            CpuFastAllocKit(cpuCounterObject, 0),
+            CpuBlockAllocatorKit(cpuCounterInterface, 0),
+            GpuFastAllocKit(gpuCounterObject, 0),
+            GpuBlockAllocatorKit(gpuCounterInterface, 0),
+            GpuTextureAllocKit(gpuTextureCounter, 0)
+        );
+
+        require(target.process(stdPassKit(processKit)));
+    }
 
     ////
 
@@ -570,24 +562,19 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
         AllocatorObject<CpuAddrU> cpuAllocObject(nullState, cpuAllocator);
         AllocatorObject<GpuAddrU> gpuAllocObject(nullState, gpuAllocator);
 
-        require
+        ////
+
+        auto processKit = kitCombine
         (
-            target.process
-            (
-                stdPassKit
-                (
-                    kitCombine
-                    (
-                        DataProcessingKit(true, 0),
-                        CpuFastAllocKit(cpuAllocObject, 0),
-                        CpuBlockAllocatorKit(cpuAllocator, 0),
-                        GpuFastAllocKit(gpuAllocObject, 0),
-                        GpuBlockAllocatorKit(gpuAllocator, 0),
-                        GpuTextureAllocKit(gpuTextureAllocator, 0)
-                    )
-                )
-            )
+            DataProcessingKit(true, 0),
+            CpuFastAllocKit(cpuAllocObject, 0),
+            CpuBlockAllocatorKit(cpuAllocator, 0),
+            GpuFastAllocKit(gpuAllocObject, 0),
+            GpuBlockAllocatorKit(gpuAllocator, 0),
+            GpuTextureAllocKit(gpuTextureAllocator, 0)
         );
+
+        require(target.process(stdPassKit(processKit)));
 
         return true;
     }
@@ -627,24 +614,17 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
     AllocatorObject<CpuAddrU> cpuDistributorObject(cpuDistributorState, cpuDistributorInterface);
     AllocatorObject<GpuAddrU> gpuDistributorObject(gpuDistributorState, gpuDistributorInterface);
 
-    require
+    auto processKit = kitCombine
     (
-        target.process
-        (
-            stdPassKit
-            (
-                kitCombine
-                (
-                    DataProcessingKit(true, 0),
-                    CpuFastAllocKit(cpuDistributorObject, 0),
-                    CpuBlockAllocatorKit(cpuDistributorInterface, 0),
-                    GpuFastAllocKit(gpuDistributorObject, 0),
-                    GpuBlockAllocatorKit(gpuDistributorInterface, 0),
-                    GpuTextureAllocKit(gpuTextureAllocator, 0)
-                )
-            )
-        )
+        DataProcessingKit(true, 0),
+        CpuFastAllocKit(cpuDistributorObject, 0),
+        CpuBlockAllocatorKit(cpuDistributorInterface, 0),
+        GpuFastAllocKit(gpuDistributorObject, 0),
+        GpuBlockAllocatorKit(gpuDistributorInterface, 0),
+        GpuTextureAllocKit(gpuTextureAllocator, 0)
     );
+
+    require(target.process(stdPassKit(processKit)));
 
     //----------------------------------------------------------------
     //

@@ -6,12 +6,9 @@ include(${HEXLIB_CMAKE_DIR}/common.cmake)
 #
 #----------------------------------------------------------------
 
-addSourcesRecursive(sources .)
-add_executable(hexlibGpuCompiler ${sources})
+hexlibProjectTemplate(hexlibGpuCompiler EXECUTABLE . "hexlibCppBase;hexlibShellCommon" FALSE hexlib)
 
-target_include_directories(hexlibGpuCompiler PRIVATE .)
-
-target_link_libraries(hexlibGpuCompiler PUBLIC hexlibCppBase hexlibShellCommon)
+set_target_properties(hexlibGpuCompiler PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 #----------------------------------------------------------------
 #
@@ -21,11 +18,3 @@ target_link_libraries(hexlibGpuCompiler PUBLIC hexlibCppBase hexlibShellCommon)
 
 add_library(hexlibGpuCompilerInterface INTERFACE)
 target_include_directories(hexlibGpuCompilerInterface INTERFACE .)
-
-#----------------------------------------------------------------
-#
-# Copy binary to known path.
-#
-#----------------------------------------------------------------
-
-set_target_properties(hexlibGpuCompiler PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
