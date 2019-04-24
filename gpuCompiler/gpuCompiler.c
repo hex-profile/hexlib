@@ -3,6 +3,7 @@
 #endif
 
 #include <stdlib.h>
+#include <string.h>
 #include <algorithm>
 
 #include "cmdLine/cmdLine.h"
@@ -120,9 +121,36 @@ inline StlString filenameToCString(const StlString& str)
 
 //================================================================
 //
-// runProcess
+// runProcess (Linux)
 //
 //================================================================
+
+#if defined(__linux__)
+
+stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
+{
+    stdBegin;
+
+    int status = system(cmdLine.c_str());
+
+    if_not (status == 0)
+    {
+        printMsg(kit.msgLog, STR("Cannot launch %0"), cmdLine, msgErr);
+        return false;
+    }
+
+    stdEnd;
+}
+
+#endif
+
+//================================================================
+//
+// runProcess (Windows)
+//
+//================================================================
+
+#if defined(_WIN32)
 
 stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
 {
@@ -156,6 +184,8 @@ stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
 
     stdEnd;
 }
+
+#endif
 
 //================================================================
 //
@@ -1499,7 +1529,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
 //
 //================================================================
 
-int __cdecl main(int argCount, const CharType* argStr[])
+int main(int argCount, const CharType* argStr[])
 {
     bool ok = false;
 

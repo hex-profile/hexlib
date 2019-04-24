@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <sstream>
 
 #include "errorLog/errorLog.h"
 #include "stdFunc/stdFunc.h"
@@ -53,7 +54,7 @@ public:
 
     stdbool readEntireFileToString(StlString& result, stdPars(MsgLogKit))
     {
-        basic_stringstream<CharType> strStream;
+        std::basic_stringstream<CharType> strStream;
         strStream << stream.rdbuf();
         result = strStream.str();
 
@@ -79,6 +80,8 @@ private:
 // Reads 16-bit unicode file and translates to ASCII characters 0..7F.
 //
 //================================================================
+
+#if 0
 
 class InputTextFileUnicodeToAscii
 {
@@ -158,6 +161,8 @@ private:
     std::basic_ifstream<char> stream;
 
 };
+
+#endif
 
 //================================================================
 //
