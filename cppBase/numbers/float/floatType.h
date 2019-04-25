@@ -9,7 +9,6 @@
 #endif
 
 #include "numbers/float/floatBase.h"
-#include "compileTools/typeOf.h"
 #include "numbers/interface/numberInterface.h"
 #include "numbers/int/intType.h"
 
@@ -46,16 +45,6 @@ BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
 
 #define TYPE_IS_BUILTIN_FLOAT(Type) \
     TypeIsBuiltinFloat< Type >::result
-
-//================================================================
-//
-// Typeof support.
-// Basic types take 16 LSBs of ID.
-//
-//================================================================
-
-TYPEOF_REGISTER(0x64DA, float)
-TYPEOF_REGISTER(0xC41E, double)
 
 //================================================================
 //
