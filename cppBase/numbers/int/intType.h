@@ -4,7 +4,6 @@
 #include <limits.h>
 
 #include "numbers/int/intBase.h"
-#include "compileTools/typeOf.h"
 #include "numbers/interface/numberInterface.h"
 #include "numbers/int/intConvertChk.h"
 #include "prepTools/prepArg.h"
@@ -42,29 +41,6 @@ BUILTIN_INT_FOREACH(TMP_MACRO, o)
 
 #define TYPE_IS_BUILTIN_INT(Type) \
     TypeIsBuiltinInt< Type >::result
-
-//================================================================
-//
-// Typeof support.
-// Basic types take 16 LSBs of ID.
-//
-//================================================================
-
-TYPEOF_REGISTER(0x11C8, char)
-TYPEOF_REGISTER(0x868A, signed char)
-TYPEOF_REGISTER(0xB003, unsigned char)
-
-TYPEOF_REGISTER(0x7A1C, signed short)
-TYPEOF_REGISTER(0x4CCF, unsigned short)
-
-TYPEOF_REGISTER(0x99C2, signed int)
-TYPEOF_REGISTER(0xA0B8, unsigned int)
-
-TYPEOF_REGISTER(0x6E01, signed long)
-TYPEOF_REGISTER(0xB522, unsigned long)
-
-TYPEOF_REGISTER(0x3596, signed long long)
-TYPEOF_REGISTER(0x1D49, unsigned long long)
 
 //================================================================
 //

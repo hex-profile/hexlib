@@ -7,32 +7,6 @@
 
 //================================================================
 //
-// Vector type registry
-//
-//================================================================
-
-TYPEOF_REGISTER(0xD386, int8_x2)
-TYPEOF_REGISTER(0xBD9C, uint8_x2)
-TYPEOF_REGISTER(0x6535, int16_x2)
-TYPEOF_REGISTER(0xC671, uint16_x2)
-TYPEOF_REGISTER(0x347A, int32_x2)
-TYPEOF_REGISTER(0x8BBA, uint32_x2)
-
-TYPEOF_REGISTER(0x4D3F, int8_x4)
-TYPEOF_REGISTER(0x8534, uint8_x4)
-TYPEOF_REGISTER(0xAD0F, int16_x4)
-TYPEOF_REGISTER(0xBDCD, uint16_x4)
-TYPEOF_REGISTER(0xF59D, int32_x4)
-TYPEOF_REGISTER(0x0F52, uint32_x4)
-
-TYPEOF_REGISTER(0x6CE3, float16_x2)
-TYPEOF_REGISTER(0x31AD, float16_x4)
-
-TYPEOF_REGISTER(0xA386, float32_x2)
-TYPEOF_REGISTER(0x6F7E, float32_x4)
-
-//================================================================
-//
 // VectorBaseImpl
 //
 //================================================================
