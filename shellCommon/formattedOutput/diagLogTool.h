@@ -110,8 +110,8 @@ public:
     DiagLogByMsgLog(MsgLog& base)
         : base(base) {}
 
-    void add(const CharType* msgPtr, size_t msgSize, MsgKind msgKind) override
-        {base.addMsg(FormatOutputAtom(CharArray(msgPtr, msgSize)), msgKind);}
+    void add(const CharType* msgPtr, MsgKind msgKind) override
+        {base.addMsg(FormatOutputAtom(charArrayFromPtr(msgPtr)), msgKind);}
 
     bool isThreadProtected() const
         {return base.isThreadProtected();}
