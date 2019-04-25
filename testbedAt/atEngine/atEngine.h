@@ -16,7 +16,7 @@
 //================================================================
 
 KIT_COMBINE2(AtEngineReallocKit, GpuModuleReallocKit, GpuBlockAllocatorKit);
-KIT_COMBINE4(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit, AlternativeVersionKit, DisplayParamsKit);
+KIT_COMBINE2(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit);
 
 //================================================================
 //
