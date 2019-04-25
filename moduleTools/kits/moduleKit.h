@@ -1,13 +1,15 @@
 #pragma once
 
-#include "userOutput/errorLogExKit.h"
-#include "cpuFuncKit.h"
-#include "dataAlloc/memoryAllocatorKit.h"
 #include "cfg/cfgInterfaceFwd.h"
 #include "cfgTools/overlayTakeover.h"
+#include "cpuFuncKit.h"
+#include "dataAlloc/memoryAllocatorKit.h"
+#include "kits/displayParamsKit.h"
+#include "kits/alternativeVersionKit.h"
 #include "kits/msgLogsKit.h"
 #include "kits/userPoint.h"
 #include "timer/timerKit.h"
+#include "userOutput/errorLogExKit.h"
 
 //================================================================
 //
@@ -55,7 +57,10 @@ KIT_CREATE1(OutputLevelKit, OutputLevel, outputLevel);
 //================================================================
 
 KIT_COMBINE3(ModuleReallocKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit);
-KIT_COMBINE8(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, OutputLevelKit, UserPointKit);
+
+// ```
+KIT_COMBINE8(ModuleBaseProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, OutputLevelKit, UserPointKit);
+KIT_COMBINE3(ModuleProcessKit, ModuleBaseProcessKit, AlternativeVersionKit, DisplayParamsKit);
 
 //================================================================
 //

@@ -16,7 +16,7 @@ class GpuOverheadTest
 public:
 
     KIT_COMBINE2(ReallocKit, ModuleReallocKit, GpuAppExecKit);
-    KIT_COMBINE2(ProcessKit, ModuleProcessKit, GpuAppExecKit);
+    KIT_COMBINE2(ProcessKit, ModuleBaseProcessKit, GpuAppExecKit);
 
     void serialize(const ModuleSerializeKit& kit);
 

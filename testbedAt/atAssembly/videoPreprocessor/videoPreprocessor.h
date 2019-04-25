@@ -42,7 +42,7 @@ struct VideoPrepTarget
 //================================================================
 
 KIT_COMBINE3(ReallocKit, ModuleReallocKit, GpuAppExecKit, AtCommonKit);
-KIT_COMBINE7(ProcessKit, ModuleProcessKit, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit, ThreadManagerKit);
+KIT_COMBINE7(ProcessKit, ModuleBaseProcessKit, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit, ThreadManagerKit);
 
 //================================================================
 //

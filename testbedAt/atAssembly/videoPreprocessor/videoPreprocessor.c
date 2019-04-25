@@ -174,7 +174,7 @@ public:
 //
 //================================================================
 
-KIT_COMBINE4(ProcessExKit, ProcessKit, AlternativeVersionKit, DisplayParamsKit, GpuImageConsoleKit);
+KIT_COMBINE4(ProcessExKit, ProcessKit, GpuImageConsoleKit, AlternativeVersionKit, DisplayParamsKit);
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -369,7 +369,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     {
         CFG_NAMESPACE("Display Params");
 
-        check_flag(alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
+        alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")); // ``` ?
 
         displayedViewIndex.serialize(kit, STR("Displayed View Index"), STR("9"), STR("0"));
         displayedTemporalIndex.serialize(kit, STR("Displayed Temporal Index"), STR(","), STR("."));
