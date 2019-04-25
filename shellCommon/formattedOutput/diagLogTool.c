@@ -29,7 +29,7 @@ bool DiagLogMsgLog::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         require(!!stringStream);
 
         const auto& str = stringStream.rdbuf()->str();
-        output->add(str.data(), str.size(), msgKind);
+        output->add(str.c_str(), msgKind);
     }
     catch (const exception&)
     {

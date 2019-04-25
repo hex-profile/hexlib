@@ -37,7 +37,6 @@ inline bool heapStateDifferent(const HeapState& a, const HeapState& b)
 
 #endif
 
-
 //================================================================
 //
 // checkHeapLeaks

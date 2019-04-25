@@ -19,7 +19,7 @@ struct DiagLog
     // Add a message to a log.
     //
 
-    virtual void add(const CharType* msgPtr, size_t msgSize, MsgKind msgKind) =0;
+    virtual void add(const CharType* msgPtr, MsgKind msgKind) =0;
 
     //
     // Can the instance be shared among multiple threads?
@@ -47,7 +47,7 @@ struct DiagLog
 
 struct DiagLogNull : public DiagLog
 {
-    void add(const CharType* msgPtr, size_t msgSize, MsgKind msgKind) override
+    void add(const CharType* msgPtr, MsgKind msgKind) override
         {}
 
     bool isThreadProtected() const override
