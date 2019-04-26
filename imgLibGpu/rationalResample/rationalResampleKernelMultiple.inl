@@ -23,8 +23,8 @@
 template <typename Dst>
 devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResampleParams<Dst>& o, Space taskIdx, devPars)
 {
-    typedef VECTOR_REBASE(Dst, float32) FloatType;
-
+    using FloatType = VECTOR_REBASE(Dst, float32);
+    
     ////
 
     const Space threadCountX = DIR(horThreadCountX, verThreadCountX);
@@ -88,7 +88,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
     ////
 
     #define TMP_MACRO(t, _) \
-        if (taskIdx == t) LOAD_SRC_BLOCK(PREP_PASTE4(FUNCNAME, srcSampler, RANK, t));
+        if (taskIdx == t) LOAD_SRC_BLOCK(PREP_PASTE5(FUNCNAME, srcSampler, RANK, _task, t));
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 

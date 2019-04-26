@@ -5,6 +5,12 @@
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "readInterpolate/gpuTexCubic.h"
 #include "vectorTypes/vectorOperations.h"
+#include "bsplinePrefilter/bsplinePrefilterSettings.h"
+#include "bsplinePrefilter/bsplinePrefilter.h"
+
+#if HOSTCODE
+#include "dataAlloc/gpuMatrixMemory.h"
+#endif
 
 //================================================================
 //
@@ -16,12 +22,12 @@ using Pixel = uint8_x4;
 
 //----------------------------------------------------------------
 
-#define TMP_MACRO(interpMode, texInterpolation, texStatement) \
+#define TMP_MACRO(interpMode, SrcPixel, texInterpolation, texStatement) \
     \
     GPUTOOL_2D \
     ( \
         PREP_PASTE2(warpImageFunc_, interpMode), \
-        ((const Pixel, src, texInterpolation, BORDER_ZERO)) \
+        ((const SrcPixel, src, texInterpolation, BORDER_ZERO)) \
         ((const float32_x2, map, INTERP_LINEAR, BORDER_CLAMP)), \
         ((Pixel, dst)), \
         ((Point<float32>, mapScaleFactor)) \
@@ -37,9 +43,9 @@ using Pixel = uint8_x4;
         } \
     )
 
-TMP_MACRO(INTERP_LINEAR, INTERP_LINEAR, tex2D(srcSampler, (pos + ofs) * srcTexstep))
-TMP_MACRO(INTERP_CUBIC, INTERP_NONE, texCubic2D(srcSampler, pos + ofs, srcTexstep))
-TMP_MACRO(INTERP_CUBIC_BSPLINE, INTERP_NONE, texCubicBspline2D(srcSampler, pos + ofs, srcTexstep))
+TMP_MACRO(INTERP_LINEAR, Pixel, INTERP_LINEAR, tex2D(srcSampler, (pos + ofs) * srcTexstep))
+TMP_MACRO(INTERP_CUBIC, Pixel, INTERP_NONE, texCubic2D(srcSampler, pos + ofs, srcTexstep))
+TMP_MACRO(INTERP_CUBIC_BSPLINE, typename BsplineExtendedType<Pixel>::T, INTERP_NONE, texCubicBspline2D(srcSampler, pos + ofs, srcTexstep))
 
 #undef TMP_MACRO
 
@@ -68,7 +74,11 @@ bool warpImage
 
     REQUIRE(borderMode == BORDER_ZERO);
 
-    ////
+    //----------------------------------------------------------------
+    //
+    // Direct interpolation modes.
+    //
+    //----------------------------------------------------------------
 
     if (interpType == INTERP_LINEAR)
         require(warpImageFunc_INTERP_LINEAR(src, map, dst, mapScaleFactor, mapValueFactor, stdPass));
@@ -79,14 +89,20 @@ bool warpImage
     else
         REQUIRE(false);
 
-    ////
+    //----------------------------------------------------------------
+    //
+    // Special mode with prefiltering.
+    //
+    //----------------------------------------------------------------
 
     if (interpType == INTERP_CUBIC_BSPLINE)
     {
+        using IntermType = typename BsplineExtendedType<Pixel>::T;
 
+        GPU_MATRIX_ALLOC(prefilteredImage, IntermType, src.size());
+        require((bsplineCubicPrefilter<Pixel, IntermType, IntermType>(src, prefilteredImage, point(1.f), BORDER_MIRROR, stdPass)));
 
-
-        require(warpImageFunc_INTERP_CUBIC_BSPLINE(src, map, dst, mapScaleFactor, mapValueFactor, stdPass));
+        require(warpImageFunc_INTERP_CUBIC_BSPLINE(prefilteredImage, map, dst, mapScaleFactor, mapValueFactor, stdPass));
     }
 
     ////
