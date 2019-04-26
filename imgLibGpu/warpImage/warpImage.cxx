@@ -16,49 +16,32 @@ using Pixel = uint8_x4;
 
 //----------------------------------------------------------------
 
-GPUTOOL_2D_BEG
-(
-    warpImageFunc_Linear,
-    ((const Pixel, src, INTERP_LINEAR, BORDER_ZERO))
-    ((const float32_x2, map, INTERP_LINEAR, BORDER_CLAMP)),
-    ((Pixel, dst)),
-    ((Point<float32>, mapScaleFactor))
-    ((Point<float32>, mapValueFactor))
-)
-#if DEVCODE
-{
-    Point<float32> pos = point(Xs, Ys);
-    float32_x2 offset = tex2D(mapSampler, pos * mapScaleFactor * mapTexstep);
-    auto ofs = mapValueFactor * point(offset.x, offset.y);
+#define TMP_MACRO(interpMode, texInterpolation, texStatement) \
+    \
+    GPUTOOL_2D \
+    ( \
+        PREP_PASTE2(warpImageFunc_, interpMode), \
+        ((const Pixel, src, texInterpolation, BORDER_ZERO)) \
+        ((const float32_x2, map, INTERP_LINEAR, BORDER_CLAMP)), \
+        ((Pixel, dst)), \
+        ((Point<float32>, mapScaleFactor)) \
+        ((Point<float32>, mapValueFactor)), \
+        \
+        { \
+            Point<float32> pos = point(Xs, Ys); \
+            float32_x2 offset = tex2D(mapSampler, pos * mapScaleFactor * mapTexstep); \
+            auto ofs = mapValueFactor * point(offset.x, offset.y); \
+            \
+            auto value = texStatement; \
+            storeNorm(dst, value); \
+        } \
+    )
 
-    auto value = tex2D(srcSampler, (pos + ofs) * srcTexstep);
-    storeNorm(dst, value);
-}
-#endif
-GPUTOOL_2D_END
+TMP_MACRO(INTERP_LINEAR, INTERP_LINEAR, tex2D(srcSampler, (pos + ofs) * srcTexstep))
+TMP_MACRO(INTERP_CUBIC, INTERP_NONE, texCubic2D(srcSampler, pos + ofs, srcTexstep))
+TMP_MACRO(INTERP_CUBIC_BSPLINE, INTERP_NONE, texCubicBspline2D(srcSampler, pos + ofs, srcTexstep))
 
-//----------------------------------------------------------------
-
-GPUTOOL_2D_BEG
-(
-    warpImageFunc_Cubic,
-    ((const Pixel, src, INTERP_NEAREST, BORDER_ZERO))
-    ((const float32_x2, map, INTERP_LINEAR, BORDER_CLAMP)),
-    ((Pixel, dst)),
-    ((Point<float32>, mapScaleFactor))
-    ((Point<float32>, mapValueFactor))
-)
-#if DEVCODE
-{
-    Point<float32> pos = point(Xs, Ys);
-    float32_x2 offset = tex2D(mapSampler, pos * mapScaleFactor * mapTexstep);
-    auto ofs = mapValueFactor * point(offset.x, offset.y);
-                 
-    auto value = texCubic2D(srcSampler, pos + ofs, srcTexstep);
-    storeNorm(dst, value);
-}
-#endif
-GPUTOOL_2D_END
+#undef TMP_MACRO
 
 //================================================================
 //
@@ -85,12 +68,28 @@ bool warpImage
 
     REQUIRE(borderMode == BORDER_ZERO);
 
+    ////
+
     if (interpType == INTERP_LINEAR)
-        require(warpImageFunc_Linear(src, map, dst, mapScaleFactor, mapValueFactor, stdPass));
+        require(warpImageFunc_INTERP_LINEAR(src, map, dst, mapScaleFactor, mapValueFactor, stdPass));
     else if (interpType == INTERP_CUBIC)
-        require(warpImageFunc_Cubic(src, map, dst, mapScaleFactor, mapValueFactor, stdPass));
+        require(warpImageFunc_INTERP_CUBIC(src, map, dst, mapScaleFactor, mapValueFactor, stdPass));
+    else if (interpType == INTERP_CUBIC_BSPLINE)
+        ;
     else
         REQUIRE(false);
+
+    ////
+
+    if (interpType == INTERP_CUBIC_BSPLINE)
+    {
+
+
+
+        require(warpImageFunc_INTERP_CUBIC_BSPLINE(src, map, dst, mapScaleFactor, mapValueFactor, stdPass));
+    }
+
+    ////
 
     stdEnd;
 }
