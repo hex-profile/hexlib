@@ -106,7 +106,7 @@ sysinline typename DevSamplerResult<SamplerType>::T texCubic2D(SamplerType srcSa
 //
 // texCubicBspline2D
 //
-// * The image should be prefiltered.
+// The image should be prefiltered (!)
 //
 //================================================================
 
