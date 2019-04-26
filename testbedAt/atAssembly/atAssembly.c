@@ -839,8 +839,9 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     Point<Space> engineFrameSize = toolModule.outputFrameSize();
 
-    engineModule->setInputResolution(engineFrameSize);
     require(inputMetadataHandler.updateMetadataOnChange(kit.atVideoInfo.videofileName, *engineModule, stdPass));
+
+    engineModule->setInputResolution(engineFrameSize);
 
     //----------------------------------------------------------------
     //
