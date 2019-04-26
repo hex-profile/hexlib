@@ -15,6 +15,7 @@
 #include "numbers/int/intType.h"
 #include "rndgen/rndgenFloat.h"
 #include "vectorTypes/vectorOperations.h"
+#include "vectorTypes/vectorType.h"
 
 namespace PREP_PASTE(FUNCNAME, Space) {
 
@@ -64,8 +65,9 @@ sysinline Point<Space> verThreadCount() {return point(verThreadCountX, verThread
 //================================================================
 
 #define TMP_MACRO(t, _) \
-    devDefineSampler(PREP_PASTE3(FUNCNAME, srcSampler1, t), DevSampler2D, DevSamplerFloat, 1) \
-    devDefineSampler(PREP_PASTE3(FUNCNAME, srcSampler2, t), DevSampler2D, DevSamplerFloat, 2)
+    devDefineSampler(PREP_PASTE3(FUNCNAME, srcSampler1_task, t), DevSampler2D, DevSamplerFloat, 1) \
+    devDefineSampler(PREP_PASTE3(FUNCNAME, srcSampler2_task, t), DevSampler2D, DevSamplerFloat, 2) \
+    devDefineSampler(PREP_PASTE3(FUNCNAME, srcSampler4_task, t), DevSampler2D, DevSamplerFloat, 4)
 
 PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 
@@ -91,6 +93,14 @@ struct ResampleParams
 //
 //================================================================
 
+#if !defined(MAX_RANK)
+    #define MAX_RANK 1
+#endif
+
+//----------------------------------------------------------------
+
+#if MAX_RANK >= 1
+
 #define RANK 1
 
 #define HORIZONTAL 1
@@ -103,7 +113,11 @@ struct ResampleParams
 
 #undef RANK
 
+#endif
+
 //----------------------------------------------------------------
+
+#if MAX_RANK >= 2
 
 #define RANK 2
 
@@ -117,27 +131,74 @@ struct ResampleParams
 
 #undef RANK
 
+#endif
+
+//----------------------------------------------------------------
+
+#if MAX_RANK >= 4
+
+#define RANK 4
+
+#define HORIZONTAL 1
+# include "rationalResampleKernelMultiple.inl"
+#undef HORIZONTAL
+
+#define HORIZONTAL 0
+# include "rationalResampleKernelMultiple.inl"
+#undef HORIZONTAL
+
+#undef RANK
+
+#endif
+
 //================================================================
 //
 // Kernel instantiations
 //
 //================================================================
 
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor1), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8u), (uint8));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver1), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8u), (uint8));
+#if MAX_RANK >= 1
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor1), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8s), (int8));
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver1), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8s), (int8));
 
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor2), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8s_x2), (int8_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver2), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8s_x2), (int8_x2));
-                                                                                                                                          
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor1), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8u), (uint8));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver1), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8u), (uint8));
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor1), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor16f), (float16));
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver1), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver16f), (float16));
 
+#endif
+
+////
+
+#if MAX_RANK >= 2
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor2), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8s_x2), (int8_x2));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver2), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8s_x2), (int8_x2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor2), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8u_x2), (uint8_x2));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver2), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8u_x2), (uint8_x2));
+
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor2), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor16f_x2), (float16_x2));
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver2), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver16f_x2), (float16_x2));
+
+#endif
+
+////
+
+#if MAX_RANK >= 4
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor4), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8s_x4), (int8_x4));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver4), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8s_x4), (int8_x4));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor4), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8u_x4), (uint8_x4));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver4), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8u_x4), (uint8_x4));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor4), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor16f_x4), (float16_x4));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver4), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver16f_x4), (float16_x4));
+
+#endif
 
 //================================================================
 //
@@ -210,7 +271,12 @@ stdbool FUNCNAME
     const int srcRank = VectorTypeRank<Src>::val;
 
     #define TMP_MACRO(t, _) \
-        const GpuSamplerLink* srcSampler##t = (srcRank == 1) ? soft_cast<const GpuSamplerLink*>(&PREP_PASTE3(FUNCNAME, srcSampler1, t)) : &PREP_PASTE3(FUNCNAME, srcSampler2, t);
+        \
+        const GpuSamplerLink* srcSampler##t = nullptr; \
+        if (srcRank == 1) srcSampler##t = &PREP_PASTE3(FUNCNAME, srcSampler1_task, t); \
+        if (srcRank == 2) srcSampler##t = &PREP_PASTE3(FUNCNAME, srcSampler2_task, t); \
+        if (srcRank == 4) srcSampler##t = &PREP_PASTE3(FUNCNAME, srcSampler4_task, t); \
+        REQUIRE(srcSampler##t != nullptr);
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 

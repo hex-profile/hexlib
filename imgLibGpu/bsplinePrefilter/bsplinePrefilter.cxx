@@ -8,7 +8,7 @@
 //
 // bsplineCubicPrefilter
 // 
-// Unser prefilter for bspline3
+// Michael Unser prefilter for cubic bspline kernel.
 //
 //================================================================
 
@@ -33,6 +33,7 @@ static devConstant float32 preFilter3[] = {0, 0, 0, FILTER_CORE15};
 #define HORIZONTAL_FIRST 1
 
 #define TASK_COUNT 1
+#define MAX_RANK 4
 
 #define OUTPUT_FACTOR
 
@@ -80,6 +81,7 @@ static devConstant float32 FILTER3[] = {0, 0, 0, FILTER_CORE3};
 #define PACK_TO_SRC_FACTOR 4
 
 #define TASK_COUNT 1
+#define MAX_RANK 4
 
 # include "rationalResample/rationalResampleMultiple.inl"
 

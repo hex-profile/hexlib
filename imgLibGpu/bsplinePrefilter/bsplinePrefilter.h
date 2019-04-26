@@ -8,7 +8,7 @@
 //
 // bsplineCubicPrefilter
 //
-// Michael Unser prefilter for cubic bspline.
+// Michael Unser prefilter for cubic bspline kernel.
 //
 // 0.194 ms on GTX780 YUV420 1920x1080
 //
