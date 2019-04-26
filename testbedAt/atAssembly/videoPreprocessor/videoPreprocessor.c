@@ -369,7 +369,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     {
         CFG_NAMESPACE("Display Params");
 
-        alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")); // ``` ?
+        check_flag(alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
 
         displayedViewIndex.serialize(kit, STR("Displayed View Index"), STR("9"), STR("0"));
         displayedTemporalIndex.serialize(kit, STR("Displayed Temporal Index"), STR(","), STR("."));
