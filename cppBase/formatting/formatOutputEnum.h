@@ -54,4 +54,4 @@
     FORMAT_OUTPUT_ENUM_SIMPLE_ITER2(PREP_SEQ_ELEM(n, seq))
 
 #define FORMAT_OUTPUT_ENUM_SIMPLE_ITER2(enumValue) \
-    else if (value == enumValue) outputStream.write(PREP_STRINGIZE(enumValue));
+    else if (value == enumValue) outputStream.write(STR(PREP_STRINGIZE(enumValue)));
