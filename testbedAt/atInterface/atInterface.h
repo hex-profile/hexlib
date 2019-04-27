@@ -31,23 +31,23 @@ struct AtImageProvider
     virtual Space getPitch() const =0;
     virtual Space baseByteAlignment() const =0;
 
-    virtual bool saveImage(const Matrix<Element>& dest, stdNullPars) =0;
+    virtual stdbool saveImage(const Matrix<Element>& dest, stdNullPars) =0;
 };
 
 //----------------------------------------------------------------
 
 struct AtVideoOverlay
 {
-    virtual bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars) =0;
-    virtual bool setFakeImage(stdNullPars) =0;
-    virtual bool updateImage(stdNullPars) =0;
+    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars) =0;
+    virtual stdbool setFakeImage(stdNullPars) =0;
+    virtual stdbool updateImage(stdNullPars) =0;
 };
 
 //----------------------------------------------------------------
 
 struct AtAsyncOverlay
 {
-    virtual bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, stdNullPars) =0;
+    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, stdNullPars) =0;
 };
 
 //================================================================
@@ -58,13 +58,13 @@ struct AtAsyncOverlay
 
 struct AtImgConsole
 {
-    virtual bool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
+    virtual stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
 
-    virtual bool clear(stdNullPars) =0;
-    virtual bool update(stdNullPars) =0;
+    virtual stdbool clear(stdNullPars) =0;
+    virtual stdbool update(stdNullPars) =0;
 
     template <typename Type>
-    inline bool addImage(const Matrix<Type>& img, const ImgOutputHint& hint, stdNullPars)
+    inline stdbool addImage(const Matrix<Type>& img, const ImgOutputHint& hint, stdNullPars)
         {return addImageFunc(makeConst(img), hint, stdNullPassThru);}
 };
 

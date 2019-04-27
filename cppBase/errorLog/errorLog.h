@@ -54,7 +54,7 @@ public:
 //================================================================
 
 #define CHECK_EX(condition, failReport) \
-    (allv(condition) || ((failReport), false))
+    (allv(condition) || (failReport, false))
 
 //----------------------------------------------------------------
 

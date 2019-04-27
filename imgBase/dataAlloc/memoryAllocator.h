@@ -49,7 +49,8 @@ class MemoryOwner : public ResourceOwner<MemoryDeallocContext>
 template <typename AddrU>
 struct AllocatorInterface
 {
-    virtual bool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars) =0;
+    virtual stdbool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars) =0;
+
 };
 
 //================================================================

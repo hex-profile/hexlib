@@ -18,7 +18,8 @@ class MallocFlatAllocatorThunk : public FlatMemoryAllocator<AddrU>
 
 public:
 
-    bool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars);
+    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars);
+
     static void dealloc(MemoryDeallocContext& context);
 
 public:

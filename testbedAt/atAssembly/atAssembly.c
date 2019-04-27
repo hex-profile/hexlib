@@ -705,7 +705,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     configEditor = defaultEditor;
     REMEMBER_CLEANUP1_EX(configEditorCleanup, configEditor.clear(), SimpleString&, configEditor);
 
-    configFile.loadFile(SimpleString(engineModule->getName()) + ".cfg", stdPassKit(kitCombine(kit, fileToolsKit)));
+    stdDiscard(configFile.loadFile(SimpleString(engineModule->getName()) + ".cfg", stdPassKit(kitCombine(kit, fileToolsKit))));
     REMEMBER_CLEANUP1_EX(configFileCleanup, configFile.unloadFile(), ConfigFile&, configFile);
 
     configFile.loadVars(*this);
@@ -1195,7 +1195,8 @@ public:
         return base.isThreadProtected();
     }
 
-    bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+    stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+
     {
         bool ok = base.addMsgTrace(v, msgKind, stdNullPassThru);
 
@@ -1319,7 +1320,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
         return true;
 
     kit.localLog.clear();
-    kit.atImgConsole.clear(stdPass);
+    require(kit.atImgConsole.clear(stdPass));
 
     //----------------------------------------------------------------
     //

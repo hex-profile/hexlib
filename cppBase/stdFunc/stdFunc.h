@@ -162,7 +162,6 @@ extern const NullKit nullKit;
 
 //================================================================
 //
-// stdNullPars
 // stdNullPass
 // stdNullPassThru
 //
@@ -205,7 +204,7 @@ public:
     stdbool(bool value)
         : value(value) {}
 
-    operator bool ()
+    operator bool () const
         {return value;}
 
 private:
@@ -213,3 +212,14 @@ private:
     bool value;
 
 };
+
+//================================================================
+//
+// stdDiscard
+//
+//================================================================
+
+inline void suppressHelper(stdbool value) {}
+
+#define stdDiscard(value) \
+    suppressHelper(value)

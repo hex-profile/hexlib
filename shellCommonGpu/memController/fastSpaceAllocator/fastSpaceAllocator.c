@@ -28,7 +28,8 @@ struct FastAllocatorDeallocContext
 //================================================================
 
 template <typename AddrU, bool realAlloc, bool stateMode>
-bool FastAllocatorThunk<AddrU, realAlloc, stateMode>::alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+stdbool FastAllocatorThunk<AddrU, realAlloc, stateMode>::alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+
 {
     stdBegin;
 
