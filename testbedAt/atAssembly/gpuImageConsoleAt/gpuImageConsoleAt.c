@@ -23,7 +23,8 @@
 //
 //================================================================
 
-bool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
+stdbool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
+
 {
     stdBegin;
 
@@ -42,7 +43,8 @@ bool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image, st
 //
 //================================================================
 
-bool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullPars)
+stdbool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullPars)
+
 {
     stdBegin;
 
@@ -99,7 +101,8 @@ bool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullPars
 //================================================================
 
 template <typename Type>
-bool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars)
+stdbool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars)
+
 {
     stdBegin;
 
@@ -163,7 +166,8 @@ INSTANTIATE_FUNC(GpuBaseAtConsoleThunk::addImageCopyImpl<uint8_x4>)
 //
 //================================================================
 
-bool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+stdbool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+
 {
     stdBegin;
 

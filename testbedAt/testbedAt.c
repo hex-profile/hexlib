@@ -194,7 +194,8 @@ class AtImgConsoleImplThunk : public AtImgConsole
 
 public:
 
-    bool addImageFunc(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageFunc(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+
     {
         std::basic_stringstream<CharType> stringStream;
         FormatStreamStlThunk formatToStream(stringStream);
@@ -218,7 +219,8 @@ public:
         return true;
     }
 
-    bool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+
     {
         MATRIX_EXPOSE(img);
 
@@ -248,13 +250,15 @@ public:
         return true;
     }
 
-    bool clear(stdNullPars)
+    stdbool clear(stdNullPars)
+
     {
         require(api->outimg_clear(api) != 0);
         return true;
     }
 
-    bool update(stdNullPars)
+    stdbool update(stdNullPars)
+
     {
         require(api->outimg_update(api) != 0);
         return true;
@@ -383,7 +387,8 @@ public:
 
 public:
 
-    bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+
     {
         TRACE_REASSEMBLE(stdTraceName);
         if (textEnabled) printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
@@ -391,12 +396,14 @@ public:
         return api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0;
     }
 
-    bool setFakeImage(stdNullPars)
+    stdbool setFakeImage(stdNullPars)
+
     {
         return true;
     }
 
-    bool updateImage(stdNullPars)
+    stdbool updateImage(stdNullPars)
+
     {
         at_bool result = api->video_image_update(api);
         DEBUG_BREAK_CHECK(result != 0);
@@ -426,7 +433,8 @@ class AtAsyncOverlayImpl : public AtAsyncOverlay
 
 public:
 
-    virtual bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, stdNullPars)
+    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, stdNullPars)
+
     {
         CRITSEC_GUARD(lock);
         TRACE_REASSEMBLE(stdTraceName);
@@ -687,7 +695,8 @@ public:
     inline MallocMonitorThunk(AllocatorInterface<AddrU>& base)
         : base(base) {}
 
-    bool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    stdbool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+
     {
         ++counter;
         return base.alloc(state, size, alignment, owner, result, stdNullPassThru);
@@ -827,7 +836,7 @@ void atClientProcess(void* instance, const at_api_process* api)
 
     ////
 
-    client->assembly.process(stdPassKit(processKit));
+    stdDiscard(client->assembly.process(stdPassKit(processKit)));
 
     //----------------------------------------------------------------
     //

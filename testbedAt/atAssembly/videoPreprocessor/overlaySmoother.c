@@ -69,7 +69,8 @@ public:
     AtProviderFromCpuImage(const Matrix<ColorPixel>& cpuImage, const ErrorLogKit& kit)
         : cpuImage(cpuImage), kit(kit) {}
 
-    bool saveImage(const Matrix<ColorPixel>& dest, stdNullPars);
+    stdbool saveImage(const Matrix<ColorPixel>& dest, stdNullPars);
+
 
     Space baseByteAlignment() const {return cpuBaseByteAlignment;}
 
@@ -88,7 +89,8 @@ private:
 //
 //================================================================
 
-bool AtProviderFromCpuImage::saveImage(const Matrix<ColorPixel>& dest, stdNullPars)
+stdbool AtProviderFromCpuImage::saveImage(const Matrix<ColorPixel>& dest, stdNullPars)
+
 {
     stdBegin;
 

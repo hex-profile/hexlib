@@ -12,9 +12,7 @@
 
 void printCurrentException(MsgLog& log)
 {
-    using namespace std;
-
-    auto exceptionPtr = current_exception();
+    auto exceptionPtr = std::current_exception();
 
     if (!exceptionPtr)
     {
@@ -26,9 +24,9 @@ void printCurrentException(MsgLog& log)
 
     try
     {
-        rethrow_exception(exceptionPtr);
+        std::rethrow_exception(exceptionPtr);
     }
-    catch (const exception& e)
+    catch (const std::exception& e)
     {
         printMsg(log, STR("Standard C++ library exception: %0"), e.what(), msgErr);
         return;

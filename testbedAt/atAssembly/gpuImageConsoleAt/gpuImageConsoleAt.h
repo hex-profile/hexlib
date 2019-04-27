@@ -21,7 +21,8 @@ public:
     AtProviderFromGpuImage(const GpuProcessKit& kit)
         : kit(kit) {}
 
-    bool setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars);
+    stdbool setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars);
+
 
     Space getPitch() const
         {return gpuImage.memPitch();}
@@ -29,7 +30,8 @@ public:
     Space baseByteAlignment() const
         {return kit.gpuProperties.samplerBaseAlignment;}
 
-    bool saveImage(const Matrix<uint8_x4>& dest, stdNullPars);
+    stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars);
+
 
 private:
 
@@ -56,25 +58,31 @@ class GpuBaseAtConsoleThunk : public GpuBaseConsole
 
 public:
 
-    bool clear(stdNullPars)
+    stdbool clear(stdNullPars)
+
         {return !kit.dataProcessing ? true : atImgConsole.clear(stdPassThru);}
 
-    bool update(stdNullPars)
+    stdbool update(stdNullPars)
+
         {return !kit.dataProcessing ? true : atImgConsole.update(stdPassThru);}
 
 public:
 
-    bool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+
         {return addImageCopyImpl(img, hint, stdPassThru);}
 
 public:
 
-    bool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars);
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars);
 
-    bool overlaySetFakeImage(stdNullPars)
+
+    stdbool overlaySetFakeImage(stdNullPars)
+
         {return !kit.dataProcessing ? true : atVideoOverlay.setFakeImage(stdPassThru);}
 
-    bool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdNullPars)
+
         {return !kit.dataProcessing ? true : atVideoOverlay.updateImage(stdPassThru);}
 
 public:
@@ -88,7 +96,8 @@ public:
 public:
 
     template <typename Type>
-    bool addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars);
+    stdbool addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars);
+
 
 public:
 

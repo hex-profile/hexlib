@@ -95,10 +95,11 @@ struct GpuTextureOwner : public GpuTexture
 
 struct GpuTextureAllocator
 {
-    virtual bool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars) =0;
+    virtual stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars) =0;
+
 
     template <typename Type>
-    inline bool createTexture(const Point<Space>& size, GpuTextureOwner& result, stdNullPars)
+    inline stdbool createTexture(const Point<Space>& size, GpuTextureOwner& result, stdNullPars)
         {return createTexture(size, GpuGetChannelType<Type>::val, VectorTypeRank<Type>::val, result, stdNullPassThru);}
 };
 
@@ -112,7 +113,8 @@ struct GpuTextureAllocator
 
 struct GpuStreamWaiting
 {
-    virtual bool waitStream(const GpuStream& stream, stdNullPars) =0;
+    virtual stdbool waitStream(const GpuStream& stream, stdNullPars) =0;
+
 };
 
 //----------------------------------------------------------------
@@ -148,7 +150,8 @@ struct GpuEventOwner : public GpuEvent
 
 struct GpuEventAllocator
 {
-    virtual bool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars) =0;
+    virtual stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars) =0;
+
 };
 
 //================================================================
@@ -165,14 +168,17 @@ struct GpuEventAllocator
 
 struct GpuEventWaiting
 {
-    virtual bool checkEvent(const GpuEvent& event, stdNullPars) =0;
+    virtual stdbool checkEvent(const GpuEvent& event, stdNullPars) =0;
 
-    virtual bool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars) =0;
 
-    inline bool waitEvent(const GpuEvent& event, stdNullPars)
+    virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars) =0;
+
+
+    inline stdbool waitEvent(const GpuEvent& event, stdNullPars)
         {bool tmp = false; return waitEvent(event, tmp, stdNullPassThru);}
 
-    virtual bool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars) =0;
+    virtual stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars) =0;
+
 };
 
 //================================================================
@@ -184,9 +190,11 @@ struct GpuEventWaiting
 struct GpuEventRecording
 {
 
-    virtual bool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+    virtual stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
 
-    virtual bool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+
+    virtual stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+
 
 };
 
@@ -215,7 +223,7 @@ struct GpuTransfer
 
     #define TMP_COPY_ARRAY_PROTO(funcName, SrcAddr, DstAddr) \
         \
-        virtual bool funcName \
+        virtual stdbool funcName \
         ( \
             SrcAddr srcAddr, \
             DstAddr dstAddr, \
@@ -238,7 +246,7 @@ struct GpuTransfer
 
     #define TMP_COPY_MATRIX_PROTO(funcName, SrcAddr, DstAddr) \
         \
-        virtual bool funcName \
+        virtual stdbool funcName \
         ( \
             SrcAddr srcAddr, Space srcBytePitch, \
             DstAddr dstAddr, Space dstBytePitch, \
@@ -388,7 +396,7 @@ public:
         if (theStream != 0)
         {
             TRACE_ROOT_STD;
-            theSyncStream->waitStream(*theStream, stdPassKit(*(NullKit*) 0));
+            stdDiscard(theSyncStream->waitStream(*theStream, stdPassKit(*(NullKit*) 0)));
 
             theStream = 0;
             theSyncStream = 0;
@@ -506,7 +514,7 @@ public:
 
 struct GpuKernelCalling
 {
-    virtual bool callKernel
+    virtual stdbool callKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,
@@ -519,7 +527,7 @@ struct GpuKernelCalling
     =0;
 
     template <typename Params>
-    inline bool callKernel
+    inline stdbool callKernel
     (
         const GroupCount& groupCount,
         const Point<Space>& threadCount,
