@@ -849,7 +849,7 @@ public:
 
     Space baseByteAlignment() const {return cpuBaseByteAlignment;}
 
-    bool saveImage(const Matrix<Element>& dest, stdNullPars);
+    stdbool saveImage(const Matrix<Element>& dest, stdNullPars);
 
 private:
 
@@ -865,7 +865,7 @@ private:
 //================================================================
 
 template <typename Element>
-bool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, stdNullPars)
+stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, stdNullPars)
 {
     stdBegin;
 

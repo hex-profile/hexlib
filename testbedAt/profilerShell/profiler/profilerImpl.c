@@ -126,7 +126,7 @@ inline void ProfilerImpl::enter(ProfilerScopeEx& scope, TraceLocation location, 
         {
             const ProfilerDeviceKit& kit = *deviceControl;
             TRACE_ROOT_STD;
-            kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass);
+            stdDiscard(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
         }
     }
 
@@ -151,22 +151,6 @@ inline void ProfilerImpl::enter(ProfilerScopeEx& scope, TraceLocation location, 
 
         thisNode = p;
     }
-
-    //if_not (thisNode)
-    //{
-    //  ProfilerNode* testNode = 0;
-
-    //  if (currentScope)
-    //  {
-    //    ProfilerNode* p = currentScope->lastChild;
-
-    //    for (; p != 0; p = p->prevBrother)
-    //      if (strcmp(p->location, location) == 0)
-    //        break;
-
-    //    if (p) abort();
-    //  }
-    //}
 
     //
     // If current node is not found in childs, allocate new node (if possible).
@@ -231,7 +215,7 @@ inline void ProfilerImpl::leave(ProfilerScopeEx& scope)
             {
                 const ProfilerDeviceKit& kit = *deviceControl;
                 TRACE_ROOT_STD;
-                kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass);
+                stdDiscard(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
             }
         }
     }

@@ -28,7 +28,8 @@ const bool MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY = false;
 
 class GpuTextureAllocIgnore : public GpuTextureAllocator
 {
-    bool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
+    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
+
     {
         result.clear();
         return true;
@@ -46,7 +47,8 @@ class GpuTextureAllocFail : public GpuTextureAllocator
 
 public:
 
-    bool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
+    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
+
     {
         result.clear();
         require(printMsgTrace(kit.errorLogEx, STR("Texture allocation is too slow for temporary memory"), msgErr, stdPassThru));

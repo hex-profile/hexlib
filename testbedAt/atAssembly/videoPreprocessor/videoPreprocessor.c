@@ -99,13 +99,16 @@ class AtOverlayMonitor : public AtVideoOverlay
 
 public:
 
-    bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+
         {overlayIsSet = true; return base.setImage(size, imageProvider, desc, id, textEnabled, stdNullPassThru);}
 
-    bool setFakeImage(stdNullPars)
+    stdbool setFakeImage(stdNullPars)
+
         {overlayIsSet = true; return base.setFakeImage(stdNullPassThru);}
 
-    bool updateImage(stdNullPars)
+    stdbool updateImage(stdNullPars)
+
         {return base.updateImage(stdNullPassThru);}
 
 public:

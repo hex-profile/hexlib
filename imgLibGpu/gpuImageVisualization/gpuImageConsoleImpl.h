@@ -20,25 +20,32 @@ class GpuProhibitedConsoleThunk : public GpuBaseConsole
 
 public:
 
-    bool clear(stdNullPars)
+    stdbool clear(stdNullPars)
+
         {stdBegin; REQUIRE(false); stdEnd;}
 
-    bool update(stdNullPars)
+    stdbool update(stdNullPars)
+
         {stdBegin; REQUIRE(false); stdEnd;}
 
-    bool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+
         {stdBegin; REQUIRE(false); stdEnd;}
 
-    bool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+
         {stdBegin; REQUIRE(false); stdEnd;}
 
-    bool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+
         {stdBegin; REQUIRE(false); stdEnd;}
 
-    bool overlaySetFakeImage(stdNullPars)
+    stdbool overlaySetFakeImage(stdNullPars)
+
         {stdBegin; REQUIRE(false); stdEnd;}
 
-    bool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdNullPars)
+
         {stdBegin; REQUIRE(false); stdEnd;}
 
     bool getTextEnabled()
@@ -68,25 +75,32 @@ class GpuBaseConsoleIgnoreThunk : public GpuBaseConsole
 
 public:
 
-    bool clear(stdNullPars)
+    stdbool clear(stdNullPars)
+
         {return true;}
 
-    bool update(stdNullPars)
+    stdbool update(stdNullPars)
+
         {return true;}
 
-    bool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+
         {return true;}
 
-    bool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+
         {return true;}
 
-    bool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+
         {return true;}
 
-    bool overlaySetFakeImage(stdNullPars)
+    stdbool overlaySetFakeImage(stdNullPars)
+
         {return true;}
 
-    bool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdNullPars)
+
         {return true;}
 
     bool getTextEnabled()
@@ -143,22 +157,28 @@ public:
 
 public:
 
-    bool clear(stdNullPars)
+    stdbool clear(stdNullPars)
+
         {return baseConsole.clear(stdPassThru);}
 
-    bool update(stdNullPars)
+    stdbool update(stdNullPars)
+
         {return baseConsole.update(stdPassThru);}
 
-    bool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+
         {return baseConsole.addImageBgr(img, hint, stdPassThru);}
 
-    bool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+
         {return baseConsole.overlaySetImageBgr(size, img, hint, stdPassThru);}
 
-    bool overlaySetFakeImage(stdNullPars)
+    stdbool overlaySetFakeImage(stdNullPars)
+
         {return baseConsole.overlaySetFakeImage(stdPassThru);}
 
-    bool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdNullPars)
+
         {return baseConsole.overlayUpdate(stdPassThru);}
 
     bool getTextEnabled()
@@ -177,7 +197,7 @@ public:
 
     #define TMP_MACRO(Type, _) \
         \
-        bool addMatrixFunc \
+        stdbool addMatrixFunc \
         ( \
             const GpuMatrix<const Type>& img, \
             float32 minVal, float32 maxVal, \
@@ -206,7 +226,7 @@ public:
 
     #define TMP_MACRO(Type, _) \
         \
-        bool addMatrixChanFunc \
+        stdbool addMatrixChanFunc \
         ( \
             const GpuMatrix<const Type>& img, \
             int channel, \
@@ -235,7 +255,7 @@ public:
 private:
 
     template <typename Type>
-    bool addMatrixExImpl
+    stdbool addMatrixExImpl
     (
         const GpuMatrix<const Type>& img,
         int channel,
@@ -257,7 +277,7 @@ private:
 public:
 
     template <typename Vector>
-    bool addVectorImageGeneric
+    stdbool addVectorImageGeneric
     (
         const GpuMatrix<const Vector>& image,
         float32 maxVector,
@@ -271,7 +291,7 @@ public:
 
     #define TMP_MACRO(Vector, o) \
         \
-        bool addVectorImageFunc \
+        stdbool addVectorImageFunc \
         ( \
             const GpuMatrix<const Vector>& image, \
             float32 maxVector, \
@@ -299,7 +319,7 @@ public:
 public:
 
     template <typename Type>
-    bool addYuvImage420Func
+    stdbool addYuvImage420Func
     (
         const GpuImageYuv<const Type>& image,
         const ImgOutputHint& hint,
@@ -310,7 +330,7 @@ public:
 
     #define TMP_MACRO(Type, _) \
         \
-        bool addYuvImage420 \
+        stdbool addYuvImage420 \
         ( \
             const GpuImageYuv<const Type>& image, \
             const ImgOutputHint& hint, \
@@ -333,7 +353,7 @@ public:
 public:
 
     template <typename Type>
-    bool addColorImageFunc
+    stdbool addColorImageFunc
     (
         const GpuMatrix<const Type>& img,
         float32 minVal, float32 maxVal,
@@ -353,7 +373,7 @@ public:
 
     #define TMP_MACRO2(Type, funcName, colorSpace) \
         \
-        bool funcName \
+        stdbool funcName \
         ( \
             const GpuMatrix<const Type>& img, \
             float32 minVal, float32 maxVal, \

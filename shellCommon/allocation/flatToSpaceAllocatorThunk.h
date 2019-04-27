@@ -20,7 +20,8 @@ class FlatToSpaceAllocatorThunk : public AllocatorInterface<AddrU>, public Block
 
 private:
 
-    bool alloc(AllocatorState& self, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    stdbool alloc(AllocatorState& self, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+
         {return flatAllocator.alloc(size, alignment, owner, result, stdNullPassThru);}
 
 public:

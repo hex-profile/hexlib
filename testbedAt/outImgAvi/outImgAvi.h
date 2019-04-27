@@ -87,7 +87,7 @@ public:
 
 public:
 
-    bool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
     {
         stdBegin;
         bool ok1 = outAvi.saveImage(img, hint.desc, hint.id, stdPass);
@@ -96,15 +96,15 @@ public:
         stdEnd;
     }
 
-    bool clear(stdNullPars)
+    stdbool clear(stdNullPars)
         {return baseConsole.clear(stdPassThru);}
 
-    bool update(stdNullPars)
+    stdbool update(stdNullPars)
         {return baseConsole.update(stdPassThru);}
 
 public:
 
-    bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         stdBegin;
         bool ok1 = outAvi.saveImage(size, imageProvider, desc, id, stdPass);
@@ -113,12 +113,12 @@ public:
         stdEnd;
     }
 
-    bool setFakeImage(stdNullPars)
+    stdbool setFakeImage(stdNullPars)
     {
         return baseOverlay.setFakeImage(stdPassThru);
     }
 
-    bool updateImage(stdNullPars) {return true;}
+    stdbool updateImage(stdNullPars) {return true;}
 
 private:
 

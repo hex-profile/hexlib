@@ -27,20 +27,27 @@
 
 //================================================================
 //
-// allv / anyv
+// allv
 //
 // Boolean "and" of all vector components.
-// Boolean "or" of all vector components.
 //
 //================================================================
 
 sysinline bool allv(const bool& value)
     {return value;}
 
+//----------------------------------------------------------------
+
 sysinline bool allv(const void* value)
     {return value != 0;}
 
-//----------------------------------------------------------------
+//================================================================
+//
+// anyv
+//
+// Boolean "or" of all vector components.
+//
+//================================================================
 
 sysinline bool anyv(const bool& value)
     {return value;}
@@ -94,6 +101,24 @@ sysinline bool anyv(const void* value)
 
 #define require_ex(condition, returnValue) \
     if (allv(condition)) ; else return (returnValue)
+
+//================================================================
+//
+// ensure
+//
+//================================================================
+
+struct Failure {};
+
+//----------------------------------------------------------------
+
+[[noreturn]]
+void throwFailure();
+
+//----------------------------------------------------------------
+
+#define ensure(condition) \
+    if (allv(condition)) ; else throwFailure()
 
 //================================================================
 //

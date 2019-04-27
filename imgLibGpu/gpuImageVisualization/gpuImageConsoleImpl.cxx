@@ -534,7 +534,8 @@ public:
     ScalarVisualizationProvider(const ScalarVisualizationParams<Type>& params, const GpuProcessKit& kit)
         : Base(params), kit(kit) {}
 
-    bool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+
 
 private:
 
@@ -549,7 +550,8 @@ private:
 //================================================================
 
 template <typename Type>
-bool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+
 {
     stdBegin;
 
@@ -584,7 +586,7 @@ bool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& des
 //================================================================
 
 template <typename Type>
-bool GpuImageConsoleThunk::addMatrixExImpl
+stdbool GpuImageConsoleThunk::addMatrixExImpl
 (
     const GpuMatrix<const Type>& img,
     int channel,
@@ -702,7 +704,7 @@ bool GpuImageConsoleThunk::addMatrixExImpl
 #define TMP_MACRO(Type, _) \
     \
     template \
-    bool GpuImageConsoleThunk::addMatrixExImpl<Type> \
+    stdbool GpuImageConsoleThunk::addMatrixExImpl<Type> \
     ( \
         const GpuMatrix<const Type>& img, \
         int channel, \
@@ -767,7 +769,8 @@ class VectorVisualizationProvider : public GpuImageProviderBgr32, private Vector
 
 public:
 
-    bool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+
 
     UseType(GpuImageConsoleThunk, Kit);
 
@@ -787,7 +790,8 @@ private:
 //================================================================
 
 template <typename Vector>
-bool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+
 {
     stdBegin;
 
@@ -881,7 +885,7 @@ bool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>& d
 //================================================================
 
 template <typename Vector>
-bool GpuImageConsoleThunk::addVectorImageGeneric
+stdbool GpuImageConsoleThunk::addVectorImageGeneric
 (
     const GpuMatrix<const Vector>& image,
     float32 maxVector,
@@ -987,7 +991,8 @@ class Yuv420ConvertProvider : public GpuImageProviderBgr32
 
 public:
 
-    bool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+
     {
         stdBegin;
         REQUIRE(equalSize(image.luma, dest));
@@ -1012,7 +1017,7 @@ private:
 //================================================================
 
 template <typename Type>
-bool GpuImageConsoleThunk::addYuvImage420Func
+stdbool GpuImageConsoleThunk::addYuvImage420Func
 (
     const GpuImageYuv<const Type>& image,
     const ImgOutputHint& hint,
@@ -1082,7 +1087,8 @@ public:
     UnpackedColorConvertProvider(const ScalarVisualizationParams<Type>& params, ColorMode colorMode, const GpuProcessKit& kit)
         : Base(params), colorMode(colorMode), kit(kit) {}
 
-    bool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+
 
 private:
 
@@ -1125,7 +1131,8 @@ GPUTOOL_2D_END
 #if HOSTCODE
 
 template <typename Type>
-bool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+
 {
     stdBegin;
 
@@ -1173,7 +1180,7 @@ bool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& de
 //================================================================
 
 template <typename Type>
-bool GpuImageConsoleThunk::addColorImageFunc
+stdbool GpuImageConsoleThunk::addColorImageFunc
 (
     const GpuMatrix<const Type>& img,
     float32 minVal, float32 maxVal,

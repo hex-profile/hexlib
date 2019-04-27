@@ -78,22 +78,22 @@ public:
 
 public:
 
-    bool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
         {overlayIsSet = true; return base.setImage(size, imageProvider, desc, id, textEnabled, stdPassThru);}
 
-    bool setFakeImage(stdNullPars)
+    stdbool setFakeImage(stdNullPars)
         {overlayIsSet = true; return base.setFakeImage(stdPassThru);}
 
-    bool updateImage(stdNullPars)
+    stdbool updateImage(stdNullPars)
         {return base.updateImage(stdPassThru);}
 
-    bool clearQueue(stdNullPars)
+    stdbool clearQueue(stdNullPars)
         {return base.clearQueue(stdPassThru);}
 
-    bool setSmoothing(bool smoothing, stdNullPars)
+    stdbool setSmoothing(bool smoothing, stdNullPars)
         {return base.setSmoothing(smoothing, stdPassThru);}
 
-    bool flushSmoothly(stdNullPars)
+    stdbool flushSmoothly(stdNullPars)
         {return base.flushSmoothly(stdPassThru);}
 
 public:
