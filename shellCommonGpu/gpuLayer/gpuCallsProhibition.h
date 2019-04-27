@@ -39,7 +39,7 @@ public:
 
     #define TMP_MACRO(funcName, SrcAddr, DstAddr) \
         \
-        virtual bool funcName \
+        virtual stdbool funcName \
         ( \
             SrcAddr srcAddr, \
             DstAddr dstAddr, \
@@ -64,7 +64,7 @@ public:
 
     #define TMP_MACRO(funcName, SrcAddr, DstAddr) \
         \
-        bool funcName \
+        stdbool funcName \
         ( \
             SrcAddr srcAddr, Space srcBytePitch, \
             DstAddr dstAddr, Space dstBytePitch, \
@@ -89,7 +89,7 @@ public:
     //
     //----------------------------------------------------------------
 
-    bool setSamplerArray
+    stdbool setSamplerArray
     (
         const GpuSamplerLink& sampler,
         GpuAddrU arrayAddr,
@@ -107,7 +107,7 @@ public:
         GPU_PROHIBITED_API_CALL;
     }
 
-    bool setSamplerImage
+    stdbool setSamplerImage
     (
         const GpuSamplerLink& sampler,
         GpuAddrU imageBaseAddr,
@@ -132,7 +132,7 @@ public:
     //
     //----------------------------------------------------------------
 
-    bool callKernel
+    stdbool callKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,
@@ -152,7 +152,8 @@ public:
     //
     //----------------------------------------------------------------
 
-    bool waitStream(const GpuStream& stream, stdNullPars)
+    stdbool waitStream(const GpuStream& stream, stdNullPars)
+
     {
         GPU_PROHIBITED_API_CALL;
     }
@@ -163,27 +164,32 @@ public:
     //
     //----------------------------------------------------------------
 
-    bool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+    stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+
     {
         GPU_PROHIBITED_API_CALL;
     }
 
-    bool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+    stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+
     {
         GPU_PROHIBITED_API_CALL;
     }
 
-    bool checkEvent(const GpuEvent& event, stdNullPars)
+    stdbool checkEvent(const GpuEvent& event, stdNullPars)
+
     {
         GPU_PROHIBITED_API_CALL;
     }
 
-    bool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
+    stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
+
     {
         GPU_PROHIBITED_API_CALL;
     }
 
-    bool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
+    stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
+
     {
         GPU_PROHIBITED_API_CALL;
     }
@@ -252,7 +258,8 @@ class GpuEventAllocatorSupressor : public GpuEventAllocator
 
 public:
 
-    bool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
+    stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
+
     {
         result.clear();
         return true;
@@ -278,7 +285,8 @@ class GpuTextureAllocatorSupressor : public GpuTextureAllocator
 
 public:
 
-    bool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
+    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
+
     {
         result.clear();
         return true;

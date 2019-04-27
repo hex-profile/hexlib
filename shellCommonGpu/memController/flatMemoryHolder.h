@@ -33,7 +33,7 @@ private:
 
 public:
 
-    inline bool realloc(AddrU size, AddrU alignment, FlatMemoryAllocator<AddrU>& allocator, stdNullPars)
+    inline stdbool realloc(AddrU size, AddrU alignment, FlatMemoryAllocator<AddrU>& allocator, stdNullPars)
     {
         stdNullBegin;
 

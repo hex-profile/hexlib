@@ -34,7 +34,7 @@ using StringArray = vector<StlString>;
 
 struct SourceCache
 {
-    virtual bool getFile(const StlString& filename, StringArray*& result, stdNullPars) =0;
+    virtual stdbool getFile(const StlString& filename, StringArray*& result, stdNullPars) =0;
 };
 
 //================================================================
@@ -1666,7 +1666,7 @@ class SourceCacheThunk : public SourceCache
 
 public:
 
-    bool getFile(const StlString& filename, StringArray*& result, stdNullPars)
+    stdbool getFile(const StlString& filename, StringArray*& result, stdNullPars)
         {return impl.getFile(searchPath, filename, result, stdPassThru);}
 
 public:

@@ -24,7 +24,8 @@ class EmuMemoryAllocator : public GpuMemoryAllocator<AddrU>
 
 public:
 
-    bool alloc(const GpuContext& context, AddrU size, AddrU alignment, GpuMemoryOwner& owner, AddrU& result, stdNullPars)
+    stdbool alloc(const GpuContext& context, AddrU size, AddrU alignment, GpuMemoryOwner& owner, AddrU& result, stdNullPars)
+
         {return base.alloc(size, alignment, owner, result, stdNullPassThru);}
 
     inline EmuMemoryAllocator(const ErrorLogKit& kit)
@@ -61,24 +62,30 @@ public:
     // Init
     //
 
-    bool initialize(stdNullPars);
-    bool getDeviceCount(int32& deviceCount, stdNullPars);
-    bool getProperties(int32 deviceIndex, GpuProperties& properties, stdNullPars);
+    stdbool initialize(stdNullPars);
+
+    stdbool getDeviceCount(int32& deviceCount, stdNullPars);
+
+    stdbool getProperties(int32 deviceIndex, GpuProperties& properties, stdNullPars);
+
 
     //
     // Context
     //
 
-    bool createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars);
+    stdbool createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars);
+
     static void destroyContext(GpuContextDeallocContext& deallocContext);
 
-    bool setThreadContext(const GpuContext& context, stdNullPars) {return true;}
+    stdbool setThreadContext(const GpuContext& context, stdNullPars) {return true;}
+
 
     //
     // Module
     //
 
-    bool createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdNullPars)
+    stdbool createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdNullPars)
+
     {
         result.clear();
         return true;
@@ -88,7 +95,8 @@ public:
     // Kernel
     //
 
-    bool createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdNullPars)
+    stdbool createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdNullPars)
+
     {
         result.clear();
         return true;
@@ -98,7 +106,8 @@ public:
     // Sampler
     //
 
-    bool getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdNullPars)
+    stdbool getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdNullPars)
+
     {
         result.clear();
         return true;
@@ -117,21 +126,24 @@ public:
 
     int32 textureAllocCount = 0;
 
-    bool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars);
+    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars);
+
     static void destroyTexture(GpuTextureDeallocContext& deallocContext);
 
     //
     // Stream creation
     //
 
-    bool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars);
+    stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars);
+
     static void destroyStream(GpuStreamDeallocContext& deallocContext);
 
     //
     // Event creation
     //
 
-    bool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
+    stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
+
     {
         result.clear();
         return true;
@@ -186,7 +198,7 @@ public:
 
     #define TMP_MACRO(funcName, SrcAddr, DstAddr) \
         \
-        bool funcName \
+        stdbool funcName \
         ( \
             SrcAddr srcAddr, \
             DstAddr dstAddr, \
@@ -208,7 +220,7 @@ public:
 
     #define TMP_MACRO(funcName, SrcAddr, DstAddr) \
         \
-        bool funcName \
+        stdbool funcName \
         ( \
             SrcAddr srcAddr, Space srcBytePitch, \
             DstAddr dstAddr, Space dstBytePitch, \
@@ -228,7 +240,7 @@ public:
     // Sampler setup
     //
 
-    bool setSamplerArray
+    stdbool setSamplerArray
     (
         const GpuSamplerLink& sampler,
         GpuAddrU arrayAddr,
@@ -243,7 +255,7 @@ public:
         stdNullPars
     );
 
-    bool setSamplerImage
+    stdbool setSamplerImage
     (
         const GpuSamplerLink& sampler,
         GpuAddrU imageBaseAddr,
@@ -263,7 +275,7 @@ public:
     // Kernel launching
     //
 
-    bool callKernel
+    stdbool callKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,
@@ -278,18 +290,24 @@ public:
     // Stream sync
     //
 
-    bool waitStream(const GpuStream& stream, stdNullPars);
+    stdbool waitStream(const GpuStream& stream, stdNullPars);
+
 
     //
     // Events
     //
 
-    bool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars);
-    bool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars);
+    stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars);
 
-    bool checkEvent(const GpuEvent& event, stdNullPars);
-    bool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars);
-    bool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars);
+    stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars);
+
+
+    stdbool checkEvent(const GpuEvent& event, stdNullPars);
+
+    stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars);
+
+    stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars);
+
 
     //
     // Benchmarking control

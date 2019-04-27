@@ -215,7 +215,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     
         profilerReport::ReportKit kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
-        profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx));
+        stdDiscard(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx)));
 
         float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
         // printMsg(kit.localLog, STR("Profiler Quick Report %0 ms"), fltf(reportTime * 1e3f, 2), msgWarn);

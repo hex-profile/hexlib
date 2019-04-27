@@ -103,7 +103,7 @@ struct GpuSamplerSetup
     // setSamplerArray
     //
 
-    virtual bool setSamplerArray
+    virtual stdbool setSamplerArray
     (
         const GpuSamplerLink& sampler,
         GpuAddrU arrayAddr,
@@ -151,7 +151,7 @@ struct GpuSamplerSetup
     // setSamplerImage
     //
 
-    virtual bool setSamplerImage
+    virtual stdbool setSamplerImage
     (
         const GpuSamplerLink& sampler,
         GpuAddrU imageBaseAddr,

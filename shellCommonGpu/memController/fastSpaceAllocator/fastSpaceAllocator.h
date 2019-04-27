@@ -106,7 +106,8 @@ public:
 
 public:
 
-    bool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars);
+    stdbool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars);
+
     static void deallocFunc(MemoryDeallocContext& context);
 
 public:

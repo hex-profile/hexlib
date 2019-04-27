@@ -19,7 +19,8 @@ struct ErrorLogEx
 {
     virtual bool isThreadProtected() const =0;
 
-    virtual bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars) =0;
+    virtual stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars) =0;
+
 };
 
 //================================================================
@@ -78,19 +79,19 @@ PREP_FOR1(PRINTTRACE__MAX_COUNT, PRINTTRACE__FUNC_THUNK, _)
 //================================================================
 
 #define CHECK_TRACE0(condition, format) \
-    CHECK_EX(condition, printMsgTrace(kit.errorLogEx, format, msgErr, stdPass))
+    CHECK_EX(condition, stdDiscard(printMsgTrace(kit.errorLogEx, format, msgErr, stdPass)))
 
 #define CHECK_TRACE1(condition, format, v0) \
-    CHECK_EX(condition, printMsgTrace(kit.errorLogEx, format, v0, msgErr, stdPass))
+    CHECK_EX(condition, stdDiscard(printMsgTrace(kit.errorLogEx, format, v0, msgErr, stdPass)))
 
 #define CHECK_TRACE2(condition, format, v0, v1) \
-    CHECK_EX(condition, printMsgTrace(kit.errorLogEx, format, v0, v1, msgErr, stdPass))
+    CHECK_EX(condition, stdDiscard(printMsgTrace(kit.errorLogEx, format, v0, v1, msgErr, stdPass)))
 
 #define CHECK_TRACE3(condition, format, v0, v1, v2) \
-    CHECK_EX(condition, printMsgTrace(kit.errorLogEx, format, v0, v1, v2, msgErr, stdPass))
+    CHECK_EX(condition, stdDiscard(printMsgTrace(kit.errorLogEx, format, v0, v1, v2, msgErr, stdPass)))
 
 #define CHECK_TRACE4(condition, format, v0, v1, v2, v3) \
-    CHECK_EX(condition, printMsgTrace(kit.errorLogEx, format, v0, v1, v2, v3, msgErr, stdPass))
+    CHECK_EX(condition, stdDiscard(printMsgTrace(kit.errorLogEx, format, v0, v1, v2, v3, msgErr, stdPass)))
 
 //================================================================
 //
