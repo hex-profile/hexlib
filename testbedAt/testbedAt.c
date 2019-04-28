@@ -195,7 +195,6 @@ class AtImgConsoleImplThunk : public AtImgConsole
 public:
 
     stdbool addImageFunc(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-
     {
         std::basic_stringstream<CharType> stringStream;
         FormatStreamStlThunk formatToStream(stringStream);
@@ -220,7 +219,6 @@ public:
     }
 
     stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-
     {
         MATRIX_EXPOSE(img);
 
@@ -251,14 +249,12 @@ public:
     }
 
     stdbool clear(stdNullPars)
-
     {
         require(api->outimg_clear(api) != 0);
         return true;
     }
 
     stdbool update(stdNullPars)
-
     {
         require(api->outimg_update(api) != 0);
         return true;
@@ -388,7 +384,6 @@ public:
 public:
 
     stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
-
     {
         TRACE_REASSEMBLE(stdTraceName);
         if (textEnabled) printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
@@ -397,13 +392,11 @@ public:
     }
 
     stdbool setFakeImage(stdNullPars)
-
     {
         return true;
     }
 
     stdbool updateImage(stdNullPars)
-
     {
         at_bool result = api->video_image_update(api);
         DEBUG_BREAK_CHECK(result != 0);
@@ -434,7 +427,6 @@ class AtAsyncOverlayImpl : public AtAsyncOverlay
 public:
 
     virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, stdNullPars)
-
     {
         CRITSEC_GUARD(lock);
         TRACE_REASSEMBLE(stdTraceName);
@@ -696,7 +688,6 @@ public:
         : base(base) {}
 
     stdbool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
-
     {
         ++counter;
         return base.alloc(state, size, alignment, owner, result, stdNullPassThru);

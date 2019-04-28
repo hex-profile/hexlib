@@ -21,31 +21,24 @@ class GpuProhibitedConsoleThunk : public GpuBaseConsole
 public:
 
     stdbool clear(stdNullPars)
-
         {stdBegin; REQUIRE(false); stdEnd;}
 
     stdbool update(stdNullPars)
-
         {stdBegin; REQUIRE(false); stdEnd;}
 
     stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-
         {stdBegin; REQUIRE(false); stdEnd;}
 
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-
         {stdBegin; REQUIRE(false); stdEnd;}
 
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
-
         {stdBegin; REQUIRE(false); stdEnd;}
 
     stdbool overlaySetFakeImage(stdNullPars)
-
         {stdBegin; REQUIRE(false); stdEnd;}
 
     stdbool overlayUpdate(stdNullPars)
-
         {stdBegin; REQUIRE(false); stdEnd;}
 
     bool getTextEnabled()
@@ -76,31 +69,24 @@ class GpuBaseConsoleIgnoreThunk : public GpuBaseConsole
 public:
 
     stdbool clear(stdNullPars)
-
         {return true;}
 
     stdbool update(stdNullPars)
-
         {return true;}
 
     stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-
         {return true;}
 
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-
         {return true;}
 
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
-
         {return true;}
 
     stdbool overlaySetFakeImage(stdNullPars)
-
         {return true;}
 
     stdbool overlayUpdate(stdNullPars)
-
         {return true;}
 
     bool getTextEnabled()
@@ -158,27 +144,21 @@ public:
 public:
 
     stdbool clear(stdNullPars)
-
         {return baseConsole.clear(stdPassThru);}
 
     stdbool update(stdNullPars)
-
         {return baseConsole.update(stdPassThru);}
 
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-
         {return baseConsole.addImageBgr(img, hint, stdPassThru);}
 
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
-
         {return baseConsole.overlaySetImageBgr(size, img, hint, stdPassThru);}
 
     stdbool overlaySetFakeImage(stdNullPars)
-
         {return baseConsole.overlaySetFakeImage(stdPassThru);}
 
     stdbool overlayUpdate(stdNullPars)
-
         {return baseConsole.overlayUpdate(stdPassThru);}
 
     bool getTextEnabled()

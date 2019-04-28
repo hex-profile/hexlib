@@ -153,7 +153,6 @@ public:
     //----------------------------------------------------------------
 
     stdbool waitStream(const GpuStream& stream, stdNullPars)
-
     {
         GPU_PROHIBITED_API_CALL;
     }
@@ -165,31 +164,26 @@ public:
     //----------------------------------------------------------------
 
     stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
-
     {
         GPU_PROHIBITED_API_CALL;
     }
 
     stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
-
     {
         GPU_PROHIBITED_API_CALL;
     }
 
     stdbool checkEvent(const GpuEvent& event, stdNullPars)
-
     {
         GPU_PROHIBITED_API_CALL;
     }
 
     stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
-
     {
         GPU_PROHIBITED_API_CALL;
     }
 
     stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
-
     {
         GPU_PROHIBITED_API_CALL;
     }
@@ -259,7 +253,6 @@ class GpuEventAllocatorSupressor : public GpuEventAllocator
 public:
 
     stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
-
     {
         result.clear();
         return true;
@@ -286,7 +279,6 @@ class GpuTextureAllocatorSupressor : public GpuTextureAllocator
 public:
 
     stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
-
     {
         result.clear();
         return true;

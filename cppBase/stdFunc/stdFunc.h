@@ -169,7 +169,6 @@ extern const NullKit nullKit;
 // 
 //================================================================
 
-// ``` recheck calls
 #define stdNullPars \
     const NullKit&, \
     TRACE_PARAMS(stdTraceName)
@@ -193,6 +192,8 @@ extern const NullKit nullKit;
 //================================================================
 
 using stdvoid = void;
+using stvoid = void;
+// ```
 
 ////
 

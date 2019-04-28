@@ -35,7 +35,6 @@ static const Space EMU_TEX_ROW_ALIGNMENT = 32;
 //================================================================
 
 stdbool EmuInitApiThunk::initialize(stdNullPars)
-
 {
     stdBegin;
     stdEnd;
@@ -48,7 +47,6 @@ stdbool EmuInitApiThunk::initialize(stdNullPars)
 //================================================================
 
 stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
-
 {
     stdBegin;
     deviceCount = 1;
@@ -62,7 +60,6 @@ stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
 //================================================================
 
 stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdNullPars)
-
 {
     stdBegin;
 
@@ -200,7 +197,6 @@ inline ContextEx& uncast(const GpuContext& context)
 //================================================================
 
 stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars)
-
 {
     stdBegin;
 
@@ -402,7 +398,6 @@ struct EmuTextureContext
 //================================================================
 
 stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
-
 {
     stdBegin;
 
@@ -511,7 +506,6 @@ inline StreamEx& uncast(const GpuStream& stream)
 //================================================================
 
 stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars)
-
 {
     stdBegin;
 
@@ -952,8 +946,9 @@ stdbool EmuExecApiThunk::callKernel
 //================================================================
 
 stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
-
-    {return true;}
+{
+    return true;
+}
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -966,32 +961,27 @@ stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
 //================================================================
 
 stdbool EmuExecApiThunk::putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
-
 {
     return true;
 }
 
 stdbool EmuExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
-
 {
     return true;
 }
 
 stdbool EmuExecApiThunk::checkEvent(const GpuEvent& event, stdNullPars)
-
 {
     return true;
 }
 
 stdbool EmuExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
-
 {
     realWaitHappened = false;
     return true;
 }
 
 stdbool EmuExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
-
 {
     time = 0;
     return true;

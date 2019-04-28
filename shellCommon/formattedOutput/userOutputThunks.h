@@ -51,7 +51,6 @@ public:
 
     stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars);
 
-
 public:
 
     inline ErrorLogExThunk()

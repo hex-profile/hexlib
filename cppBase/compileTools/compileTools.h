@@ -104,24 +104,6 @@ sysinline bool anyv(const void* value)
 
 //================================================================
 //
-// ensure
-//
-//================================================================
-
-struct Failure {};
-
-//----------------------------------------------------------------
-
-[[noreturn]]
-void throwFailure();
-
-//----------------------------------------------------------------
-
-#define ensure(condition) \
-    if (allv(condition)) ; else throwFailure()
-
-//================================================================
-//
 // breakBlock
 //
 // Special construction for local error-checking block.

@@ -65,8 +65,9 @@ class GpuAllocatorJoinContextThunk : public FlatMemoryAllocator<AddrU>
 public:
 
     stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
-
-        {return base->alloc(context, size, alignment, owner, result, stdNullPassThru);}
+    {
+        return base->alloc(context, size, alignment, owner, result, stdNullPassThru);
+    }
 
     void setup(GpuMemoryAllocator<AddrU>& base, const GpuContext& context)
     {

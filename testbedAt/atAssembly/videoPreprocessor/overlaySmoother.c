@@ -71,7 +71,6 @@ public:
 
     stdbool saveImage(const Matrix<ColorPixel>& dest, stdNullPars);
 
-
     Space baseByteAlignment() const {return cpuBaseByteAlignment;}
 
     Space getPitch() const {return cpuImage.memPitch();}
@@ -90,7 +89,6 @@ private:
 //================================================================
 
 stdbool AtProviderFromCpuImage::saveImage(const Matrix<ColorPixel>& dest, stdNullPars)
-
 {
     stdBegin;
 

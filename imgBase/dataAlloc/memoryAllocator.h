@@ -50,7 +50,6 @@ template <typename AddrU>
 struct AllocatorInterface
 {
     virtual stdbool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars) =0;
-
 };
 
 //================================================================

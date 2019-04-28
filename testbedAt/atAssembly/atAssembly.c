@@ -1196,7 +1196,6 @@ public:
     }
 
     stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
-
     {
         bool ok = base.addMsgTrace(v, msgKind, stdNullPassThru);
 

@@ -19,7 +19,6 @@
 struct GpuImageProviderBgr32
 {
     virtual stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const =0;
-
 };
 
 //================================================================
@@ -38,9 +37,7 @@ struct GpuBaseConsole
     //
 
     virtual stdbool clear(stdNullPars) =0;
-
     virtual stdbool update(stdNullPars) =0;
-
 
     //
     // Basic output interaces.
@@ -48,17 +45,13 @@ struct GpuBaseConsole
 
     virtual stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
 
-
     //
     // Video overlay output.
     //
 
     virtual stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars) =0;
-
     virtual stdbool overlaySetFakeImage(stdNullPars) =0;
-
     virtual stdbool overlayUpdate(stdNullPars) =0;
-
 
     //
     //
@@ -367,16 +360,13 @@ struct GpuImageConsoleNull : public GpuImageConsole
     //
 
     stdbool clear(stdNullPars) {return true;}
-
     stdbool update(stdNullPars) {return true;}
-
 
     //
     // Basic output interaces.
     //
 
     stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars) {return true;}
-
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) {return true;}
 
 
@@ -385,11 +375,8 @@ struct GpuImageConsoleNull : public GpuImageConsole
     //
 
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars) {return true;}
-
     stdbool overlaySetFakeImage(stdNullPars) {return true;}
-
     stdbool overlayUpdate(stdNullPars) {return true;}
-
 
     //
     //
