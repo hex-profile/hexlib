@@ -97,10 +97,14 @@ public:
     }
 
     stdbool clear(stdNullPars)
-        {return baseConsole.clear(stdPassThru);}
+    {
+        return baseConsole.clear(stdPassThru);
+    }
 
     stdbool update(stdNullPars)
-        {return baseConsole.update(stdPassThru);}
+    {
+        return baseConsole.update(stdPassThru);
+    }
 
 public:
 
@@ -118,7 +122,10 @@ public:
         return baseOverlay.setFakeImage(stdPassThru);
     }
 
-    stdbool updateImage(stdNullPars) {return true;}
+    stdbool updateImage(stdNullPars) 
+    {
+        return true;
+    }
 
 private:
 

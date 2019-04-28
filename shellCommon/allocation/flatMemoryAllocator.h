@@ -14,5 +14,4 @@ template <typename AddrU>
 struct FlatMemoryAllocator
 {
     virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars) =0;
-
 };

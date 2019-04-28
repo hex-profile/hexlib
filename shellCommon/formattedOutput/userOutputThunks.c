@@ -84,7 +84,6 @@ bool ErrorLogExThunk::isThreadProtected() const
 //================================================================
 
 stdbool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
-
 {
     stdNullBegin;
 

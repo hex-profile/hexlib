@@ -97,7 +97,6 @@ struct GpuTextureAllocator
 {
     virtual stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars) =0;
 
-
     template <typename Type>
     inline stdbool createTexture(const Point<Space>& size, GpuTextureOwner& result, stdNullPars)
         {return createTexture(size, GpuGetChannelType<Type>::val, VectorTypeRank<Type>::val, result, stdNullPassThru);}
@@ -114,7 +113,6 @@ struct GpuTextureAllocator
 struct GpuStreamWaiting
 {
     virtual stdbool waitStream(const GpuStream& stream, stdNullPars) =0;
-
 };
 
 //----------------------------------------------------------------
@@ -151,7 +149,6 @@ struct GpuEventOwner : public GpuEvent
 struct GpuEventAllocator
 {
     virtual stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars) =0;
-
 };
 
 //================================================================
@@ -170,15 +167,12 @@ struct GpuEventWaiting
 {
     virtual stdbool checkEvent(const GpuEvent& event, stdNullPars) =0;
 
-
     virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars) =0;
-
 
     inline stdbool waitEvent(const GpuEvent& event, stdNullPars)
         {bool tmp = false; return waitEvent(event, tmp, stdNullPassThru);}
 
     virtual stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars) =0;
-
 };
 
 //================================================================
@@ -189,13 +183,9 @@ struct GpuEventWaiting
 
 struct GpuEventRecording
 {
-
     virtual stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
 
-
     virtual stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
-
-
 };
 
 //================================================================

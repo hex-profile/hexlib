@@ -845,9 +845,11 @@ public:
 
 public:
 
-    Space getPitch() const {return source.memPitch();}
+    Space getPitch() const
+        {return source.memPitch();}
 
-    Space baseByteAlignment() const {return cpuBaseByteAlignment;}
+    Space baseByteAlignment() const
+        {return cpuBaseByteAlignment;}
 
     stdbool saveImage(const Matrix<Element>& dest, stdNullPars);
 

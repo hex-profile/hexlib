@@ -23,7 +23,6 @@ public:
 
     stdbool setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars);
 
-
     Space getPitch() const
         {return gpuImage.memPitch();}
 
@@ -31,7 +30,6 @@ public:
         {return kit.gpuProperties.samplerBaseAlignment;}
 
     stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars);
-
 
 private:
 
@@ -59,30 +57,24 @@ class GpuBaseAtConsoleThunk : public GpuBaseConsole
 public:
 
     stdbool clear(stdNullPars)
-
         {return !kit.dataProcessing ? true : atImgConsole.clear(stdPassThru);}
 
     stdbool update(stdNullPars)
-
         {return !kit.dataProcessing ? true : atImgConsole.update(stdPassThru);}
 
 public:
 
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-
         {return addImageCopyImpl(img, hint, stdPassThru);}
 
 public:
 
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars);
 
-
     stdbool overlaySetFakeImage(stdNullPars)
-
         {return !kit.dataProcessing ? true : atVideoOverlay.setFakeImage(stdPassThru);}
 
     stdbool overlayUpdate(stdNullPars)
-
         {return !kit.dataProcessing ? true : atVideoOverlay.updateImage(stdPassThru);}
 
 public:
@@ -97,7 +89,6 @@ public:
 
     template <typename Type>
     stdbool addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars);
-
 
 public:
 

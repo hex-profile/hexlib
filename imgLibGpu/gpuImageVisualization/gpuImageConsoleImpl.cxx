@@ -536,7 +536,6 @@ public:
 
     stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
 
-
 private:
 
     GpuProcessKit kit;
@@ -551,7 +550,6 @@ private:
 
 template <typename Type>
 stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
-
 {
     stdBegin;
 
@@ -771,7 +769,6 @@ public:
 
     stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
 
-
     UseType(GpuImageConsoleThunk, Kit);
 
     VectorVisualizationProvider(const VectorVisualizationParams<Vector>& params, const Kit& kit)
@@ -791,7 +788,6 @@ private:
 
 template <typename Vector>
 stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
-
 {
     stdBegin;
 
@@ -992,7 +988,6 @@ class Yuv420ConvertProvider : public GpuImageProviderBgr32
 public:
 
     stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
-
     {
         stdBegin;
         REQUIRE(equalSize(image.luma, dest));
@@ -1089,7 +1084,6 @@ public:
 
     stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
 
-
 private:
 
     ColorMode colorMode;
@@ -1132,7 +1126,6 @@ GPUTOOL_2D_END
 
 template <typename Type>
 stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
-
 {
     stdBegin;
 
