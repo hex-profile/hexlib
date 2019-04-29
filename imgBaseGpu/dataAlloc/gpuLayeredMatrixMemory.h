@@ -3,6 +3,7 @@
 #include "data/gpuLayeredMatrix.h"
 #include "dataAlloc/memoryAllocator.h"
 #include "errorLog/errorLog.h"
+#include "gpuAppliedApi/gpuAppliedApi.h"
 
 //================================================================
 //

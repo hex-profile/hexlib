@@ -386,7 +386,7 @@ public:
         if (theStream != 0)
         {
             TRACE_ROOT_STD;
-            stdDiscard(theSyncStream->waitStream(*theStream, stdPassKit(*(NullKit*) 0)));
+            stdDiscard(theSyncStream->waitStream(*theStream, stdNullPass));
 
             theStream = 0;
             theSyncStream = 0;
