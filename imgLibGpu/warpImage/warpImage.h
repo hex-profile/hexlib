@@ -3,6 +3,7 @@
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
 #include "imageRead/interpType.h"
+#include "numbers/lt/ltBase.h"
 
 //================================================================
 //
@@ -17,6 +18,7 @@ template <typename Pixel>
 bool warpImage
 (
     const GpuMatrix<const Pixel>& src,
+    const LinearTransform<Point<float32>>& srcTransform,
     const GpuMatrix<const float32_x2>& map,
     const Point<float32>& mapScaleFactor,
     const Point<float32>& mapValueFactor,
