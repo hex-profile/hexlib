@@ -87,14 +87,13 @@ inline void destruct(Type& x)
 
 //================================================================
 //
-// valueInit
-//
-// Assign to default value constructed by value-initialization.
+// resetObject
 //
 //================================================================
 
 template <typename Type>
-inline void valueInit(Type& dst)
+inline void resetObject(Type& x)
 {
-    dst = Type{};
+    destruct(x);
+    constructDefault(x);
 }
