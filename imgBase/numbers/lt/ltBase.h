@@ -16,7 +16,8 @@ struct LinearTransform
     Type C1;
     Type C0;
 
-    inline Type operator () (const Type& value) const
+    template <typename ValueType>
+    sysinline auto operator () (const ValueType& value) const
         {return value * C1 + C0;}
 };
 

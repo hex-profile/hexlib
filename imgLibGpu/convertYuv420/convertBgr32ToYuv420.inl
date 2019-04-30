@@ -6,7 +6,7 @@
 
 #if DEVCODE
 
-devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(ConvertBgrNvParams<DST_PIXEL, DST_PIXEL2>), o)
+devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(ConvertBgrYuv420Params<DST_PIXEL, DST_PIXEL2>), o)
 {
 
     //----------------------------------------------------------------
@@ -15,7 +15,6 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
     //
     //----------------------------------------------------------------
 
-    MATRIX_EXPOSE_EX(o.src, src);
     MATRIX_EXPOSE_EX(o.dstLuma, dstLuma);
 
     ////
@@ -62,8 +61,6 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
     Space srcBaseX = 2 * dstBaseX - extraL + devThreadX;
     Space srcBaseY = 2 * dstBaseY - extraL + devThreadY;
 
-    srcBaseY += o.verticalSourceOffset;
-
     float32 srcBaseXs = srcBaseX + 0.5f;
     float32 srcBaseYs = srcBaseY + 0.5f;
 
@@ -75,7 +72,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
             const Space tX = (kX) * threadCountX; \
             const Space tY = (kY) * threadCountY; \
             \
-            float32_x4 bgrValue = devTex2D(srcSampler, srcBaseXs + tX, srcBaseYs + tY); \
+            float32_x4 bgrValue = tex2D(srcSampler, o.srcTransform(point(srcBaseXs + tX, srcBaseYs + tY))); \
             \
             float32 Yf, Pr, Pb; \
             convertBgrToYPrPb(bgrValue, Yf, Pr, Pb); \
@@ -180,26 +177,38 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 
     //----------------------------------------------------------------
     //
-    // Write output
+    // Write chroma output.
     //
     //----------------------------------------------------------------
-
-    MATRIX_EXPOSE_EX(o.dstChroma, dstChroma);
-
-    ////
-
-    Space chromaSizeX = dstChromaSizeX;
-    Space chromaSizeY = dstChromaSizeY;
-
-    ////
 
     Space dstX = dstBaseX + devThreadX;
     Space dstY = dstBaseY + devThreadY;
 
-    if (dstX < chromaSizeX && dstY < chromaSizeY)
+    ////
+
     {
-        float32_x2 chromaValue = make_float32_x2(resultU, resultV);
-        MATRIX_ELEMENT(dstChroma, dstX, dstY) = convertNormClamp<DST_PIXEL2>(chromaValue);
+        MATRIX_EXPOSE_EX(o.dstChroma, dstChroma);
+
+        if (MATRIX_VALID_ACCESS(dstChroma, dstX, dstY))
+            MATRIX_ELEMENT(dstChroma, dstX, dstY) = convertNormClamp<DST_PIXEL2>(makeVec2(resultU, resultV));
+    }
+
+    ////
+
+    {
+        MATRIX_EXPOSE_EX(o.dstChromaU, dstChromaU);
+
+        if (MATRIX_VALID_ACCESS(dstChromaU, dstX, dstY))
+            MATRIX_ELEMENT(dstChromaU, dstX, dstY) = convertNormClamp<DST_PIXEL>(resultU);
+    }
+
+    ////
+
+    {
+        MATRIX_EXPOSE_EX(o.dstChromaV, dstChromaV);
+
+        if (MATRIX_VALID_ACCESS(dstChromaV, dstX, dstY))
+            MATRIX_ELEMENT(dstChromaV, dstX, dstY) = convertNormClamp<DST_PIXEL>(resultV);
     }
 }
 
@@ -219,6 +228,8 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<DST_PIXEL>& dstLuma,
     const GpuMatrix<DST_PIXEL2>& dstChroma,
+    const GpuMatrix<DST_PIXEL>& dstChromaU,
+    const GpuMatrix<DST_PIXEL>& dstChromaV,
     stdPars(GpuProcessKit)
 )
 {
@@ -234,41 +245,21 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 
     ////
 
-    Point<Space> chromaSize = dstChroma.size();
+    Point<Space> domainSize = (lumaSize + 1) >> 1; // round UP to cover all luma pixels
+    domainSize = maxv(domainSize, dstChroma.size());
+    domainSize = maxv(domainSize, dstChromaU.size());
+    domainSize = maxv(domainSize, dstChromaV.size());
 
     ////
 
-    Point<Space> lumaHalfUp = (lumaSize + 1) >> 1;
-    Point<Space> lumaHalfDn = lumaSize >> 1;
-
-    REQUIRE(chromaSize == lumaHalfUp || chromaSize == lumaHalfDn);
-
-    Point<Space> domainSize = maxv(chromaSize, lumaHalfUp);
-
-    //
-    // Compute memory space array, covering the matrix.
-    // Correct the array base address if the pitch is negative.
-    //
-
-    GpuMatrix<const uint8_x4> tmpSrc = src;
-    GpuMatrix<DST_PIXEL> tmpDstLuma = dstLuma;
-    GpuMatrix<DST_PIXEL2> tmpDstChroma = dstChroma;
-
-    Space verticalSourceOffset = 0;
+    auto srcCorrect = src;
+    auto srcTransform = ltPassthru<Point<float32>>();
 
     if (src.memPitch() < 0)
     {
-        verticalSourceOffset = lumaSize.Y - 2*chromaSize.Y;
-
-        tmpSrc = flipMatrix(tmpSrc); 
-        tmpDstLuma = flipMatrix(tmpDstLuma);
-        tmpDstChroma = flipMatrix(tmpDstChroma);
+        srcCorrect = flipMatrix(src);
+        srcTransform = linearTransform(point(1.f, -1.f), point(0.f, float32(src.sizeY())));
     }
-
-    ////
-
-    MATRIX_EXPOSE(tmpSrc);
-    REQUIRE(tmpSrcMemPitch >= 0);
 
     ////
 
@@ -277,22 +268,19 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
         kit.gpuSamplerSetting.setSamplerImage
         (
             srcSampler,
-            tmpSrc,
-            BORDER_CLAMP,
+            srcCorrect,
+            BORDER_MIRROR,
             false,
             true,
-            false,
+            true,
             stdPass
         )
     );
 
     ////
 
-    ConvertBgrNvParams<DST_PIXEL, DST_PIXEL2> params;
-    params.src = tmpSrc;
-    params.verticalSourceOffset = verticalSourceOffset;
-    params.dstLuma = tmpDstLuma;
-    params.dstChroma = tmpDstChroma;
+    auto srcFullTransform = ltCombine(srcTransform, linearTransform(computeTexstep(src), point(0.f)));
+    ConvertBgrYuv420Params<DST_PIXEL, DST_PIXEL2> params{srcFullTransform, dstLuma, dstChroma, dstChromaU, dstChromaV};
 
     require
     (

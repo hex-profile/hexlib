@@ -143,19 +143,6 @@ struct ConvertImplFlag<LtFamily, LtFamily, rounding, hint>
 
 //================================================================
 //
-// LT_DECOMPOSE
-//
-//================================================================
-
-#define LT_DECOMPOSE_EX(name, prefix, Type) \
-    Type prefix##C1 = (name).C1; \
-    Type prefix##C0 = (name).C0;
-
-#define LT_DECOMPOSE(name, Type) \
-    LT_DECOMPOSE_EX(name, name, Type)
-
-//================================================================
-//
 // ltApply
 //
 //================================================================
@@ -205,6 +192,22 @@ sysinline LinearTransform<Type> ltInverse(const LinearTransform<Type>& lt)
     (
         div,
         -lt.C0 * div
+    );
+}
+
+//================================================================
+//
+// ltCombine
+//
+//================================================================
+
+template <typename Type>
+sysinline LinearTransform<Type> ltCombine(const LinearTransform<Type>& A, const LinearTransform<Type>& B)
+{
+    return linearTransform
+    (
+        A.C1 * B.C1,
+        A.C0 * B.C1 + B.C0
     );
 }
 
