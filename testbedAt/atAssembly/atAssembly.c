@@ -379,7 +379,7 @@ class InputMetadataHandler
 
 public:
 
-    KIT_COMBINE2(UpdateKit, DiagnosticKit, FileToolsKit);
+    KIT_COMBINE3(UpdateKit, DiagnosticKit, LocalLogKit, FileToolsKit);
 
     stdbool checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit));
     stdbool updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit));
@@ -456,7 +456,11 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     //
     //----------------------------------------------------------------
 
-    REMEMBER_CLEANUP_EX(resetState, {currentInputName.clear(); currentConfigName.clear(); currentProperties = FileProperties{};});
+    printMsgL(kit, STR("Reloading metadata config."), msgWarn);
+
+    receiver.inputMetadataReset();
+
+    REMEMBER_CLEANUP_EX(resetState, {receiver.inputMetadataReset(); currentInputName.clear(); currentConfigName.clear(); currentProperties = FileProperties{};});
 
     //----------------------------------------------------------------
     //
@@ -481,11 +485,6 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
 
     require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
 
-    ////
-
-    if_not (currentProperties.exists)
-        {resetState.cancel(); return true;}
-
     //----------------------------------------------------------------
     //
     // Read metadata config file.
@@ -493,7 +492,9 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     //----------------------------------------------------------------
 
     ConfigFile metadataConfig;
-    require(metadataConfig.loadFile(currentConfigName, stdPass));
+
+    if (currentProperties.exists)
+        require(metadataConfig.loadFile(currentConfigName, stdPass));
 
     //----------------------------------------------------------------
     //
@@ -503,7 +504,7 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
 
     class SerializeToInputMetadata : public CfgSerialization
     {
-        void serialize(const CfgSerializeKit& kit) {receiver.setInputMetadata(kit);}
+        void serialize(const CfgSerializeKit& kit) {receiver.inputMetadataSerialize(kit);}
 
         CLASS_CONTEXT(SerializeToInputMetadata, ((AtEngine&, receiver)));
     };
@@ -514,7 +515,10 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     metadataConfig.loadVars(serializer);
 
     metadataConfig.saveVars(serializer, true);
-    metadataConfig.updateFile(true, stdPass); // correct the config
+    metadataConfig.updateFile(true, stdPass); // Correct the config file.
+
+    // Update the file properties after correction.
+    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass)); 
 
     //----------------------------------------------------------------
     //

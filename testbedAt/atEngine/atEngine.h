@@ -30,7 +30,9 @@ struct AtEngine
 
     virtual void serialize(const ModuleSerializeKit& kit) =0;
     virtual void setInputResolution(const Point<Space>& frameSize) =0;
-    virtual void setInputMetadata(const CfgSerializeKit& kit) =0;
+
+    virtual void inputMetadataReset() =0;
+    virtual void inputMetadataSerialize(const CfgSerializeKit& kit) =0;
 
     virtual bool reallocValid() const =0;
     virtual stdbool realloc(stdPars(AtEngineReallocKit)) =0;
