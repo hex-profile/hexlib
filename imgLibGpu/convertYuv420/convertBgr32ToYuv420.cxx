@@ -11,6 +11,8 @@
 #include "gpuDevice/gpuDevice.h"
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "convertYuv420/convertYuvRgbFunc.h"
+#include "numbers/lt/ltType.h"
+#include "gpuSupport/gpuTexTools.h"
 
 //================================================================
 //
@@ -47,17 +49,19 @@ static const Space threadCountY = 16;
 
 //================================================================
 //
-// ConvertBgrNvParams
+// ConvertBgrYuv420Params
 //
 //================================================================
 
 template <typename DstPixel, typename DstPixel2>
-struct ConvertBgrNvParams
+struct ConvertBgrYuv420Params
 {
-    GpuMatrix<const uint8_x4> src;
-    Space verticalSourceOffset;
+    LinearTransform<Point<float32>> srcTransform;
+
     GpuMatrix<DstPixel> dstLuma;
     GpuMatrix<DstPixel2> dstChroma;
+    GpuMatrix<DstPixel> dstChromaU;
+    GpuMatrix<DstPixel> dstChromaV;
 };
 
 //================================================================
