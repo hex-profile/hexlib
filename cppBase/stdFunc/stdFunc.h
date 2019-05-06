@@ -192,8 +192,6 @@ extern const NullKit nullKit;
 //================================================================
 
 using stdvoid = void;
-using stvoid = void;
-// ```
 
 ////
 

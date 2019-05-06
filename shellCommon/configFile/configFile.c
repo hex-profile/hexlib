@@ -178,9 +178,9 @@ public:
     void loadVars(CfgSerialization& serialization);
     void saveVars(CfgSerialization& serialization, bool forceUpdate);
 
-    stdvoid updateFile(bool forceUpdate, stdPars(CfgFileKit));
+    stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
 
-    stdvoid editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
+    stdbool editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
 
 private:
 
@@ -315,15 +315,15 @@ void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate)
 //
 //================================================================
 
-stdvoid ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
+stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 {
     stdBegin;
 
     if_not (updateFileEnabled)
-        return;
+        return false;
 
     if_not (forceUpdate || memoryChanged)
-        return;
+        return true;
 
     //
     // update file
@@ -337,10 +337,10 @@ stdvoid ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
     {
         printMsg(kit.msgLog, STR("Cannot save config file %0, updating is stopped"), filename.cstr(), msgWarn);
         updateFileEnabled = false;
-        return;
+        return false;
     }
 
-    stdEndv;
+    stdEnd;
 }
 
 //================================================================
@@ -366,33 +366,38 @@ stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filen
 //
 //================================================================
 
-stdvoid ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
+stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
 {
     stdBegin;
 
-    requirev(updateFileEnabled);
-    REQUIREV(filename.length() != 0);
+    require(updateFileEnabled);
+    REQUIRE(filename.length() != 0);
 
     ////
 
-    updateFile(false, stdPass);
+    require(updateFile(false, stdPass));
 
     ////
 
     if_not (launchEditor(configEditor, filename, stdPass))
     {
         if_not (launchEditor(CT("notepad"), filename, stdPass))
-            return;
+            return false;
     }
 
+    ////
+
     if_not (memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass))
+    {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
+        return false;
+    }
 
     memoryChanged = false;
 
     ////
 
-    stdEndv;
+    stdEnd;
 }
 
 //================================================================
@@ -419,11 +424,11 @@ void ConfigFile::loadVars(CfgSerialization& serialization)
 void ConfigFile::saveVars(CfgSerialization& serialization, bool forceUpdate)
     {instance->saveVars(serialization, forceUpdate);}
 
-stdvoid ConfigFile::updateFile(bool forceUpdate, stdPars(CfgFileKit))
-    {instance->updateFile(forceUpdate, stdPassThru);}
+stdbool ConfigFile::updateFile(bool forceUpdate, stdPars(CfgFileKit))
+    {return instance->updateFile(forceUpdate, stdPassThru);}
 
-stdvoid ConfigFile::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
-    {instance->editFile(configEditor, stdPassThru);}
+stdbool ConfigFile::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
+    {return instance->editFile(configEditor, stdPassThru);}
 
 //----------------------------------------------------------------
 

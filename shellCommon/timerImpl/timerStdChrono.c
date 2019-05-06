@@ -80,13 +80,13 @@ TimeMoment TimerStdChrono::add(const TimeMoment& baseMoment, float32 difference)
 //================================================================
 
 template <typename SteadyDuration, typename Repr = typename SteadyDuration::rep>
-constexpr SteadyDuration maxDuration() noexcept
+constexpr SteadyDuration maxDuration()
     {return SteadyDuration{numeric_limits<Repr>::max()};}
 
 //----------------------------------------------------------------
 
 template <typename SteadyDuration>
-constexpr SteadyDuration absDuration(const SteadyDuration d) noexcept
+constexpr SteadyDuration absDuration(const SteadyDuration d)
     {return SteadyDuration{d.count() < 0 ? -d.count() : d.count()};}
 
 //----------------------------------------------------------------

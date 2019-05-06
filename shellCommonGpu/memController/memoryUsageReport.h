@@ -9,7 +9,7 @@
 //================================================================
 
 template <typename Kit>
-inline stdvoid memoryUsageReport
+inline stdbool memoryUsageReport
 (
     const CharArray& name,
     const MemoryUsage& stateUsage,
@@ -19,7 +19,7 @@ inline stdvoid memoryUsageReport
     stdPars(Kit)
 )
 {
-    printMsg
+    return printMsg
     (
         kit.localLog,
         STR("%0: GPU %3M / %4M, CPU %1M / %2M"),
