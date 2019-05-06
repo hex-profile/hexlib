@@ -96,9 +96,9 @@ void MemController::deinit()
 //================================================================
 
 template <typename AddrU, typename Kit>
-inline stdvoid memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignment, stdPars(Kit))
+inline stdbool memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignment, stdPars(Kit))
 {
-    printMsg
+    return printMsg
     (
         kit.localLog, STR("%0: Failed to alloc %1 Mb"),
         name,

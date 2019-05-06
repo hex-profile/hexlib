@@ -87,11 +87,11 @@ public:
     void loadVars(CfgSerialization& serialization);
     void saveVars(CfgSerialization& serialization, bool forceUpdate);
 
-    stdvoid updateFile(bool forceUpdate, stdPars(CfgFileKit));
+    stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
 
 public:
 
-    stdvoid editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
+    stdbool editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
 
 public:
 
