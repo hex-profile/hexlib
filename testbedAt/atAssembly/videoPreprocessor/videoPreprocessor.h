@@ -11,6 +11,7 @@
 #include "kits/gpuRgbFrameKit.h"
 #include "kits/userPoint.h"
 #include "vectorTypes/vectorBase.h"
+#include "storage/dynamicClass.h"
 
 namespace videoPreprocessor {
 
@@ -42,7 +43,9 @@ struct VideoPrepTarget
 //================================================================
 
 KIT_COMBINE3(ReallocKit, ModuleReallocKit, GpuAppExecKit, AtCommonKit);
-KIT_COMBINE7(ProcessKit, ModuleBaseProcessKit, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit, ThreadManagerKit);
+
+KIT_COMBINE8(ProcessBaseKit_, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, OutputLevelKit, UserPointKit);
+KIT_COMBINE7(ProcessKit, ProcessBaseKit_, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit, ThreadManagerKit);
 
 //================================================================
 //
@@ -59,16 +62,17 @@ public:
     ~VideoPreprocessor();
 
     void serialize(const ModuleSerializeKit& kit);
+    void setFrameSize(const Point<Space>& frameSize);
 
     bool reallocValid() const;
-    stdbool realloc(const Point<Space>& frameSize, stdPars(ReallocKit));
+    stdbool realloc(stdPars(ReallocKit));
 
     Point<Space> outputFrameSize() const;
-    stdbool processEntry(VideoPrepTarget& target, stdPars(ProcessKit));
+    stdbool process(VideoPrepTarget& target, stdPars(ProcessKit));
 
 private:
 
-    StaticClass<class VideoPreprocessorImpl, 1 << 15> instance;
+    DynamicClass<class VideoPreprocessorImpl> instance;
 
 };
 

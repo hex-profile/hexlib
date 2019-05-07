@@ -4,7 +4,6 @@
 
 #include "atAssembly/frameAdvanceKit.h"
 #include "atAssembly/frameChange.h"
-#include "atAssembly/toolModule/toolModule.h"
 #include "atAssembly/videoPreprocessor/videoPreprocessor.h"
 #include "cfgTools/boolSwitch.h"
 #include "compileTools/classContext.h"
@@ -38,13 +37,11 @@ namespace atStartup {
 //
 //================================================================
 
-KIT_COMBINE6(ProcessEnrichedKit, ProcessKit, TimerKit, OverlayTakeoverKit, UserPointKit, FileToolsKit, FrameAdvanceKit);
-KIT_COMBINE2(ProcessProfilerKit, ProcessEnrichedKit, ProfilerKit);
-
+KIT_COMBINE7(ProcessProfilerKit, ProcessKit, TimerKit, OverlayTakeoverKit, UserPointKit, FileToolsKit, FrameAdvanceKit, ProfilerKit);
 KIT_COMBINE2(ProcessFinalKit, ProcessProfilerKit, gpuShell::GpuShellKit);
 
-KIT_COMBINE1(ModuleReallocKit, ProcessFinalKit);
-KIT_COMBINE2(ModuleProcessKit, ProcessFinalKit, PipeControlKit);
+KIT_COMBINE1(TargetReallocKit, ProcessFinalKit);
+KIT_COMBINE2(TargetProcessKit, ProcessFinalKit, PipeControlKit);
 
 //================================================================
 //
@@ -56,6 +53,16 @@ inline bool uncommonActivity(const ReallocActivity& stateActivity, const Realloc
 {
     return stateActivity.sysAllocCount || tempActivity.sysAllocCount || stateActivity.fastAllocCount;
 }
+
+//================================================================
+//
+// ToolModule
+//
+//================================================================
+
+using ToolModule = videoPreprocessor::VideoPreprocessor;
+using ToolTarget = videoPreprocessor::VideoPrepTarget;
+using ToolTargetProcessKit = videoPreprocessor::ProcessTargetKit;
 
 //================================================================
 //
@@ -76,20 +83,20 @@ public:
     stdbool realloc(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
-        ModuleReallocKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
+        TargetReallocKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
         return toolModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
     }
 
 public:
 
-    inline ToolModuleReallocThunk(ToolModule& toolModule, const ModuleReallocKit& baseKit)
+    inline ToolModuleReallocThunk(ToolModule& toolModule, const TargetReallocKit& baseKit)
         : toolModule(toolModule), baseKit(baseKit) {}
 
 private:
 
     ToolModule& toolModule;
-    ModuleReallocKit const baseKit;
+    TargetReallocKit const baseKit;
 
 };
 
@@ -107,21 +114,21 @@ public:
     stdbool process(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
-        ModuleProcessKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
+        TargetProcessKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
         return toolModule.process(toolTarget, stdPassThruKit(kitCombine(kit, joinKit, OutputLevelKit(OUTPUT_ENABLED, 0))));
     }
 
 public:
 
-    inline ToolModuleProcessThunk(ToolModule& toolModule, ToolTarget& toolTarget, const ModuleProcessKit& baseKit)
+    inline ToolModuleProcessThunk(ToolModule& toolModule, ToolTarget& toolTarget, const TargetProcessKit& baseKit)
         : toolModule(toolModule), toolTarget(toolTarget), baseKit(baseKit) {}
 
 private:
 
     ToolModule& toolModule;
     ToolTarget& toolTarget;
-    ModuleProcessKit const baseKit;
+    TargetProcessKit const baseKit;
 
 };
 
@@ -888,7 +895,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         //
 
         PipeControl pipeControl(frameRepetition, false);
-        ModuleProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl, 0));
+        TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl, 0));
 
         ////
 
@@ -946,7 +953,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         //
 
         PipeControl pipeControl(1, false);
-        ModuleProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl, 0));
+        TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl, 0));
 
         ////
 
@@ -1355,7 +1362,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
             FrameAdvanceKit(frameAdvance, 0)
         );
 
-        ProfilerTargetToAssembly<ProcessEnrichedKit> profilerTarget(*this, kit);
+        ProfilerTargetToAssembly<decltype(kit)> profilerTarget(*this, kit);
         require(profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass));
     }
 
