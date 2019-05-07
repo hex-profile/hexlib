@@ -194,13 +194,14 @@ public:
     VideoPreprocessorImpl();
 
     void serialize(const ModuleSerializeKit& kit);
+    void setFrameSize(const Point<Space>& frameSize);
 
     bool reallocValid() const;
-    stdbool realloc(const Point<Space>& frameSize, stdPars(ReallocKit));
+    stdbool realloc(stdPars(ReallocKit));
 
     Point<Space> outputFrameSize() const;
 
-    stdbool processEntry(VideoPrepTarget& target, stdPars(ProcessKit));
+    stdbool process(VideoPrepTarget& target, stdPars(ProcessKit));
 
     stdbool processSingleFrame
     (
@@ -236,6 +237,7 @@ public:
 
 private:
 
+    Point<Space> desiredFrameSize = point(0);
     Point<Space> allocFrameSize = point(0);
 
     ////
@@ -449,6 +451,17 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 
 //================================================================
 //
+// VideoPreprocessorImpl::setFrameSize
+//
+//================================================================
+
+void VideoPreprocessorImpl::setFrameSize(const Point<Space>& frameSize)
+{
+    desiredFrameSize = frameSize;
+}
+
+//================================================================
+//
 // VideoPreprocessorImpl::reallocValid
 //
 //================================================================
@@ -456,6 +469,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 bool VideoPreprocessorImpl::reallocValid() const
 {
     return
+        allv(allocFrameSize == desiredFrameSize) &&
         frameHistoryCapacity == frameHistory.allocSize() &&
         halfFloatTest.reallocValid();
 }
@@ -466,7 +480,7 @@ bool VideoPreprocessorImpl::reallocValid() const
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::realloc(const Point<Space>& frameSize, stdPars(ReallocKit))
+stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
 {
     stdBegin;
 
@@ -483,7 +497,7 @@ stdbool VideoPreprocessorImpl::realloc(const Point<Space>& frameSize, stdPars(Re
     for (Space k = 0; k < frameHistoryCapacity; ++k)
     {
         FrameSnapshot* f = frameHistory.add();
-        REQUIRE(f->frameMemory.realloc(frameSize, stdPass));
+        REQUIRE(f->frameMemory.realloc(desiredFrameSize, stdPass));
         f->frame = f->frameMemory;
     }
 
@@ -496,12 +510,12 @@ stdbool VideoPreprocessorImpl::realloc(const Point<Space>& frameSize, stdPars(Re
 
     ////
 
-    require(rndgenFrame.realloc(frameSize, stdPass));
+    require(rndgenFrame.realloc(desiredFrameSize, stdPass));
     rndgenFrameInitialized = false;
 
     ////
 
-    allocFrameSize = frameSize;
+    allocFrameSize = desiredFrameSize;
 
     stdEnd;
 }
@@ -995,11 +1009,11 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
 //================================================================
 //
-// VideoPreprocessorImpl::processEntry
+// VideoPreprocessorImpl::process
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(ProcessKit))
+stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessKit))
 {
     stdBeginScoped;
 
@@ -1161,10 +1175,11 @@ stdbool VideoPreprocessorImpl::processEntry(VideoPrepTarget& target, stdPars(Pro
 
 CLASSTHUNK_CONSTRUCT_DESTRUCT(VideoPreprocessor)
 CLASSTHUNK_VOID1(VideoPreprocessor, serialize, const ModuleSerializeKit&)
+CLASSTHUNK_VOID1(VideoPreprocessor, setFrameSize, const Point<Space>&)
 CLASSTHUNK_BOOL_CONST0(VideoPreprocessor, reallocValid)
-CLASSTHUNK_BOOL_STD1(VideoPreprocessor, realloc, const Point<Space>&, ReallocKit)
+CLASSTHUNK_BOOL_STD0(VideoPreprocessor, realloc, ReallocKit)
 CLASSTHUNK_PURE0(VideoPreprocessor, Point<Space>, point(0), outputFrameSize, const)
-CLASSTHUNK_BOOL_STD1(VideoPreprocessor, processEntry, VideoPrepTarget&, ProcessKit)
+CLASSTHUNK_BOOL_STD1(VideoPreprocessor, process, VideoPrepTarget&, ProcessKit)
 
 //----------------------------------------------------------------
 

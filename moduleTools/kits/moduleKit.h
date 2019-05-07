@@ -57,10 +57,7 @@ KIT_CREATE1(OutputLevelKit, OutputLevel, outputLevel);
 //================================================================
 
 KIT_COMBINE3(ModuleReallocKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit);
-
-// ```
-KIT_COMBINE8(ModuleBaseProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, OutputLevelKit, UserPointKit);
-KIT_COMBINE3(ModuleProcessKit, ModuleBaseProcessKit, AlternativeVersionKit, DisplayParamsKit);
+KIT_COMBINE10(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, OutputLevelKit, UserPointKit, AlternativeVersionKit, DisplayParamsKit);
 
 //================================================================
 //

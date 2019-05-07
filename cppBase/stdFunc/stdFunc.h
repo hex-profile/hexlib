@@ -195,7 +195,10 @@ using stdvoid = void;
 
 ////
 
-class stdbool // [[nodiscard]]
+class stdbool 
+//#if PLATFORM == 0
+//    [[nodiscard]]
+//#endif
 {
 
 public:
