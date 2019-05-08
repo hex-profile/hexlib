@@ -162,7 +162,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     else
     {
         TimeMoment processBeg = kit.timer.moment();
-        bool ok = target.process(stdPassKit(ProfilerKit(0, 0)));
+        bool ok = target.process(stdPassKit(ProfilerKit(nullptr)));
         *frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment());
 
         return ok;
@@ -194,7 +194,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         ProfilerThunk profilerThunk(profilerImpl);
 
         TimeMoment processBeg = kit.timer.moment();
-        processOk = target.process(stdPassKit(ProfilerKit(&profilerThunk, 0)));
+        processOk = target.process(stdPassKit(ProfilerKit(&profilerThunk)));
         *frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment());
 
         CHECK(profilerImpl.checkResetScope());

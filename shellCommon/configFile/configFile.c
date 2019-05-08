@@ -131,7 +131,7 @@ struct CheckCfgvarsChanged : public CfgVisitor
 bool cfgvarChanged(CfgSerialization& serialization)
 {
     CheckCfgvarsChanged checkChanged;
-    serialization.serialize(CfgSerializeKit(checkChanged, 0));
+    serialization.serialize(CfgSerializeKit(checkChanged, nullptr));
     return checkChanged.anyChange;
 }
 

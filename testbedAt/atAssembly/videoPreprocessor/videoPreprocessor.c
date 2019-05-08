@@ -636,7 +636,7 @@ stdbool VideoPreprocessorImpl::processTarget
     );
 
     ProcessKit oldKit = kit;
-    ProcessExKit kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole, userDisplayFactor), displayKit, AlternativeVersionKit(alternativeVersion, 0));
+    ProcessExKit kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole, userDisplayFactor), displayKit, AlternativeVersionKit(alternativeVersion));
 
     //----------------------------------------------------------------
     //
@@ -668,7 +668,7 @@ stdbool VideoPreprocessorImpl::processTarget
 
     DisplayDelayerThunk displayDelayer(displayWaitController, kit);
 
-    require(target.process(stdPassKit(kitCombine(kit, GpuRgbFrameKit(inputFrame, 0), DisplayDelayerKit(displayDelayer, 0)))));
+    require(target.process(stdPassKit(kitCombine(kit, GpuRgbFrameKit(inputFrame), DisplayDelayerKit(displayDelayer)))));
 
     ////
 
@@ -714,7 +714,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 
     overlaySmoother::OverlaySmootherThunk overlaySmootherThunk(overlaySmoother, kit);
 
-    auto kit = kitReplace(oldKit, AtVideoOverlayKit(overlaySmootherThunk, 0));
+    auto kit = kitReplace(oldKit, AtVideoOverlayKit(overlaySmootherThunk));
 
     ////
 
@@ -784,7 +784,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     Point<Space> frameSize = inputFrame.size();
 
     AtOverlayMonitor atOverlayMonitor(kit.atVideoOverlay);
-    ProcessKit kitMonitorEx = kitReplace(kit, AtVideoOverlayKit(atOverlayMonitor, 0));
+    ProcessKit kitMonitorEx = kitReplace(kit, AtVideoOverlayKit(atOverlayMonitor));
 
     //----------------------------------------------------------------
     //
@@ -976,12 +976,12 @@ stdbool VideoPreprocessorImpl::processCropFrontend
         userPointValid = false;
 
     UserPoint newUserPoint(userPointValid, userPoint, kit.userPoint.signal, kit.userPoint.signalAlt);
-    UserPointKit newUserPointKit(newUserPoint, 0);
+    UserPointKit newUserPointKit(newUserPoint);
 
     ////
 
     AtOverlayMonitor atOverlayMonitor(kit.atVideoOverlay);
-    AtVideoOverlayKit atOverlayKit(atOverlayMonitor, 0);
+    AtVideoOverlayKit atOverlayKit(atOverlayMonitor);
 
     //
     // Main process
@@ -1049,7 +1049,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
     if (internalProcess && !kit.dataProcessing)
         pipeControl.rollbackFrames = 0;
 
-    ProcessKit kit = kitReplace(savedPipeKit, PipeControlKit(pipeControl, 0));
+    ProcessKit kit = kitReplace(savedPipeKit, PipeControlKit(pipeControl));
 
     ////
 
@@ -1143,7 +1143,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
                 bool randomize = (randomizeSignal != 0) && !kit.dataProcessing;
                 PipeControl pipeControl = (k == histSize-1) ? PipeControl(initialRollback, randomize) : PipeControl(0, false);
-                PipeControlKit pipelineControlKit(pipeControl, 0);
+                PipeControlKit pipelineControlKit(pipeControl);
 
                 OutputLevelKit outputKit(k == 0 ? kit.outputLevel : OUTPUT_NONE);
                 ProfilerKit profilerKit(k == 0 ? kit.profiler : 0);

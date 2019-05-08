@@ -85,7 +85,7 @@ public:
 
     DiagnosticKit kit()
     {
-        return kitCombine(ErrorLogKit(*errorLog, 0), MsgLogKit(*msgLog, 0), ErrorLogExKit(*errorLogEx, 0));
+        return kitCombine(ErrorLogKit(*errorLog), MsgLogKit(*msgLog), ErrorLogExKit(*errorLogEx));
     }
 
 private:

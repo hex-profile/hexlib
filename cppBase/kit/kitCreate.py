@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
         level = [0]
 
-        for n in range(1, 16 + 1):
+        for n in range(2, 16 + 1):
 
             write = lambda s : writeLn(file, level, s)
             writes = lambda s : writeLn(file, level, s + (' ' if len(s) else '') + '\\')
@@ -54,12 +54,13 @@ if __name__ == '__main__':
             writes('#define KIT__CREATE%d(Kit, %s, typenameWord)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
 
             with Indent(level):
+
                 writes('')
                 writes('struct Kit')
 
                 with Indent(level):
                     writes(':')
-                    [writes('KitFieldTag<struct name%d##_Tag>%s' % (i, '' if i == n-1 else ',')) for i in range(n)]
+                    [writes('Kit_FieldTag<struct name%d##_Tag>%s' % (i, '' if i == n-1 else ',')) for i in range(n)]
 
                 writes('{')
 
@@ -85,7 +86,6 @@ if __name__ == '__main__':
                     writes('(')
                     with Indent(level):
                         [writes('typenameWord() ParamType<Type%d>::T name%d%s' % (i, i, '' if i == n-1 and n != 1 else ',')) for i in range(n)]
-                        if (n == 1): writes('int = 0')
                     writes(')')
 
                     with Indent(level):
@@ -120,11 +120,11 @@ if __name__ == '__main__':
                     #----------------------------------------------------------------
 
                     writes('template <typename OldKit, typename NewKit>')
-                    writes('sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit)')
+                    writes('sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit)')
 
                     with Indent(level):
                         writes(':')
-                        [writes('name%d(KitReplacer<OldKit, NewKit, name%d##_Tag>::func(&oldKit, &newKit)->name%d)%s' % (i, i, i, '' if i == n-1 else ',')) for i in range(n)]
+                        [writes('name%d(Kit_Replacer<OldKit, NewKit, name%d##_Tag>::func(&oldKit, &newKit)->name%d)%s' % (i, i, i, '' if i == n-1 else ',')) for i in range(n)]
 
                     writes('{')
                     writes('}')
