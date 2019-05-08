@@ -116,7 +116,7 @@ public:
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         TargetProcessKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
-        return toolModule.process(toolTarget, stdPassThruKit(kitCombine(kit, joinKit, OutputLevelKit(OUTPUT_ENABLED, 0))));
+        return toolModule.process(toolTarget, stdPassThruKit(kitCombine(kit, joinKit, OutputLevelKit(OUTPUT_ENABLED))));
     }
 
 public:
@@ -647,7 +647,7 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
     {
         OverlayTakeoverThunk overlayTakeover(overlayOwnerID);
         const CfgSerializeKit& kitOld = kit;
-        ModuleSerializeKit kit = kitCombine(kitOld, OverlayTakeoverKit(overlayTakeover, 0));
+        ModuleSerializeKit kit = kitCombine(kitOld, OverlayTakeoverKit(overlayTakeover));
 
         //
         // AtAssembly
@@ -704,7 +704,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     //
 
     FileToolsImpl fileTools;
-    FileToolsKit fileToolsKit(fileTools, 0);
+    FileToolsKit fileToolsKit(fileTools);
 
     //
     // Config file
@@ -788,7 +788,7 @@ stdvoid AtAssemblyImpl::finalize(stdPars(InitKit))
     ////
 
     FileToolsImpl fileTools;
-    FileToolsKit fileToolsKit(fileTools, 0);
+    FileToolsKit fileToolsKit(fileTools);
 
     //
     // Make finalization work
@@ -895,7 +895,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         //
 
         PipeControl pipeControl(frameRepetition, false);
-        TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl, 0));
+        TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl));
 
         ////
 
@@ -953,7 +953,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         //
 
         PipeControl pipeControl(1, false);
-        TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl, 0));
+        TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl));
 
         ////
 
@@ -1059,8 +1059,8 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
         kit,
         gpuShell::GpuApiImplKit(gpuInitApi, gpuExecApi),
         GpuPropertiesKit(gpuProperties),
-        GpuCurrentContextKit(gpuContext, 0),
-        GpuCurrentStreamKit(gpuStream, 0)
+        GpuCurrentContextKit(gpuContext),
+        GpuCurrentStreamKit(gpuStream)
     );
 
     ////
@@ -1241,13 +1241,13 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //----------------------------------------------------------------
 
     MsgLogBreakShell msgLog(kit.msgLog, debugBreakOnErrors);
-    MsgLogKit msgLogKit(msgLog, 0);
+    MsgLogKit msgLogKit(msgLog);
 
     ErrorLogBreakShell errorLog(kit.errorLog, debugBreakOnErrors);
-    ErrorLogKit errorLogKit(errorLog, 0);
+    ErrorLogKit errorLogKit(errorLog);
 
     ErrorLogExBreakShell errorLogEx(kit.errorLogEx, debugBreakOnErrors);
-    ErrorLogExKit errorLogExKit(errorLogEx, 0);
+    ErrorLogExKit errorLogExKit(errorLogEx);
 
     ////
 
@@ -1286,7 +1286,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 
     {
         FeedSignal visitor(signalHist);
-        serialize(CfgSerializeKit(visitor, 0));
+        serialize(CfgSerializeKit(visitor, nullptr));
     }
 
     //
@@ -1306,7 +1306,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     if (prevOverlayID != overlayOwnerID)
     {
         FeedSignal visitor(signalHist);
-        serialize(CfgSerializeKit(visitor, 0));
+        serialize(CfgSerializeKit(visitor, nullptr));
     }
 
     //----------------------------------------------------------------
@@ -1354,12 +1354,12 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
         auto kit = kitCombine
         (
             saveKit,
-            TimerKit(timer, 0),
-            OverlayTakeoverKit(overlayTakeover, 0),
-            PipeControlKit(pipeControl, 0),
-            UserPointKit(userPoint, 0),
-            FileToolsKit(fileTools, 0),
-            FrameAdvanceKit(frameAdvance, 0)
+            TimerKit(timer),
+            OverlayTakeoverKit(overlayTakeover),
+            PipeControlKit(pipeControl),
+            UserPointKit(userPoint),
+            FileToolsKit(fileTools),
+            FrameAdvanceKit(frameAdvance)
         );
 
         ProfilerTargetToAssembly<decltype(kit)> profilerTarget(*this, kit);

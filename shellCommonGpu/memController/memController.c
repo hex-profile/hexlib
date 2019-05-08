@@ -165,12 +165,12 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
         auto reallocKit = kitCombine
         (
-            DataProcessingKit(true, 0),
-            CpuFastAllocKit(cpuAllocObject, 0),
-            CpuBlockAllocatorKit(cpuAllocator, 0),
-            GpuFastAllocKit(gpuAllocObject, 0),
-            GpuBlockAllocatorKit(gpuAllocator, 0),
-            GpuTextureAllocKit(alloc.gpuSystemTextureAllocator, 0)
+            DataProcessingKit(true),
+            CpuFastAllocKit(cpuAllocObject),
+            CpuBlockAllocatorKit(cpuAllocator),
+            GpuFastAllocKit(gpuAllocObject),
+            GpuBlockAllocatorKit(gpuAllocator),
+            GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
         );
 
         bool allocOk = target.realloc(stdPassKit(reallocKit));
@@ -222,12 +222,12 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     {
         auto reallocKit = kitCombine
         (
-            DataProcessingKit(false, 0),
-            CpuFastAllocKit(cpuCounterObject, 0),
-            CpuBlockAllocatorKit(cpuCounterInterface, 0),
-            GpuFastAllocKit(gpuCounterObject, 0),
-            GpuBlockAllocatorKit(gpuCounterInterface, 0),
-            GpuTextureAllocKit(gpuTextureCounter, 0)
+            DataProcessingKit(false),
+            CpuFastAllocKit(cpuCounterObject),
+            CpuBlockAllocatorKit(cpuCounterInterface),
+            GpuFastAllocKit(gpuCounterObject),
+            GpuBlockAllocatorKit(gpuCounterInterface),
+            GpuTextureAllocKit(gpuTextureCounter)
         );
 
         require(target.realloc(stdPassKit(reallocKit)));
@@ -326,11 +326,11 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     {
         auto reallocKit = kitCombine
         (
-            DataProcessingKit(true, 0),
-            CpuFastAllocKit(cpuDistributorObject, 0),
-            CpuBlockAllocatorKit(cpuDistributorInterface, 0),
-            GpuFastAllocKit(gpuDistributorObject, 0),
-            GpuBlockAllocatorKit(gpuDistributorInterface, 0),
+            DataProcessingKit(true),
+            CpuFastAllocKit(cpuDistributorObject),
+            CpuBlockAllocatorKit(cpuDistributorInterface),
+            GpuFastAllocKit(gpuDistributorObject),
+            GpuBlockAllocatorKit(gpuDistributorInterface),
             GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
         );
 
@@ -409,12 +409,12 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
     {
         auto processKit = kitCombine
         (
-            DataProcessingKit(false, 0),
-            CpuFastAllocKit(cpuCounterObject, 0),
-            CpuBlockAllocatorKit(cpuCounterInterface, 0),
-            GpuFastAllocKit(gpuCounterObject, 0),
-            GpuBlockAllocatorKit(gpuCounterInterface, 0),
-            GpuTextureAllocKit(gpuTextureCounter, 0)
+            DataProcessingKit(false),
+            CpuFastAllocKit(cpuCounterObject),
+            CpuBlockAllocatorKit(cpuCounterInterface),
+            GpuFastAllocKit(gpuCounterObject),
+            GpuBlockAllocatorKit(gpuCounterInterface),
+            GpuTextureAllocKit(gpuTextureCounter)
         );
 
         require(target.process(stdPassKit(processKit)));
@@ -566,12 +566,12 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
 
         auto processKit = kitCombine
         (
-            DataProcessingKit(true, 0),
-            CpuFastAllocKit(cpuAllocObject, 0),
-            CpuBlockAllocatorKit(cpuAllocator, 0),
-            GpuFastAllocKit(gpuAllocObject, 0),
-            GpuBlockAllocatorKit(gpuAllocator, 0),
-            GpuTextureAllocKit(gpuTextureAllocator, 0)
+            DataProcessingKit(true),
+            CpuFastAllocKit(cpuAllocObject),
+            CpuBlockAllocatorKit(cpuAllocator),
+            GpuFastAllocKit(gpuAllocObject),
+            GpuBlockAllocatorKit(gpuAllocator),
+            GpuTextureAllocKit(gpuTextureAllocator)
         );
 
         require(target.process(stdPassKit(processKit)));
@@ -616,12 +616,12 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
 
     auto processKit = kitCombine
     (
-        DataProcessingKit(true, 0),
-        CpuFastAllocKit(cpuDistributorObject, 0),
-        CpuBlockAllocatorKit(cpuDistributorInterface, 0),
-        GpuFastAllocKit(gpuDistributorObject, 0),
-        GpuBlockAllocatorKit(gpuDistributorInterface, 0),
-        GpuTextureAllocKit(gpuTextureAllocator, 0)
+        DataProcessingKit(true),
+        CpuFastAllocKit(cpuDistributorObject),
+        CpuBlockAllocatorKit(cpuDistributorInterface),
+        GpuFastAllocKit(gpuDistributorObject),
+        GpuBlockAllocatorKit(gpuDistributorInterface),
+        GpuTextureAllocKit(gpuTextureAllocator)
     );
 
     require(target.process(stdPassKit(processKit)));

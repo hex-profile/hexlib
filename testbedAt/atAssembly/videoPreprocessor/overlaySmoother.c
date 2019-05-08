@@ -520,7 +520,7 @@ void serverFunc(void* param)
     ////
 
     ErrorLogDebugBreak errorLog;
-    ErrorLogKit kit(errorLog, 0);
+    ErrorLogKit kit(errorLog);
 
     ////
 

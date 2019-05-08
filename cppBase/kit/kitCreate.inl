@@ -1,53 +1,11 @@
 //----------------------------------------------------------------
 
-#define KIT__CREATE1(Kit, Type0, name0, typenameWord) \
-    \
-    struct Kit \
-        : \
-        KitFieldTag<struct name0##_Tag> \
-    { \
-        \
-        Type0 name0; \
-        \
-        sysinline Kit \
-        ( \
-            typenameWord() ParamType<Type0>::T name0, \
-            int = 0 \
-        ) \
-            : \
-            name0(name0) \
-        { \
-        } \
-        \
-        template <typename OtherKit> \
-        sysinline Kit(const OtherKit& otherKit) \
-            : \
-            name0(otherKit.name0) \
-        { \
-        } \
-        \
-        template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
-            : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0) \
-        { \
-        } \
-    }
-    
-#define KIT_CREATE1(Kit, Type0, name0) \
-    KIT__CREATE1(Kit, Type0, name0, KIT__TYPENAME_NO)
-
-#define KIT_CREATE1_(Kit, Type0, name0) \
-    KIT__CREATE1(Kit, Type0, name0, KIT__TYPENAME_YES)
-
-//----------------------------------------------------------------
-
 #define KIT__CREATE2(Kit, Type0, name0, Type1, name1, typenameWord) \
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag> \
     { \
         \
         Type0 name0; \
@@ -73,10 +31,10 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1) \
         { \
         } \
     }
@@ -93,9 +51,9 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag> \
     { \
         \
         Type0 name0; \
@@ -125,11 +83,11 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2) \
         { \
         } \
     }
@@ -146,10 +104,10 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag> \
     { \
         \
         Type0 name0; \
@@ -183,12 +141,12 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3) \
         { \
         } \
     }
@@ -205,11 +163,11 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag> \
     { \
         \
         Type0 name0; \
@@ -247,13 +205,13 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4) \
         { \
         } \
     }
@@ -270,12 +228,12 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag> \
     { \
         \
         Type0 name0; \
@@ -317,14 +275,14 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5) \
         { \
         } \
     }
@@ -341,13 +299,13 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag> \
     { \
         \
         Type0 name0; \
@@ -393,15 +351,15 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6) \
         { \
         } \
     }
@@ -418,14 +376,14 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag> \
     { \
         \
         Type0 name0; \
@@ -475,16 +433,16 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7) \
         { \
         } \
     }
@@ -501,15 +459,15 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag> \
     { \
         \
         Type0 name0; \
@@ -563,17 +521,17 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8) \
         { \
         } \
     }
@@ -590,16 +548,16 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag>, \
-        KitFieldTag<struct name9##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag>, \
+        Kit_FieldTag<struct name9##_Tag> \
     { \
         \
         Type0 name0; \
@@ -657,18 +615,18 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
-            name9(KitReplacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
+            name9(Kit_Replacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9) \
         { \
         } \
     }
@@ -685,17 +643,17 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag>, \
-        KitFieldTag<struct name9##_Tag>, \
-        KitFieldTag<struct name10##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag>, \
+        Kit_FieldTag<struct name9##_Tag>, \
+        Kit_FieldTag<struct name10##_Tag> \
     { \
         \
         Type0 name0; \
@@ -757,19 +715,19 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
-            name9(KitReplacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
-            name10(KitReplacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
+            name9(Kit_Replacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
+            name10(Kit_Replacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10) \
         { \
         } \
     }
@@ -786,18 +744,18 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag>, \
-        KitFieldTag<struct name9##_Tag>, \
-        KitFieldTag<struct name10##_Tag>, \
-        KitFieldTag<struct name11##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag>, \
+        Kit_FieldTag<struct name9##_Tag>, \
+        Kit_FieldTag<struct name10##_Tag>, \
+        Kit_FieldTag<struct name11##_Tag> \
     { \
         \
         Type0 name0; \
@@ -863,20 +821,20 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
-            name9(KitReplacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
-            name10(KitReplacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
-            name11(KitReplacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
+            name9(Kit_Replacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
+            name10(Kit_Replacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
+            name11(Kit_Replacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11) \
         { \
         } \
     }
@@ -893,19 +851,19 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag>, \
-        KitFieldTag<struct name9##_Tag>, \
-        KitFieldTag<struct name10##_Tag>, \
-        KitFieldTag<struct name11##_Tag>, \
-        KitFieldTag<struct name12##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag>, \
+        Kit_FieldTag<struct name9##_Tag>, \
+        Kit_FieldTag<struct name10##_Tag>, \
+        Kit_FieldTag<struct name11##_Tag>, \
+        Kit_FieldTag<struct name12##_Tag> \
     { \
         \
         Type0 name0; \
@@ -975,21 +933,21 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
-            name9(KitReplacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
-            name10(KitReplacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
-            name11(KitReplacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
-            name12(KitReplacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
+            name9(Kit_Replacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
+            name10(Kit_Replacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
+            name11(Kit_Replacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
+            name12(Kit_Replacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12) \
         { \
         } \
     }
@@ -1006,20 +964,20 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag>, \
-        KitFieldTag<struct name9##_Tag>, \
-        KitFieldTag<struct name10##_Tag>, \
-        KitFieldTag<struct name11##_Tag>, \
-        KitFieldTag<struct name12##_Tag>, \
-        KitFieldTag<struct name13##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag>, \
+        Kit_FieldTag<struct name9##_Tag>, \
+        Kit_FieldTag<struct name10##_Tag>, \
+        Kit_FieldTag<struct name11##_Tag>, \
+        Kit_FieldTag<struct name12##_Tag>, \
+        Kit_FieldTag<struct name13##_Tag> \
     { \
         \
         Type0 name0; \
@@ -1093,22 +1051,22 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
-            name9(KitReplacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
-            name10(KitReplacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
-            name11(KitReplacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
-            name12(KitReplacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12), \
-            name13(KitReplacer<OldKit, NewKit, name13##_Tag>::func(&oldKit, &newKit)->name13) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
+            name9(Kit_Replacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
+            name10(Kit_Replacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
+            name11(Kit_Replacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
+            name12(Kit_Replacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12), \
+            name13(Kit_Replacer<OldKit, NewKit, name13##_Tag>::func(&oldKit, &newKit)->name13) \
         { \
         } \
     }
@@ -1125,21 +1083,21 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag>, \
-        KitFieldTag<struct name9##_Tag>, \
-        KitFieldTag<struct name10##_Tag>, \
-        KitFieldTag<struct name11##_Tag>, \
-        KitFieldTag<struct name12##_Tag>, \
-        KitFieldTag<struct name13##_Tag>, \
-        KitFieldTag<struct name14##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag>, \
+        Kit_FieldTag<struct name9##_Tag>, \
+        Kit_FieldTag<struct name10##_Tag>, \
+        Kit_FieldTag<struct name11##_Tag>, \
+        Kit_FieldTag<struct name12##_Tag>, \
+        Kit_FieldTag<struct name13##_Tag>, \
+        Kit_FieldTag<struct name14##_Tag> \
     { \
         \
         Type0 name0; \
@@ -1217,23 +1175,23 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
-            name9(KitReplacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
-            name10(KitReplacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
-            name11(KitReplacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
-            name12(KitReplacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12), \
-            name13(KitReplacer<OldKit, NewKit, name13##_Tag>::func(&oldKit, &newKit)->name13), \
-            name14(KitReplacer<OldKit, NewKit, name14##_Tag>::func(&oldKit, &newKit)->name14) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
+            name9(Kit_Replacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
+            name10(Kit_Replacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
+            name11(Kit_Replacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
+            name12(Kit_Replacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12), \
+            name13(Kit_Replacer<OldKit, NewKit, name13##_Tag>::func(&oldKit, &newKit)->name13), \
+            name14(Kit_Replacer<OldKit, NewKit, name14##_Tag>::func(&oldKit, &newKit)->name14) \
         { \
         } \
     }
@@ -1250,22 +1208,22 @@
     \
     struct Kit \
         : \
-        KitFieldTag<struct name0##_Tag>, \
-        KitFieldTag<struct name1##_Tag>, \
-        KitFieldTag<struct name2##_Tag>, \
-        KitFieldTag<struct name3##_Tag>, \
-        KitFieldTag<struct name4##_Tag>, \
-        KitFieldTag<struct name5##_Tag>, \
-        KitFieldTag<struct name6##_Tag>, \
-        KitFieldTag<struct name7##_Tag>, \
-        KitFieldTag<struct name8##_Tag>, \
-        KitFieldTag<struct name9##_Tag>, \
-        KitFieldTag<struct name10##_Tag>, \
-        KitFieldTag<struct name11##_Tag>, \
-        KitFieldTag<struct name12##_Tag>, \
-        KitFieldTag<struct name13##_Tag>, \
-        KitFieldTag<struct name14##_Tag>, \
-        KitFieldTag<struct name15##_Tag> \
+        Kit_FieldTag<struct name0##_Tag>, \
+        Kit_FieldTag<struct name1##_Tag>, \
+        Kit_FieldTag<struct name2##_Tag>, \
+        Kit_FieldTag<struct name3##_Tag>, \
+        Kit_FieldTag<struct name4##_Tag>, \
+        Kit_FieldTag<struct name5##_Tag>, \
+        Kit_FieldTag<struct name6##_Tag>, \
+        Kit_FieldTag<struct name7##_Tag>, \
+        Kit_FieldTag<struct name8##_Tag>, \
+        Kit_FieldTag<struct name9##_Tag>, \
+        Kit_FieldTag<struct name10##_Tag>, \
+        Kit_FieldTag<struct name11##_Tag>, \
+        Kit_FieldTag<struct name12##_Tag>, \
+        Kit_FieldTag<struct name13##_Tag>, \
+        Kit_FieldTag<struct name14##_Tag>, \
+        Kit_FieldTag<struct name15##_Tag> \
     { \
         \
         Type0 name0; \
@@ -1347,24 +1305,24 @@
         } \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(KitReplacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
-            name1(KitReplacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
-            name2(KitReplacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
-            name3(KitReplacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
-            name4(KitReplacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
-            name5(KitReplacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
-            name6(KitReplacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
-            name7(KitReplacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
-            name8(KitReplacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
-            name9(KitReplacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
-            name10(KitReplacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
-            name11(KitReplacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
-            name12(KitReplacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12), \
-            name13(KitReplacer<OldKit, NewKit, name13##_Tag>::func(&oldKit, &newKit)->name13), \
-            name14(KitReplacer<OldKit, NewKit, name14##_Tag>::func(&oldKit, &newKit)->name14), \
-            name15(KitReplacer<OldKit, NewKit, name15##_Tag>::func(&oldKit, &newKit)->name15) \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0), \
+            name1(Kit_Replacer<OldKit, NewKit, name1##_Tag>::func(&oldKit, &newKit)->name1), \
+            name2(Kit_Replacer<OldKit, NewKit, name2##_Tag>::func(&oldKit, &newKit)->name2), \
+            name3(Kit_Replacer<OldKit, NewKit, name3##_Tag>::func(&oldKit, &newKit)->name3), \
+            name4(Kit_Replacer<OldKit, NewKit, name4##_Tag>::func(&oldKit, &newKit)->name4), \
+            name5(Kit_Replacer<OldKit, NewKit, name5##_Tag>::func(&oldKit, &newKit)->name5), \
+            name6(Kit_Replacer<OldKit, NewKit, name6##_Tag>::func(&oldKit, &newKit)->name6), \
+            name7(Kit_Replacer<OldKit, NewKit, name7##_Tag>::func(&oldKit, &newKit)->name7), \
+            name8(Kit_Replacer<OldKit, NewKit, name8##_Tag>::func(&oldKit, &newKit)->name8), \
+            name9(Kit_Replacer<OldKit, NewKit, name9##_Tag>::func(&oldKit, &newKit)->name9), \
+            name10(Kit_Replacer<OldKit, NewKit, name10##_Tag>::func(&oldKit, &newKit)->name10), \
+            name11(Kit_Replacer<OldKit, NewKit, name11##_Tag>::func(&oldKit, &newKit)->name11), \
+            name12(Kit_Replacer<OldKit, NewKit, name12##_Tag>::func(&oldKit, &newKit)->name12), \
+            name13(Kit_Replacer<OldKit, NewKit, name13##_Tag>::func(&oldKit, &newKit)->name13), \
+            name14(Kit_Replacer<OldKit, NewKit, name14##_Tag>::func(&oldKit, &newKit)->name14), \
+            name15(Kit_Replacer<OldKit, NewKit, name15##_Tag>::func(&oldKit, &newKit)->name15) \
         { \
         } \
     }

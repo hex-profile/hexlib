@@ -482,7 +482,7 @@ private:
     OutputLogToAt<AtApi> localLog(api->lcon_print_ex, api->lcon_clear, api->lcon_update, api, false); \
     \
     ErrorLogThunk errorLog(msgLog); \
-    ErrorLogKit errorLogKit(errorLog, 0); \
+    ErrorLogKit errorLogKit(errorLog); \
     ErrorLogExThunk errorLogEx(msgLog); \
     \
     MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit); \
@@ -494,15 +494,15 @@ private:
     \
     atStartup::InitKit baseKit = kitCombine \
     ( \
-        ErrorLogKit(errorLog, 0), \
-        ErrorLogExKit(errorLogEx, 0), \
-        MsgLogKit(msgLog, 0), \
-        LocalLogKit(localLog, 0), \
+        ErrorLogKit(errorLog), \
+        ErrorLogExKit(errorLogEx), \
+        MsgLogKit(msgLog), \
+        LocalLogKit(localLog), \
         LocalLogAuxKit(false, localLog), \
-        AtImgConsoleKit(imgConsole, 0), \
-        AtSignalSetKit(signalSet, 0), \
-        MallocKit(mallocAllocator, 0), \
-        ThreadManagerKit(threadManager, 0) \
+        AtImgConsoleKit(imgConsole), \
+        AtSignalSetKit(signalSet), \
+        MallocKit(mallocAllocator), \
+        ThreadManagerKit(threadManager) \
     );
 
 //================================================================
@@ -724,7 +724,7 @@ void atClientProcess(void* instance, const at_api_process* api)
     MallocMonitorThunk<CpuAddrU> mallocMonitor(baseKit.malloc.func);
     AllocatorObject<CpuAddrU> mallocMonitorObject(baseKit.malloc.state, mallocMonitor);
 
-    atStartup::InitKit kit = kitReplace(baseKit, MallocKit(mallocMonitorObject, 0));
+    atStartup::InitKit kit = kitReplace(baseKit, MallocKit(mallocMonitorObject));
 
     //----------------------------------------------------------------
     //
@@ -816,11 +816,11 @@ void atClientProcess(void* instance, const at_api_process* api)
     atStartup::ProcessKit processKit = kitCombine
     (
         kit,
-        AtVideoFrameKit(atVideoFrame, 0),
-        AtVideoOverlayKit(atVideoOverlay, 0),
-        AtAsyncOverlayKit(client->asyncOverlay, 0),
-        AtSignalTestKit(atSignalTest, 0),
-        AtVideoInfoKit(atVideoInfo, 0),
+        AtVideoFrameKit(atVideoFrame),
+        AtVideoOverlayKit(atVideoOverlay),
+        AtAsyncOverlayKit(client->asyncOverlay),
+        AtSignalTestKit(atSignalTest),
+        AtVideoInfoKit(atVideoInfo),
         AtUserPointKit(userPointValid, userPoint),
         AtContinousModeKit(atRunning != 0, atPlaying != 0)
     );

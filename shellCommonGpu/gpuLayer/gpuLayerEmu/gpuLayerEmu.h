@@ -147,15 +147,15 @@ public:
     {
         return kitCombine
         (
-            GpuInitializationKit(*this, 0),
-            GpuContextCreationKit(*this, 0),
-            GpuModuleCreationKit(*this, 0),
-            GpuKernelLoadingKit(*this, 0),
-            GpuSamplerLoadingKit(*this, 0),
-            GpuMemoryAllocationKit(*this, 0),
-            GpuTextureAllocKit(*this, 0),
-            GpuStreamCreationKit(*this, 0),
-            GpuEventAllocKit(*this, 0)
+            GpuInitializationKit(*this),
+            GpuContextCreationKit(*this),
+            GpuModuleCreationKit(*this),
+            GpuKernelLoadingKit(*this),
+            GpuSamplerLoadingKit(*this),
+            GpuMemoryAllocationKit(*this),
+            GpuTextureAllocKit(*this),
+            GpuStreamCreationKit(*this),
+            GpuEventAllocKit(*this)
         );
     }
 
@@ -320,13 +320,13 @@ public:
     {
         return kitCombine
         (
-            GpuTransferKit(*this, 0),
-            GpuSamplerSetupKit(*this, 0),
-            GpuKernelCallingKit(*this, 0),
-            GpuStreamWaitingKit(*this, 0),
-            GpuEventRecordingKit(*this, 0),
-            GpuEventWaitingKit(*this, 0),
-            GpuBenchmarkingControlKit(*this, 0)
+            GpuTransferKit(*this),
+            GpuSamplerSetupKit(*this),
+            GpuKernelCallingKit(*this),
+            GpuStreamWaitingKit(*this),
+            GpuEventRecordingKit(*this),
+            GpuEventWaitingKit(*this),
+            GpuBenchmarkingControlKit(*this)
         );
     }
 

@@ -216,13 +216,13 @@ public:
     {
         return kitCombine
         (
-            GpuTransferKit(*this, 0),
-            GpuSamplerSetupKit(*this, 0),
-            GpuKernelCallingKit(*this, 0),
-            GpuStreamWaitingKit(*this, 0),
-            GpuEventRecordingKit(*this, 0),
-            GpuEventWaitingKit(*this, 0),
-            GpuBenchmarkingControlKit(*this, 0)
+            GpuTransferKit(*this),
+            GpuSamplerSetupKit(*this),
+            GpuKernelCallingKit(*this),
+            GpuStreamWaitingKit(*this),
+            GpuEventRecordingKit(*this),
+            GpuEventWaitingKit(*this),
+            GpuBenchmarkingControlKit(*this)
         );
     }
 

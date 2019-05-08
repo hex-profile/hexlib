@@ -48,14 +48,14 @@
 
 //================================================================
 //
-// KitFieldTag
+// Kit_FieldTag
 //
 // Used to record the presence of field name in a kit.
 //
 //================================================================
 
 template <typename Tag>
-struct KitFieldTag {};
+struct Kit_FieldTag {};
 
 //================================================================
 //
@@ -71,14 +71,14 @@ struct KitFieldTag {};
 
 //================================================================
 //
-// KitIsConvertible
+// Kit_IsConvertible
 //
 // Is source type pointer is convertible to destination type pointer?
 //
 //================================================================
 
 template <typename Src, typename Dst>
-struct KitIsConvertible
+struct Kit_IsConvertible
 {
     using FalseType = char;
     struct TrueType {char data[2];};
@@ -87,14 +87,14 @@ struct KitIsConvertible
     static FalseType check(...);
     static TrueType check(const Dst*);
 
-    static Src src;
+    static Src* makeSrc();
 
-    static const bool val = (sizeof(check(&src)) == sizeof(TrueType));
+    static constexpr bool value = (sizeof(check(makeSrc())) == sizeof(TrueType));
 };
 
 //================================================================
 //
-// KitFieldSelector
+// Kit_ReplaceSelector
 //
 // Selects from two pointers by compile-time condition.
 // Used for kit replace functionality.
@@ -102,10 +102,10 @@ struct KitIsConvertible
 //================================================================
 
 template <bool condition>
-struct KitFieldSelector;
+struct Kit_ReplaceSelector;
 
 template <>
-struct KitFieldSelector<false>
+struct Kit_ReplaceSelector<false>
 {
     template <typename T0, typename T1>
     static sysinline const T0* func(const T0* v0, const T1* v1)
@@ -113,7 +113,7 @@ struct KitFieldSelector<false>
 };
 
 template <>
-struct KitFieldSelector<true>
+struct Kit_ReplaceSelector<true>
 {
     template <typename T0, typename T1>
     static sysinline const T1* func(const T0* v0, const T1* v1)
@@ -122,24 +122,24 @@ struct KitFieldSelector<true>
 
 //================================================================
 //
-// KitReplacer
+// Kit_Replacer
 //
 //================================================================
 
 template <typename OldKit, typename NewKit, typename Tag>
-struct KitReplacer : public KitFieldSelector< KitIsConvertible<NewKit, KitFieldTag<Tag> >::val> {};
+struct Kit_Replacer : public Kit_ReplaceSelector<Kit_IsConvertible<NewKit, Kit_FieldTag<Tag>>::value> {};
 
 //================================================================
 //
-// KitReplaceConstructor
-// KitCombineConstructor
+// Kit_ReplaceConstructor
+// Kit_CombineConstructor
 //
 // Used to disambiguate constructors
 //
 //================================================================
 
-enum KitReplaceConstructor {};
-enum KitCombineConstructor {};
+enum Kit_ReplaceConstructor {};
+enum Kit_CombineConstructor {};
 
 //================================================================
 //
@@ -150,7 +150,7 @@ enum KitCombineConstructor {};
 template <typename BaseKit, typename NewKit>
 sysinline BaseKit kitReplace(const BaseKit& baseKit, const NewKit& newKit)
 {
-    return BaseKit(baseKit, KitReplaceConstructor(), newKit);
+    return BaseKit(baseKit, Kit_ReplaceConstructor(), newKit);
 }
 
 //================================================================
@@ -167,27 +167,78 @@ sysinline BaseKit kitReplace(const BaseKit& baseKit, const NewKit& newKit)
     \
     struct Kit \
     { \
-        sysinline Kit(const Kit& that) \
-        { \
-        } \
-        \
-        sysinline Kit \
-        ( \
-        ) \
-        { \
-        } \
+        sysinline Kit() \
+            {} \
         \
         template <typename OtherKit> \
         sysinline Kit(const OtherKit& otherKit) \
-        { \
-        } \
+            {} \
         \
         template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit) \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
+            {} \
+    }
+
+//----------------------------------------------------------------
+
+template <typename Type>
+struct Kit_ValueReader
+{
+    static sysinline Type& func(Type& value)
+        {return value;}
+
+    static sysinline const Type& func(const Type& value)
+        {return value;}
+};
+
+//----------------------------------------------------------------
+
+#define KIT__CREATE1(Kit, Type0, name0, typenameWord) \
+    \
+    struct Kit \
+        : \
+        Kit_FieldTag<struct name0##_Tag> \
+    { \
+        \
+        Type0 name0; \
+        \
+        \
+        template <typename Kit> \
+        struct Kit_FieldReader \
+        { \
+            static sysinline Type0 func(const Kit& kit) \
+                {return kit.name0;} \
+        }; \
+        \
+        template <typename Type> \
+        struct Kit_ReaderSelector \
+        { \
+            static constexpr bool isKit = Kit_IsConvertible<Type, Kit_FieldTag<name0##_Tag>>::value; \
+            using T = TYPE_SELECT(isKit, Kit_FieldReader<Type>, Kit_ValueReader<Type>); \
+        }; \
+        \
+        template <typename Type> \
+        sysinline Kit(Type& value) \
+            : name0(Kit_ReaderSelector<Type>::T::func(value)) {} \
+        \
+        template <typename Type> \
+        sysinline Kit(const Type& value) \
+            : name0(Kit_ReaderSelector<Type>::T::func(value)) {} \
+        \
+        template <typename OldKit, typename NewKit> \
+        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
+            : \
+            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0) \
         { \
         } \
     }
     
+#define KIT_CREATE1(Kit, Type0, name0) \
+    KIT__CREATE1(Kit, Type0, name0, KIT__TYPENAME_NO)
+
+#define KIT_CREATE1_(Kit, Type0, name0) \
+    KIT__CREATE1(Kit, Type0, name0, KIT__TYPENAME_YES)
+
 //----------------------------------------------------------------
 
 # include "kitCreate.inl"
@@ -215,16 +266,16 @@ struct KitCombine
     }
    
     template <typename OldKit, typename NewKit>
-    sysinline KitCombine(const OldKit& oldKit, KitReplaceConstructor, const NewKit& newKit)
+    sysinline KitCombine(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit)
         :
-        Types(oldKit, KitReplaceConstructor(), newKit)...
+        Types(oldKit, Kit_ReplaceConstructor(), newKit)...
     {
     }
    
     sysinline KitCombine
     (
         const Types&... otherTypes,
-        KitCombineConstructor
+        Kit_CombineConstructor
     )
         :
         Types(otherTypes)...
@@ -236,7 +287,7 @@ struct KitCombine
 
 template <typename... Types>
 sysinline auto kitCombine(const Types&... values)
-    {return KitCombine<Types...>(values..., KitCombineConstructor());}
+    {return KitCombine<Types...>(values..., Kit_CombineConstructor());}
 
 //----------------------------------------------------------------
 

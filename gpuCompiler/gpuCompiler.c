@@ -1162,10 +1162,10 @@ bool mainFunc(int argCount, const CharType* argStr[])
 
     CompilerKit kit = kitCombine
     (
-        ErrorLogKit(errorLog, 0),
-        ErrorLogExKit(errorLogEx, 0),
-        MsgLogKit(msgLog, 0),
-        FileToolsKit(fileTools, 0)
+        ErrorLogKit(errorLog),
+        ErrorLogExKit(errorLogEx),
+        MsgLogKit(msgLog),
+        FileToolsKit(fileTools)
     );
 
     TRACE_ROOT(stdTraceName, TRACE_AUTO_LOCATION);
