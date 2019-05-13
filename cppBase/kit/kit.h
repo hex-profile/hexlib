@@ -138,8 +138,8 @@ struct Kit_Replacer : public Kit_ReplaceSelector<Kit_IsConvertible<NewKit, Kit_F
 //
 //================================================================
 
-enum Kit_ReplaceConstructor {};
-enum Kit_CombineConstructor {};
+enum class Kit_ReplaceConstructor {};
+enum class Kit_CombineConstructor {};
 
 //================================================================
 //
@@ -274,8 +274,8 @@ struct KitCombine
    
     sysinline KitCombine
     (
-        const Types&... otherTypes,
-        Kit_CombineConstructor
+        Kit_CombineConstructor,
+        const Types&... otherTypes
     )
         :
         Types(otherTypes)...
@@ -287,7 +287,7 @@ struct KitCombine
 
 template <typename... Types>
 sysinline auto kitCombine(const Types&... values)
-    {return KitCombine<Types...>(values..., Kit_CombineConstructor());}
+    {return KitCombine<Types...>(Kit_CombineConstructor(), values...);}
 
 //----------------------------------------------------------------
 
