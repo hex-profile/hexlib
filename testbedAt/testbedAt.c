@@ -235,7 +235,7 @@ public:
         ////
 
         const uint8_x4* imgPtr = unsafePtr(imgMemPtr, imgSizeX, imgSizeY);
-        COMPILE_ASSERT(sizeof(at_pixel_rgb32) == sizeof(uint8_x4));
+        COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
 
         require
         (
@@ -357,7 +357,7 @@ public:
         AtImageProviderThunk* self = (AtImageProviderThunk*) context;
         const TraceScope& TRACE_SCOPE(stdTraceName) = self->trace;
 
-        COMPILE_ASSERT(sizeof(at_pixel_rgb32) == sizeof(uint8_x4));
+        COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
         return self->imageProvider.saveImage(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass);
     }
 
@@ -738,7 +738,7 @@ void atClientProcess(void* instance, const at_api_process* api)
     Space frameSizeY = 0;
     REQUIREV(api->video_image_get(api, &frameMemPtrAt, &frameMemPitch, &frameSizeX, &frameSizeY) != 0);
 
-    COMPILE_ASSERT(sizeof(at_pixel_rgb32) == sizeof(uint8_x4));
+    COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
     const uint8_x4* frameMemPtr = (const uint8_x4*) frameMemPtrAt;
 
     if (frameSizeX == 0 || frameSizeY == 0)

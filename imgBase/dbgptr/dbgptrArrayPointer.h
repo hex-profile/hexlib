@@ -409,7 +409,7 @@ private:
 
 //----------------------------------------------------------------
 
-COMPILE_ASSERT(sizeof(DbgptrReference<DebugArrayPointer<int> >) == sizeof(DebugArrayPointer<int>));
+COMPILE_ASSERT_EQUAL_LAYOUT(DbgptrReference<DebugArrayPointer<int>>, DebugArrayPointer<int>);
 
 //================================================================
 //
@@ -443,7 +443,7 @@ inline bool isPtrAligned(const DebugArrayPointer<Type>& ptr)
 //================================================================
 
 template <typename Type>
-struct PtrElemType< DebugArrayPointer<Type> >
+struct PtrElemType<DebugArrayPointer<Type>>
 {
     using T = Type;
 };

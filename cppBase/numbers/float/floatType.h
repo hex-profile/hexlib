@@ -44,7 +44,7 @@ BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
 ////
 
 #define TYPE_IS_BUILTIN_FLOAT(Type) \
-    TypeIsBuiltinFloat< Type >::result
+    TypeIsBuiltinFloat<Type>::result
 
 //================================================================
 //
@@ -121,7 +121,7 @@ TYPE_MIN_MAX_IMPL_RUNTIME(double, -DBL_MAX, +DBL_MAX)
 
 //----------------------------------------------------------------
 
-COMPILE_ASSERT(sizeof(float32) == sizeof(uint32));
+COMPILE_ASSERT_EQUAL_LAYOUT(float32, uint32);
 static const uint32 ieeeFloat32Nan = 0xFFC00000UL;
 
 template <>
@@ -141,7 +141,7 @@ sysinline float32 float32Nan()
 
 //----------------------------------------------------------------
 
-COMPILE_ASSERT(sizeof(float64) == sizeof(uint64));
+COMPILE_ASSERT_EQUAL_LAYOUT(float64, uint64);
 static const uint64 ieeeFloat64Nan = 0xFFF8000000000000ULL;
 
 //----------------------------------------------------------------
@@ -178,10 +178,6 @@ sysinline float64 float64Nan()
 #if defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__) || defined(__CUDA_ARCH__) || defined(__arm__) || defined(__aarch64__)
 
 //----------------------------------------------------------------
-
-COMPILE_ASSERT(sizeof(uint32) == sizeof(uint32));
-
-////
 
 template <>
 struct DefImpl<float32>

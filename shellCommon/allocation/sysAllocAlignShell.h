@@ -41,8 +41,7 @@ static inline stdbool sysAllocAlignShell(AddrU size, AddrU alignment, Owner& own
 
     MemoryDeallocContext& context = owner.replace(deallocFunc);
 
-    COMPILE_ASSERT(sizeof(AddrU) <= sizeof(MemoryDeallocContext));
-    (AddrU&) context = allocPtr;
+    context.recast<AddrU>() = allocPtr;
 
     result = alignedPtr;
 

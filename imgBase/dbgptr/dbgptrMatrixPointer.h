@@ -485,7 +485,7 @@ private:
 
 //----------------------------------------------------------------
 
-COMPILE_ASSERT(sizeof(DbgptrReference<DebugMatrixPointer<int> >) == sizeof(DebugMatrixPointer<int>));
+COMPILE_ASSERT_EQUAL_LAYOUT(DbgptrReference<DebugMatrixPointer<int>>, DebugMatrixPointer<int>);
 
 //================================================================
 //
@@ -528,7 +528,7 @@ inline bool isPtrAligned(const DebugMatrixPointer<Type>& ptr)
 //================================================================
 
 template <typename Type>
-struct PtrElemType< DebugMatrixPointer<Type> >
+struct PtrElemType<DebugMatrixPointer<Type>>
 {
     using T = Type;
 };

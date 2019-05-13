@@ -207,15 +207,13 @@ public:
     inline operator const Array<Type>& () const
     {
         const ArrayEx<Type*>* arr = this;
-        COMPILE_ASSERT(sizeof(Array<Type>) == sizeof(ArrayEx<Type*>));
-        return * (const Array<Type> *) arr;
+        return recastEqualLayout<const Array<Type>>(*arr);
     }
 
     inline operator const Array<const Type>& () const
     {
         const ArrayEx<Type*>* arr = this;
-        COMPILE_ASSERT(sizeof(Array<const Type>) == sizeof(ArrayEx<Type*>));
-        return * (const Array<const Type> *) arr;
+        return recastEqualLayout<const Array<const Type>>(*arr);
     }
 
 };

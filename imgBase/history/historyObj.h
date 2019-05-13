@@ -313,7 +313,7 @@ sysinline void historyForEach(const HistoryRanges<Type>& historyRanges, const Ac
 //================================================================
 
 template <typename Type, Space maxSize>
-class HistoryObjStatic : public HistoryGeneric< ArrayObjMemStatic<Type, maxSize> >
+class HistoryObjStatic : public HistoryGeneric<ArrayObjMemStatic<Type, maxSize>>
 {
 };
 
@@ -324,6 +324,6 @@ class HistoryObjStatic : public HistoryGeneric< ArrayObjMemStatic<Type, maxSize>
 //================================================================
 
 template <typename Type>
-class HistoryObj : public HistoryGeneric< ArrayObjMem<Type> >
+class HistoryObj : public HistoryGeneric<ArrayObjMem<Type>>
 {
 };

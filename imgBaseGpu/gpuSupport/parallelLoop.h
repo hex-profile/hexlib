@@ -6,7 +6,7 @@
 //
 // PARALLEL_LOOP_UNBASED
 //
-// Performs parallel for with 1D processor over 1D area.
+// Performs parallel "for" with 1D processor over 1D area.
 //
 // Loop variable is NOT adjusted for groupMember.
 //
@@ -17,13 +17,13 @@
     { \
         enum {_groupSize = (groupSize)}; \
         enum {_iterCount = (iterationCount) / (_groupSize)}; \
-        enum {iterRem = (iterationCount) % (_groupSize)}; \
+        enum {_iterRem = (iterationCount) % (_groupSize)}; \
         \
-        COMPILE_ASSERT(_iterCount >= 0 && iterRem >= 0); /* Ensure compile-time constants */ \
+        COMPILE_ASSERT(_iterCount >= 0 && _iterRem >= 0); /* Ensure compile-time constants */ \
         \
         Space _member = (groupMember); \
         \
-        bool _extra = (iterRem) && (_member < iterRem); \
+        bool _extra = (_iterRem) && (_member < _iterRem); \
         \
         /**/ \
         \
@@ -146,7 +146,7 @@
         devUnrollLoop \
         for (Space _n = 0; _n < _iterCount; ++_n, _i += _groupSize) \
         { \
-            Space iY = SpaceU(_i) / SpaceU(_areaSizeX); /* for constant divisor, optimized well */ \
+            Space iY = SpaceU(_i) / SpaceU(_areaSizeX); /* for constant divisor, it is optimized well */ \
             Space iX = _i - iY * _areaSizeX; \
             \
             {iterationBody;} \
@@ -154,7 +154,7 @@
         \
         if (_iterRem && _tid < _iterRem) \
         { \
-            Space iY = SpaceU(_i) / SpaceU(_areaSizeX); /* for constant divisor, optimized well */ \
+            Space iY = SpaceU(_i) / SpaceU(_areaSizeX); /* for constant divisor, it is optimized well*/ \
             Space iX = _i - iY * _areaSizeX; \
             \
             {iterationBody;} \

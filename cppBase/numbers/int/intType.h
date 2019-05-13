@@ -40,7 +40,7 @@ BUILTIN_INT_FOREACH(TMP_MACRO, o)
 ////
 
 #define TYPE_IS_BUILTIN_INT(Type) \
-    TypeIsBuiltinInt< Type >::result
+    TypeIsBuiltinInt<Type>::result
 
 //================================================================
 //

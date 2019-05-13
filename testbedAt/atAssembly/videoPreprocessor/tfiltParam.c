@@ -157,8 +157,8 @@ void TfiltNorm<Type, n>::operator =(const TfiltNorm<Type, n>& that)
 //================================================================
 
 #define TFILT_INST(Type, n) \
-    template class TfiltParam< Type, n >; \
-    template class TfiltNorm< Type, n >; \
+    template class TfiltParam<Type, n>; \
+    template class TfiltNorm<Type, n>; \
 
 TFILT_INST(float32, 8);
 TFILT_INST(float32, 4);

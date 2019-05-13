@@ -33,7 +33,7 @@ TimeMoment TimerWin32::moment()
     QueryPerformanceCounter(&f);
 
     TimeMoment result;
-    (Moment&) result = f.QuadPart;
+    result.recast<Moment>() = f.QuadPart;
     return result;
 }
 
@@ -45,8 +45,8 @@ TimeMoment TimerWin32::moment()
 
 float32 TimerWin32::diff(const TimeMoment& t1, const TimeMoment& t2)
 {
-    const Moment& m1 = (Moment&) t1;
-    const Moment& m2 = (Moment&) t2;
+    const Moment& m1 = t1.recast<const Moment>();
+    const Moment& m2 = t2.recast<const Moment>();
 
     return int64(m2 - m1) * tickPeriod;
 }

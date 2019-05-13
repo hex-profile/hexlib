@@ -265,7 +265,7 @@ struct GpuTransfer
 #define TMP_COPY_ARRAY_INLINE(funcName, SrcAddr, DstAddr, SrcPtr, DstPtr, pureGpuValue) \
     \
     template <typename Src, typename Dst, typename Kit> \
-    inline stdbool enqueueCopy(const ArrayEx< SrcPtr(Src) >& src, const ArrayEx< DstPtr(Dst) >& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
+    inline stdbool enqueueCopy(const ArrayEx<SrcPtr(Src)>& src, const ArrayEx<DstPtr(Dst)>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
     { \
         stdBegin; \
         \
@@ -307,7 +307,7 @@ TMP_COPY_ARRAY_INLINE(copyArrayGpuGpu, GpuAddrU, GpuAddrU, GpuPtr, GpuPtr, true)
 #define TMP_COPY_MATRIX_INLINE(funcName, SrcAddr, DstAddr, SrcPtr, DstPtr, pureGpuValue) \
     \
     template <typename Src, typename Dst, typename Kit> \
-    inline stdbool enqueueCopy(const MatrixEx< SrcPtr(Src) >& src, const MatrixEx< DstPtr(Dst) >& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
+    inline stdbool enqueueCopy(const MatrixEx<SrcPtr(Src)>& src, const MatrixEx<DstPtr(Dst)>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
     { \
         stdBegin; \
         \

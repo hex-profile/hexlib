@@ -99,7 +99,7 @@ TMP_MACRO(DevSamplerUint, 4, uint32_x4)
 //================================================================
 
 template <typename DeclType, int dim, cudaTextureReadMode texReadMode>
-struct DevSamplerResult< texture<DeclType, dim, texReadMode> >
+struct DevSamplerResult<texture<DeclType, dim, texReadMode>>
 {
     static const int rank = VectorTypeRank<DeclType>::val;
     using BaseType = VECTOR_BASE(DeclType);

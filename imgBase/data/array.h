@@ -327,16 +327,14 @@ public:
     sysinline operator const Array<OtherType>& () const
     {
         ARRAY__CHECK_CONVERSION(Type*, OtherType*);
-        COMPILE_ASSERT(sizeof(Array<Type>) == sizeof(Array<OtherType>));
-        return * (const Array<OtherType>*) this;
+        return recastEqualLayout<const Array<OtherType>>(*this);
     }
 
     template <typename OtherType>
     sysinline operator const Array<OtherType> () const
     {
         ARRAY__CHECK_CONVERSION(Type*, OtherType*);
-        COMPILE_ASSERT(sizeof(Array<Type>) == sizeof(Array<OtherType>));
-        return * (const Array<OtherType>*) this;
+        return recastEqualLayout<const Array<OtherType>>(*this);
     }
 
 };
@@ -397,8 +395,7 @@ sysinline Space getLayerCount(const ArrayEx<Pointer>& arr)
 template <typename Type>
 sysinline const ArrayEx<const Type*>& makeConst(const ArrayEx<Type*>& array)
 {
-    COMPILE_ASSERT(sizeof(ArrayEx<const Type*>) == sizeof(ArrayEx<Type*>));
-    return * (const ArrayEx<const Type*>*) &array;
+    return recastEqualLayout<const ArrayEx<const Type*>>(array);
 }
 
 //================================================================
@@ -413,6 +410,5 @@ sysinline const ArrayEx<const Type*>& makeConst(const ArrayEx<Type*>& array)
 template <typename Type>
 sysinline const Array<Type>& recastToNonConst(const Array<const Type>& array)
 {
-    COMPILE_ASSERT(sizeof(Array<const Type>) == sizeof(Array<Type>));
-    return * (const Array<Type>*) &array;
+    return recastEqualLayout<const Array<Type>>(array);
 }

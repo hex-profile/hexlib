@@ -46,7 +46,7 @@ class ArrayObjMem : public ArrayMemoryEx<Type*>
 {
 
     using Base = ArrayMemoryEx<Type*>;
-    UseType_(Base, AddrU);
+    using AddrU = typename Base::AddrU;
 
 public:
 

@@ -7,17 +7,17 @@
 //
 // GpuArray<Type>
 //
-// Array for GPU address space: identical to ArrayEx< GpuPtr(Type) >.
+// Array for GPU address space: identical to ArrayEx<GpuPtr(Type)>.
 //
 //================================================================
 
 template <typename Type>
-class GpuArray : public ArrayEx< GpuPtr(Type) >
+class GpuArray : public ArrayEx<GpuPtr(Type)>
 {
 
 public:
 
-    using Base = ArrayEx< GpuPtr(Type) >;
+    using Base = ArrayEx<GpuPtr(Type)>;
 
     //
     // Construct
@@ -40,8 +40,7 @@ public:
     sysinline operator const GpuArray<OtherType>& () const
     {
         ARRAY__CHECK_CONVERSION(GpuPtr(Type), GpuPtr(OtherType));
-        COMPILE_ASSERT(sizeof(GpuArray<Type>) == sizeof(GpuArray<OtherType>));
-        return * (const GpuArray<OtherType> *) this;
+        return recastEqualLayout<const GpuArray<OtherType>>(*this);
     }
 
 };
@@ -53,10 +52,9 @@ public:
 //================================================================
 
 template <typename Type>
-inline const GpuArray<const Type>& makeConst(const GpuArray<Type>& array)
+sysinline const GpuArray<const Type>& makeConst(const GpuArray<Type>& array)
 {
-    COMPILE_ASSERT(sizeof(GpuArray<const Type>) == sizeof(GpuArray<Type>));
-    return * (const GpuArray<const Type>*) &array;
+    return recastEqualLayout<const GpuArray<const Type>>(array);
 }
 
 //================================================================
@@ -69,8 +67,7 @@ inline const GpuArray<const Type>& makeConst(const GpuArray<Type>& array)
 //================================================================
 
 template <typename Type>
-inline const GpuArray<Type>& recastToNonConst(const GpuArray<const Type>& array)
+sysinline const GpuArray<Type>& recastToNonConst(const GpuArray<const Type>& array)
 {
-    COMPILE_ASSERT(sizeof(GpuArray<const Type>) == sizeof(GpuArray<Type>));
-    return * (const GpuArray<Type>*) &array;
+    return recastEqualLayout<const GpuArray<Type>>(array);
 }

@@ -92,7 +92,7 @@
     GPT_FOREACH_SAMPLER(samplerList, GPT_DEFINE_SAMPLER, prefix)
 
 #define GPT_DEFINE_SAMPLER(Type, name, interp, border, prefix) \
-    devDefineSampler(PREP_PASTE3(prefix, name, Sampler), DevSampler2D, DevSamplerFloat, VectorTypeRank< Type >::val)
+    devDefineSampler(PREP_PASTE3(prefix, name, Sampler), DevSampler2D, DevSamplerFloat, VectorTypeRank<Type>::val)
 
 //================================================================
 //
@@ -127,7 +127,7 @@
     GpuMatrixPtr(Type) name = MATRIX_POINTER(o.name, X, Y); MAKE_VARIABLE_USED(name);
 
 #define GPT_EXPOSE_PARAM(Type, name) \
-    ParamType< Type >::T name = o.name; MAKE_VARIABLE_USED(name);
+    ParamType<Type>::T name = o.name; MAKE_VARIABLE_USED(name);
 
 //================================================================
 //
@@ -136,13 +136,13 @@
 //================================================================
 
 #define GPT_DECLARE_SAMPLER_ARG(Type, name, interp, border, o) \
-    const GpuMatrix< Type >& name##Matrix,
+    const GpuMatrix<Type>& name##Matrix,
 
 #define GPT_DECLARE_MATRIX_ARG(Type, name) \
-    const GpuMatrix< Type >& name##Matrix,
+    const GpuMatrix<Type>& name##Matrix,
 
 #define GPT_DECLARE_PARAM_ARG(Type, name) \
-    ParamType< Type >::T name,
+    ParamType<Type>::T name,
 
 //----------------------------------------------------------------
 
@@ -153,7 +153,7 @@
     REQUIRE(globSize == name##Matrix.size());
 
 #define GPT_BIND_SAMPLER(Type, name, interp, border, prefix) \
-    require(kit.gpuSamplerSetting.setSamplerImage< Type >(PREP_PASTE3(prefix, name, Sampler), name##Matrix, border, interp == INTERP_LINEAR, true, true, \
+    require(kit.gpuSamplerSetting.setSamplerImage<Type>(PREP_PASTE3(prefix, name, Sampler), name##Matrix, border, interp == INTERP_LINEAR, true, true, \
         stdPassLocationMsg(PREP_STRINGIZE(PREP_PASTE2(name, Sampler)))));
 
 #define GPT_SET_SAMPLER_FIELD(Type, name, interp, border, o) \

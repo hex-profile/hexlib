@@ -71,8 +71,7 @@ struct GpuPtrType
 //
 //================================================================
 
-COMPILE_ASSERT(sizeof(GpuPtr(int)) == sizeof(GpuAddrU));
-COMPILE_ASSERT(alignof(GpuPtr(int)) == sizeof(GpuAddrU));
+COMPILE_ASSERT_EQUAL_LAYOUT(GpuPtr(int), GpuAddrU);
 
 //================================================================
 //

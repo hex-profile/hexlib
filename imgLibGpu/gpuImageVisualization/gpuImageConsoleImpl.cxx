@@ -769,7 +769,7 @@ public:
 
     stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
 
-    UseType(GpuImageConsoleThunk, Kit);
+    using Kit = GpuImageConsoleThunk::Kit;
 
     VectorVisualizationProvider(const VectorVisualizationParams<Vector>& params, const Kit& kit)
         : Base(params), kit(kit) {}

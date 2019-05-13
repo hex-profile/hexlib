@@ -113,7 +113,7 @@ struct EmuSampler
 //================================================================
 
 template <DevSamplerType samplerType, DevSamplerReadMode readMode, int rank>
-struct DevSamplerResult< EmuSampler<samplerType, readMode, rank> >
+struct DevSamplerResult<EmuSampler<samplerType, readMode, rank>>
 {
     using T = typename DevSamplerReturnType<readMode, rank>::T;
 };

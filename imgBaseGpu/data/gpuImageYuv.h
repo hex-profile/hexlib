@@ -42,13 +42,13 @@ struct GpuImageYuv
     GpuMatrix<LumaType> luma;
     GpuMatrix<ChromaType> chroma;
 
-    inline GpuImageYuv()
+    sysinline GpuImageYuv()
         {}
 
-    inline GpuImageYuv(const GpuMatrix<LumaType>& luma, const GpuMatrix<ChromaType>& chroma)
+    sysinline GpuImageYuv(const GpuMatrix<LumaType>& luma, const GpuMatrix<ChromaType>& chroma)
         : luma(luma), chroma(chroma) {}
 
-    inline operator GpuImageYuv<const LumaType> () const
+    sysinline operator GpuImageYuv<const LumaType> () const
         {return GpuImageYuv<const LumaType>(luma, chroma);}
 };
 
@@ -59,7 +59,7 @@ struct GpuImageYuv
 //================================================================
 
 template <typename LumaType>
-inline bool equalSize(const GpuImageYuv<LumaType>& m1, const GpuImageYuv<LumaType>& m2)
+sysinline bool equalSize(const GpuImageYuv<LumaType>& m1, const GpuImageYuv<LumaType>& m2)
 {
     return
         equalSize(m1.luma, m2.luma) &&
@@ -73,8 +73,7 @@ inline bool equalSize(const GpuImageYuv<LumaType>& m1, const GpuImageYuv<LumaTyp
 //================================================================
 
 template <typename Type>
-inline const GpuImageYuv<const Type>& makeConst(const GpuImageYuv<Type>& image)
+sysinline const GpuImageYuv<const Type>& makeConst(const GpuImageYuv<Type>& image)
 {
-    COMPILE_ASSERT(sizeof(GpuImageYuv<const Type>) == sizeof(GpuImageYuv<Type>));
-    return * (const GpuImageYuv<const Type>*) &image;
+    return recastEqualLayout<const GpuImageYuv<const Type>>(image);
 }

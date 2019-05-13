@@ -85,8 +85,7 @@ stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdP
 {
     section.clear();
 
-    COMPILE_ASSERT(sizeof(CriticalSectionWin32) <= sizeof(CriticalSectionData));
-    CriticalSectionWin32& sectionEx = (CriticalSectionWin32&) section.data;
+    auto& sectionEx = section.data.recast<CriticalSectionWin32>();
 
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
@@ -197,8 +196,7 @@ stdbool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, std
 
     ////
 
-    COMPILE_ASSERT(sizeof(EventWin32) <= sizeof(event.data));
-    EventWin32& eventEx = (EventWin32&) event.data;
+    auto& eventEx = event.data.recast<EventWin32>();
 
     constructDefault(eventEx);
     require(eventEx.create(manualReset, stdPass));
@@ -368,8 +366,7 @@ stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadPar
 {
     threadControl.waitAndClear();
 
-    COMPILE_ASSERT(sizeof(ThreadControllerWin32) <= sizeof(ThreadControlData));
-    ThreadControllerWin32& threadControlEx = (ThreadControllerWin32&) threadControl.data;
+    auto& threadControlEx = threadControl.data.recast<ThreadControllerWin32>();
 
     stdbool ok = false;
     constructParams(threadControlEx, ThreadControllerWin32, (threadFunc, threadParams, stackSize, ok, stdPassThru));
@@ -389,8 +386,7 @@ stdbool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPa
 {
     threadControl.waitAndClear();
 
-    COMPILE_ASSERT(sizeof(CurrentThreadWin32) <= sizeof(ThreadControlData));
-    CurrentThreadWin32& threadControlEx = (CurrentThreadWin32&) threadControl.data;
+    auto& threadControlEx = threadControl.data.recast<CurrentThreadWin32>();
 
     constructDefault(threadControlEx);
     threadControl.intrface = &threadControlEx;

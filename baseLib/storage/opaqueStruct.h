@@ -16,9 +16,30 @@
 //================================================================
 
 template <size_t size>
-struct OpaqueStruct
+class OpaqueStruct
 {
+
+public:
+
+    template <typename Type>
+    inline Type& recast()
+    {
+        static_assert(sizeof(Self) >= sizeof(Type) && alignof(Self) % alignof(Type) == 0, "");
+        return * (Type*) this;
+    }
+
+    template <typename Type>
+    inline const Type& recast() const
+    {
+        static_assert(sizeof(Self) >= sizeof(Type) && alignof(Self) % alignof(Type) == 0, "");
+        return * (const Type*) this;
+    }
+
+private:
+
+    using Self = OpaqueStruct<size>;
     std::aligned_storage_t<size> data; // uses default alignment
+
 };
 
 //================================================================

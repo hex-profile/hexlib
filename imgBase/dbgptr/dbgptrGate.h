@@ -17,15 +17,15 @@
         DebugArrayPointer<Type>
 
     #define ArrayPtrCreate(Type, memPtr, memSize, preconditions) \
-        DebugArrayPointer< Type >(memPtr, memSize, preconditions)
+        DebugArrayPointer<Type>(memPtr, memSize, preconditions)
 
     ////
 
     #define MatrixPtr(Type) \
-        DebugMatrixPointer< Type >
+        DebugMatrixPointer<Type>
 
     #define MatrixPtrCreate(Type, memPtr, memPitch, memSizeX, memSizeY, preconditions) \
-        DebugMatrixPointer< Type >(memPtr, memPitch, memSizeX, memSizeY, preconditions)
+        DebugMatrixPointer<Type>(memPtr, memPitch, memSizeX, memSizeY, preconditions)
 
 #else
 

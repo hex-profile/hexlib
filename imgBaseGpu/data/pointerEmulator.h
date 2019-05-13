@@ -56,8 +56,7 @@ public:
 
     inline operator const SelfConstType& ()
     {
-        COMPILE_ASSERT(sizeof(SelfConstType) == sizeof(Self));
-        return * (const SelfConstType*) this;
+        return recastEqualLayout<const SelfConstType>(*this);
     }
 
     //

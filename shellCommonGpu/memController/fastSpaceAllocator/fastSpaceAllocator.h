@@ -133,13 +133,11 @@ public:
 
 private:
 
-    COMPILE_ASSERT(sizeof(FastAllocatorState<AddrU>) <= sizeof(AllocatorState));
+    static auto& castState(AllocatorState& state)
+        {return state.recast<FastAllocatorState<AddrU>>();}
 
-    static FastAllocatorState<AddrU>& castState(AllocatorState& state)
-        {return (FastAllocatorState<AddrU>&) state;}
-
-    static const FastAllocatorState<AddrU>& castState(const AllocatorState& state)
-        {return (const FastAllocatorState<AddrU>&) state;}
+    static const auto& castState(const AllocatorState& state)
+        {return state.recast<const FastAllocatorState<AddrU>>();}
 
 private:
 

@@ -16,11 +16,11 @@
 //================================================================
 
 template <typename Type>
-class GpuArrayMemory : public ArrayMemoryEx< GpuPtr(Type) >
+class GpuArrayMemory : public ArrayMemoryEx<GpuPtr(Type)>
 {
 
-    using Base = ArrayMemoryEx< GpuPtr(Type) >;
-    UseType_(Base, AddrU);
+    using Base = ArrayMemoryEx<GpuPtr(Type)>;
+    using AddrU = typename Base::AddrU;
 
 public:
 
@@ -48,23 +48,20 @@ public:
 
     inline operator const GpuArray<Type>& () const
     {
-        const ArrayEx< GpuPtr(Type) >* arr = this;
-        COMPILE_ASSERT(sizeof(GpuArray<Type>) == sizeof(ArrayEx< GpuPtr(Type) >));
-        return * (const GpuArray<Type> *) arr;
+        const ArrayEx<GpuPtr(Type)>* arr = this;
+        return recastEqualLayout<const GpuArray<Type>>(*arr);
     }
 
     inline operator const GpuArray<const Type>& () const
     {
-        const ArrayEx< GpuPtr(Type) >* arr = this;
-        COMPILE_ASSERT(sizeof(GpuArray<const Type>) == sizeof(ArrayEx< GpuPtr(Type) >));
-        return * (const GpuArray<const Type> *) arr;
+        const ArrayEx<GpuPtr(Type)>* arr = this;
+        return recastEqualLayout<const GpuArray<const Type>>(*arr);
     }
 
     inline const GpuArray<Type>& operator () () const
     {
-        const ArrayEx< GpuPtr(Type) >* arr = this;
-        COMPILE_ASSERT(sizeof(GpuArray<Type>) == sizeof(ArrayEx< GpuPtr(Type) >));
-        return * (const GpuArray<Type> *) arr;
+        const ArrayEx<GpuPtr(Type)>* arr = this;
+        return recastEqualLayout<const GpuArray<Type>>(*arr);
     }
 
 };

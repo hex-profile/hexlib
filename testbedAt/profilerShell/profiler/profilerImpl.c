@@ -18,8 +18,6 @@ struct ProfilerScopeEx
     ProfilerMoment startMoment;
 };
 
-COMPILE_ASSERT(sizeof(ProfilerScopeEx) <= 24);
-
 //================================================================
 //
 // NodePtr
@@ -252,8 +250,7 @@ void ProfilerImpl::getCurrentNodeLink(ProfilerNodeLink& result)
 {
     nodeRefOwner.connect(result.profilerChild);
 
-    COMPILE_ASSERT(sizeof(result.reference) >= sizeof(NodePtr));
-    (NodePtr&) result.reference = currentScope;
+    result.reference.recast<NodePtr>() = currentScope;
 }
 
 //================================================================
@@ -293,8 +290,7 @@ void ProfilerThunk::enterFunc(Profiler& profiler, ProfilerScope& scope, TraceLoc
 {
     ProfilerThunk& that = static_cast<ProfilerThunk&>(profiler);
 
-    COMPILE_ASSERT(sizeof(ProfilerScopeEx) <= sizeof(ProfilerScope));
-    ProfilerScopeEx& scopeEx = (ProfilerScopeEx&) scope;
+    auto& scopeEx = scope.data.recast<ProfilerScopeEx>();
 
     that.impl.enter(scopeEx, location, 0, 0);
 }
@@ -305,8 +301,7 @@ void ProfilerThunk::enterExFunc(Profiler& profiler, ProfilerScope& scope, TraceL
 {
     ProfilerThunk& that = static_cast<ProfilerThunk&>(profiler);
 
-    COMPILE_ASSERT(sizeof(ProfilerScopeEx) <= sizeof(ProfilerScope));
-    ProfilerScopeEx& scopeEx = (ProfilerScopeEx&) scope;
+    auto& scopeEx = scope.data.recast<ProfilerScopeEx>();
 
     that.impl.enter(scopeEx, location, elemCount, userName);
 }
@@ -317,8 +312,7 @@ void ProfilerThunk::leaveFunc(Profiler& profiler, ProfilerScope& scope)
 {
     ProfilerThunk& that = static_cast<ProfilerThunk&>(profiler);
 
-    COMPILE_ASSERT(sizeof(ProfilerScopeEx) <= sizeof(ProfilerScope));
-    ProfilerScopeEx& scopeEx = (ProfilerScopeEx&) scope;
+    auto& scopeEx = scope.data.recast<ProfilerScopeEx>();
 
     that.impl.leave(scopeEx);
 }
@@ -336,8 +330,7 @@ void ProfilerThunk::getCurrentNodeLinkFunc(Profiler& profiler, ProfilerNodeLink&
 
 void ProfilerThunk::addDeviceTimeFunc(const ProfilerNodeLink& node, float32 deviceTime, float32 overheadTime)
 {
-    COMPILE_ASSERT(sizeof(NodePtr) <= sizeof(node.reference));
-    NodePtr nodePtr = (const NodePtr&) node.reference;
+    NodePtr nodePtr = node.reference.recast<const NodePtr>();
 
     if (node.profilerChild.getParent())
         ProfilerImpl::addDeviceTime(nodePtr, deviceTime, overheadTime);
