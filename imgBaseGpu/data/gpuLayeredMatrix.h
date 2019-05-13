@@ -27,10 +27,9 @@ struct GpuLayeredMatrix
     // Cast from GpuLayeredMatrix<T> to GpuLayeredMatrix<const T>
     //
 
-    inline operator const GpuLayeredMatrix<const Element>& () const
+    sysinline operator const GpuLayeredMatrix<const Element>& () const
     {
-        COMPILE_ASSERT(sizeof(GpuLayeredMatrix<Element>) == sizeof(GpuLayeredMatrix<const Element>));
-        return * (const GpuLayeredMatrix<const Element>*) this;
+        return recastEqualLayout<const GpuLayeredMatrix<const Element>>(*this);
     }
 
 };
@@ -73,10 +72,9 @@ class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
 //================================================================
 
 template <typename Type>
-inline const GpuLayeredMatrix<const Type>& makeConst(const GpuLayeredMatrix<Type>& matrix)
+sysinline const GpuLayeredMatrix<const Type>& makeConst(const GpuLayeredMatrix<Type>& matrix)
 {
-    COMPILE_ASSERT(sizeof(GpuLayeredMatrix<const Type>) == sizeof(GpuLayeredMatrix<Type>));
-    return * (const GpuLayeredMatrix<const Type>*) &matrix;
+    return recastEqualLayout<const GpuLayeredMatrix<const Type>>(matrix);
 }
 
 //================================================================
@@ -109,7 +107,7 @@ class GpuLayeredMatrixFromMatrix : public GpuLayeredMatrix<Element>
 
 public:
 
-    inline GpuLayeredMatrixFromMatrix(const GpuMatrix<Element>& base)
+    sysinline GpuLayeredMatrixFromMatrix(const GpuMatrix<Element>& base)
         : base(base) {}
 
     Point<Space> size() const
@@ -130,7 +128,7 @@ private:
 //----------------------------------------------------------------
 
 template <typename Element>
-inline GpuLayeredMatrixFromMatrix<Element> gpuLayeredMatrixFromMatrix(const GpuMatrix<Element>& base)
+sysinline GpuLayeredMatrixFromMatrix<Element> gpuLayeredMatrixFromMatrix(const GpuMatrix<Element>& base)
     {return GpuLayeredMatrixFromMatrix<Element>(base);}
 
 //================================================================

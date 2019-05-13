@@ -10,7 +10,7 @@
 //================================================================
 
 #define TMP_MACRO(Type, o) \
-    template class SerializeNumericVar< Type >; \
+    template class SerializeNumericVar<Type>; \
 
 TMP_MACRO(float32_x2, o)
 TMP_MACRO(float32_x4, o)

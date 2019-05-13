@@ -8,18 +8,18 @@
 //
 // GpuMatrix
 //
-// Matrix for GPU address space: identical to MatrixEx< GpuPtr(Type) >.
+// Matrix for GPU address space: identical to MatrixEx<GpuPtr(Type)>.
 //
 //================================================================
 
 template <typename Type>
-class GpuMatrix : public MatrixEx< GpuPtr(Type) >
+class GpuMatrix : public MatrixEx<GpuPtr(Type)>
 {
 
 public:
 
-    using Base = MatrixEx< GpuPtr(Type) >;
-    UseType_(Base, TmpType);
+    using Base = MatrixEx<GpuPtr(Type)>;
+    using TmpType = typename Base::TmpType;
 
     //
     // Constructors
@@ -27,9 +27,6 @@ public:
 
     sysinline GpuMatrix(const TmpType* = 0)
         {}
-
-    sysinline GpuMatrix(const ConstructUnitialized& tag)
-        : Base(tag) {}
 
     sysinline GpuMatrix(GpuPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}
@@ -65,8 +62,7 @@ public:
     sysinline operator const GpuMatrix<OtherType>& () const
     {
         MATRIX__CHECK_CONVERSION(GpuPtr(Type), GpuPtr(OtherType));
-        COMPILE_ASSERT(sizeof(GpuMatrix<Type>) == sizeof(GpuMatrix<OtherType>));
-        return * (const GpuMatrix<OtherType> *) this;
+        return recastEqualLayout<const GpuMatrix<OtherType>>(*this);
     }
 
 };
@@ -84,10 +80,9 @@ COMPILE_ASSERT(alignof(GpuMatrix<uint8>) == HEXLIB_GPU_BITNESS / 8);
 //================================================================
 
 template <typename Type>
-inline const GpuMatrix<const Type>& makeConst(const GpuMatrix<Type>& matrix)
+sysinline const GpuMatrix<const Type>& makeConst(const GpuMatrix<Type>& matrix)
 {
-    COMPILE_ASSERT(sizeof(GpuMatrix<const Type>) == sizeof(GpuMatrix<Type>));
-    return * (const GpuMatrix<const Type>*) &matrix;
+    return recastEqualLayout<const GpuMatrix<const Type>>(matrix);
 }
 
 //================================================================
@@ -100,10 +95,9 @@ inline const GpuMatrix<const Type>& makeConst(const GpuMatrix<Type>& matrix)
 //================================================================
 
 template <typename Type>
-inline const GpuMatrix<Type>& recastToNonConst(const GpuMatrix<const Type>& matrix)
+sysinline const GpuMatrix<Type>& recastToNonConst(const GpuMatrix<const Type>& matrix)
 {
-    COMPILE_ASSERT(sizeof(GpuMatrix<const Type>) == sizeof(GpuMatrix<Type>));
-    return * (const GpuMatrix<Type>*) &matrix;
+    return recastEqualLayout<const GpuMatrix<Type>>(matrix);
 }
 
 //================================================================

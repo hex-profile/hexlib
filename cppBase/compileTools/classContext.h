@@ -31,7 +31,7 @@
         PREP_LIST_FOREACH_PAIR(list, CLASS_CONTEXT_DECL_FIELD, typenameKeyword) \
 
 #define CLASS_CONTEXT_ARGUMENT(Type, name, typenameKeyword) \
-    typenameKeyword ParamType< Type >::T name
+    typenameKeyword ParamType<Type>::T name
 
 #define CLASS_CONTEXT_CONSTRUCT_FIELD(Type, name, typenameKeyword) \
     name(name)

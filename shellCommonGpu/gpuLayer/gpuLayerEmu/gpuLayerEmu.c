@@ -186,8 +186,7 @@ private:
 
 inline ContextEx& uncast(const GpuContext& context)
 {
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(GpuContext));
-    return ** (ContextEx**) &context;
+    return *context.recast<ContextEx*>();
 }
 
 //================================================================
@@ -221,12 +220,10 @@ stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& resul
 
     GpuContextDeallocContext& deallocContext = result.owner.replace(destroyContext);
 
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(deallocContext));
-    * (ContextEx**) &deallocContext = ctx;
+    deallocContext.recast<ContextEx*>() = ctx;
 
     GpuContext& resultBase = result;
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(resultBase));
-    * (ContextEx**) &resultBase = ctx;
+    resultBase.recast<ContextEx*>() = ctx;
 
     ////
 
@@ -245,8 +242,7 @@ stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& resul
 
 void EmuInitApiThunk::destroyContext(GpuContextDeallocContext& deallocContext)
 {
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(deallocContext));
-    ContextEx*& context = * (ContextEx**) &deallocContext;
+    auto& context = deallocContext.recast<ContextEx*>();
     delete context;
     context = 0;
 }
@@ -409,8 +405,7 @@ stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Sp
 
     GpuTexture& gpuTexture = result;
 
-    COMPILE_ASSERT(sizeof(EmuTexture) <= sizeof(GpuTexture));
-    EmuTexture& emuTexture = (EmuTexture&) gpuTexture;
+    auto& emuTexture = gpuTexture.recast<EmuTexture>();
 
     ////
 
@@ -420,8 +415,7 @@ stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Sp
     ////
 
     GpuTextureDeallocContext& deallocContext = result.owner.replace(destroyTexture);
-    COMPILE_ASSERT(sizeof(EmuTextureContext) <= sizeof(deallocContext));
-    EmuTextureContext& emuTextureContext = (EmuTextureContext&) deallocContext;
+    auto& emuTextureContext = deallocContext.recast<EmuTextureContext>();
     emuTextureContext.allocPtr = sysAllocPtr;
 
     ////
@@ -437,8 +431,7 @@ stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Sp
 
 void EmuInitApiThunk::destroyTexture(GpuTextureDeallocContext& deallocContext)
 {
-    COMPILE_ASSERT(sizeof(EmuTextureContext) <= sizeof(deallocContext));
-    EmuTextureContext& context = (EmuTextureContext&) deallocContext;
+    auto& context = deallocContext.recast<EmuTextureContext>();
 
     if (context.allocPtr != 0)
     {
@@ -495,8 +488,7 @@ public:
 
 inline StreamEx& uncast(const GpuStream& stream)
 {
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(GpuStream));
-    return ** (StreamEx**) &stream;
+    return *stream.recast<StreamEx*>();
 }
 
 //================================================================
@@ -524,12 +516,10 @@ stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream
 
     GpuStreamDeallocContext& deallocContext = result.owner.replace(destroyStream);
 
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(deallocContext));
-    * (StreamEx**) &deallocContext = streamEx;
+    deallocContext.recast<StreamEx*>() = streamEx;
 
     GpuStream& resultBase = result;
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(resultBase));
-    * (StreamEx**) &resultBase = streamEx;
+    resultBase.recast<StreamEx*>() = streamEx;
 
     ////
 
@@ -546,8 +536,7 @@ stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream
 
 void EmuInitApiThunk::destroyStream(GpuStreamDeallocContext& deallocContext)
 {
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(deallocContext));
-    StreamEx*& stream = * (StreamEx**) &deallocContext;
+    auto& stream = deallocContext.recast<StreamEx*>();
     delete stream;
     stream = 0;
 }

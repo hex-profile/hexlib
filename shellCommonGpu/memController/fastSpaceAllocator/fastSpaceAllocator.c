@@ -74,8 +74,7 @@ stdbool FastAllocatorThunk<AddrU, realAlloc, stateMode>::alloc(AllocatorState& s
     {
         MemoryDeallocContext& deallocContext = owner.replace(deallocFunc);
 
-        COMPILE_ASSERT(sizeof(FastAllocatorDeallocContext<AddrU>) <= sizeof(MemoryDeallocContext));
-        FastAllocatorDeallocContext<AddrU>& info = (FastAllocatorDeallocContext<AddrU>&) deallocContext;
+        auto& info = deallocContext.recast<FastAllocatorDeallocContext<AddrU>>();
 
         info.allocState = &state;
         info.restoreValue = originalOffset;

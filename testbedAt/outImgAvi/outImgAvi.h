@@ -78,7 +78,7 @@ class OutImgAviThunk
 
 public:
 
-    UseType(OutImgAvi, Kit);
+    using Kit = OutImgAvi::Kit;
 
 public:
 

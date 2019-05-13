@@ -368,8 +368,7 @@ static stdbool setupSamplerImage
     stdBegin;
 
     state.reset();
-    COMPILE_ASSERT(sizeof(EmuSamplerInfo2D<MemType>) <= sizeof(state.data));
-    EmuSamplerInfo2D<MemType>& info = (EmuSamplerInfo2D<MemType>&) state.data;
+    auto& info = state.data.recast<EmuSamplerInfo2D<MemType>>();
 
     ////
 
@@ -603,8 +602,7 @@ static stdbool setupSamplerArray
     stdBegin;
 
     state.reset();
-    COMPILE_ASSERT(sizeof(EmuSamplerInfo1D<MemType>) <= sizeof(state.data));
-    EmuSamplerInfo1D<MemType>& info = (EmuSamplerInfo1D<MemType>&) state.data;
+    auto& info = state.data.recast<EmuSamplerInfo1D<MemType>>();
 
     ////
 

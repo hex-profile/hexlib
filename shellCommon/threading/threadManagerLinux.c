@@ -90,8 +90,7 @@ stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdP
 {
     section.clear();
 
-    COMPILE_ASSERT(sizeof(CriticalSectionLinux) <= sizeof(CriticalSectionData));
-    CriticalSectionLinux& sectionEx = (CriticalSectionLinux&) section.data;
+    auto& sectionEx = section.data.recast<CriticalSectionLinux>();
 
     constructDefault(sectionEx);
     section.intrface = &sectionEx;

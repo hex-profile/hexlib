@@ -83,7 +83,7 @@ inline ParamMsg0 paramMsg(const CharArray& format)
     } \
     \
     template <PREP_ENUM_INDEXED(n, typename T)> \
-    struct FormatOutputFunc< ParamStruct<PREP_ENUM_INDEXED(n, T)> > \
+    struct FormatOutputFunc<ParamStruct<PREP_ENUM_INDEXED(n, T)>> \
     { \
         typedef void FuncType(const ParamMsg& value, FormatOutputStream& outputStream); \
         static inline FuncType* get() {return &formatOutput<ParamMsg>;} \

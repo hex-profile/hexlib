@@ -42,14 +42,12 @@ public:
 
     inline ClassName& ref()
     {
-        COMPILE_ASSERT(sizeof(ClassName) <= classSize);
-        return * (ClassName*) &memory;
+        return memory.template recast<ClassName>();
     }
 
     inline const ClassName& ref() const
     {
-        COMPILE_ASSERT(sizeof(ClassName) <= classSize);
-        return * (ClassName*) &memory;
+        return memory.template recast<const ClassName>();
     }
 
     inline ClassName& operator ~()

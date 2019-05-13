@@ -64,7 +64,7 @@ public:
     stdbool waitForDisplayTime(stdNullPars)
         {return impl.waitForDisplayTime(stdPassThru);}
 
-    UseType(DisplayWaitController, Kit);
+    using Kit = DisplayWaitController::Kit;
 
     DisplayDelayerThunk(DisplayWaitController& impl, const Kit& kit)
         : impl(impl), kit(kit) {}

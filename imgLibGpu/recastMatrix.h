@@ -14,7 +14,7 @@ inline Matrix<Dst> recastMatrix(const Matrix<Src>& src)
 {
     MATRIX_EXPOSE(src);
 
-    COMPILE_ASSERT(sizeof(Src) == sizeof(Dst));
+    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
 
     return Matrix<Dst>
     (
@@ -34,7 +34,7 @@ inline GpuMatrix<Dst> recastMatrix(const GpuMatrix<Src>& src)
 {
     MATRIX_EXPOSE(src);
 
-    COMPILE_ASSERT(sizeof(Src) == sizeof(Dst));
+    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
 
     using SrcPtr = GpuPtr(Src);
     using DstPtr = GpuPtr(Dst);

@@ -34,9 +34,6 @@ private:
 
     using Moment = uint64;
 
-    COMPILE_ASSERT(sizeof(Moment) <= sizeof(TimeMoment));
-    COMPILE_ASSERT(alignof(Moment) <= alignof(TimeMoment));
-
     float32 tickFreq = 0;
     float32 tickPeriod = 0;
 

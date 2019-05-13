@@ -153,13 +153,11 @@ void formatOutput(const CUresult& value, FormatOutputStream& outputStream)
 //
 //================================================================
 
-COMPILE_ASSERT(sizeof(CUevent) <= sizeof(GpuEvent));
-
 inline const CUevent& uncast(const GpuEvent& event)
-    {return * (CUevent*) &event;}
+    {return event.recast<CUevent>();}
 
 inline CUevent& uncast(GpuEvent& event)
-    {return * (CUevent*) &event;}
+    {return event.recast<CUevent>();}
 
 //================================================================
 //
@@ -503,8 +501,7 @@ void ContextEx::destroy()
 
 inline const ContextEx& uncast(const GpuContext& context)
 {
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(GpuContext));
-    return ** (const ContextEx**) &context;
+    return *context.recast<const ContextEx*>();
 }
 
 //================================================================
@@ -535,9 +532,8 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& resu
 
     ////
 
-    GpuContext tmpContext; // not very elegant, but...
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(tmpContext));
-    * (ContextEx**) &tmpContext = ctx;
+    GpuContext tmpContext;
+    tmpContext.recast<ContextEx*>() = ctx;
 
     ////
 
@@ -547,13 +543,10 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& resu
     ////
 
     GpuContextDeallocContext& deallocContext = result.owner.replace(destroyContext);
-
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(deallocContext));
-    * (ContextEx**) &deallocContext = ctx;
+    deallocContext.recast<ContextEx*>() = ctx;
 
     GpuContext& resultBase = result;
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(resultBase));
-    * (ContextEx**) &resultBase = ctx;
+    resultBase.recast<ContextEx*>() = ctx;
 
     ////
 
@@ -573,8 +566,7 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& resu
 
 void CudaInitApiThunk::destroyContext(GpuContextDeallocContext& deallocContext)
 {
-    COMPILE_ASSERT(sizeof(ContextEx*) <= sizeof(deallocContext));
-    ContextEx*& context = * (ContextEx**) &deallocContext;
+    auto& context = deallocContext.recast<ContextEx*>();
     delete context;
     context = 0;
 }
@@ -629,15 +621,12 @@ stdbool CudaInitApiThunk::createModuleFromBinary(const GpuContext& context, cons
     ////
 
     GpuModuleDeallocContext& ownerContext = result.owner.replace(destroyModule);
-
-    COMPILE_ASSERT(sizeof(CUmodule) <= sizeof(ownerContext));
-    (CUmodule&) ownerContext = module;
+    ownerContext.recast<CUmodule>() = module;
 
     ////
 
     GpuModule& resultBase = result;
-    COMPILE_ASSERT(sizeof(CUmodule) <= sizeof(resultBase));
-    (CUmodule&) resultBase = module;
+    resultBase.recast<CUmodule>()  = module;
 
     ////
 
@@ -652,8 +641,7 @@ stdbool CudaInitApiThunk::createModuleFromBinary(const GpuContext& context, cons
 
 void CudaInitApiThunk::destroyModule(GpuModuleDeallocContext& deallocContext)
 {
-    COMPILE_ASSERT(sizeof(CUmodule) <= sizeof(deallocContext));
-    CUmodule& context = (CUmodule&) deallocContext;
+    auto& context = deallocContext.recast<CUmodule>();
 
     CUresult err = cuModuleUnload(context);
     DEBUG_BREAK_CHECK(err == CUDA_SUCCESS);
@@ -695,8 +683,7 @@ stdbool CudaInitApiThunk::createKernelFromModule(const GpuModule& module, const 
     ////
 
     GpuKernel& resultBase = result;
-    COMPILE_ASSERT(sizeof(CUfunction) <= sizeof(resultBase));
-    (CUfunction&) resultBase = kernel;
+    resultBase.recast<CUfunction>() = kernel;
 
     ////
 
@@ -738,8 +725,7 @@ stdbool CudaInitApiThunk::getSamplerFromModule(const GpuModule& module, const ch
     ////
 
     GpuSampler& resultBase = result;
-    COMPILE_ASSERT(sizeof(CUtexref) <= sizeof(resultBase));
-    (CUtexref&) resultBase = sampler;
+    resultBase.recast<CUtexref>() = sampler;
 
     ////
 
@@ -944,16 +930,12 @@ stdbool CudaInitApiThunk::createTexture(const GpuContext& context, const Point<S
     ////
 
     GpuTexture& gpuTexture = result;
-
-    COMPILE_ASSERT(sizeof(CUarray) <= sizeof(GpuTexture));
-    (CUarray&) gpuTexture = texture;
+    gpuTexture.recast<CUarray>() = texture;
 
     ////
 
     GpuTextureDeallocContext& ownerContext = result.owner.replace(destroyTexture);
-
-    COMPILE_ASSERT(sizeof(CUarray) <= sizeof(ownerContext));
-    (CUarray&) ownerContext = texture;
+    ownerContext.recast<CUarray>() = texture;
 
     ////
 
@@ -968,8 +950,7 @@ stdbool CudaInitApiThunk::createTexture(const GpuContext& context, const Point<S
 
 void CudaInitApiThunk::destroyTexture(GpuTextureDeallocContext& deallocContext)
 {
-    COMPILE_ASSERT(sizeof(CUarray) <= sizeof(deallocContext));
-    CUarray& texture = (CUarray&) deallocContext;
+    auto& texture = deallocContext.recast<CUarray>();
 
     CUresult err = cuArrayDestroy(texture);
     DEBUG_BREAK_CHECK(err == CUDA_SUCCESS);
@@ -1440,8 +1421,7 @@ stdbool StreamEx::create(const GpuContext& context, bool nullStream, void*& base
 
 inline StreamEx& uncast(const GpuStream& stream)
 {
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(GpuStream));
-    return ** (StreamEx**) &stream;
+    return *stream.recast<StreamEx*>();
 }
 
 //================================================================
@@ -1531,13 +1511,10 @@ stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStrea
     ////
 
     GpuStreamDeallocContext& deallocContext = result.owner.replace(destroyStream);
-
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(deallocContext));
-    * (StreamEx**) &deallocContext = streamEx;
+    deallocContext.recast<StreamEx*>() = streamEx;
 
     GpuStream& gpuStream = result;
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(gpuStream));
-    * (StreamEx**) &gpuStream = streamEx;
+    gpuStream.recast<StreamEx*>() = streamEx;
 
     ////
 
@@ -1554,8 +1531,7 @@ stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStrea
 
 void CudaInitApiThunk::destroyStream(GpuStreamDeallocContext& deallocContext)
 {
-    COMPILE_ASSERT(sizeof(StreamEx*) <= sizeof(deallocContext));
-    StreamEx*& stream = * (StreamEx**) &deallocContext;
+    auto& stream = deallocContext.recast<StreamEx*>();
     delete stream;
     stream = 0;
 }
@@ -1591,9 +1567,7 @@ stdbool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& t
 
     ////
 
-    COMPILE_ASSERT(sizeof(CUfunction) <= sizeof(kernelHandle));
-    CUfunction cuFunc = (const CUfunction&) kernelHandle;
-
+    CUfunction cuFunc = kernelHandle.recast<const CUfunction>();
     CUstream cuStream = uncast(stream).cuStream;
 
     ////
@@ -1761,16 +1735,12 @@ stdbool CudaInitApiThunk::createEvent(const GpuContext& context, bool timingEnab
     ////
 
     GpuEventDeallocContext& deallocContext = result.owner.replace(destroyEvent);
-
-    COMPILE_ASSERT(sizeof(CUevent) <= sizeof(deallocContext));
-    (CUevent&) deallocContext = event;
+    deallocContext.recast<CUevent>() = event;
 
     ////
 
     GpuEvent& resultEvent = result;
-
-    COMPILE_ASSERT(sizeof(CUevent) <= sizeof(GpuEvent));
-    (CUevent&) resultEvent = event;
+    resultEvent.recast<CUevent>() = event;
 
     ////
 
@@ -2023,8 +1993,7 @@ stdbool CudaExecApiThunk::setSamplerImage
     GpuSampler samplerHandle;
     require(ctx.moduleKeeper.fetchSampler(sampler, samplerHandle, stdPass));
 
-    COMPILE_ASSERT(sizeof(CUtexref) <= sizeof(samplerHandle));
-    CUtexref texref = (const CUtexref&) samplerHandle;
+    CUtexref texref = samplerHandle.recast<const CUtexref>();
 
     //
     // Check image
@@ -2115,8 +2084,7 @@ stdbool CudaExecApiThunk::setSamplerArray
     GpuSampler samplerHandle;
     require(ctx.moduleKeeper.fetchSampler(sampler, samplerHandle, stdPass));
 
-    COMPILE_ASSERT(sizeof(CUtexref) <= sizeof(samplerHandle));
-    CUtexref texref = (const CUtexref&) samplerHandle;
+    CUtexref texref = samplerHandle.recast<const CUtexref>();
 
     //
     // Check array
@@ -2216,8 +2184,7 @@ stdbool CudaExecApiThunk::callKernel
 
     ////
 
-    COMPILE_ASSERT(sizeof(CUfunction) <= sizeof(kernelHandle));
-    CUfunction cuFunc = (const CUfunction&) kernelHandle;
+    CUfunction cuFunc = kernelHandle.recast<const CUfunction>();
 
     CUstream cuStream = uncast(stream).cuStream;
 

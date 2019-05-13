@@ -34,8 +34,7 @@ sysinline Type loadViaSamplerCache(const Type* ptr);
             template <typename Type> \
             struct Inner  \
             { \
-                COMPILE_ASSERT(sizeof(Type) == sizeof(ReadType) && \
-                    alignof(Type) == alignof(ReadType)); \
+                COMPILE_ASSERT_EQUAL_LAYOUT(Type, ReadType); \
                 \
                 static sysinline void func(const Type* ptr, Type& result) \
                     {* (ReadType*) &result = __ldg((const ReadType*) ptr);} \

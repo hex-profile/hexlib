@@ -247,10 +247,10 @@ struct TypeMinMaxStaticImpl;
 //----------------------------------------------------------------
 
 #define TYPE_MIN(Type) \
-    TypeMinMaxStaticImpl< Type >::minVal
+    TypeMinMaxStaticImpl<Type>::minVal
 
 #define TYPE_MAX(Type) \
-    TypeMinMaxStaticImpl< Type >::maxVal
+    TypeMinMaxStaticImpl<Type>::maxVal
 
 //----------------------------------------------------------------
 
@@ -451,7 +451,7 @@ struct ConvertFamilyImpl
 //----------------------------------------------------------------
 
 #define CONVERT_FAMILY_IMPL(Type, Family) \
-    template <> struct ConvertFamilyImpl< Type > {using T = Family;};
+    template <> struct ConvertFamilyImpl<Type> {using T = Family;};
 
 //----------------------------------------------------------------
 

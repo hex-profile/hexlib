@@ -164,15 +164,51 @@ sysinline Dst soft_cast(Src src)
 #define COMPILE_ARRAY_SIZE(X) \
     (sizeof(X) / sizeof((X)[0]))
 
+//================================================================
+//
+// COMPILE_ASSERT_EQUAL_LAYOUT
+// COMPILE_ASSERT_FITTING_LAYOUT
+//
+//================================================================
+
+#define COMPILE_ASSERT_EQUAL_LAYOUT(T1, T2) \
+    COMPILE_ASSERT((sizeof(T1) == sizeof(T2) && alignof(T1) == alignof(T2)))
+
+#define COMPILE_ASSERT_FITTING_LAYOUT(T1, T2) \
+    COMPILE_ASSERT((sizeof(T1) <= sizeof(T2) && alignof(T2) % alignof(T1) == 0))
+
+//================================================================
+//
+// recastEqualLayout
+//
+//================================================================
+
+//================================================================
+//
+// TYPE_ALIGN
+//
+//================================================================
+
+template <typename Dst, typename Src>
+sysinline Dst& recastEqualLayout(Src& src)
+{
+    COMPILE_ASSERT(sizeof(Src) == sizeof(Dst));
+
+#if !(defined(_MSC_VER) && (_MSC_VER <= 1900)) // workaround
+    COMPILE_ASSERT(alignof(Src) == alignof(Dst));
+#endif
+
+    return * (Dst*) &src;
+}
+
 //----------------------------------------------------------------
 
-template <typename ArrayType>
-struct CompileArraySize
+template <typename Dst, typename Src>
+sysinline Dst& recastFittingLayout(Src& src)
 {
-    struct ArrayWrapper {ArrayType data;};
-    static ArrayWrapper makeArray();
-    static const size_t result = COMPILE_ARRAY_SIZE(makeArray().data);
-};
+    COMPILE_ASSERT_FITTING_LAYOUT(Dst, Src);
+    return * (Dst*) &src;
+}
 
 //================================================================
 //
@@ -197,28 +233,6 @@ struct CompileArraySize
         {static_assert(0, "missing function body");}
 
 #endif
-
-//================================================================
-//
-// ConstructUnitialized
-//
-//================================================================
-
-struct ConstructUnitialized {};
-
-//================================================================
-//
-// UseType(Class, Type)
-//
-// Copies type from some context to the current context.
-//
-//================================================================
-
-#define UseType(Class, Type) \
-    using Type = Class::Type
-
-#define UseType_(Class, Type) \
-    using Type = typename Class::Type
 
 //================================================================
 //
@@ -256,10 +270,10 @@ struct TypeSelect
 //----------------------------------------------------------------
 
 #define TYPE_SELECT(cond, T1, T2) \
-    typename TypeSelect< bool(cond), T1, T2 >::T
+    typename TypeSelect<bool(cond), T1, T2>::T
 
 #define TYPE_SELECT_(cond, T1, T2) \
-    TypeSelect< bool(cond), T1, T2 >::T
+    TypeSelect<bool(cond), T1, T2>::T
 
 //================================================================
 //
@@ -315,10 +329,10 @@ TMP_MACRO(const volatile Type&)
 ////
 
 #define TYPE_CLEANSE(Type) \
-    typename TypeCleanse< Type >::T
+    typename TypeCleanse<Type>::T
 
 #define TYPE_CLEANSE_(Type) \
-    TypeCleanse< Type >::T
+    TypeCleanse<Type>::T
 
 //================================================================
 //
@@ -414,34 +428,3 @@ sysinline void compileUseVariableByValue(Type) {}
 
 #define COMPILE_IS_POWER2(X) \
     (((X) & ((X) - 1)) == 0)
-
-//================================================================
-//
-// CtEnableIf
-//
-//================================================================
-
-template <bool condition, class Type = void>
-struct CtEnableIf {};
-
-template <class Type>
-struct CtEnableIf<true, Type> {using T = Type;};
-
-#define CT_ENABLE_IF(condition, Type) \
-    typename CtEnableIf<condition, Type>::T
-
-//================================================================
-//
-// CT_PASS_TYPE_IF
-//
-//================================================================
-
-template <bool condition, typename Type>
-struct CtPassTypeIf
-{
-    struct NonExistingType;
-    using T = TYPE_SELECT(condition, Type, NonExistingType);
-};
-
-#define CT_PASS_TYPE_IF(condition, Type) \
-    typename CtPassTypeIf<condition, Type>::T

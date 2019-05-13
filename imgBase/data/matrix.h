@@ -234,13 +234,6 @@ public:
         {assignNull();}
 
     //
-    // Create uninitialized
-    //
-
-    sysinline MatrixEx(const ConstructUnitialized&)
-        {}
-
-    //
     // Create by parameters.
     //
 
@@ -274,8 +267,7 @@ public:
     sysinline operator const MatrixEx<OtherPointer>& () const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
-        COMPILE_ASSERT(sizeof(MatrixEx<Pointer>) == sizeof(MatrixEx<OtherPointer>));
-        return * (const MatrixEx<OtherPointer> *) this;
+        return recastEqualLayout<const MatrixEx<OtherPointer>>(*this);
     }
 
     //
@@ -606,7 +598,7 @@ public:
 
     using Base = MatrixEx<Type*>;
 
-    UseType_(Base, TmpType);
+    using TmpType = typename Base::TmpType;
 
     //
     // Constructors
@@ -643,16 +635,14 @@ public:
     sysinline operator const Matrix<OtherType>& () const
     {
         MATRIX__CHECK_CONVERSION(Type*, OtherType*);
-        COMPILE_ASSERT(sizeof(Matrix<Type>) == sizeof(Matrix<OtherType>));
-        return * (const Matrix<OtherType> *) this;
+        return recastEqualLayout<const Matrix<OtherType>>(*this);
     }
 
     template <typename OtherType>
     sysinline operator const Matrix<OtherType> () const
     {
         MATRIX__CHECK_CONVERSION(Type*, OtherType*);
-        COMPILE_ASSERT(sizeof(Matrix<Type>) == sizeof(Matrix<OtherType>));
-        return * (const Matrix<OtherType> *) this;
+        return recastEqualLayout<const Matrix<OtherType>>(*this);
     }
 
 public:
@@ -703,8 +693,7 @@ public:
 template <typename Type>
 sysinline const MatrixEx<const Type*>& makeConst(const MatrixEx<Type*>& matrix)
 {
-    COMPILE_ASSERT(sizeof(MatrixEx<const Type*>) == sizeof(MatrixEx<Type*>));
-    return * (const MatrixEx<const Type*>*) &matrix;
+    return recastEqualLayout<const MatrixEx<const Type*>>(matrix);
 }
 
 //================================================================
@@ -719,8 +708,7 @@ sysinline const MatrixEx<const Type*>& makeConst(const MatrixEx<Type*>& matrix)
 template <typename Type>
 sysinline const Matrix<Type>& recastToNonConst(const Matrix<const Type>& matrix)
 {
-    COMPILE_ASSERT(sizeof(Matrix<const Type>) == sizeof(Matrix<Type>));
-    return * (const Matrix<Type>*) &matrix;
+    return recastEqualLayout<const Matrix<Type>>(matrix);
 }
 
 //================================================================

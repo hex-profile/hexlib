@@ -152,24 +152,19 @@ public:
     sysinline operator const Matrix<Type>& () const
     {
         const MatrixEx<Type*>* baseMatrix = this;
-        COMPILE_ASSERT(sizeof(Matrix<Type>) == sizeof(MatrixEx<Type*>));
-        return * (const Matrix<Type> *) baseMatrix;
+        return recastEqualLayout<const Matrix<Type>>(*baseMatrix);
+    }
+
+    sysinline operator const Matrix<const Type>& () const
+    {
+        const MatrixEx<Type*>* baseMatrix = this;
+        return recastEqualLayout<const Matrix<const Type>>(*baseMatrix);
     }
 
     sysinline const Matrix<Type>& operator()() const
     {
         const MatrixEx<Type*>* baseMatrix = this;
-        COMPILE_ASSERT(sizeof(Matrix<Type>) == sizeof(MatrixEx<Type*>));
-        return * (const Matrix<Type> *) baseMatrix;
-    }
-
-    ////
-
-    sysinline operator const Matrix<const Type>& () const
-    {
-        const MatrixEx<Type*>* baseMatrix = this;
-        COMPILE_ASSERT(sizeof(Matrix<const Type>) == sizeof(MatrixEx<Type*>));
-        return * (const Matrix<const Type> *) baseMatrix;
+        return recastEqualLayout<const Matrix<Type>>(*baseMatrix);
     }
 
     //
