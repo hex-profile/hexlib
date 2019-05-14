@@ -995,12 +995,12 @@ public:
         stdEnd;
     }
 
-    Yuv420ConvertProvider(const GpuImageYuv<const Pixel>& image, const GpuProcessKit& kit)
+    Yuv420ConvertProvider(const GpuPackedYuv<const Pixel>& image, const GpuProcessKit& kit)
         : image(image), kit(kit) {}
 
 private:
 
-    GpuImageYuv<const Pixel> image;
+    GpuPackedYuv<const Pixel> image;
     GpuProcessKit kit;
 
 };
@@ -1014,7 +1014,7 @@ private:
 template <typename Type>
 stdbool GpuImageConsoleThunk::addYuvImage420Func
 (
-    const GpuImageYuv<const Type>& image,
+    const GpuPackedYuv<const Type>& image,
     const ImgOutputHint& hint,
     stdNullPars
 )

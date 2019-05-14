@@ -5,12 +5,12 @@
 
 //================================================================
 //
-// MakeChromaType
+// ChromaPackedType
 //
 //================================================================
 
 template <typename Type>
-struct MakeChromaType
+struct ChromaPackedType
 {
     using TypeSigned = TYPE_MAKE_SIGNED(Type);
     using T = typename MakeVectorType<TypeSigned, 2>::T;
@@ -19,14 +19,14 @@ struct MakeChromaType
 //----------------------------------------------------------------
 
 template <typename Type>
-struct MakeChromaType<const Type>
+struct ChromaPackedType<const Type>
 {
-    using T = const typename MakeChromaType<Type>::T;
+    using T = const typename ChromaPackedType<Type>::T;
 };
 
 //================================================================
 //
-// GpuImageYuv
+// GpuPackedYuv
 //
 // YUV image in 4:2:0 format.
 //
@@ -35,21 +35,15 @@ struct MakeChromaType<const Type>
 //================================================================
 
 template <typename LumaType>
-struct GpuImageYuv
+struct GpuPackedYuv
 {
-    using ChromaType = typename MakeChromaType<LumaType>::T;
+    using ChromaType = typename ChromaPackedType<LumaType>::T;
 
     GpuMatrix<LumaType> luma;
     GpuMatrix<ChromaType> chroma;
 
-    sysinline GpuImageYuv()
-        {}
-
-    sysinline GpuImageYuv(const GpuMatrix<LumaType>& luma, const GpuMatrix<ChromaType>& chroma)
-        : luma(luma), chroma(chroma) {}
-
-    sysinline operator GpuImageYuv<const LumaType> () const
-        {return GpuImageYuv<const LumaType>(luma, chroma);}
+    sysinline operator GpuPackedYuv<const LumaType> () const
+        {return GpuPackedYuv<const LumaType>{luma, chroma};}
 };
 
 //================================================================
@@ -59,11 +53,11 @@ struct GpuImageYuv
 //================================================================
 
 template <typename LumaType>
-sysinline bool equalSize(const GpuImageYuv<LumaType>& m1, const GpuImageYuv<LumaType>& m2)
+sysinline bool equalSize(const GpuPackedYuv<LumaType>& a, const GpuPackedYuv<LumaType>& b)
 {
     return
-        equalSize(m1.luma, m2.luma) &&
-        equalSize(m1.chroma, m2.chroma);
+        equalSize(a.luma, b.luma) &&
+        equalSize(a.chroma, b.chroma);
 }
 
 //================================================================
@@ -73,7 +67,59 @@ sysinline bool equalSize(const GpuImageYuv<LumaType>& m1, const GpuImageYuv<Luma
 //================================================================
 
 template <typename Type>
-sysinline const GpuImageYuv<const Type>& makeConst(const GpuImageYuv<Type>& image)
+sysinline const GpuPackedYuv<const Type>& makeConst(const GpuPackedYuv<Type>& image)
 {
-    return recastEqualLayout<const GpuImageYuv<const Type>>(image);
+    return recastEqualLayout<const GpuPackedYuv<const Type>>(image);
+}
+
+//================================================================
+//
+// GpuPlanarYuv
+//
+// YUV image in 4:2:0 format.
+//
+// Chroma is stored in planar format.
+//
+//================================================================
+
+template <typename LumaType>
+struct GpuPlanarYuv
+{
+    using ChromaType = TYPE_MAKE_SIGNED(LumaType);
+
+    GpuMatrix<LumaType> Y;
+    GpuMatrix<ChromaType> U;
+    GpuMatrix<ChromaType> V;
+
+    sysinline GpuPlanarYuv() = default;
+
+    sysinline operator GpuPlanarYuv<const LumaType> () const
+        {return GpuPlanarYuv<const LumaType>{Y, U, V};}
+};
+
+//================================================================
+//
+// equalSize
+//
+//================================================================
+
+template <typename LumaType>
+sysinline bool equalSize(const GpuPlanarYuv<LumaType>& a, const GpuPlanarYuv<LumaType>& b)
+{
+    return
+        equalSize(a.Y, b.Y) &&
+        equalSize(a.U, b.U) &&
+        equalSize(a.V, b.V);
+}
+
+//================================================================
+//
+// makeConst
+//
+//================================================================
+
+template <typename Type>
+sysinline const GpuPlanarYuv<const Type>& makeConst(const GpuPlanarYuv<Type>& image)
+{
+    return recastEqualLayout<const GpuPlanarYuv<const Type>>(image);
 }

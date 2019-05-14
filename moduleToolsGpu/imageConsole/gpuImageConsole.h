@@ -302,7 +302,7 @@ struct GpuImageConsole : public GpuBaseConsole
         \
         virtual stdbool addYuvImage420 \
         ( \
-            const GpuImageYuv<const Type>& image, \
+            const GpuPackedYuv<const Type>& image, \
             const ImgOutputHint& hint, \
             stdNullPars \
         ) \
@@ -475,7 +475,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addYuvImage420(const GpuImageYuv<const Type>& image, const ImgOutputHint& hint, stdNullPars) \
+        stdbool addYuvImage420(const GpuPackedYuv<const Type>& image, const ImgOutputHint& hint, stdNullPars) \
             {return true;}
 
     IMAGE_CONSOLE_FOREACH_YUV420_TYPE(TMP_MACRO, _)
