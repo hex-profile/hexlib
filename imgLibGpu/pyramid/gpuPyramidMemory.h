@@ -8,20 +8,20 @@
 
 //================================================================
 //
-// pyramidMemoryMaxLevels
+// gpuPyramidMemoryMaxLevels
 //
 //================================================================
 
-static constexpr Space pyramidMemoryMaxLevels = 32;
+static constexpr Space gpuPyramidMemoryMaxLevels = 32;
 
 //================================================================
 //
-// PyramidMemory<Type>
+// GpuPyramidMemory<Type>
 //
 //================================================================
 
 template <typename Type>
-class PyramidMemory : public GpuPyramid<Type>
+class GpuPyramidMemory : public GpuPyramid<Type>
 {
 
 public:
@@ -99,7 +99,7 @@ public:
 private:
 
     using ImageStorage = GpuLayeredMatrixMemory<Type>;
-    ArrayObjMemStatic<ImageStorage, pyramidMemoryMaxLevels> pyramidArray;
+    ArrayObjMemStatic<ImageStorage, gpuPyramidMemoryMaxLevels> pyramidArray;
     Space currentLayerCount = 0;
 
     GpuLayeredMatrixEmpty<Type> emptyLayeredMatrix;

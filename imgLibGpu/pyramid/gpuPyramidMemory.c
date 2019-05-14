@@ -12,12 +12,12 @@
 
 //================================================================
 //
-// PyramidMemory::~PyramidMemory
+// GpuPyramidMemory::~GpuPyramidMemory
 //
 //================================================================
 
 template <typename Type>
-void PyramidMemory<Type>::dealloc()
+void GpuPyramidMemory<Type>::dealloc()
 {
     pyramidArray.dealloc();
     currentLayerCount = 0;
@@ -25,12 +25,12 @@ void PyramidMemory<Type>::dealloc()
 
 //================================================================
 //
-// PyramidMemory::realloc
+// GpuPyramidMemory::realloc
 //
 //================================================================
 
 template <typename Type>
-stdbool PyramidMemory<Type>::reallocEx
+stdbool GpuPyramidMemory<Type>::reallocEx
 (
     const PyramidScale& scale,
     const Point<float32>& baseScaleFactor,
@@ -52,7 +52,7 @@ stdbool PyramidMemory<Type>::reallocEx
 
     ////
 
-    using Self = PyramidMemory<Type>;
+    using Self = GpuPyramidMemory<Type>;
     Self& self = *this;
     REMEMBER_CLEANUP1_EX(deallocCleanup, self.dealloc(), Self&, self);
 
@@ -92,12 +92,12 @@ stdbool PyramidMemory<Type>::reallocEx
 
 //================================================================
 //
-// PyramidMemory::levelSize
+// GpuPyramidMemory::levelSize
 //
 //================================================================
 
 template <typename Type>
-Point<Space> PyramidMemory<Type>::levelSize(Space level) const
+Point<Space> GpuPyramidMemory<Type>::levelSize(Space level) const
 {
     ARRAY_EXPOSE(pyramidArray);
 
@@ -111,12 +111,12 @@ Point<Space> PyramidMemory<Type>::levelSize(Space level) const
 
 //================================================================
 //
-// PyramidMemory::operator[]
+// GpuPyramidMemory::operator[]
 //
 //================================================================
 
 template <typename Type>
-GpuMatrix<Type> PyramidMemory<Type>::operator[] (Space level) const
+GpuMatrix<Type> GpuPyramidMemory<Type>::operator[] (Space level) const
 {
     ARRAY_EXPOSE(pyramidArray);
 
@@ -130,12 +130,12 @@ GpuMatrix<Type> PyramidMemory<Type>::operator[] (Space level) const
 
 //================================================================
 //
-// PyramidMemory::getLayer
+// GpuPyramidMemory::getLayer
 //
 //================================================================
 
 template <typename Type>
-GpuMatrix<Type> PyramidMemory<Type>::getLayer(Space level, Space layer) const
+GpuMatrix<Type> GpuPyramidMemory<Type>::getLayer(Space level, Space layer) const
 {
     GpuMatrix<Type> result;
 
@@ -149,12 +149,12 @@ GpuMatrix<Type> PyramidMemory<Type>::getLayer(Space level, Space layer) const
 
 //================================================================
 //
-// PyramidMemory<Type>::getLevel
+// GpuPyramidMemory<Type>::getLevel
 //
 //================================================================
 
 template <typename Type>
-const GpuLayeredMatrix<Type>& PyramidMemory<Type>::getLevel(Space level) const
+const GpuLayeredMatrix<Type>& GpuPyramidMemory<Type>::getLevel(Space level) const
 {
     const GpuLayeredMatrix<Type>* result = &emptyLayeredMatrix;
 
@@ -168,12 +168,12 @@ const GpuLayeredMatrix<Type>& PyramidMemory<Type>::getLevel(Space level) const
 
 //================================================================
 //
-// PyramidMemory::getGpuLayout
+// GpuPyramidMemory::getGpuLayout
 //
 //================================================================
 
 template <typename Type>
-bool PyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidLayout& layout) const
+bool GpuPyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidLayout& layout) const
 {
     ARRAY_EXPOSE(pyramidArray);
 
@@ -220,7 +220,7 @@ bool PyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidLayo
 //================================================================
 
 #define TMP_MACRO(Type, o) \
-    template class PyramidMemory<Type>; \
+    template class GpuPyramidMemory<Type>; \
 
 VECTOR_INT_FOREACH(TMP_MACRO, o)
 VECTOR_FLOAT_FOREACH(TMP_MACRO, o)
