@@ -4,7 +4,7 @@
 #define HEXLIB_OPAQUE_STRUCT
 
 #include <type_traits>
-#include <stddef.h>
+#include <cstddef>
 
 //================================================================
 //

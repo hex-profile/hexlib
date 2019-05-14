@@ -36,6 +36,25 @@ struct GpuLayeredMatrix
 
 //================================================================
 //
+// GpuLayeredMatrixEmpty
+//
+//================================================================
+
+template <typename Element>
+class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
+{
+    Point<Space> size() const
+        {return point(0);}
+
+    Space layerCount() const
+        {return 0;}
+
+    GpuMatrix<Element> getLayer(Space r) const
+        {return 0;}
+};
+
+//================================================================
+//
 // GPU_LAYERED_MATRIX_PASS
 //
 //================================================================
@@ -66,8 +85,6 @@ sysinline const GpuLayeredMatrix<const Type>& makeConst(const GpuLayeredMatrix<T
 
 template <typename Type>
 GET_SIZE_DEFINE(GpuLayeredMatrix<Type>, value.size())
-
-////
 
 sysinline Space getLayerCount(Space layerCount)
     {return layerCount;}
@@ -110,45 +127,6 @@ private:
 
 template <typename Element>
 sysinline GpuLayeredMatrixFromMatrix<Element> gpuLayeredMatrixFromMatrix(const GpuMatrix<Element>& base)
-    {return GpuLayeredMatrixFromMatrix<Element>(base);}
-
-//================================================================
-//
-// GpuLayeredMatrixSubrange
-//
-//================================================================
-
-template <typename Element>
-class GpuLayeredMatrixSubrange : public GpuLayeredMatrix<Element>
 {
-
-public:
-
-    Point<Space> size() const
-        {return base.size();}
-
-    Space layerCount() const
-        {return actualEnd - actualBegin;}
-
-    GpuMatrix<Element> getLayer(Space r) const
-        {return base.getLayer(clampRange(r, actualBegin, actualEnd));}
-
-public:
-
-    GpuLayeredMatrixSubrange(const GpuLayeredMatrix<Element>& base, Space layerBegin, Space layerCount)
-        : base(base)
-    {
-        Space baseCount = base.layerCount();
-        actualBegin = clampRange(layerBegin, 0, baseCount);
-
-        Space availCount = baseCount - actualBegin;
-        actualEnd = actualBegin + clampRange(layerCount, 0, availCount);
-    }
-
-private:
-
-    const GpuLayeredMatrix<Element>& base;
-    Space actualBegin;
-    Space actualEnd;
-
-};
+    return GpuLayeredMatrixFromMatrix<Element>(base);
+}

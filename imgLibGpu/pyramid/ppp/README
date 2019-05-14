@@ -1,0 +1,1 @@
+Tools for processing an entire image pyramid with a single GPU kernel call, to avoid kernel launch overheads.

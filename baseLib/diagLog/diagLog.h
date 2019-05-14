@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stddef.h>
+#include <cstddef>
 
 #include "types/charType.h"
 #include "diagLog/msgKind.h"
