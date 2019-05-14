@@ -36,34 +36,15 @@ struct GpuLayeredMatrix
 
 //================================================================
 //
-// PASS_LAYERED_MATRIX
+// GPU_LAYERED_MATRIX_PASS
 //
 //================================================================
 
-#define PASS_LAYERED_MATRIX(n, name) \
-    PREP_ENUM(n, PASS_LAYERED_MATRIX_FUNC, name)
+#define GPU_LAYERED_MATRIX_PASS(n, name) \
+    PREP_ENUM(n, GPU_LAYERED_MATRIX_PASS_FUNC, name)
 
-#define PASS_LAYERED_MATRIX_FUNC(r, name) \
+#define GPU_LAYERED_MATRIX_PASS_FUNC(r, name) \
     name.getLayer(r)
-
-//================================================================
-//
-// GpuLayeredMatrixEmpty
-//
-//================================================================
-
-template <typename Element>
-class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
-{
-    Point<Space> size() const
-        {return point(0);}
-
-    Space layerCount() const
-        {return 0;}
-
-    GpuMatrix<Element> getLayer(Space r) const
-        {return 0;}
-};
 
 //================================================================
 //
