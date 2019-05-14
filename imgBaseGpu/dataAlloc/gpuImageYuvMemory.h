@@ -6,36 +6,35 @@
 
 //================================================================
 //
-// GpuImageYuvMemory
+// GpuPackedYuvMemory
 //
 //================================================================
 
 template <typename LumaType>
-class GpuImageYuvMemory
+class GpuPackedYuvMemory
 {
 
 public:
 
-    using TypeSigned = TYPE_MAKE_SIGNED(LumaType);
-    using ChromaType = typename MakeVectorType<TypeSigned, 2>::T;
+    using ChromaType = typename ChromaPackedType<LumaType>::T;
 
     GpuMatrixMemory<LumaType> luma;
     GpuMatrixMemory<ChromaType> chroma;
 
 public:
 
-    sysinline operator GpuImageYuv<LumaType> () const
-        {return GpuImageYuv<LumaType>(luma, chroma);}
+    sysinline operator GpuPackedYuv<LumaType> () const
+        {return GpuPackedYuv<LumaType>{luma, chroma};}
 
-    sysinline operator GpuImageYuv<const LumaType> () const
-        {return GpuImageYuv<const LumaType>(luma, chroma);}
+    sysinline operator GpuPackedYuv<const LumaType> () const
+        {return GpuPackedYuv<const LumaType>{luma, chroma};}
 
-    sysinline GpuImageYuv<LumaType> operator()()
-        {return GpuImageYuv<LumaType>(luma, chroma);}
+    sysinline GpuPackedYuv<LumaType> operator()()
+        {return GpuPackedYuv<LumaType>{luma, chroma};}
 
 public:
 
-    sysinline GpuImageYuvMemory() {}
+    sysinline GpuPackedYuvMemory() {}
 
 public:
 

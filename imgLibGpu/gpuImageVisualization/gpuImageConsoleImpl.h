@@ -301,7 +301,7 @@ public:
     template <typename Type>
     stdbool addYuvImage420Func
     (
-        const GpuImageYuv<const Type>& image,
+        const GpuPackedYuv<const Type>& image,
         const ImgOutputHint& hint,
         stdNullPars
     );
@@ -312,7 +312,7 @@ public:
         \
         stdbool addYuvImage420 \
         ( \
-            const GpuImageYuv<const Type>& image, \
+            const GpuPackedYuv<const Type>& image, \
             const ImgOutputHint& hint, \
             stdNullPars \
         ) \

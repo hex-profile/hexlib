@@ -4,6 +4,7 @@
 #include "gpuProcessHeader.h"
 #include "pyramid/gpuPyramid.h"
 #include "dataAlloc/gpuArrayMemory.h"
+#include "errorLog/errorLog.h"
 
 //================================================================
 //

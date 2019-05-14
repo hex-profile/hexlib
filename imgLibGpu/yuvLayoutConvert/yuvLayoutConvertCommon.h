@@ -18,7 +18,7 @@ using Luma = int8;
 //
 //================================================================
 
-using Chroma = MakeChromaType<Luma>::T;
+using Chroma = ChromaPackedType<Luma>::T;
 
 //----------------------------------------------------------------
 
