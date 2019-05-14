@@ -14,9 +14,7 @@
 struct ErrorLog
 {
     virtual bool isThreadProtected() const =0;
-
     virtual void addErrorSimple(const CharType* message) =0;
-
     virtual void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) =0;
 };
 

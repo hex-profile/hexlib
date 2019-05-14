@@ -138,7 +138,6 @@ public:
 
 private:
 
-    //
     MemoryOwner memoryOwner;
 
     //
