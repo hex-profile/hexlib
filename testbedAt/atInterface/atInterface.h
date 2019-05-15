@@ -28,9 +28,9 @@ struct AtVideoFrame : public Matrix<const uint8_x4>
 template <typename Element>
 struct AtImageProvider
 {
+    virtual bool dataProcessing() const =0;
     virtual Space getPitch() const =0;
     virtual Space baseByteAlignment() const =0;
-
     virtual stdbool saveImage(const Matrix<Element>& dest, stdNullPars) =0;
 };
 

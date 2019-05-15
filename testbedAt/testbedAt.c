@@ -386,9 +386,20 @@ public:
     stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         TRACE_REASSEMBLE(stdTraceName);
-        if (textEnabled) printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
+
         AtImageProviderThunk atProvider(imageProvider, TRACE_SCOPE(stdTraceName));
-        return api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0;
+
+        if_not (imageProvider.dataProcessing())
+        {
+            require(atProvider.callbackFunc(&atProvider, nullptr, imageProvider.getPitch(), size.X, size.Y) != 0);
+        }
+        else
+        {
+            if (textEnabled) printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
+            require(api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
+        }
+
+        return true;
     }
 
     stdbool setFakeImage(stdNullPars)

@@ -91,7 +91,6 @@ sysinline bool isEqualLayout(const GpuPyramidLayout& a, const GpuPyramidLayout& 
 //
 //================================================================
 
-// ```
 template <typename Type>
 struct GpuPyramidParam
 {
@@ -109,4 +108,3 @@ sysinline const GpuPyramidParam<const Type>& makeConst(const GpuPyramidParam<Typ
 {
     return recastEqualLayout<const GpuPyramidParam<const Type>>(param);
 }
-
