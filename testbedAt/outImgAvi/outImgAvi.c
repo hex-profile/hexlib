@@ -634,6 +634,7 @@ stdbool AviWriter::writeImage
 
     Matrix<Element> bufferMatrix(bufferPtr, bufferMemPitch, imageSize.X, imageSize.Y);
 
+    REQUIRE(imageProvider.dataProcessing());
     require(imageProvider.saveImage(flipMatrix(bufferMatrix), stdPass));
 
     //
@@ -844,6 +845,9 @@ public:
         : source(source), kit(kit) {}
 
 public:
+
+    bool dataProcessing() const
+        {return true;}
 
     Space getPitch() const
         {return source.memPitch();}

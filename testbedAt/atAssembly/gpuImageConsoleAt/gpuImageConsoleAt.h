@@ -23,6 +23,11 @@ public:
 
     stdbool setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars);
 
+public:
+
+    bool dataProcessing() const
+        {return kit.dataProcessing;}
+
     Space getPitch() const
         {return gpuImage.memPitch();}
 

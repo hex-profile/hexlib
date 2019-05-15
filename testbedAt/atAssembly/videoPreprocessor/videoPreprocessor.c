@@ -911,8 +911,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
         AtProviderFromGpuImage imageProvider(kit);
         require(imageProvider.setImage(processedFrame, stdPass));
 
-        if (kit.dataProcessing)
-            require(kit.atVideoOverlay.setImage(processedFrame.size(), imageProvider, STR("Rotated Frame"), 0, true, stdPass));
+        require(kit.atVideoOverlay.setImage(processedFrame.size(), imageProvider, STR("Rotated Frame"), 0, true, stdPass));
     }
 
     ////
@@ -939,19 +938,11 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     ////
 
     Point<Space> frameSize = inputFrame.size();
+
     Point<Space> cropSize = clampRange(cropSizeCfg(), point(0), frameSize);
 
-    ////
-
-    if (!cropMode || allv(cropSize == frameSize))
-    {
-        require(processTarget(target, inputFrame, frameIndex, stdPass));
-        return true;
-    }
-
-    ////
-
-    // printMsgL(kit, STR("Cropping %0"), cropSize);
+    if_not (cropMode)
+        cropSize = frameSize;
 
     ////
 
@@ -961,9 +952,16 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     // Input frame
     //
 
+    GpuMatrix<const uint8_x4> croppedFrame = inputFrame;
+
     GPU_MATRIX_ALLOC(croppedFrameMemory, uint8_x4, cropSize);
-    GpuMatrix<uint8_x4> croppedFrame = flipMatrix(croppedFrameMemory);
-    require(copyImageRect(inputFrame, cropOfs, croppedFrame, stdPass));
+
+    if_not (allv(cropSize == frameSize))
+    {
+        GpuMatrix<uint8_x4> dstFrame = flipMatrix(croppedFrameMemory);
+        croppedFrame = dstFrame;
+        require(copyImageRect(inputFrame, cropOfs, dstFrame, stdPass));
+    }
 
     //
     // User point
@@ -998,8 +996,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
         AtProviderFromGpuImage imageProvider(kit);
         require(imageProvider.setImage(croppedFrame, stdPass));
 
-        if (kit.dataProcessing)
-            require(kit.atVideoOverlay.setImage(croppedFrame.size(), imageProvider, STR("Cropped Frame"), 0, true, stdPass));
+        require(kit.atVideoOverlay.setImage(croppedFrame.size(), imageProvider, STR("Cropped Frame"), 0, true, stdPass));
     }
 
     ////

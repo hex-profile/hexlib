@@ -108,14 +108,11 @@ stdbool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpu
         AtProviderFromGpuImage imageProvider(kit);
         require(imageProvider.setImage(gpuMatrix, stdPass));
 
-        if (kit.dataProcessing)
-            require(atVideoOverlay.setImage(gpuMatrix.size(), imageProvider, hint.desc, hint.id, textEnabled, stdPass));
-
+        require(atVideoOverlay.setImage(gpuMatrix.size(), imageProvider, hint.desc, hint.id, textEnabled, stdPass));
         overlaySet = true;
     }
     else
     {
-
         //
         // Allocate CPU matrix
         //
@@ -178,8 +175,7 @@ stdbool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, cons
     AtProviderFromGpuImage imageProvider(kit);
     require(imageProvider.setImage(gpuImage, stdPass));
 
-    if (kit.dataProcessing)
-        require(atVideoOverlay.setImage(size, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
+    require(atVideoOverlay.setImage(size, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
 
     overlaySet = true;
 

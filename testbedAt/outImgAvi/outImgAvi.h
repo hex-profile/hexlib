@@ -73,7 +73,6 @@ class OutImgAviThunk
     public AtImgConsole,
     public AtVideoOverlay
 
-
 {
 
 public:

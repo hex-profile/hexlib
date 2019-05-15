@@ -69,11 +69,16 @@ public:
     AtProviderFromCpuImage(const Matrix<ColorPixel>& cpuImage, const ErrorLogKit& kit)
         : cpuImage(cpuImage), kit(kit) {}
 
+    bool dataProcessing() const
+        {return true;}
+
+    Space baseByteAlignment() const 
+        {return cpuBaseByteAlignment;}
+
+    Space getPitch() const 
+        {return cpuImage.memPitch();}
+
     stdbool saveImage(const Matrix<ColorPixel>& dest, stdNullPars);
-
-    Space baseByteAlignment() const {return cpuBaseByteAlignment;}
-
-    Space getPitch() const {return cpuImage.memPitch();}
 
 private:
 
@@ -193,6 +198,7 @@ stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider<uint8_x4>& pr
 
     ////
 
+    REQUIRE(provider.dataProcessing());
     require(provider.saveImage(dstMatrix, stdPass));
     dst.matrix = dstMatrix;
 
