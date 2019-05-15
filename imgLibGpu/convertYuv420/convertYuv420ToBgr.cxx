@@ -6,14 +6,14 @@
 #include "errorLog/errorLog.h"
 #endif
 
-#include "kit/kit.h"
+#include "convertYuv420/convertYuvRgbFunc.h"
 #include "data/gpuMatrix.h"
 #include "gpuDevice/gpuDevice.h"
 #include "gpuDevice/loadstore/storeNorm.h"
-#include "readBordered.h"
-#include "convertYuv420/convertYuvRgbFunc.h"
 #include "gpuSupport/gpuTexTools.h"
+#include "kit/kit.h"
 #include "numbers/lt/ltType.h"
+#include "readBordered.h"
 
 //================================================================
 //
@@ -57,6 +57,7 @@ template <typename DstPixel>
 struct ConvertParamsYuvBgr
 {
     Point<float32> lumaTexstep;
+    bool chromaIsPacked;
     Point<float32> chromaTexstep;
     Point<Space> srcOffsetDiv2;
     Point<Space> srcSize;
@@ -71,7 +72,10 @@ struct ConvertParamsYuvBgr
 //================================================================
 
 devDefineSampler(lumaSampler, DevSampler2D, DevSamplerFloat, 1)
-devDefineSampler(chromaSampler, DevSampler2D, DevSamplerFloat, 2)
+
+devDefineSampler(chromaSamplerPacked, DevSampler2D, DevSamplerFloat, 2)
+devDefineSampler(chromaSamplerU, DevSampler2D, DevSamplerFloat, 1)
+devDefineSampler(chromaSamplerV, DevSampler2D, DevSamplerFloat, 1)
 
 //================================================================
 //
@@ -113,34 +117,6 @@ devDefineSampler(chromaSampler, DevSampler2D, DevSamplerFloat, 2)
 
 //================================================================
 //
-// Code: YUV
-//
-//================================================================
-
-#define DST_PIXEL uint8_x4
-#define SUFFIX Yuv_uint8
-#define CONVERT CONVERT_YUV
-
-# include "convertYuv420ToBgr.inl"
-
-#undef SUFFIX
-#undef CONVERT
-#undef DST_PIXEL
-
-//----------------------------------------------------------------
-
-#define DST_PIXEL float16_x4
-#define SUFFIX Yuv_float16
-#define CONVERT CONVERT_YUV
-
-# include "convertYuv420ToBgr.inl"
-
-#undef SUFFIX
-#undef CONVERT
-#undef DST_PIXEL
-
-//================================================================
-//
 // Instances
 //
 //================================================================
@@ -151,14 +127,16 @@ devDefineSampler(chromaSampler, DevSampler2D, DevSamplerFloat, 2)
     stdbool baseFunc \
     ( \
         const GpuMatrix<const SrcPixel>& srcLuma, \
-        const GpuMatrix<const SrcPixel2>& srcChroma, \
+        const GpuMatrix<const SrcPixel2>& srcChromaPacked, \
+        const GpuMatrix<const SrcPixel>& srcChromaU, \
+        const GpuMatrix<const SrcPixel>& srcChromaV, \
         const Point<Space>& srcOffset, \
         const DstPixel& outerColor, \
         const GpuMatrix<DstPixel>& dst, \
         stdPars(GpuProcessKit) \
     ) \
     { \
-        return baseFunc##suffix(srcLuma, srcChroma, srcOffset, outerColor, dst, stdPassThru); \
+        return baseFunc##suffix(srcLuma, srcChromaPacked, srcChromaU, srcChromaV, srcOffset, outerColor, dst, stdPassThru); \
     }
 
 ////
