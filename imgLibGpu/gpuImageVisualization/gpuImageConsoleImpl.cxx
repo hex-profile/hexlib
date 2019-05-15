@@ -991,7 +991,7 @@ public:
     {
         stdBegin;
         REQUIRE(equalSize(image.luma, dest));
-        require(convertYuv420ToBgr(image.luma, image.chroma, point(0), make_uint8_x4(0, 0, 0, 0), dest, stdPass)); // 0.22 ms
+        require(convertYuv420ToBgr<Pixel>(image.luma, image.chroma, nullptr, nullptr, point(0), make_uint8_x4(0, 0, 0, 0), dest, stdPass)); // 0.22 ms
         stdEnd;
     }
 
@@ -1037,7 +1037,7 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
     if (hint.target == ImgOutputConsole)
     {
         GPU_MATRIX_ALLOC(tmp, uint8_x4, image.luma.size());
-        require(convertYuv420ToBgr(image.luma, image.chroma, point(0), make_uint8_x4(0, 0, 0, 0), tmp, stdPass));
+        require(convertYuv420ToBgr<Type>(image.luma, image.chroma, nullptr, nullptr, point(0), make_uint8_x4(0, 0, 0, 0), tmp, stdPass));
     
         require(baseConsole.addImageBgr(tmp, hint, stdPass));
     }

@@ -44,23 +44,40 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
 
     Point<float32> chromaReadBaseTex = convertIndexToPos(dstChromaBase + o.srcOffsetDiv2 - extraL) * o.chromaTexstep;
 
-    #define READ_ITER(bX, bY) \
+    #define READ_ITER(bX, bY, chromaReader) \
         { \
-            float32_x2 value = tex2D(chromaSampler, chromaReadBaseTex + convertFloat32(point(bX, bY) + devThreadIdx) * o.chromaTexstep); \
+            auto chromaPos = chromaReadBaseTex + convertFloat32(point(bX, bY) + devThreadIdx) * o.chromaTexstep; \
+            float32_x2 value = chromaReader(chromaPos); \
             SRC_BUFFERU((bX) + devThreadX, (bY) + devThreadY) = value.x; \
             SRC_BUFFERV((bX) + devThreadX, (bY) + devThreadY) = value.y; \
         }
 
-    READ_ITER(0 * threadCountX, 0 * threadCountY);
+    #define READ_EVERYTHING(chromaReader) \
+        { \
+            READ_ITER(0 * threadCountX, 0 * threadCountY, chromaReader); \
+            \
+            if (extraX) \
+                READ_ITER(1 * threadCountX, 0 * threadCountY, chromaReader); \
+            \
+            if (extraY) \
+                READ_ITER(0 * threadCountX, 1 * threadCountY, chromaReader); \
+            \
+            if (extraX && extraY) \
+                READ_ITER(1 * threadCountX, 1 * threadCountY, chromaReader); \
+        }
 
-    if (extraX) 
-        READ_ITER(1 * threadCountX, 0 * threadCountY); 
+    ////
 
-    if (extraY)
-        READ_ITER(0 * threadCountX, 1 * threadCountY); 
+    #define CHROMA_PACKED_READER(ofs) \
+        tex2D(chromaSamplerPacked, ofs);
 
-    if (extraX && extraY)
-        READ_ITER(1 * threadCountX, 1 * threadCountY);
+    #define CHROMA_PLANAR_READER(ofs) \
+        make_float32_x2(tex2D(chromaSamplerU, ofs), tex2D(chromaSamplerV, ofs));
+
+    if (o.chromaIsPacked)
+        READ_EVERYTHING(CHROMA_PACKED_READER)
+    else
+        READ_EVERYTHING(CHROMA_PLANAR_READER)
 
     ////
 
@@ -242,7 +259,9 @@ template <typename SrcPixel, typename SrcPixel2, typename DST_PIXEL>
 stdbool PREP_PASTE(convertYuv420To, SUFFIX)
 (
     const GpuMatrix<const SrcPixel>& srcLuma, 
-    const GpuMatrix<const SrcPixel2>& srcChroma,
+    const GpuMatrix<const SrcPixel2>& srcChromaPacked,
+    const GpuMatrix<const SrcPixel>& srcChromaU,
+    const GpuMatrix<const SrcPixel>& srcChromaV,
     const Point<Space>& srcOffset,
     const DST_PIXEL& outerColor,
     const GpuMatrix<DST_PIXEL>& dst, 
@@ -258,7 +277,21 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
 
     ////
 
-    REQUIRE(srcChroma.size() >= srcLuma.size() / 2);
+    bool chromaIsPacked = hasData(srcChromaPacked);
+
+    Point<Space> chromaSize{};
+
+    if (chromaIsPacked)
+        chromaSize = srcChromaPacked.size();
+    else
+    {
+        REQUIRE(equalSize(srcChromaU, srcChromaV));
+        chromaSize = srcChromaU.size();
+    }
+
+    ////
+
+    REQUIRE(chromaSize >= srcLuma.size() / 2);
     REQUIRE(srcOffset % 2 == 0);
 
     //----------------------------------------------------------------
@@ -294,14 +327,24 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     //----------------------------------------------------------------
 
     require(kit.gpuSamplerSetting.setSamplerImage(lumaSampler, srcLuma, BORDER_MIRROR, false, true, true, stdPass));
-    require(kit.gpuSamplerSetting.setSamplerImage(chromaSampler, srcChroma, BORDER_MIRROR, false, true, true, stdPass));
+
+    ////
+
+    if (chromaIsPacked)
+        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerPacked, srcChromaPacked, BORDER_MIRROR, false, true, true, stdPass));
+    else
+    {
+        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerU, srcChromaU, BORDER_MIRROR, false, true, true, stdPass));
+        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerV, srcChromaV, BORDER_MIRROR, false, true, true, stdPass));
+    }
 
     ////
 
     ConvertParamsYuvBgr<DST_PIXEL> params
     {
         computeTexstep(srcLuma),
-        computeTexstep(srcChroma),
+        chromaIsPacked,
+        computeTexstep(chromaSize),
         srcOffset / 2, srcLuma.size(), 
         outerColor, 
         dst
