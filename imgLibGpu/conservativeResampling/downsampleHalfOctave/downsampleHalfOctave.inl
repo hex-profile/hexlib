@@ -1,0 +1,273 @@
+//================================================================
+//
+// downsampleHalfOctaveModelHorizontal
+//
+//================================================================
+
+GPUTOOL_2D_BEG
+(
+    PREP_PASTE(downsampleHalfOctaveModelHorizontal, PIXEL),
+    ((const PIXEL, src, INTERP_NONE, BORDER_MIRROR)),
+    ((PIXEL, dst)),
+    PREP_EMPTY
+)
+#if DEVCODE
+{
+    typedef VECTOR_REBASE_(PIXEL, float32) FloatType;
+    FloatType sumWV = convertNearest<FloatType>(0);
+    float32 sumW = 0;
+
+    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * FILTER_RADIUS;
+    float32 srcCenter = DOWNSAMPLE_HALF_OCTAVE_FACTOR * Xs;
+
+    float32 srcOrg = srcCenter - radius; // space
+    float32 srcEnd = srcCenter + radius;
+
+    Space srcOrgGrid = convertDown<Space>(srcOrg - 0.5f);
+    Space srcEndGrid = convertUp<Space>(srcEnd - 0.5f);
+
+    for (Space iX = srcOrgGrid - 4; iX <= srcEndGrid + 4; ++iX)
+    {
+        float32 srcX = iX + 0.5f;
+        FloatType value = tex2D(srcSampler, point(srcX, Ys) * srcTexstep);
+
+        float32 w = downsampleKernel((srcX - srcCenter) / DOWNSAMPLE_HALF_OCTAVE_FACTOR) / DOWNSAMPLE_HALF_OCTAVE_FACTOR;
+        sumWV += w * value;
+        sumW += w;
+    }
+
+    float32 divSumW = 1.f/sumW;
+    if (sumW == 0) divSumW = 0;
+    FloatType result = sumWV * divSumW;
+
+    storeNorm(dst, result);
+}
+#endif
+GPUTOOL_2D_END
+
+//================================================================
+//
+// downsampleHalfOctaveModelVertical
+//
+//================================================================
+
+GPUTOOL_2D_BEG
+(
+    PREP_PASTE2(downsampleHalfOctaveModelVertical, PIXEL),
+    ((const PIXEL, src, INTERP_NONE, BORDER_MIRROR)),
+    ((PIXEL, dst)),
+    PREP_EMPTY
+)
+#if DEVCODE
+{
+    typedef VECTOR_REBASE_(PIXEL, float32) FloatType;
+    FloatType sumWV = convertNearest<FloatType>(0);
+    float32 sumW = 0;
+
+    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * FILTER_RADIUS;
+
+    float32 srcCenter = DOWNSAMPLE_HALF_OCTAVE_FACTOR * Ys;
+
+    float32 srcOrg = srcCenter - radius; // space
+    float32 srcEnd = srcCenter + radius;
+
+    Space srcOrgGrid = convertDown<Space>(srcOrg - 0.5f);
+    Space srcEndGrid = convertUp<Space>(srcEnd - 0.5f);
+
+    for (Space iY = srcOrgGrid; iY <= srcEndGrid; ++iY)
+    {
+        float32 srcY = iY + 0.5f;
+        FloatType value = tex2D(srcSampler, point(Xs, srcY) * srcTexstep);
+
+        float32 w = downsampleKernel((srcY - srcCenter) / DOWNSAMPLE_HALF_OCTAVE_FACTOR) / DOWNSAMPLE_HALF_OCTAVE_FACTOR;
+        sumWV += w * value;
+        sumW += w;
+    }
+
+    float32 divSumW = 1.f/sumW;
+    if (sumW == 0) divSumW = 0;
+    FloatType result = sumWV * divSumW;
+
+    storeNorm(dst, result);
+}
+#endif
+GPUTOOL_2D_END
+
+//================================================================
+//
+// dhoHorizontalOptimized
+//
+//================================================================
+
+GPUTOOL_2D_BEG_EX
+(
+    PREP_PASTE(dhoHorizontalOptimized, PIXEL),
+    (dhoAcrossThreads, dhoAlongThreads),
+    true,
+    ((const PIXEL, src, INTERP_NONE, BORDER_MIRROR))
+    ((const float32, coeffs, INTERP_LINEAR, BORDER_CLAMP)),
+    ((PIXEL, dst)),
+    PREP_EMPTY
+)
+#if DEVCODE
+{
+    typedef VECTOR_REBASE_(PIXEL, float32) FloatType;
+    FloatType sum = convertNearest<FloatType>(0);
+
+    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * FILTER_RADIUS;
+    float32 srcCenter = DOWNSAMPLE_HALF_OCTAVE_FACTOR * Xs;
+
+    float32 srcOrgFlt = srcCenter - (radius - 0.5f);
+    Space srcOrgInt = convertDown<Space>(srcOrgFlt);
+    float32 srcOrgFrac = srcOrgFlt - srcOrgInt;
+
+    Point<float32> srcPos = point(srcOrgInt + 0.5f, Ys) * srcTexstep;
+
+    //----------------------------------------------------------------
+    //
+    // Load coeffs
+    //
+    //----------------------------------------------------------------
+
+    devSramMatrixDense(coeffsCache, float32, downHoFilterLength, dhoAcrossThreads);
+    MatrixPtr(float32) coeffsPtr = MATRIX_POINTER(coeffsCache, 0, devThreadX);
+
+    PARALLEL_LOOP_UNBASED(i, downHoFilterLength, devThreadY, dhoAlongThreads,
+        coeffsPtr[i] = devTex2D(coeffsSampler, (i + (devThreadY + 0.5f)) * coeffsTexstep.X, srcOrgFrac))
+
+    devSyncThreads();
+
+    //----------------------------------------------------------------
+    //
+    // Process
+    //
+    //----------------------------------------------------------------
+
+    if_not (vItemIsActive)
+        return;
+
+    ////
+
+    devUnrollLoop
+    for (Space i = 0; i < downHoFilterLength; ++i)
+    {
+        FloatType value = tex2D(srcSampler, srcPos);
+
+        float32 w = coeffsPtr[i];
+        sum += w * value;
+
+        srcPos.X += srcTexstep.X;
+    }
+
+    ////
+
+    storeNorm(dst, sum);
+}
+#endif
+GPUTOOL_2D_END
+
+//================================================================
+//
+// dhoVerticalOptimized
+//
+//================================================================
+
+GPUTOOL_2D_BEG_EX
+(
+    PREP_PASTE(dhoVerticalOptimized, PIXEL),
+    (dhoAlongThreads, dhoAcrossThreads),
+    true,
+    ((const PIXEL, src, INTERP_NONE, BORDER_MIRROR))
+    ((const float32, coeffs, INTERP_LINEAR, BORDER_CLAMP)),
+    ((PIXEL, dst)),
+    ((float32, dstFactor))
+)
+#if DEVCODE
+{
+    typedef VECTOR_REBASE_(PIXEL, float32) FloatType;
+    FloatType sum = convertNearest<FloatType>(0);
+
+    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * FILTER_RADIUS;
+    float32 srcCenter = DOWNSAMPLE_HALF_OCTAVE_FACTOR * Ys;
+
+    float32 srcOrgFlt = srcCenter - (radius - 0.5f);
+    Space srcOrgInt = convertDown<Space>(srcOrgFlt);
+    float32 srcOrgFrac = srcOrgFlt - srcOrgInt;
+
+    Point<float32> srcPos = point(Xs, srcOrgInt + 0.5f) * srcTexstep;
+
+    //----------------------------------------------------------------
+    //
+    // Load coeffs
+    //
+    //----------------------------------------------------------------
+
+    devSramMatrixDense(coeffsCache, float32, downHoFilterLength, dhoAcrossThreads);
+    MatrixPtr(float32) coeffsPtr = MATRIX_POINTER(coeffsCache, 0, devThreadY);
+
+    PARALLEL_LOOP_UNBASED(i, downHoFilterLength, devThreadX, dhoAlongThreads,
+        coeffsPtr[i] = devTex2D(coeffsSampler, (i + (devThreadX + 0.5f)) * coeffsTexstep.X, srcOrgFrac))
+
+    devSyncThreads();
+    
+
+    //----------------------------------------------------------------
+    //
+    // Process
+    //
+    //----------------------------------------------------------------
+
+    if_not (vItemIsActive)
+        return;
+
+    ////
+
+    devUnrollLoop
+    for (Space i = 0; i < downHoFilterLength; ++i)
+    {
+        FloatType value = tex2D(srcSampler, srcPos);
+
+        float32 w = coeffsPtr[i];
+        sum += w * value;
+
+        srcPos.Y += srcTexstep.Y;
+    }
+
+    ////
+
+    storeNorm(dst, sum * dstFactor);
+}
+#endif
+GPUTOOL_2D_END
+
+//================================================================
+//
+// DownsampleHalfOctave::process
+//
+//================================================================
+
+#if HOSTCODE
+
+stdbool DownsampleHalfOctave::process(const GpuMatrix<const PIXEL>& src, const GpuMatrix<PIXEL>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit))
+{
+    stdBegin;
+
+    REQUIRE(allocated);
+
+    GPU_MATRIX_ALLOC(tmp, PIXEL, point(dst.sizeX(), src.sizeY()));
+
+    if_not (testMode)
+    {
+        require(PREP_PASTE(dhoHorizontalOptimized, PIXEL)(src, coeffs, tmp, stdPass));
+        require(PREP_PASTE(dhoVerticalOptimized, PIXEL)(tmp, coeffs, dst, dstFactor, stdPass));
+    }
+    else
+    {
+        require(PREP_PASTE(downsampleHalfOctaveModelHorizontal, PIXEL)(src, tmp, stdPass));
+        require(PREP_PASTE(downsampleHalfOctaveModelVertical, PIXEL)(tmp, dst, stdPass));
+    }
+
+    stdEnd;
+}
+
+#endif

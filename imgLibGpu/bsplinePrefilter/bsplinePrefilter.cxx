@@ -33,23 +33,33 @@ static devConstant float32 preFilter3[] = {0, 0, 0, FILTER_CORE15};
 #define HORIZONTAL_FIRST 1
 
 #define TASK_COUNT 1
-#define MAX_RANK 4
 
 #define OUTPUT_FACTOR
 
+#define FOREACH_TYPE(action) \
+    \
+    action(float16, float16, float16, 1) \
+    action(float16_x2, float16_x2, float16_x2, 2) \
+    action(float16_x4, float16_x4, float16_x4, 4) \
+    \
+    action(int8, float16, float16, 1) \
+    action(int8_x2, float16_x2, float16_x2, 2) \
+    action(int8_x4, float16_x4, float16_x4, 4) \
+    \
+    action(uint8, float16, float16, 1) \
+    action(uint8_x2, float16_x2, float16_x2, 2) \
+    action(uint8_x4, float16_x4, float16_x4, 4)
+
+#define FOREACH_DST_TYPE(action) \
+    \
+    action(float16, float16, float16, 1) \
+    action(float16_x2, float16_x2, float16_x2, 2) \
+    action(float16_x4, float16_x4, float16_x4, 4) \
+
 # include "rationalResample/rationalResampleMultiple.inl"
 
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16, float16, float16>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x2, float16_x2, float16_x2>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x4, float16_x4, float16_x4>), FUNCNAME))
-
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<int8, float16, float16>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<int8_x2, float16_x2, float16_x2>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<int8_x4, float16_x4, float16_x4>), FUNCNAME))
-
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<uint8, float16, float16>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<uint8_x2, float16_x2, float16_x2>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<uint8_x4, float16_x4, float16_x4>), FUNCNAME))
+#undef FOREACH_DST_TYPE
+#undef FOREACH_TYPE
 
 #undef FILTER0
 #undef FILTER1
@@ -81,18 +91,19 @@ static devConstant float32 FILTER3[] = {0, 0, 0, FILTER_CORE3};
 #define PACK_TO_SRC_FACTOR 4
 
 #define TASK_COUNT 1
-#define MAX_RANK 4
+
+#define FOREACH_TYPE(action) \
+    \
+    action(float16, float16, float16, 1) \
+    action(float16_x2, float16_x2, float16_x2, 2) \
+    action(float16_x4, float16_x4, float16_x4, 4) \
+    \
+    action(float16, float16, int8, 1) \
+    action(float16_x2, float16_x2, int8_x2, 2) \
+    action(float16_x4, float16_x4, int8_x4, 4) \
+    \
+    action(float16, float16, uint8, 1) \
+    action(float16_x2, float16_x2, uint8_x2, 2) \
+    action(float16_x4, float16_x4, uint8_x4, 4)
 
 # include "rationalResample/rationalResampleMultiple.inl"
-
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16, float16, float16>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x2, float16_x2, float16_x2>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x4, float16_x4, float16_x4>), FUNCNAME))
-
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16, float16, int8>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x2, float16_x2, int8_x2>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x4, float16_x4, int8_x4>), FUNCNAME))
-
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16, float16, uint8>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x2, float16_x2, uint8_x2>), FUNCNAME))
-HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<float16_x4, float16_x4, uint8_x4>), FUNCNAME))

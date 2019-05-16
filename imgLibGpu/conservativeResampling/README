@@ -1,0 +1,21 @@
+Conservative resampling module.
+
+The resampling kernel used here is sinc shaped by gaussian: 
+baseKernel(x) = sinc(x) * gauss1(x, sigma).
+
+Here sinc(x) = sin(pi*x) / (pi*x),
+gauss1(x, sigma) = exp(-x^2 / sigma^2 / 2).
+
+In frequency domain, this kernel is box blurred by gaussian:
+sinc in frequency domain is box, gauss in frequency domain is gauss and multiplication becomes convolution.
+
+The module is named conservative because the tradeoff "loosing resolution <-> having aliasing artifacts"
+is shifted totally to "no aliasing artifacts" side. 
+
+For this purpose, the kernel is scaled up by "theta" parameter:
+kernel(x) = baseKernel(x / theta) / theta.
+
+The scaling up in spatial domain scales it down in frequency domain so that 
+at the critical frequency the response is zero with almost 9 bits of accuracy.
+
+Filters are computed in "conservativeResampling.mws".

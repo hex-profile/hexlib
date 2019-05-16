@@ -52,11 +52,11 @@ fgrw.(QF%FB7$$\"3KLLL)o))>v#F/$!3n%*\\#zT?=6%FB7$$\"35LLL.a#o$GF/$!3)e
 P9'R'Qn&QFB7$$\"3ammm^Q40IF/$!3iHoZ(H41;$FB7$$\"3y******z]rfJF/$!3f;k!
 fza3T#FB7$$\"3gmmmc%GpL$F/$!39,286q=j:FB7$$\"3/LLL8-V&\\$F/$!3O3^\"*p+
 \\=\"*F27$$\"3=+++XhUkOF/$!3k'otthEa&RF27$$\"3=+++:o<EQF/$!3+%[IK$[+;5
-F27$$\"\"%F*F+-%'COLOURG6&%$RGBG$\"#5!\"\"F+F+-%+AXESLABELSG6$Q\"x6\"Q
-!Fedl-%%VIEWG6$;F(Fhcl%(DEFAULTG" 1 2 0 1 10 0 2 9 1 4 2 1.000000 
+F27$$\"\"%F*F+-%'COLOURG6&%$RGBG$\"*++++\"!\")F+F+-%+AXESLABELSG6$%\"x
+GQ!6\"-%%VIEWG6$;F(Fhcl%(DEFAULTG" 1 2 0 1 10 0 2 9 1 4 2 1.000000 
 45.000000 45.000000 0 0 "Curve 1" }}}}{EXCHG {PARA 0 "> " 0 "" 
 {MPLTEXT 1 0 52 "evalf[10](seq(lanczos(i/2 + 0.25, 2)/2, i=-10..10));
 " }}{PARA 11 "" 1 "" {XPPMATH 20 "67$\"\"!F$F#F#F#F#F#$!+dDf_*)!#7$!+(
->SiB%!#6$\"+)QLn<\"!#5$\"+d.x'Q%F-F.F+F(F%F#F#F#F#F#F#F#" }}}}{MARK "0
- 0 0" 8 }{VIEWOPTS 1 0 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
-
+>SiB%!#6$\"+)QLn<\"!#5$\"+d.x'Q%F-F.F+F(F%F#F#F#F#F#F#F#" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK "4 0 0" 0 }{VIEWOPTS 1 
+0 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
