@@ -93,14 +93,6 @@ struct ResampleParams
 //
 //================================================================
 
-#if !defined(MAX_RANK)
-    #define MAX_RANK 1
-#endif
-
-//----------------------------------------------------------------
-
-#if MAX_RANK >= 1
-
 #define RANK 1
 
 #define HORIZONTAL 1
@@ -113,11 +105,7 @@ struct ResampleParams
 
 #undef RANK
 
-#endif
-
 //----------------------------------------------------------------
-
-#if MAX_RANK >= 2
 
 #define RANK 2
 
@@ -131,11 +119,7 @@ struct ResampleParams
 
 #undef RANK
 
-#endif
-
 //----------------------------------------------------------------
-
-#if MAX_RANK >= 4
 
 #define RANK 4
 
@@ -148,57 +132,6 @@ struct ResampleParams
 #undef HORIZONTAL
 
 #undef RANK
-
-#endif
-
-//================================================================
-//
-// Kernel instantiations
-//
-//================================================================
-
-#if MAX_RANK >= 1
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor1), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8s), (int8));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver1), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8s), (int8));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor1), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8u), (uint8));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver1), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8u), (uint8));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor1), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor16f), (float16));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver1), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver16f), (float16));
-
-#endif
-
-////
-
-#if MAX_RANK >= 2
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor2), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8s_x2), (int8_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver2), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8s_x2), (int8_x2));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor2), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8u_x2), (uint8_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver2), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8u_x2), (uint8_x2));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor2), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor16f_x2), (float16_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver2), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver16f_x2), (float16_x2));
-
-#endif
-
-////
-
-#if MAX_RANK >= 4
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor4), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8s_x4), (int8_x4));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver4), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8s_x4), (int8_x4));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor4), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor8u_x4), (uint8_x4));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver4), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver8u_x4), (uint8_x4));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Hor4), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE(FUNCNAME, Hor16f_x4), (float16_x4));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver4), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE(FUNCNAME, Ver16f_x4), (float16_x4));
-
-#endif
 
 //================================================================
 //
@@ -215,6 +148,27 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, Ver4), Resample
 #else
     #define DIR(h, v) v
 #endif
+
+//================================================================
+//
+// Kernel instantiation.
+//
+//================================================================
+
+#ifndef FOREACH_DST_TYPE
+    #define FOREACH_DST_TYPE FOREACH_TYPE
+#endif
+
+//----------------------------------------------------------------
+
+#define TMP_MACRO(Src, Interm, DstType, rank) \
+    \
+    GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE3(FUNCNAME, Hor, rank), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE3(FUNCNAME, Hor, DstType), (DstType)); \
+    GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE3(FUNCNAME, Ver, rank), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE3(FUNCNAME, Ver, DstType), (DstType)); \
+
+FOREACH_DST_TYPE(TMP_MACRO)
+
+#undef TMP_MACRO
 
 //----------------------------------------------------------------
 
@@ -236,7 +190,6 @@ stdbool FUNCNAME
         const GpuMatrix<Dst>& dst##t,
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
-    
 
     #undef TMP_MACRO
 
@@ -329,7 +282,6 @@ stdbool FUNCNAME
 
     #undef TMP_MACRO
 
-
     ////
 
     require
@@ -393,6 +345,15 @@ stdbool FUNCNAME
 
     stdEnd;
 }
+
+//----------------------------------------------------------------
+
+#define TMP_MACRO(Src, Interm, Dst, rank) \
+    HOST_ONLY(INSTANTIATE_FUNC_EX((FUNCNAME<Src, Interm, Dst>), PREP_PASTE5(FUNCNAME, Src, Interm, Dst, rank)))
+
+FOREACH_TYPE(TMP_MACRO)
+
+#undef TMP_MACRO
 
 //----------------------------------------------------------------
 
