@@ -29,22 +29,10 @@ static const Space threadCountY = 8;
 
 //================================================================
 //
-// Filter coeffs
+// Filter coeffs (Lanczos2)
 //
 //================================================================
 
-#if 0
-#define C0 (-3 / 128.f)
-#define C1 (-9 / 128.f)
-#define C2 (+29 / 128.f)
-#define C3 (+111 / 128.f)
-#define C4 (+111 / 128.f)
-#define C5 (+29 / 128.f)
-#define C6 (-9 / 128.f)
-#define C7 (-3 / 128.f)
-#endif
-
-#if 1 // Lanczos2
 #define C0 (-0.01772666f)
 #define C1 (-0.08388007f)
 #define C2 (+0.23300019f)
@@ -53,7 +41,6 @@ static const Space threadCountY = 8;
 #define C5 (+0.23300019f)
 #define C6 (-0.08388007f)
 #define C7 (-0.01772666f)
-#endif
 
 //================================================================
 //
@@ -75,36 +62,97 @@ struct UpsampleParams
 
 devDefineSampler(srcSampler1, DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(srcSampler2, DevSampler2D, DevSamplerFloat, 2)
+devDefineSampler(srcSampler4, DevSampler2D, DevSamplerFloat, 4)
 
 //================================================================
 //
-// Kernel instances
+// Kernel instances (rank 1)
 //
 //================================================================
 
 #define RANK 1
+
+#define DST int8
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
 #define DST uint8
 # include "upsampleTwiceCubicKernel.inl"
-#undef RANK
 #undef DST
 
-#define RANK 1
+#define DST int16
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
+#define DST uint16
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
 #define DST float16
 # include "upsampleTwiceCubicKernel.inl"
-#undef RANK
 #undef DST
 
+#undef RANK
+
+//================================================================
+//
+// Kernel instances (rank 2)
+//
+//================================================================
+
 #define RANK 2
+
+#define DST int8_x2
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
 #define DST uint8_x2
 # include "upsampleTwiceCubicKernel.inl"
-#undef RANK
 #undef DST
 
-#define RANK 2
+#define DST int16_x2
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
+#define DST uint16_x2
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
 #define DST float16_x2
 # include "upsampleTwiceCubicKernel.inl"
-#undef RANK
 #undef DST
+
+#undef RANK
+
+//================================================================
+//
+// Kernel instances (rank 4)
+//
+//================================================================
+
+#define RANK 4
+
+#define DST int8_x4
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
+#define DST uint8_x4
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
+#define DST int16_x4
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
+#define DST uint16_x4
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
+#define DST float16_x4
+# include "upsampleTwiceCubicKernel.inl"
+#undef DST
+
+#undef RANK
 
 //================================================================
 //
@@ -145,7 +193,13 @@ stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>
     ////
 
     const int srcRank = VectorTypeRank<Src>::val;
-    const GpuSamplerLink* srcSampler = (srcRank == 1) ? soft_cast<const GpuSamplerLink*>(&srcSampler1) : &srcSampler2;
+
+    const GpuSamplerLink* srcSampler = nullptr;
+    if (srcRank == 1) srcSampler = &srcSampler1;
+    if (srcRank == 2) srcSampler = &srcSampler2;
+    if (srcRank == 4) srcSampler = &srcSampler4;
+    REQUIRE(srcSampler);
+
     require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, BORDER_CLAMP, false, true, false, stdPass));
 
     ////
@@ -171,10 +225,23 @@ stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>
 
 //----------------------------------------------------------------
 
+INSTANTIATE_FUNC((upsampleTwiceCubic<int8, int8>))
 INSTANTIATE_FUNC((upsampleTwiceCubic<uint8, uint8>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<int16, int8>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<uint16, uint8>))
 INSTANTIATE_FUNC((upsampleTwiceCubic<float16, float16>))
+
+INSTANTIATE_FUNC((upsampleTwiceCubic<int8_x2, int8_x2>))
 INSTANTIATE_FUNC((upsampleTwiceCubic<uint8_x2, uint8_x2>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<int16_x2, int8_x2>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<uint16_x2, uint8_x2>))
 INSTANTIATE_FUNC((upsampleTwiceCubic<float16_x2, float16_x2>))
+
+INSTANTIATE_FUNC((upsampleTwiceCubic<int8_x4, int8_x4>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<uint8_x4, uint8_x4>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<int16_x4, int8_x4>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<uint16_x4, uint8_x4>))
+INSTANTIATE_FUNC((upsampleTwiceCubic<float16_x4, float16_x4>))
 
 //----------------------------------------------------------------
 

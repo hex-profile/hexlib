@@ -1,0 +1,2 @@
+Downsample 2X and upsample 2X with Lanczos kernel of radius=2 (downsample is 8-tap, upsample is 4-tap).
+The functions are named "cubic" because it is roughly the same as bicubic interpolation.
