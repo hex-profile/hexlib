@@ -57,6 +57,7 @@ static const Space threadCountY = 8;
 
 devDefineSampler(srcSampler1, DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(srcSampler2, DevSampler2D, DevSamplerFloat, 2)
+devDefineSampler(srcSampler4, DevSampler2D, DevSamplerFloat, 4)
 
 //================================================================
 //
@@ -77,9 +78,8 @@ struct DownsampleParams
 //
 //================================================================
 
-struct FilterCubic
+struct FilterLanczos2
 {
-    // Lanczos2
     static sysinline float32 C0() {return -0.00886333f;}
     static sysinline float32 C1() {return -0.04194003f;}
     static sysinline float32 C2() {return +0.11650009f;}
@@ -88,18 +88,6 @@ struct FilterCubic
     static sysinline float32 C5() {return +0.11650009f;}
     static sysinline float32 C6() {return -0.04194003f;}
     static sysinline float32 C7() {return -0.00886333f;}
-};
-
-struct FilterGauss
-{
-    static sysinline float32 C0() {return 0.00814629f;}
-    static sysinline float32 C1() {return 0.04819912f;}
-    static sysinline float32 C2() {return 0.15767343f;}
-    static sysinline float32 C3() {return 0.28517944f;}
-    static sysinline float32 C4() {return 0.28517944f;}
-    static sysinline float32 C5() {return 0.15767343f;}
-    static sysinline float32 C6() {return 0.04819912f;}
-    static sysinline float32 C7() {return 0.00814629f;}
 };
 
 //================================================================
@@ -116,6 +104,10 @@ struct FilterGauss
 # include "downsampleTwiceCubic.inl"
 #undef RANK
 
+#define RANK 4
+# include "downsampleTwiceCubic.inl"
+#undef RANK
+
 //================================================================
 //
 // Kernel instantiations
@@ -123,32 +115,53 @@ struct FilterGauss
 //================================================================
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceCubic8u, (uint8) (FilterCubic) (FilterCubic));
+    downsampleTwiceCubic8s_x1, (int8) (FilterLanczos2) (FilterLanczos2));
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceGauss8u, (uint8) (FilterGauss) (FilterGauss));
+    downsampleTwiceCubic8u_x1, (uint8) (FilterLanczos2) (FilterLanczos2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16s_x1, (int16) (FilterLanczos2) (FilterLanczos2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16u_x1, (uint16) (FilterLanczos2) (FilterLanczos2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16f_x1, (float16) (FilterLanczos2) (FilterLanczos2));
 
 //----------------------------------------------------------------
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x2, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceCubic8s_x2, (int8_x2) (FilterCubic) (FilterCubic));
+    downsampleTwiceCubic8s_x2, (int8_x2) (FilterLanczos2) (FilterLanczos2));
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x2, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceGauss8s_x2, (int8_x2) (FilterGauss) (FilterGauss));
+    downsampleTwiceCubic8u_x2, (uint8_x2) (FilterLanczos2) (FilterLanczos2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x2, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16s_x2, (int16_x2) (FilterLanczos2) (FilterLanczos2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x2, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16u_x2, (uint16_x2) (FilterLanczos2) (FilterLanczos2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x2, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16f_x2, (float16_x2) (FilterLanczos2) (FilterLanczos2));
 
 //----------------------------------------------------------------
 
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceGauss16f, (float16) (FilterGauss) (FilterGauss));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x4, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic8s_x4, (int8_x4) (FilterLanczos2) (FilterLanczos2));
 
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceCubic16f, (float16) (FilterCubic) (FilterCubic));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x4, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic8u_x4, (uint8_x4) (FilterLanczos2) (FilterLanczos2));
 
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceCubicGauss16f, (float16) (FilterCubic) (FilterGauss));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x4, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16s_x4, (int16_x4) (FilterLanczos2) (FilterLanczos2));
 
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x1, DownsampleParams, downsampleTwiceKernelLink,
-    downsampleTwiceGaussCubic16f, (float16) (FilterGauss) (FilterCubic));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x4, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16u_x4, (uint16_x4) (FilterLanczos2) (FilterLanczos2));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, FilterY)), downsampleTwiceKernel_x4, DownsampleParams, downsampleTwiceKernelLink,
+    downsampleTwiceCubic16f_x4, (float16_x4) (FilterLanczos2) (FilterLanczos2));
 
 //================================================================
 //
@@ -158,7 +171,7 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, Fil
 
 #if HOSTCODE
 
-template <typename Src, typename Dst, typename FilterX, typename FilterY>
+template <typename Src, typename Dst>
 stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, const Point<Space>& srcOfs, stdPars(GpuProcessKit))
 {
     stdBegin;
@@ -166,10 +179,19 @@ stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Ds
     if_not (kit.dataProcessing)
         return true;
 
+    using FilterX = FilterLanczos2;
+    using FilterY = FilterLanczos2;
+
     ////
 
     const int srcRank = VectorTypeRank<Src>::val;
-    const GpuSamplerLink* srcSampler = (srcRank == 1) ? soft_cast<const GpuSamplerLink*>(&srcSampler1) : &srcSampler2;
+    
+    const GpuSamplerLink* srcSampler = nullptr;
+    if (srcRank == 1) srcSampler = &srcSampler1;
+    if (srcRank == 2) srcSampler = &srcSampler2;
+    if (srcRank == 4) srcSampler = &srcSampler4;
+    REQUIRE(srcSampler);
+
     require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, BORDER_CLAMP, false, true, false, stdPass));
 
     ////
@@ -195,16 +217,23 @@ stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Ds
 
 //----------------------------------------------------------------
 
-INSTANTIATE_FUNC((downsampleTwiceCubic<uint8, uint8, FilterCubic, FilterCubic>))
-INSTANTIATE_FUNC((downsampleTwiceCubic<uint8, uint8, FilterGauss, FilterGauss>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<int8, int8>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<uint8, uint8>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<int16, int8>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<uint16, uint8>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<float16, float16>))
 
-INSTANTIATE_FUNC((downsampleTwiceCubic<int8_x2, int8_x2, FilterCubic, FilterCubic>))
-INSTANTIATE_FUNC((downsampleTwiceCubic<int8_x2, int8_x2, FilterGauss, FilterGauss>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<int8_x2, int8_x2>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<uint8_x2, uint8_x2>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<int16_x2, int8_x2>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<uint16_x2, uint8_x2>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<float16_x2, float16_x2>))
 
-INSTANTIATE_FUNC((downsampleTwiceCubic<float16, float16, FilterCubic, FilterCubic>))
-INSTANTIATE_FUNC((downsampleTwiceCubic<float16, float16, FilterGauss, FilterGauss>))
-INSTANTIATE_FUNC((downsampleTwiceCubic<float16, float16, FilterGauss, FilterCubic>))
-INSTANTIATE_FUNC((downsampleTwiceCubic<float16, float16, FilterCubic, FilterGauss>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<int8_x4, int8_x4>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<uint8_x4, uint8_x4>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<int16_x4, int8_x4>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<uint16_x4, uint8_x4>))
+INSTANTIATE_FUNC((downsampleTwiceCubic<float16_x4, float16_x4>))
 
 //----------------------------------------------------------------
 
