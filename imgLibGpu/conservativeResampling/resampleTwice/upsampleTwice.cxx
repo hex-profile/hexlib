@@ -20,8 +20,8 @@ static const Space FILTER_SRC_SHIFT = -9;
 #define FUNCSPACE conservativeResampling
 #define FUNCNAME upsampleTwice
 
-#define PACK_SIZE 1
-#define PACK_TO_SRC_FACTOR 2
+#define PACK_SIZE 2
+#define PACK_TO_SRC_FACTOR 1
 
 #define HORIZONTAL_FIRST 1
 
