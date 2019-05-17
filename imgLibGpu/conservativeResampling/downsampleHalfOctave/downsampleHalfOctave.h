@@ -3,6 +3,7 @@
 #include "dataAlloc/gpuMatrixMemory.h"
 #include "gpuProcessHeader.h"
 
+namespace conservativeResampling {
 namespace downsampleHalfOctave {
 
 //================================================================
@@ -32,4 +33,5 @@ private:
 
 //----------------------------------------------------------------
 
+}
 }

@@ -7,14 +7,14 @@ namespace conservativeResampling {
 
 //================================================================
 //
-// upsampleOneAndHalf
+// downsampleTwicePacketized2
 //
-// 0.143 ms 1280x720 -> 1920x1080 Monochrome on GTX780
+// 0.205 ms FullHD YUV420 on GTX780
 //
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool upsampleOneAndHalf(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
+stdbool downsampleTwicePacketized2(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 
