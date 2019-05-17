@@ -10,12 +10,13 @@
 #include "vectorTypes/vectorOperations.h"
 #include "simpleConvolutionSeparable.inl"
 #include "numbers/mathIntrinsics.h"
-#include "conservativeResampling/conservativeResamplingFilters.h"
+#include "conservativeResampling/conservativeResamplingSettings.h"
 
 #if HOSTCODE
 #include "dataAlloc/gpuMatrixMemory.h"
 #endif
 
+namespace conservativeResampling {
 namespace downsampleHalfOctave {
 
 //================================================================
@@ -186,4 +187,5 @@ stdbool DownsampleHalfOctave::realloc(stdPars(GpuProcessKit))
 
 //----------------------------------------------------------------
 
+}
 }

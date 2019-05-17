@@ -843,11 +843,11 @@ tIndex := round(sum(filterCenters[k] - (diam-1)/2 - 1/2, k = 1..period
  x):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 
 "> " 0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(abs(kernelScaled(k + start
 Offset[1])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[1] + k)
-), k = -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+'GS`
+), k = -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+m8M&
 G*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(
 abs(kernelScaled(k + startOffset[2])), k = 0..diam-1) / sum(abs(kernel
 Scaled(startOffset[2] + k)), k = -200..diam-1+200));" }}{PARA 11 "" 1 
-"" {XPPMATH 20 "6#$\"+'GS`G*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" 
+"" {XPPMATH 20 "6#$\"+m8M&G*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" 
 {MPLTEXT 1 0 59 "s1 := sum(kernelScaled(k + startOffset[1]), k = 0..di
 am-1);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%#s1G$\"+x#[1+\"!\"*" }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 59 "s2 := sum(kernelScaled(k + s
@@ -871,7 +871,7 @@ Scaled(startOffset[2] + i) / s2) end do;" }}{PARA 6 "" 1 "" {TEXT -1
 0f, -0.00482240f, -0.00295087f, +0.00224565f, +0.00110935f, " }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
 " {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "# Downsample 2.X" }}}{EXCHG 
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 15 "# Downsample 2X" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" 
 {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 23 "diam :=
  42: scale := 2:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "lookCou
@@ -900,8 +900,8 @@ ilterCenters[k] - (diam-1)/2 - 1/2, k = 1..period) / period);" }}
 og[2](1 - sum(abs(kernelScaled(k + startOffset[p])), k = 0..diam-1) / \+
 sum(abs(kernelScaled(startOffset[p] + k)), k = -200..diam-1+200)) end;
 " }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$!+Udm,'*!\"*" }}{PARA 11 "" 1 "" 
-{XPPMATH 20 "6#$!+`*\\z.\"!\")" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$!+`
-*\\z.\"!\")" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$!+Udm,'*!\"*" }}}
+{XPPMATH 20 "6#$!+Q)\\z.\"!\")" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$!+Q
+)\\z.\"!\")" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$!+Udm,'*!\"*" }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 99 "for p from 1 to period do fi
 lterSum[p] := sum(kernelScaled(k + startOffset[p]), k = 0..diam-1) end
 :" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 156 "for p from 1 to perio
@@ -945,72 +945,117 @@ tartOffset[p] + i) / filterSum[p]) end do;\n  printf(\"\\n\\n\");\nend
 .01546395f, -0.01411692f, +0.00147518f, +0.00905498f, +0.00400148f, -0
 .00299226f, -0.00378289f, -0.00034333f, +0.00182135f, +0.00109779f, " 
 }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
-1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 15 "# Upsample 1.5X" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 25 "diam := 20: scale := 2/3:" }
-}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "lookCount := 20;" }}{PARA 
-11 "" 1 "" {XPPMATH 20 "6#>%*lookCountG\"#?" }}}{EXCHG {PARA 0 "> " 0 
-"" {MPLTEXT 1 0 73 "filterCenters := evalf(seq(((idx + 1/2) * scale), \+
-idx = 0..lookCount-1));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.filterCe
-ntersG66$\"+LLLLL!#5$\"\"\"\"\"!$\"+nmmm;!\"*$\"+LLLLBF.$\"\"$F+$\"+nm
-mmOF.$\"+LLLLVF.$\"\"&F+$\"+nmmmcF.$\"+LLLLjF.$\"\"(F+$\"+nmmmwF.$\"+L
-LLL$)F.$\"\"*F+$\"+nmmm'*F.$\"+LLLL5!\")$\"#6F+$\"+nmmm6FI$\"+LLLL7FI$
-\"#8F+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 12 "period := 3;" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#>%'periodG\"\"$" }}}{EXCHG {PARA 0 "> \+
-" 0 "" {MPLTEXT 1 0 80 "startIndex := seq(round(filterCenters[k] - (di
-am-1)/2 - 1/2), k = 1..lookCount);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#
->%+startIndexG66!#5!\"*!\")F(!\"(!\"'F*!\"&!\"%F,!\"$!\"#F.!\"\"\"\"!F
-0\"\"\"\"\"#F2\"\"$" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 89 "avgS
-tartIndex := round(sum(filterCenters[k] - (diam-1)/2 - 1/2, k = 1..per
-iod) / period);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.avgStartIndexG!
-\"*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "startOffset := evalf
-(seq((avgStartIndex + 1/2) - filterCenters[k], k = 1..lookCount));" }}
-{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,startOffsetG66$!+LLLL))!\"*$!+++++&
-*F($!+nmm;5!\")$!+LLL$3\"F-$!++++]6F-$!+nmm;7F-$!+LLL$G\"F-$!++++]8F-$
-!+nmm;9F-$!+LLL$[\"F-$!++++]:F-$!+nmm;;F-$!+LLL$o\"F-$!++++]<F-$!+nmm;
-=F-$!+LLL$)=F-$!++++]>F-$!+nmm;?F-$!+LLL$3#F-$!++++]@F-" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 71 "kernelScaled := unapply(winSinc(x /
- max(scale, 1)) / max(scale, 1), x);" }}{PARA 11 "" 1 "" {XPPMATH 20 "
-6#>%-kernelScaledGf*6#%\"xG6\"6$%)operatorG%&arrowGF(**-%$sinG6#,$*($
-\"+#p2Bp(!#5\"\"\"%#PiGF59$F5F5F5F6!\"\"F7F8-%$expG6#,$*&$\"+!)4J(G$!#
-6F5)F7\"\"#F5F8F5F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 168 
-"for p from 1 to period do -log[2](1 - sum(abs(kernelScaled(k + startO
-ffset[p])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[p] + k))
-, k = -200..diam-1+200)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+.
-+\">C*!\"*" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+i*3&[5!\")" }}{PARA 
-11 "" 1 "" {XPPMATH 20 "6#$\"+F0\">C*!\"*" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 99 "for p from 1 to period do filterSum[p] := sum(kerne
-lScaled(k + startOffset[p]), k = 0..diam-1) end:" }}}{EXCHG {PARA 0 ">
- " 0 "" {MPLTEXT 1 0 156 "for p from 1 to period do \n  for i from 0 t
-o diam-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[p] + i) / fi
-lterSum[p]) end do;\n  printf(\"\\n\\n\");\nend do;" }}{PARA 6 "" 1 "
-" {TEXT -1 280 "+0.00166414f, +0.00043475f, -0.00723411f, +0.01780444f
-, -0.02365456f, +0.00821240f, +0.04609053f, -0.14923741f, +0.33710882f
-, +0.74748520f, +0.08257036f, -0.10897243f, +0.07078922f, -0.02592033f
-, -0.00206014f, +0.01065854f, -0.00819722f, +0.00336871f, -0.00035155f
-, -0.00055936f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "" 1 "" 
-{TEXT -1 279 "-0.00141998f, +0.00345938f, -0.00443153f, 0.00000000f, +
-0.01420508f, -0.03610672f, +0.05006276f, -0.02482460f, -0.09163485f, +
-0.59069046f, +0.59069046f, -0.09163485f, -0.02482460f, +0.05006276f, -
-0.03610672f, +0.01420508f, +0.00000000f, -0.00443153f, +0.00345938f, -
-0.00141998f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "" 1 "" 
-{TEXT -1 280 "-0.00055936f, -0.00035155f, +0.00336871f, -0.00819722f, \+
-+0.01065854f, -0.00206014f, -0.02592033f, +0.07078922f, -0.10897243f, \+
-+0.08257036f, +0.74748520f, +0.33710882f, -0.14923741f, +0.04609053f, \+
-+0.00821240f, -0.02365456f, +0.01780444f, -0.00723411f, +0.00043475f, \+
-+0.00166414f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> \+
-" 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 
-"# Downsample 4.X" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 23 "diam := 76: scale := 4:" }}}{EXCHG {PARA 0 "> " 0 "
+1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 13 "# Upsample 2X" 
+}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 25 "di
+am := 19: scale := 1/2:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "
+lookCount := 20;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*lookCountG\"#?
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 73 "filterCenters := evalf(
+seq(((idx + 1/2) * scale), idx = 0..lookCount-1));" }}{PARA 12 "" 1 "
+" {XPPMATH 20 "6#>%.filterCentersG66$\"+++++D!#5$\"+++++vF($\"++++]7!
+\"*$\"++++]<F-$\"++++]AF-$\"++++]FF-$\"++++]KF-$\"++++]PF-$\"++++]UF-$
+\"++++]ZF-$\"++++]_F-$\"++++]dF-$\"++++]iF-$\"++++]nF-$\"++++]sF-$\"++
+++]xF-$\"++++]#)F-$\"++++]()F-$\"++++]#*F-$\"++++](*F-" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 12 "period := 2;" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#>%'periodG\"\"#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 80 "startIndex := seq(round(filterCenters[k] - (diam-1)/2 - 1/2), \+
+k = 1..lookCount);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%+startIndexG66
+!\"*F&!\")F'!\"(F(!\"'F)!\"&F*!\"%F+!\"$F,!\"#F-!\"\"F.\"\"!F/" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 89 "avgStartIndex := round(sum(f
+ilterCenters[k] - (diam-1)/2 - 1/2, k = 1..period) / period);" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.avgStartIndexG!\"*" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "startOffset := evalf(seq((avgStartI
+ndex + 1/2) - filterCenters[k], k = 1..lookCount));" }}{PARA 12 "" 1 "
+" {XPPMATH 20 "6#>%,startOffsetG66$!++++]()!\"*$!++++]#*F($!++++](*F($
+!++++D5!\")$!++++v5F/$!++++D6F/$!++++v6F/$!++++D7F/$!++++v7F/$!++++D8F
+/$!++++v8F/$!++++D9F/$!++++v9F/$!++++D:F/$!++++v:F/$!++++D;F/$!++++v;F
+/$!++++D<F/$!++++v<F/$!++++D=F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 71 "kernelScaled := unapply(winSinc(x / max(scale, 1)) / max(scale
+, 1), x):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 168 "for p from 1 \+
+to period do -log[2](1 - sum(abs(kernelScaled(k + startOffset[p])), k \+
+= 0..diam-1) / sum(abs(kernelScaled(startOffset[p] + k)), k = -200..di
+am-1+200)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+tW!R/*!\"*" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+tW!R/*!\"*" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 99 "for p from 1 to period do filterSum[p] := sum(
+kernelScaled(k + startOffset[p]), k = 0..diam-1) end:" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 156 "for p from 1 to period do \n  for \+
+i from 0 to diam-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[p]
+ + i) / filterSum[p]) end do;\n  printf(\"\\n\\n\");\nend do;" }{TEXT 
+-1 0 "" }}{PARA 6 "" 1 "" {TEXT -1 266 "+0.00219537f, -0.00068659f, -0
+.00598392f, +0.01810818f, -0.02823106f, +0.01893732f, +0.03197533f, -0
+.14547108f, +0.40408355f, +0.72100016f, +0.02912540f, -0.08955916f, +0
+.06913369f, -0.03092485f, +0.00295006f, +0.00800217f, -0.00756503f, +0
+.00364235f, -0.00073186f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 
+"" 1 "" {TEXT -1 266 "-0.00073186f, +0.00364235f, -0.00756503f, +0.008
+00217f, +0.00295006f, -0.03092485f, +0.06913369f, -0.08955916f, +0.029
+12540f, +0.72100016f, +0.40408355f, -0.14547108f, +0.03197533f, +0.018
+93732f, -0.02823106f, +0.01810818f, -0.00598392f, -0.00068659f, +0.002
+19537f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 15 "# Upsa
+mple 1.5X" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 25 "diam := 20: scale := 2/3:" }}}{EXCHG {PARA 0 "> " 0 "
 " {MPLTEXT 1 0 16 "lookCount := 20;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6
 #>%*lookCountG\"#?" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 73 "filte
 rCenters := evalf(seq(((idx + 1/2) * scale), idx = 0..lookCount-1));" 
-}}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.filterCentersG66$\"\"#\"\"!$\"\"'
-F($\"#5F($\"#9F($\"#=F($\"#AF($\"#EF($\"#IF($\"#MF($\"#QF($\"#UF($\"#Y
-F($\"#]F($\"#aF($\"#eF($\"#iF($\"#mF($\"#qF($\"#uF($\"#yF(" }}}{EXCHG 
+}}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.filterCentersG66$\"+LLLLL!#5$\"\"
+\"\"\"!$\"+nmmm;!\"*$\"+LLLLBF.$\"\"$F+$\"+nmmmOF.$\"+LLLLVF.$\"\"&F+$
+\"+nmmmcF.$\"+LLLLjF.$\"\"(F+$\"+nmmmwF.$\"+LLLL$)F.$\"\"*F+$\"+nmmm'*
+F.$\"+LLLL5!\")$\"#6F+$\"+nmmm6FI$\"+LLLL7FI$\"#8F+" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 12 "period := 3;" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#>%'periodG\"\"$" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 80 "startIndex := seq(round(filterCenters[k] - (diam-1)/2 - 1/2), \+
+k = 1..lookCount);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%+startIndexG66
+!#5!\"*!\")F(!\"(!\"'F*!\"&!\"%F,!\"$!\"#F.!\"\"\"\"!F0\"\"\"\"\"#F2\"
+\"$" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 89 "avgStartIndex := rou
+nd(sum(filterCenters[k] - (diam-1)/2 - 1/2, k = 1..period) / period);
+" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.avgStartIndexG!\"*" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "startOffset := evalf(seq((avgStartI
+ndex + 1/2) - filterCenters[k], k = 1..lookCount));" }}{PARA 12 "" 1 "
+" {XPPMATH 20 "6#>%,startOffsetG66$!+LLLL))!\"*$!+++++&*F($!+nmm;5!\")
+$!+LLL$3\"F-$!++++]6F-$!+nmm;7F-$!+LLL$G\"F-$!++++]8F-$!+nmm;9F-$!+LLL
+$[\"F-$!++++]:F-$!+nmm;;F-$!+LLL$o\"F-$!++++]<F-$!+nmm;=F-$!+LLL$)=F-$
+!++++]>F-$!+nmm;?F-$!+LLL$3#F-$!++++]@F-" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 71 "kernelScaled := unapply(winSinc(x / max(scale, 1)) / \+
+max(scale, 1), x);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%-kernelScaledG
+f*6#%\"xG6\"6$%)operatorG%&arrowGF(**-%$sinG6#,$*($\"+#p2Bp(!#5\"\"\"%
+#PiGF59$F5F5F5F6!\"\"F7F8-%$expG6#,$*&$\"+!)4J(G$!#6F5)F7\"\"#F5F8F5F(
+F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 168 "for p from 1 to pe
+riod do -log[2](1 - sum(abs(kernelScaled(k + startOffset[p])), k = 0..
+diam-1) / sum(abs(kernelScaled(startOffset[p] + k)), k = -200..diam-1+
+200)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+.+\">C*!\"*" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+6#4&[5!\")" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#$\"+.+\">C*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 99 "for p from 1 to period do filterSum[p] := sum(kernelScaled(k +
+ startOffset[p]), k = 0..diam-1) end:" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 156 "for p from 1 to period do \n  for i from 0 to diam-1
+ do printf(\"%+.8ff, \", kernelScaled(startOffset[p] + i) / filterSum[
+p]) end do;\n  printf(\"\\n\\n\");\nend do;" }}{PARA 6 "" 1 "" {TEXT 
+-1 280 "+0.00166414f, +0.00043475f, -0.00723411f, +0.01780444f, -0.023
+65456f, +0.00821240f, +0.04609053f, -0.14923741f, +0.33710882f, +0.747
+48520f, +0.08257036f, -0.10897243f, +0.07078922f, -0.02592033f, -0.002
+06014f, +0.01065854f, -0.00819722f, +0.00336871f, -0.00035155f, -0.000
+55936f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "" 1 "" {TEXT -1 
+279 "-0.00141998f, +0.00345938f, -0.00443153f, 0.00000000f, +0.0142050
+8f, -0.03610672f, +0.05006276f, -0.02482460f, -0.09163485f, +0.5906904
+6f, +0.59069046f, -0.09163485f, -0.02482460f, +0.05006276f, -0.0361067
+2f, +0.01420508f, +0.00000000f, -0.00443153f, +0.00345938f, -0.0014199
+8f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "" 1 "" {TEXT -1 280 "
+-0.00055936f, -0.00035155f, +0.00336871f, -0.00819722f, +0.01065854f, \+
+-0.00206014f, -0.02592033f, +0.07078922f, -0.10897243f, +0.08257036f, \+
++0.74748520f, +0.33710882f, -0.14923741f, +0.04609053f, +0.00821240f, \+
+-0.02365456f, +0.01780444f, -0.00723411f, +0.00043475f, +0.00166414f, \+
+" }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "# Down
+sample 4.X" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 23 "diam := 76: scale := 4:" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 16 "lookCount := 20;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>
+%*lookCountG\"#?" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 73 "filterC
+enters := evalf(seq(((idx + 1/2) * scale), idx = 0..lookCount-1));" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.filterCentersG66$\"\"#\"\"!$\"\"'F(
+$\"#5F($\"#9F($\"#=F($\"#AF($\"#EF($\"#IF($\"#MF($\"#QF($\"#UF($\"#YF(
+$\"#]F($\"#aF($\"#eF($\"#iF($\"#mF($\"#qF($\"#uF($\"#yF(" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 12 "period := 1;" }}{PARA 11 "" 1 "" 
 {XPPMATH 20 "6#>%'periodG\"\"\"" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
 1 0 80 "startIndex := seq(round(filterCenters[k] - (diam-1)/2 - 1/2), \+
@@ -1029,7 +1074,7 @@ ndex + 1/2) - filterCenters[k], k = 1..lookCount));" }}{PARA 12 "" 1 "
 ):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 168 "for p from 1 to peri
 od do -log[2](1 - sum(abs(kernelScaled(k + startOffset[p])), k = 0..di
 am-1) / sum(abs(kernelScaled(startOffset[p] + k)), k = -200..diam-1+20
-0)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+VMw%3*!\"*" }}}{EXCHG 
+0)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+8Rw%3*!\"*" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 99 "for p from 1 to period do filterSum
 [p] := sum(kernelScaled(k + startOffset[p]), k = 0..diam-1) end:" }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 156 "for p from 1 to period do \+
@@ -1051,63 +1096,62 @@ ffset[p] + i) / filterSum[p]) end do;\n  printf(\"\\n\\n\");\nend do;
 7641f, +0.00097526f, -0.00084336f, -0.00192455f, -0.00209884f, -0.0015
 4314f, -0.00063277f, +0.00023691f, +0.00078977f, +0.00093066f, +0.0007
 2855f, +0.00034787f, -0.00003406f, -0.00029084f, " }}{PARA 6 "" 1 "" 
-{TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
+{TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 14 "# Upsample 4.X" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 14 "# Upsample 4.X" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
-1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 25 "diam := 19: scale := 1/4:" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "lookCount := 20;" }}{PARA 
-11 "" 1 "" {XPPMATH 20 "6#>%*lookCountG\"#?" }}}{EXCHG {PARA 0 "> " 0 
-"" {MPLTEXT 1 0 73 "filterCenters := evalf(seq(((idx + 1/2) * scale), \+
-idx = 0..lookCount-1));" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%.filterCe
-ntersG66$\"++++]7!#5$\"++++]PF($\"++++]iF($\"++++]()F($\"++++D6!\"*$\"
-++++v8F1$\"++++D;F1$\"++++v=F1$\"++++D@F1$\"++++vBF1$\"++++DEF1$\"++++
-vGF1$\"++++DJF1$\"++++vLF1$\"++++DOF1$\"++++vQF1$\"++++DTF1$\"++++vVF1
-$\"++++DYF1$\"++++v[F1" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 12 "p
-eriod := 4;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%'periodG\"\"%" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 80 "startIndex := seq(round(filt
-erCenters[k] - (diam-1)/2 - 1/2), k = 1..lookCount);" }}{PARA 11 "" 1 
-"" {XPPMATH 20 "6#>%+startIndexG66!\"*F&F&F&!\")F'F'F'!\"(F(F(F(!\"'F)
-F)F)!\"&F*F*F*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 89 "avgStartI
-ndex := round(sum(filterCenters[k] - (diam-1)/2 - 1/2, k = 1..period) \+
-/ period);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.avgStartIndexG!\"*" }
-}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "startOffset := evalf(seq((
-avgStartIndex + 1/2) - filterCenters[k], k = 1..lookCount));" }}{PARA 
-12 "" 1 "" {XPPMATH 20 "6#>%,startOffsetG66$!++++D')!\"*$!++++v))F($!+
-+++D\"*F($!++++v$*F($!++++D'*F($!++++v)*F($!+++]75!\")$!+++]P5F5$!+++]
-i5F5$!+++](3\"F5$!+++]76F5$!+++]P6F5$!+++]i6F5$!+++](=\"F5$!+++]77F5$!
-+++]P7F5$!+++]i7F5$!+++](G\"F5$!+++]78F5$!+++]P8F5" }}}{EXCHG {PARA 0 
-"> " 0 "" {MPLTEXT 1 0 71 "kernelScaled := unapply(winSinc(x / max(sca
-le, 1)) / max(scale, 1), x):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
-0 168 "for p from 1 to period do -log[2](1 - sum(abs(kernelScaled(k + \+
-startOffset[p])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[p]
- + k)), k = -200..diam-1+200)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6
-#$\"+GA_N#*!\"*" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+s1L_*)!\"*" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+s1L_*)!\"*" }}{PARA 11 "" 1 "" 
-{XPPMATH 20 "6#$\"+\")Q_N#*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
-1 0 99 "for p from 1 to period do filterSum[p] := sum(kernelScaled(k +
- startOffset[p]), k = 0..diam-1) end:" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 156 "for p from 1 to period do \n  for i from 0 to diam-1
- do printf(\"%+.8ff, \", kernelScaled(startOffset[p] + i) / filterSum[
-p]) end do;\n  printf(\"\\n\\n\");\nend do;" }}{PARA 6 "" 1 "" {TEXT 
--1 266 "+0.00291439f, -0.00253125f, -0.00337366f, +0.01709718f, -0.033
-47612f, +0.03512213f, +0.00583154f, -0.12686379f, +0.50136652f, +0.664
-41936f, -0.03917403f, -0.05754225f, +0.06185693f, -0.03532735f, +0.009
-39264f, +0.00390127f, -0.00617294f, +0.00372287f, -0.00116343f, " }}
-{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "" 1 "" {TEXT -1 266 "+0.00139
-140f, +0.00094758f, -0.00769771f, +0.01736938f, -0.02111394f, +0.00302
-406f, +0.05197515f, -0.14858887f, +0.30323242f, +0.75632731f, +0.11126
-306f, -0.11761747f, +0.07046246f, -0.02279168f, -0.00471586f, +0.01190
-489f, -0.00839484f, +0.00315888f, -0.00013622f, " }}{PARA 6 "" 1 "" 
-{TEXT -1 0 "" }}{PARA 6 "" 1 "" {TEXT -1 266 "-0.00013622f, +0.0031588
-8f, -0.00839484f, +0.01190489f, -0.00471586f, -0.02279168f, +0.0704624
-6f, -0.11761747f, +0.11126306f, +0.75632731f, +0.30323242f, -0.1485888
-7f, +0.05197515f, +0.00302406f, -0.02111394f, +0.01736938f, -0.0076977
-1f, +0.00094758f, +0.00139140f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}
-{PARA 6 "" 1 "" {TEXT -1 266 "-0.00116343f, +0.00372287f, -0.00617294f
-, +0.00390127f, +0.00939264f, -0.03532735f, +0.06185693f, -0.05754225f
-, -0.03917403f, +0.66441936f, +0.50136652f, -0.12686379f, +0.00583154f
-, +0.03512213f, -0.03347612f, +0.01709718f, -0.00337366f, -0.00253125f
-, +0.00291439f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 ">
- " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK "0 0 0" 0 }{VIEWOPTS 1 1 0 1 1 
-1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
+{MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 25 "diam :=
+ 19: scale := 1/4:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "lookC
+ount := 20;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*lookCountG\"#?" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 73 "filterCenters := evalf(seq((
+(idx + 1/2) * scale), idx = 0..lookCount-1));" }}{PARA 12 "" 1 "" 
+{XPPMATH 20 "6#>%.filterCentersG66$\"++++]7!#5$\"++++]PF($\"++++]iF($
+\"++++]()F($\"++++D6!\"*$\"++++v8F1$\"++++D;F1$\"++++v=F1$\"++++D@F1$
+\"++++vBF1$\"++++DEF1$\"++++vGF1$\"++++DJF1$\"++++vLF1$\"++++DOF1$\"++
+++vQF1$\"++++DTF1$\"++++vVF1$\"++++DYF1$\"++++v[F1" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 12 "period := 4;" }}{PARA 11 "" 1 "" {XPPMATH 
+20 "6#>%'periodG\"\"%" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 80 "st
+artIndex := seq(round(filterCenters[k] - (diam-1)/2 - 1/2), k = 1..loo
+kCount);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%+startIndexG66!\"*F&F&F&
+!\")F'F'F'!\"(F(F(F(!\"'F)F)F)!\"&F*F*F*" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 89 "avgStartIndex := round(sum(filterCenters[k] - (diam-1
+)/2 - 1/2, k = 1..period) / period);" }}{PARA 11 "" 1 "" {XPPMATH 20 "
+6#>%.avgStartIndexG!\"*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "
+startOffset := evalf(seq((avgStartIndex + 1/2) - filterCenters[k], k =
+ 1..lookCount));" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,startOffsetG66$
+!++++D')!\"*$!++++v))F($!++++D\"*F($!++++v$*F($!++++D'*F($!++++v)*F($!
++++]75!\")$!+++]P5F5$!+++]i5F5$!+++](3\"F5$!+++]76F5$!+++]P6F5$!+++]i6
+F5$!+++](=\"F5$!+++]77F5$!+++]P7F5$!+++]i7F5$!+++](G\"F5$!+++]78F5$!++
++]P8F5" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 71 "kernelScaled := u
+napply(winSinc(x / max(scale, 1)) / max(scale, 1), x):" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 168 "for p from 1 to period do -log[2](
+1 - sum(abs(kernelScaled(k + startOffset[p])), k = 0..diam-1) / sum(ab
+s(kernelScaled(startOffset[p] + k)), k = -200..diam-1+200)) end;" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+GA_N#*!\"*" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#$\"+s1L_*)!\"*" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+s
+1L_*)!\"*" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+\")Q_N#*!\"*" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 99 "for p from 1 to period do fi
+lterSum[p] := sum(kernelScaled(k + startOffset[p]), k = 0..diam-1) end
+:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 156 "for p from 1 to perio
+d do \n  for i from 0 to diam-1 do printf(\"%+.8ff, \", kernelScaled(s
+tartOffset[p] + i) / filterSum[p]) end do;\n  printf(\"\\n\\n\");\nend
+ do;" }}{PARA 6 "" 1 "" {TEXT -1 266 "+0.00291439f, -0.00253125f, -0.0
+0337366f, +0.01709718f, -0.03347612f, +0.03512213f, +0.00583154f, -0.1
+2686379f, +0.50136652f, +0.66441936f, -0.03917403f, -0.05754225f, +0.0
+6185693f, -0.03532735f, +0.00939264f, +0.00390127f, -0.00617294f, +0.0
+0372287f, -0.00116343f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "
+" 1 "" {TEXT -1 266 "+0.00139140f, +0.00094758f, -0.00769771f, +0.0173
+6938f, -0.02111394f, +0.00302406f, +0.05197515f, -0.14858887f, +0.3032
+3242f, +0.75632731f, +0.11126306f, -0.11761747f, +0.07046246f, -0.0227
+9168f, -0.00471586f, +0.01190489f, -0.00839484f, +0.00315888f, -0.0001
+3622f, " }}{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "" 1 "" {TEXT -1 
+266 "-0.00013622f, +0.00315888f, -0.00839484f, +0.01190489f, -0.004715
+86f, -0.02279168f, +0.07046246f, -0.11761747f, +0.11126306f, +0.756327
+31f, +0.30323242f, -0.14858887f, +0.05197515f, +0.00302406f, -0.021113
+94f, +0.01736938f, -0.00769771f, +0.00094758f, +0.00139140f, " }}
+{PARA 6 "" 1 "" {TEXT -1 0 "" }}{PARA 6 "" 1 "" {TEXT -1 266 "-0.00116
+343f, +0.00372287f, -0.00617294f, +0.00390127f, +0.00939264f, -0.03532
+735f, +0.06185693f, -0.05754225f, -0.03917403f, +0.66441936f, +0.50136
+652f, -0.12686379f, +0.00583154f, +0.03512213f, -0.03347612f, +0.01709
+718f, -0.00337366f, -0.00253125f, +0.00291439f, " }}{PARA 6 "" 1 "" 
+{TEXT -1 0 "" }}}}{MARK "93 0 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }
+{PAGENUMBERS 0 1 2 33 1 1 }

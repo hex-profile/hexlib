@@ -3,6 +3,8 @@
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
 
+namespace conservativeResampling {
+
 //================================================================
 //
 // downsampleFourTimes
@@ -28,3 +30,7 @@ stdbool downsampleFourTimesDual
     BorderMode borderMode,
     stdPars(GpuProcessKit)
 );
+
+//----------------------------------------------------------------
+
+}

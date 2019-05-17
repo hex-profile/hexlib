@@ -17,6 +17,10 @@
 #include "vectorTypes/vectorOperations.h"
 #include "vectorTypes/vectorType.h"
 
+#ifdef FUNCSPACE
+namespace FUNCSPACE {
+#endif
+
 namespace PREP_PASTE(FUNCNAME, Space) {
 
 //================================================================
@@ -26,7 +30,7 @@ namespace PREP_PASTE(FUNCNAME, Space) {
 //================================================================
 
 #ifndef TASK_COUNT
-    #error
+    #define TASK_COUNT 1
 #endif
 
 //================================================================
@@ -357,4 +361,10 @@ FOREACH_TYPE(TMP_MACRO)
 
 //----------------------------------------------------------------
 
+#endif
+
+//----------------------------------------------------------------
+
+#ifdef FUNCSPACE
+}
 #endif
