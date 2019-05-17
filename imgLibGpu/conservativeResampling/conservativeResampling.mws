@@ -357,8 +357,8 @@ GQ!6\"-%%VIEWG6$;F(F^_u%(DEFAULTG" 1 2 0 1 10 0 2 9 1 4 2 1.000000
 {MPLTEXT 1 0 50 "WinSinc := unapply(WinSincEx(f, sigma, theta), f);" }
 }{PARA 11 "" 1 "" {XPPMATH 20 "6#>%(WinSincGf*6#%\"fG6\"6$%)operatorG%
 &arrowGF(,&*&#\"\"\"\"\"#F/-%$erfG6#,&**$\"#R!\"\"F/F0F.%#PiGF/9$F/F/*
-*\"\"$F/F0F8F0F.F9F/F/F/F/*&#F/F0F/-F26#,&**F6F/F0F.F9F/F:F/F/**F<F/F0
-F8F0F.F9F/F8F/F8F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 56 "p
+*\"\"$F/F0F8F9F/F0F.F/F/F/*&#F/F0F/-F26#,&**F6F/F0F.F9F/F:F/F/**F<F/F0
+F8F9F/F0F.F8F/F8F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 56 "p
 lot([evalf(WinSinc(f))], f = -1/2..1/2, numpoints=512);" }}{PARA 13 "
 " 1 "" {GLPLOT2D 837 837 837 {PLOTDATA 2 "6%-%'CURVESG6$7\\[m7$$!3++++
 ++++]!#=$\"3s,Q&4\")QhM#!#?7$$!3)>>#3y^_z\\F*$\"3%4g_=!o&4u#F-7$$!3Y%y
@@ -843,11 +843,11 @@ tIndex := round(sum(filterCenters[k] - (diam-1)/2 - 1/2, k = 1..period
  x):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 
 "> " 0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(abs(kernelScaled(k + start
 Offset[1])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[1] + k)
-), k = -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+m8M&
+), k = -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+E3M&
 G*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(
 abs(kernelScaled(k + startOffset[2])), k = 0..diam-1) / sum(abs(kernel
 Scaled(startOffset[2] + k)), k = -200..diam-1+200));" }}{PARA 11 "" 1 
-"" {XPPMATH 20 "6#$\"+m8M&G*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" 
+"" {XPPMATH 20 "6#$\"+E3M&G*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" 
 {MPLTEXT 1 0 59 "s1 := sum(kernelScaled(k + startOffset[1]), k = 0..di
 am-1);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%#s1G$\"+x#[1+\"!\"*" }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 59 "s2 := sum(kernelScaled(k + s
@@ -974,8 +974,8 @@ ndex + 1/2) - filterCenters[k], k = 1..lookCount));" }}{PARA 12 "" 1 "
 , 1), x):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 168 "for p from 1 \+
 to period do -log[2](1 - sum(abs(kernelScaled(k + startOffset[p])), k \+
 = 0..diam-1) / sum(abs(kernelScaled(startOffset[p] + k)), k = -200..di
-am-1+200)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+tW!R/*!\"*" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+tW!R/*!\"*" }}}{EXCHG {PARA 0 "> \+
+am-1+200)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+fN!R/*!\"*" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+fN!R/*!\"*" }}}{EXCHG {PARA 0 "> \+
 " 0 "" {MPLTEXT 1 0 99 "for p from 1 to period do filterSum[p] := sum(
 kernelScaled(k + startOffset[p]), k = 0..diam-1) end:" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 156 "for p from 1 to period do \n  for \+
@@ -1024,7 +1024,7 @@ F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 168 "for p from 1 to pe
 riod do -log[2](1 - sum(abs(kernelScaled(k + startOffset[p])), k = 0..
 diam-1) / sum(abs(kernelScaled(startOffset[p] + k)), k = -200..diam-1+
 200)) end;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+.+\">C*!\"*" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+6#4&[5!\")" }}{PARA 11 "" 1 "" 
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+'34&[5!\")" }}{PARA 11 "" 1 "" 
 {XPPMATH 20 "6#$\"+.+\">C*!\"*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
 1 0 99 "for p from 1 to period do filterSum[p] := sum(kernelScaled(k +
  startOffset[p]), k = 0..diam-1) end:" }}}{EXCHG {PARA 0 "> " 0 "" 
@@ -1126,9 +1126,9 @@ napply(winSinc(x / max(scale, 1)) / max(scale, 1), x):" }}}{EXCHG
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 168 "for p from 1 to period do -log[2](
 1 - sum(abs(kernelScaled(k + startOffset[p])), k = 0..diam-1) / sum(ab
 s(kernelScaled(startOffset[p] + k)), k = -200..diam-1+200)) end;" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+GA_N#*!\"*" }}{PARA 11 "" 1 "" 
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+2<_N#*!\"*" }}{PARA 11 "" 1 "" 
 {XPPMATH 20 "6#$\"+s1L_*)!\"*" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+s
-1L_*)!\"*" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+\")Q_N#*!\"*" }}}
+1L_*)!\"*" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+]F_N#*!\"*" }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 99 "for p from 1 to period do fi
 lterSum[p] := sum(kernelScaled(k + startOffset[p]), k = 0..diam-1) end
 :" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 156 "for p from 1 to perio
@@ -1153,5 +1153,6 @@ tartOffset[p] + i) / filterSum[p]) end do;\n  printf(\"\\n\\n\");\nend
 735f, +0.06185693f, -0.05754225f, -0.03917403f, +0.66441936f, +0.50136
 652f, -0.12686379f, +0.00583154f, +0.03512213f, -0.03347612f, +0.01709
 718f, -0.00337366f, -0.00253125f, +0.00291439f, " }}{PARA 6 "" 1 "" 
-{TEXT -1 0 "" }}}}{MARK "93 0 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }
-{PAGENUMBERS 0 1 2 33 1 1 }
+{TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK 
+"152 0 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 
+1 1 }
