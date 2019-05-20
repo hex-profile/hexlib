@@ -8,6 +8,7 @@
 #include "userOutput/printMsg.h"
 #include "userOutput/printMsgEx.h"
 #include "simpleString/simpleString.h"
+#include "storage/rememberCleanup.h"
 
 //================================================================
 //
@@ -162,10 +163,10 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     else
     {
         TimeMoment processBeg = kit.timer.moment();
-        bool ok = target.process(stdPassKit(ProfilerKit(nullptr)));
-        *frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment());
+        REMEMBER_CLEANUP(*frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment()));
 
-        return ok;
+        require(target.process(stdPassKit(ProfilerKit(nullptr))));
+        returnSuccess;
     }
 
     //----------------------------------------------------------------
@@ -194,7 +195,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         ProfilerThunk profilerThunk(profilerImpl);
 
         TimeMoment processBeg = kit.timer.moment();
-        processOk = target.process(stdPassKit(ProfilerKit(&profilerThunk)));
+        processOk = errorBlock(target.process(stdPassKit(ProfilerKit(&profilerThunk))));
         *frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment());
 
         CHECK(profilerImpl.checkResetScope());
@@ -215,7 +216,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     
         profilerReport::ReportKit kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
-        stdDiscard(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx)));
+        errorBlock(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx)));
 
         float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
         // printMsg(kit.localLog, STR("Profiler Quick Report %0 ms"), fltf(reportTime * 1e3f, 2), msgWarn);
@@ -271,5 +272,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         externalScopeIsEntered = true;
     }
 
-    stdEndEx(processOk);
+    require(processOk);
+
+    stdEnd;
 }

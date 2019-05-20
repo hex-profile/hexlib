@@ -38,7 +38,7 @@ public:
         stdEnd;
     }
 
-    stdbool getLine(std::basic_string<Type>& s, stdPars(MsgLogKit))
+    bool getLine(std::basic_string<Type>& s, stdPars(MsgLogKit))
     {
         getline(stream, s);
 

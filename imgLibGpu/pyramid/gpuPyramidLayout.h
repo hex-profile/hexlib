@@ -72,13 +72,13 @@ sysinline void initEmpty(GpuPyramidLayout& layout)
 
 sysinline bool isEqualLayout(const GpuPyramidLayout& a, const GpuPyramidLayout& b)
 {
-    require(a.levelCount == b.levelCount);
-    require(a.layerCount == b.layerCount);
+    ensure(a.levelCount == b.levelCount);
+    ensure(a.layerCount == b.layerCount);
 
     Space levelCount = a.levelCount;
 
     for (Space i = 0; i < levelCount; ++i)
-        require(a.levels[i] == b.levels[i]);
+        ensure(a.levels[i] == b.levels[i]);
 
     return true;
 }

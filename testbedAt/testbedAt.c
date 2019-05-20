@@ -160,10 +160,10 @@ bool OutputLogToAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         FormatStreamStlThunk formatToStream(stringStream);
 
         v.func(v.value, formatToStream);
-        require(formatToStream.isOk());
-        require(!!stringStream);
+        ensure(formatToStream.isOk());
+        ensure(!!stringStream);
 
-        require(printFunc(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
+        ensure(printFunc(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
 
     #if defined(_WIN32)
         stringStream << endl;
@@ -173,7 +173,7 @@ bool OutputLogToAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     #endif
 
     }
-    catch (const std::exception&) {require(false);}
+    catch (const std::exception&) {ensure(false);}
 
     return true;
 }
@@ -215,7 +215,7 @@ public:
                 stringStream.rdbuf()->str().c_str()) != 0
         );
 
-        return true;
+        returnSuccess;
     }
 
     stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
@@ -245,19 +245,19 @@ public:
                 stringStream.rdbuf()->str().c_str()) != 0
         );
 
-        return true;
+        returnSuccess;
     }
 
     stdbool clear(stdNullPars)
     {
         require(api->outimg_clear(api) != 0);
-        return true;
+        returnSuccess;
     }
 
     stdbool update(stdNullPars)
     {
         require(api->outimg_update(api) != 0);
-        return true;
+        returnSuccess;
     }
 
 public:
@@ -358,7 +358,7 @@ public:
         const TraceScope& TRACE_SCOPE(stdTraceName) = self->trace;
 
         COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
-        return self->imageProvider.saveImage(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass);
+        return errorBlock(self->imageProvider.saveImage(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass));
     }
 
 private:
@@ -399,19 +399,19 @@ public:
             require(api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         }
 
-        return true;
+        returnSuccess;
     }
 
     stdbool setFakeImage(stdNullPars)
     {
-        return true;
+        returnSuccess;
     }
 
     stdbool updateImage(stdNullPars)
     {
         at_bool result = api->video_image_update(api);
-        DEBUG_BREAK_CHECK(result != 0);
-        return result != 0;
+        require(DEBUG_BREAK_CHECK(result != 0));
+        returnSuccess;
     }
 
 public:
@@ -443,7 +443,8 @@ public:
         TRACE_REASSEMBLE(stdTraceName);
         AtImageProviderThunk atProvider(imageProvider, TRACE_SCOPE(stdTraceName));
 
-        return base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0;
+        require(base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
+        returnSuccess;
     }
 
     AtAsyncOverlayImpl()
@@ -561,12 +562,12 @@ bool getVideoPosition(const at_api_process& api, Space& index, Space& count)
 {
     uint32 atIndex = 0;
     uint32 atCount = 0;
-    require(api.videofile_pos(&api, &atIndex, &atCount) != 0);
+    ensure(api.videofile_pos(&api, &atIndex, &atCount) != 0);
 
-    require(0 <= atIndex && atIndex <= spaceMax);
+    ensure(0 <= atIndex && atIndex <= spaceMax);
     index = atIndex;
 
-    require(atCount >= 0 && atCount <= spaceMax);
+    ensure(atCount >= 0 && atCount <= spaceMax);
     count = atCount;
 
     return true;
@@ -610,7 +611,7 @@ struct Client
 //
 //================================================================
 
-void atClientCreate(void** instance, const at_api_create* api, const AtEngineFactory& engineFactory)
+stdbool atClientCreateCore(void** instance, const at_api_create* api, const AtEngineFactory& engineFactory)
 {
     *instance = 0;
 
@@ -622,27 +623,36 @@ void atClientCreate(void** instance, const at_api_create* api, const AtEngineFac
     ////
 
     Client* client = new (std::nothrow) Client;
-    REQUIREV(client != 0);
+    REQUIRE(client != 0);
     REMEMBER_CLEANUP1_EX(clientCleanup, delete client, Client*, client);
 
     ////
 
-    requirev(client->asyncOverlay.init(stdPass));
+    require(client->asyncOverlay.init(stdPass));
 
     ////
 
     at_async_overlay async_overlay;
-    REQUIREV(api->get_async_overlay(api, &async_overlay) != 0);
+    REQUIRE(api->get_async_overlay(api, &async_overlay) != 0);
     client->asyncOverlay.setBase(async_overlay);
 
     ////
 
-    requirev(client->assembly.init(engineFactory, stdPass));
+    require(client->assembly.init(engineFactory, stdPass));
 
     ////
 
     clientCleanup.cancel();
     *instance = client;
+
+    returnSuccess;
+}
+
+//----------------------------------------------------------------
+
+void atClientCreate(void** instance, const at_api_create* api, const AtEngineFactory& engineFactory)
+{
+    errorBlock(atClientCreateCore(instance, api, engineFactory));
 }
 
 //================================================================
@@ -720,7 +730,7 @@ private:
 //
 //================================================================
 
-void atClientProcess(void* instance, const at_api_process* api)
+stdbool atClientProcessCore(void* instance, const at_api_process* api)
 {
     TRACE_ROOT_STD;
 
@@ -737,6 +747,12 @@ void atClientProcess(void* instance, const at_api_process* api)
 
     atStartup::InitKit kit = kitReplace(baseKit, MallocKit(mallocMonitorObject));
 
+    REMEMBER_CLEANUP
+    (
+        if (mallocMonitor.counter)
+            printMsg(kit.localLog, STR("In-Process Malloc Count: %0"), mallocMonitor.counter, msgWarn);
+    );
+
     //----------------------------------------------------------------
     //
     // Video frame
@@ -747,7 +763,7 @@ void atClientProcess(void* instance, const at_api_process* api)
     Space frameMemPitch = 0;
     Space frameSizeX = 0;
     Space frameSizeY = 0;
-    REQUIREV(api->video_image_get(api, &frameMemPtrAt, &frameMemPitch, &frameSizeX, &frameSizeY) != 0);
+    REQUIRE(api->video_image_get(api, &frameMemPtrAt, &frameMemPitch, &frameSizeX, &frameSizeY) != 0);
 
     COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
     const uint8_x4* frameMemPtr = (const uint8_x4*) frameMemPtrAt;
@@ -761,7 +777,7 @@ void atClientProcess(void* instance, const at_api_process* api)
     }
 
     Matrix<const uint8_x4> frame;
-    REQUIREV(frame.assign(frameMemPtr, frameMemPitch, frameSizeX, frameSizeY) != 0);
+    REQUIRE(frame.assign(frameMemPtr, frameMemPitch, frameSizeX, frameSizeY) != 0);
 
     //----------------------------------------------------------------
     //
@@ -770,7 +786,7 @@ void atClientProcess(void* instance, const at_api_process* api)
     //----------------------------------------------------------------
 
     Client* client = static_cast<Client*>(instance);
-    REQUIREV(client != 0);
+    REQUIRE(client != 0);
 
     ////
 
@@ -812,7 +828,7 @@ void atClientProcess(void* instance, const at_api_process* api)
 
     at_bool atRunning = false;
     at_bool atPlaying = false;
-    requirev(api->get_continuous_mode(api, &atRunning, &atPlaying) != 0);
+    REQUIRE(api->get_continuous_mode(api, &atRunning, &atPlaying) != 0);
 
     //----------------------------------------------------------------
     //
@@ -838,15 +854,14 @@ void atClientProcess(void* instance, const at_api_process* api)
 
     ////
 
-    stdDiscard(client->assembly.process(stdPassKit(processKit)));
+    require(client->assembly.process(stdPassKit(processKit)));
 
-    //----------------------------------------------------------------
-    //
-    // Monitor malloc usage
-    //
-    //----------------------------------------------------------------
+    returnSuccess;
+}
 
-    if (mallocMonitor.counter)
-        printMsg(kit.localLog, STR("In-Process Malloc Count: %0"), mallocMonitor.counter, msgWarn);
+//----------------------------------------------------------------
 
+void atClientProcess(void* instance, const at_api_process* api)
+{
+    errorBlock(atClientProcessCore(instance, api));
 }

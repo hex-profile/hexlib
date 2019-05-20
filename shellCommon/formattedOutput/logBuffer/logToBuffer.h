@@ -28,7 +28,7 @@ public:
     bool clear()
     {
         if (outputInterface)
-            require(outputInterface->clear());
+            ensure(outputInterface->clear());
 
         return true;
     }

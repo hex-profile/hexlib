@@ -10,7 +10,7 @@
 //
 //================================================================
 
-bool point3dUsage()
+stdbool point3dUsage()
 {
     // Type traits: signed/unsigned.
     COMPILE_ASSERT(TYPE_IS_SIGNED(const Point3D<int>));

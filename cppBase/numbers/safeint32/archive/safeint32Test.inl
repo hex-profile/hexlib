@@ -522,7 +522,7 @@ stdbool testDivision(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
-    bool ok = testBinarySpecialCasesAndRandom<Perk, Division<Perk> >(rndgen, stdPass);
+    bool ok = testBinarySpecialCasesAndRandom<Perk, Division<Perk>>(rndgen, stdPass);
     require(ok);
 
     stdEnd;
@@ -580,10 +580,9 @@ stdbool testRemainder(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
-    bool ok = testBinarySpecialCasesAndRandom<Perk, Remainder<Perk> >
-        (rndgen, stdPass);
+    require(testBinarySpecialCasesAndRandom<Perk, Remainder<Perk>>(rndgen, stdPass));
 
-    stdEndEx(ok);
+    stdEnd;
 }
 
 //================================================================
@@ -601,10 +600,9 @@ stdbool testAddition(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
-    bool ok = testBinarySpecialCasesAndRandom<Perk, Addition<Perk> >
-        (rndgen, stdPass);
+    require(testBinarySpecialCasesAndRandom<Perk, Addition<Perk>>(rndgen, stdPass));
 
-    stdEndEx(ok);
+    stdEnd;
 }
 
 //================================================================
@@ -622,10 +620,9 @@ stdbool testSubtraction(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
-    bool ok = testBinarySpecialCasesAndRandom<Perk, Subtraction<Perk> >
-        (rndgen, stdPass);
+    require(testBinarySpecialCasesAndRandom<Perk, Subtraction<Perk>>(rndgen, stdPass));
 
-    stdEndEx(ok);
+    stdEnd;
 }
 
 //================================================================
@@ -759,8 +756,8 @@ stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     stdBegin;
 
-    require((testUnaryPlusMinus<Perk, UnaryMinus<Perk> >(rndgen, stdPass)));
-    require((testUnaryPlusMinus<Perk, UnaryPlus<Perk> >(rndgen, stdPass)));
+    require((testUnaryPlusMinus<Perk, UnaryMinus<Perk>>(rndgen, stdPass)));
+    require((testUnaryPlusMinus<Perk, UnaryPlus<Perk>>(rndgen, stdPass)));
 
     require(testMultiplication<Perk>(rndgen, stdPass));
 
@@ -770,8 +767,8 @@ stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
     require(testAddition<Perk>(rndgen, stdPass));
     require(testSubtraction<Perk>(rndgen, stdPass));
 
-    require((testShift<Perk, ShiftLeft<Perk> >(rndgen, stdPass)));
-    require((testShift<Perk, ShiftRight<Perk> >(rndgen, stdPass)));
+    require((testShift<Perk, ShiftLeft<Perk>>(rndgen, stdPass)));
+    require((testShift<Perk, ShiftRight<Perk>>(rndgen, stdPass)));
 
     stdEnd;
 }

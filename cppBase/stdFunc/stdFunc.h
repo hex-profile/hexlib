@@ -2,6 +2,7 @@
 
 #include "stdFunc/traceCallstack.h"
 #include "stdFunc/profiler.h"
+#include "compileTools/errorHandling.h"
 
 //================================================================
 //
@@ -121,13 +122,10 @@
 //================================================================
 
 #define stdEnd \
-    return true \
+    returnSuccess \
 
 #define stdEndv \
     return \
-
-#define stdEndEx(value) \
-    return (value) \
 
 //================================================================
 //
@@ -140,9 +138,6 @@
 
 #define stdEndScoped \
     stdEnd; }
-
-#define stdEndExScoped(value) \
-    stdEndEx(value); }
 
 //================================================================
 //
@@ -181,47 +176,3 @@ extern const NullKit nullKit;
 
 #define stdNullBegin \
     TRACE_REASSEMBLE(stdTraceName);
-
-//================================================================
-//
-// Preparing for the remake of all hexlib projects 
-// to exception-based error handling.
-//
-// Temporary types to find all error recovering places in code.
-//
-//================================================================
-
-using stdvoid = void;
-
-////
-
-class stdbool 
-//#if PLATFORM == 0
-//    [[nodiscard]]
-//#endif
-{
-
-public:
-    
-    stdbool(bool value)
-        : value(value) {}
-
-    operator bool () const
-        {return value;}
-
-private:
-
-    bool value;
-
-};
-
-//================================================================
-//
-// stdDiscard
-//
-//================================================================
-
-inline void suppressHelper(stdbool value) {}
-
-#define stdDiscard(value) \
-    suppressHelper(value)

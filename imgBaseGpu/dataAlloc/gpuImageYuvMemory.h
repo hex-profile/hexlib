@@ -3,6 +3,7 @@
 #include "dataAlloc/gpuMatrixMemory.h"
 #include "data/gpuImageYuv.h"
 #include "numbers/divRound.h"
+#include "storage/rememberCleanup.h"
 
 //================================================================
 //
@@ -56,12 +57,12 @@ public:
     {
         Point<Space> chromaSize = divNonneg(size, point(2), sizeRounding);
 
-        bool okLuma = luma.reallocEx(size, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);
-        bool okChroma = chroma.reallocEx(chromaSize, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);
+        REMEMBER_CLEANUP_EX(deallocCleanup, dealloc());
 
-        if_not (okLuma && okChroma)
-            {dealloc(); return false;}
+        require(luma.reallocEx(size, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru));
+        require(chroma.reallocEx(chromaSize, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru));
 
+        deallocCleanup.cancel();
         return true;
     }
 

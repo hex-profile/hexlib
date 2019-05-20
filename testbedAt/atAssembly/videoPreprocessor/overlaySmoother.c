@@ -318,7 +318,7 @@ struct SharedStruct
         stdBegin;
 
         if (initialized)
-            return true;
+            returnSuccess;
 
         ////
 
@@ -425,7 +425,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
         float32 timeToWait = clampMin(targetDelay - elapsedTime, 0.f);
 
         if (targetSmoothing && timeToWait > 0)
-            {resultWaitTime = timeToWait; return true;}
+            {resultWaitTime = timeToWait; returnSuccess;}
     }
 
     //----------------------------------------------------------------
@@ -444,7 +444,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
             queueSize >= 1 && shared.outputInterface != 0;
 
         if_not (everythingIsReady)
-            {resultWaitTime = float32Nan(); return true;}
+            {resultWaitTime = float32Nan(); returnSuccess;}
 
         ////
 
@@ -492,6 +492,66 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
 
 //================================================================
 //
+// serverFuncCore
+//
+//================================================================
+
+stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
+{
+    stdBegin;
+
+    TimerImpl timer;
+
+    TimeMoment lastOutput;
+    bool lastOutputDefined = false;
+
+    uint32 outputFrameCount = 0;
+
+    ////
+
+    for (;;)
+    {
+
+        {
+            CRITSEC_GUARD(shared.varLock);
+
+            if (shared.varShutdown)
+                break;
+        }
+
+        ////
+
+        float32 resultWaitTime = 0;
+        require(tryToOutputOneFrame(shared, lastOutputDefined, lastOutput, timer, resultWaitTime, outputFrameCount, stdPass));
+
+        if (resultWaitTime == 0.f)
+        {
+            ++outputFrameCount;
+            continue; // go next frame
+        }
+
+        ////
+
+        if_not (def(resultWaitTime))
+        {
+            shared.serverWake.wait();
+        }
+        else
+        {
+            REQUIRE(resultWaitTime >= 0.f);
+            int32 waitMs = convertDown<int32>(resultWaitTime * 1000);
+
+            if (waitMs > 0)
+                shared.serverWake.waitWithTimeout(waitMs);
+        }
+
+    }
+
+    stdEnd;
+}
+
+//================================================================
+//
 // serverFunc
 //
 //================================================================
@@ -523,59 +583,10 @@ void serverFunc(void* param)
 
     TRACE_ROOT_STD;
 
-    ////
-
     ErrorLogDebugBreak errorLog;
     ErrorLogKit kit(errorLog);
 
-    ////
-
-    TimerImpl timer;
-
-    TimeMoment lastOutput;
-    bool lastOutputDefined = false;
-
-    uint32 outputFrameCount = 0;
-
-    ////
-
-    for (;;)
-    {
-
-        {
-            CRITSEC_GUARD(shared.varLock);
-
-            if (shared.varShutdown)
-                break;
-        }
-
-        ////
-
-        float32 resultWaitTime = 0;
-        requirev(tryToOutputOneFrame(shared, lastOutputDefined, lastOutput, timer, resultWaitTime, outputFrameCount, stdPass));
-
-        if (resultWaitTime == 0.f)
-        {
-            ++outputFrameCount;
-            continue; // go next frame
-        }
-
-        ////
-
-        if_not (def(resultWaitTime))
-        {
-            shared.serverWake.wait();
-        }
-        else
-        {
-            REQUIREV(resultWaitTime >= 0.f);
-            int32 waitMs = convertDown<int32>(resultWaitTime * 1000);
-
-            if (waitMs > 0)
-                shared.serverWake.waitWithTimeout(waitMs);
-        }
-
-    }
+    ensurev(errorBlock(serverFuncCore(shared, stdPass)));
 
     ////
 
@@ -791,7 +802,7 @@ void OverlaySmootherImpl::serialize(const ModuleSerializeKit& kit)
 
 void OverlaySmootherImpl::setOutputInterface(AtAsyncOverlay* output)
 {
-    requirev(initialized && shared.running());
+    ensurev(initialized && shared.running());
 
     {
         CRITSEC_GUARD(shared.outputLock);

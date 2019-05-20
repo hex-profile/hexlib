@@ -25,7 +25,7 @@ bool SerializeNumericVar<Type>::getName(CfgOutputString& getName) const
 template <typename Type>
 bool SerializeNumericVar<Type>::getTextValue(CfgWriteStream& s) const
 {
-    require(cfgWrite(s, targetVar()));
+    ensure(cfgWrite(s, targetVar()));
     return true;
 }
 
@@ -39,7 +39,7 @@ template <typename Type>
 bool SerializeNumericVar<Type>::setTextValue(CfgReadStream& s) const 
 {
     Type readValue = targetVar.defaultValue();
-    require(cfgRead(s, readValue));
+    ensure(cfgRead(s, readValue));
 
     targetVar = readValue;
     return true;
@@ -55,14 +55,14 @@ template <typename Type>
 bool SerializeNumericVar<Type>::getTextComment(CfgWriteStream& s) const
 {
     if_not (comment.size == 1 && *comment.ptr == '*')
-        require(cfgWrite(s, comment));
+        ensure(cfgWrite(s, comment));
     else
     {
-        require(cfgWrite(s, targetVar.minValue()));
-        require(cfgWrite(s, STR(" .. (")));
-        require(cfgWrite(s, targetVar.defaultValue()));
-        require(cfgWrite(s, STR(") .. ")));
-        require(cfgWrite(s, targetVar.maxValue()));
+        ensure(cfgWrite(s, targetVar.minValue()));
+        ensure(cfgWrite(s, STR(" .. (")));
+        ensure(cfgWrite(s, targetVar.defaultValue()));
+        ensure(cfgWrite(s, STR(") .. ")));
+        ensure(cfgWrite(s, targetVar.maxValue()));
     }
 
     return true;

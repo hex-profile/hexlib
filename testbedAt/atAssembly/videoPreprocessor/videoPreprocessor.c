@@ -730,8 +730,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
     //
     //----------------------------------------------------------------
 
-    // ~~~ not exception-safe
-    bool ok = processPrepFrontend(target, inputFrame, frameIndex, stdPass);
+    bool processOk = errorBlock(processPrepFrontend(target, inputFrame, frameIndex, stdPass));
 
     //----------------------------------------------------------------
     //
@@ -762,7 +761,9 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 
     ////
 
-    stdEndExScoped(ok);
+    require(processOk);
+
+    stdEndScoped;
 }
 
 //================================================================

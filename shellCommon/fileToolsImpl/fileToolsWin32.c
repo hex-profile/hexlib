@@ -35,7 +35,7 @@ bool FileToolsWin32::fileExists(const CharType* filename)
 bool FileToolsWin32::getChangeTime(const CharType* filename, FileTime& result)
 {
     struct _stati64 tmp;
-    require(_stati64(filename, &tmp) == 0);
+    ensure(_stati64(filename, &tmp) == 0);
 
     result = tmp.st_mtime;
     return true;
@@ -50,9 +50,9 @@ bool FileToolsWin32::getChangeTime(const CharType* filename, FileTime& result)
 bool FileToolsWin32::getFileSize(const CharType* filename, FileSize& result)
 {
     struct _stati64 tmp;
-    require(_stati64(filename, &tmp) == 0);
+    ensure(_stati64(filename, &tmp) == 0);
 
-    require(tmp.st_size >= 0);
+    ensure(tmp.st_size >= 0);
     result = tmp.st_size;
 
     return true;
@@ -82,17 +82,17 @@ bool FileToolsWin32::expandPath(const CharType* filename, GetString& result)
     CharType* dummy(0);
     DWORD size = GetFullPathName(filename, 0, NULL, &dummy);
 
-    require(size >= 1);
-    require(size <= 65536);
+    ensure(size >= 1);
+    ensure(size <= 65536);
 
     CharType* pathPtr = new (std::nothrow) CharType[size];
-    require(pathPtr);
+    ensure(pathPtr);
     REMEMBER_CLEANUP1(delete[] pathPtr, CharType*, pathPtr);
 
     DWORD n = GetFullPathName(filename, size, pathPtr, &dummy);
-    require(n == size - 1);
+    ensure(n == size - 1);
 
-    require(result.setBuffer(pathPtr, n));
+    ensure(result.setBuffer(pathPtr, n));
     return true;
 }
 

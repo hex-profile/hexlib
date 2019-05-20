@@ -54,7 +54,7 @@ TMP_MACRO(INTERP_CUBIC_BSPLINE, typename BsplineExtendedType<PIXEL>::T, INTERP_N
 #if HOSTCODE
 
 template <>
-bool warpImage
+stdbool warpImage
 (
     const GpuMatrix<const PIXEL>& src,
     const LinearTransform<Point<float32>>& srcTransform,

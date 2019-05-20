@@ -15,9 +15,9 @@ struct CfgWrite<VectorX2>
     template <typename VectorType>
     static inline bool func(CfgWriteStream& s, const VectorType& value)
     {
-        require(cfgWrite(s, value.x));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.y));
+        ensure(cfgWrite(s, value.x));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.y));
         return true;
     }
 };
@@ -34,13 +34,13 @@ struct CfgWrite<VectorX4>
     template <typename VectorType>
     static inline bool func(CfgWriteStream& s, const VectorType& value)
     {
-        require(cfgWrite(s, value.x));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.y));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.z));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.w));
+        ensure(cfgWrite(s, value.x));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.y));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.z));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.w));
         return true;
     }
 };
@@ -55,22 +55,22 @@ inline bool readVectorSeparator(CfgReadStream& s)
 {
     CharType tmp(0);
 
-    require(s.readChars(&tmp, 1));
+    ensure(s.readChars(&tmp, 1));
 
     if_not (tmp == ' ')
-        require(s.unreadChar());
+        ensure(s.unreadChar());
 
     ////
 
-    require(s.readChars(&tmp, 1));
-    require(tmp == ',');
+    ensure(s.readChars(&tmp, 1));
+    ensure(tmp == ',');
 
     ////
 
-    require(s.readChars(&tmp, 1));
+    ensure(s.readChars(&tmp, 1));
 
     if_not (tmp == ' ')
-        require(s.unreadChar());
+        ensure(s.unreadChar());
 
     return true;
 }
@@ -89,9 +89,9 @@ struct CfgRead<VectorX2>
     {
         VectorType newValue(value);
 
-        require(cfgRead(s, newValue.x));
-        require(readVectorSeparator(s));
-        require(cfgRead(s, newValue.y));
+        ensure(cfgRead(s, newValue.x));
+        ensure(readVectorSeparator(s));
+        ensure(cfgRead(s, newValue.y));
 
         value = newValue;
 
@@ -113,16 +113,16 @@ struct CfgRead<VectorX4>
     {
         VectorType newValue(value);
 
-        require(cfgRead(s, newValue.x));
-        require(readVectorSeparator(s));
+        ensure(cfgRead(s, newValue.x));
+        ensure(readVectorSeparator(s));
 
-        require(cfgRead(s, newValue.y));
-        require(readVectorSeparator(s));
+        ensure(cfgRead(s, newValue.y));
+        ensure(readVectorSeparator(s));
 
-        require(cfgRead(s, newValue.z));
-        require(readVectorSeparator(s));
+        ensure(cfgRead(s, newValue.z));
+        ensure(readVectorSeparator(s));
 
-        require(cfgRead(s, newValue.w));
+        ensure(cfgRead(s, newValue.w));
 
         value = newValue;
 

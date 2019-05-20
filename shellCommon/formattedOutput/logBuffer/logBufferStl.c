@@ -24,7 +24,7 @@ bool LogBufferStl::add(const CharArray& text, MsgKind kind, const TimeMoment& mo
     }
     catch (const std::exception&)
     {
-        require(false);
+        ensure(false);
     }
 
     return true;
@@ -53,7 +53,7 @@ static inline RowInt restoreIndex(RowInt index, RowInt size)
 bool LogBufferStl::readRange(LogBufferReceiver& receiver, RowInt rowOrg, RowInt rowEnd)
 {
     RowInt arraySize = msgArray.size();
-    require(arraySize >= 0);
+    ensure(arraySize >= 0);
 
     ////
 
@@ -65,7 +65,7 @@ bool LogBufferStl::readRange(LogBufferReceiver& receiver, RowInt rowOrg, RowInt 
     for (RowInt i = rowOrg; i < rowEnd; ++i)
     {
         MsgRecord& r = msgArray[i];
-        require(receiver.addRow(CharArray(r.text.data(), r.text.size()), r.kind, r.moment));
+        ensure(receiver.addRow(CharArray(r.text.data(), r.text.size()), r.kind, r.moment));
     }
 
     return true;

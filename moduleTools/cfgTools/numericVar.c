@@ -9,7 +9,7 @@
 
 bool SerializeBoolVar::getTextValue(CfgWriteStream& s) const
 {
-    require(cfgWrite(s, var != 0));
+    ensure(cfgWrite(s, var != 0));
     return true;
 }
 
@@ -18,7 +18,7 @@ bool SerializeBoolVar::getTextValue(CfgWriteStream& s) const
 bool SerializeBoolVar::setTextValue(CfgReadStream& s)
 {
     bool readValue = false;
-    require(cfgRead(s, readValue));
+    ensure(cfgRead(s, readValue));
 
     var = readValue;
     return true;

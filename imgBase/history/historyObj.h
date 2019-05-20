@@ -155,7 +155,7 @@ public:
     sysinline void addAdvance()
     {
         ARRAY_EXPOSE(buffer);
-        requirev(storedEnd >= 0 && storedEnd < bufferSize);
+        ensurev(storedEnd >= 0 && storedEnd < bufferSize);
 
         if (++storedEnd == bufferSize)
             storedEnd = 0;
@@ -210,15 +210,15 @@ public:
         Type* result = 0;
 
         ARRAY_EXPOSE(buffer);
-        require_ex(bufferSize != 0, nullptr);
+        ensure_ex(bufferSize != 0, nullptr);
 
         Space I = -index-1;
-        require_ex(-storedCount <= I && I < 0, nullptr);
+        ensure_ex(-storedCount <= I && I < 0, nullptr);
 
         Space relativeIndex = storedEnd + I; // only to the left, minimum -bufferSize
         if (relativeIndex < 0) relativeIndex += bufferSize; // [0, bufferSize - 1]
 
-        require_ex(relativeIndex >= 0 && relativeIndex < bufferSize, nullptr);
+        ensure_ex(relativeIndex >= 0 && relativeIndex < bufferSize, nullptr);
         result = &helpModify(bufferPtr[relativeIndex]);
 
         return result;

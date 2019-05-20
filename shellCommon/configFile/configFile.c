@@ -178,7 +178,7 @@ public:
     void loadVars(CfgSerialization& serialization);
     void saveVars(CfgSerialization& serialization, bool forceUpdate);
 
-    stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
+    bool updateFile(bool forceUpdate, stdPars(CfgFileKit));
 
     stdbool editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
 
@@ -315,10 +315,8 @@ void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate)
 //
 //================================================================
 
-stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
+bool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 {
-    stdBegin;
-
     if_not (updateFileEnabled)
         return false;
 
@@ -329,7 +327,7 @@ stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
     // update file
     //
 
-    if (memory.saveToFile(filename.cstr(), kit.fileTools, stdPass))
+    if (errorBlock(memory.saveToFile(filename.cstr(), kit.fileTools, stdPass)))
     {
         memoryChanged = false;
     }
@@ -340,7 +338,7 @@ stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
         return false;
     }
 
-    stdEnd;
+    return true;
 }
 
 //================================================================

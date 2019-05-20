@@ -18,7 +18,7 @@ inline void reduceValue(const Type& value, Type& resultValue, CharArray& resultU
     ////
 
     Type absValue = absv(value);
-    requirev(def(absValue));
+    ensurev(def(absValue));
 
     ////
 

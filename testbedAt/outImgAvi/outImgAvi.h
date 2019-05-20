@@ -89,8 +89,8 @@ public:
     stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
     {
         stdBegin;
-        bool ok1 = outAvi.saveImage(img, hint.desc, hint.id, stdPass);
-        bool ok2 = baseConsole.addImage(img, hint, stdPass);
+        bool ok1 = errorBlock(outAvi.saveImage(img, hint.desc, hint.id, stdPass));
+        bool ok2 = errorBlock(baseConsole.addImage(img, hint, stdPass));
         require(ok1 && ok2);
         stdEnd;
     }
@@ -110,8 +110,8 @@ public:
     stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         stdBegin;
-        bool ok1 = outAvi.saveImage(size, imageProvider, desc, id, stdPass);
-        bool ok2 = baseOverlay.setImage(size, imageProvider, desc, id, textEnabled, stdPass);
+        bool ok1 = errorBlock(outAvi.saveImage(size, imageProvider, desc, id, stdPass));
+        bool ok2 = errorBlock(baseOverlay.setImage(size, imageProvider, desc, id, textEnabled, stdPass));
         require(ok1 && ok2);
         stdEnd;
     }

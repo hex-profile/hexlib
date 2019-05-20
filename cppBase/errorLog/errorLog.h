@@ -79,21 +79,12 @@ public:
 // Checks a condition; if the condition is not true,
 // outputs an error message to the error log and returns false.
 //
-// REQUIRE is for bool functions.
-// REQUIREV is for void functions.
-//
 //================================================================
 
 #define REQUIRE_EX(condition, failReport) \
     require(CHECK_EX(condition, failReport))
 
-#define REQUIREV_EX(condition, failReport) \
-    requirev(CHECK_EX(condition, failReport))
-
 //----------------------------------------------------------------
 
 #define REQUIRE(condition) \
     require(CHECK(condition))
-
-#define REQUIREV(condition) \
-    requirev(CHECK(condition))

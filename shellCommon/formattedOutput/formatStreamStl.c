@@ -18,10 +18,10 @@ void FormatStreamStlThunk::write(const CharType* bufferPtr, size_t bufferSize)
 
     try
     {
-        requirev(bufferSize >= 0);
+        ensurev(bufferSize >= 0);
 
         streamsize size = 0;
-        requirev(convertExact(bufferSize, size));
+        ensurev(convertExact(bufferSize, size));
 
         outputStream.write(bufferPtr, bufferSize);
         theOk = true;

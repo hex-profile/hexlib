@@ -54,7 +54,7 @@ void MallocFlatAllocatorThunk<AddrU>::dealloc(MemoryDeallocContext& deallocConte
     AddrU& memAddr = (AddrU&) deallocContext;
 
     COMPILE_ASSERT(sizeof(void*) == sizeof(size_t));
-    requirev(memAddr <= TYPE_MAX(size_t));
+    ensurev(memAddr <= TYPE_MAX(size_t));
 
     void* memPtr = (void*) memAddr;
 

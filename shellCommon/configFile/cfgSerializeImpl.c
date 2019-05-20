@@ -55,8 +55,8 @@ public:
 
     bool writeChars(const CharType* array, size_t size)
     {
-        try {stream.write(array, size); require(!!stream);}
-        catch (const exception&) {require(false);}
+        try {stream.write(array, size); ensure(!!stream);}
+        catch (const exception&) {ensure(false);}
         return true;
     }
 
@@ -66,8 +66,8 @@ public:
 
     bool writeCstr(const CharType* cstr)
     {
-        try {stream << cstr; require(!!stream);}
-        catch (const exception&) {require(false);}
+        try {stream << cstr; ensure(!!stream);}
+        catch (const exception&) {ensure(false);}
         return true;
     }
 
@@ -79,8 +79,8 @@ public:
         \
         bool write(Type value) \
         { \
-            try {stream << value; require(!!stream);} \
-            catch (const exception&) {require(false);} \
+            try {stream << value; ensure(!!stream);} \
+            catch (const exception&) {ensure(false);} \
             return true; \
         }
 
@@ -93,16 +93,16 @@ public:
     bool write(float value, int32 precision)
     {
         if (precision == 0) precision = FLT_DIG+1;
-        try {stream << setprecision(precision) << value; require(!!stream);}
-        catch (const exception&) {require(false);}
+        try {stream << setprecision(precision) << value; ensure(!!stream);}
+        catch (const exception&) {ensure(false);}
         return true;
     }
 
     bool write(double value, int32 precision)
     {
         if (precision == 0) precision = DBL_DIG+1;
-        try {stream << setprecision(precision) << value; require(!!stream);}
-        catch (const exception&) {require(false);}
+        try {stream << setprecision(precision) << value; ensure(!!stream);}
+        catch (const exception&) {ensure(false);}
         return true;
     }
 
@@ -145,8 +145,8 @@ public:
 
     bool unreadChar()
     {
-        try {stream.unget(); require(!!stream);}
-        catch (const exception&) {require(false);}
+        try {stream.unget(); ensure(!!stream);}
+        catch (const exception&) {ensure(false);}
         return true;
     }
 
@@ -156,8 +156,8 @@ public:
 
     bool readChars(CharType* result, size_t size)
     {
-        try {stream.read(result, size); require(!!stream);}
-        catch (const exception&) {require(false);}
+        try {stream.read(result, size); ensure(!!stream);}
+        catch (const exception&) {ensure(false);}
         return true;
     }
 
@@ -167,8 +167,8 @@ public:
         \
         bool read(Type& result) \
         { \
-            try {stream >> result; require(!!stream);} \
-            catch (const exception&) {require(false);} \
+            try {stream >> result; ensure(!!stream);} \
+            catch (const exception&) {ensure(false);} \
             return true; \
         }
 
@@ -187,11 +187,11 @@ public:
             String s;
             getline(stream, s);
 
-            require(stream || stream.eof());
-            require(result.addBuf(s.c_str(), s.size()));
+            ensure(stream || stream.eof());
+            ensure(result.addBuf(s.c_str(), s.size()));
 
         }
-        catch (const exception&) {require(false);}
+        catch (const exception&) {ensure(false);}
 
         return true;
     }
@@ -217,7 +217,7 @@ public:
             NamePart tmp(String(bufArray, bufSize));
             container.push_front(tmp);
         }
-        catch (const exception&) {require(false);}
+        catch (const exception&) {ensure(false);}
 
         return true;
     }
@@ -244,11 +244,11 @@ bool getVarNamePath(const CfgNamespace* scope, const CfgSerializeVariable& var, 
     GetNameToContainer getName(result);
 
     // Get main part
-    require(var.getName(getName));
+    ensure(var.getName(getName));
 
     // Get space scope
     for (const CfgNamespace* p = scope; p != 0; p = p->prev)
-        require(getName.addStr(charArrayFromPtr(p->desc)));
+        ensure(getName.addStr(charArrayFromPtr(p->desc)));
 
     return true;
 }
@@ -268,7 +268,7 @@ bool loadVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
     //
 
     NameContainer name;
-    require(getVarNamePath(scope, var, name));
+    ensure(getVarNamePath(scope, var, name));
 
     //
     // Try to get string value.
@@ -278,7 +278,7 @@ bool loadVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
     String varComment;
     String varBlockComment;
 
-    require(stringEnv.get(name, varValue, varComment, varBlockComment));
+    ensure(stringEnv.get(name, varValue, varComment, varBlockComment));
 
     //
     // And to set variable value.
@@ -286,7 +286,7 @@ bool loadVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
 
     ReadStreamStlThunk tmp(varValue.c_str()); // [D184B846]
 
-    require(var.setTextValue(tmp));
+    ensure(var.setTextValue(tmp));
 
     return true;
 }
@@ -335,7 +335,7 @@ bool saveVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
     //
 
     NameContainer name;
-    require(getVarNamePath(scope, var, name));
+    ensure(getVarNamePath(scope, var, name));
 
     //
     // Get text representation of the variable's value
@@ -374,7 +374,7 @@ bool saveVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
     String commentStr = comment.str();
     String blockCommentStr = blockComment.str();
 
-    require
+    ensure
     (
         stringEnv.set
         (

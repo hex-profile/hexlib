@@ -87,7 +87,7 @@ public:
         try
         {
             String name;
-            requirev(getSignalNamePath(scope, signal, name));
+            ensurev(getSignalNamePath(scope, signal, name));
 
             String key;
             GetStdString getKey(key);
@@ -102,7 +102,7 @@ public:
             uint32 id = currentId++;
             signal.setID(id);
 
-            requirev(registration.actsetAdd(id, name.c_str(), key.c_str(), comment.c_str()));
+            ensurev(registration.actsetAdd(id, name.c_str(), key.c_str(), comment.c_str()));
         }
         catch (const exception&) {}
     }

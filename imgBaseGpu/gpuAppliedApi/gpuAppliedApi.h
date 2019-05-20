@@ -386,7 +386,7 @@ public:
         if (theStream != 0)
         {
             TRACE_ROOT_STD;
-            stdDiscard(theSyncStream->waitStream(*theStream, stdNullPass));
+            errorBlock(theSyncStream->waitStream(*theStream, stdNullPass));
 
             theStream = 0;
             theSyncStream = 0;
@@ -422,19 +422,17 @@ public:
     template <typename Src, typename Dst, typename Kit>
     inline stdbool operator()(const Src& src, const Dst& dst, const GpuStream& stream, stdPars(Kit))
     {
-        bool ok = true;
-
         if (kit.dataProcessing)
         {
             bool pureGpu = false;
 
-            ok = enqueueCopy(src, dst, stream, pureGpu, stdPassThru);
+            require(enqueueCopy(src, dst, stream, pureGpu, stdPassThru));
 
-            if (!pureGpu && ok)
+            if (!pureGpu)
                 ioGuard.reassign(stream, kit.gpuStreamWaiting);
         }
 
-        return ok;
+        returnSuccess;
     }
 
     ////

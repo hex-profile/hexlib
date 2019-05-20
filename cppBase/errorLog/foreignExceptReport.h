@@ -3,7 +3,7 @@
 #include "userOutput/errorLogExKit.h"
 #include "stdFunc/stdFunc.h"
 
-#include "compileTools/errorHandlingBase.h"
+#include "compileTools/errorHandling.h"
 
 //================================================================
 //
@@ -18,7 +18,7 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept;
 // foreignExceptReport*
 //
 // Any foreign exception is reported to error log 
-// and re-thrown as a native "Failure".
+// and re-thrown as a native "ExceptFailure".
 //
 //================================================================
 
@@ -32,5 +32,5 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept;
     catch (...) \
     { \
         reportForeignException(stdPass); \
-        throwFailure(); \
+        exceptThrowFailure(); \
     }

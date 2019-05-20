@@ -640,7 +640,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 
     ////
 
-    bool smartSuccess = cutSmartBlock(text, rowIndex, result.code, o.smartMaxScanRows, stdPass);
+    bool smartSuccess = errorBlock(cutSmartBlock(text, rowIndex, result.code, o.smartMaxScanRows, stdPass));
 
     if_not (smartSuccess)
         cutSimpleSurroundingBlock(text, rowIndex, o.simpleCutRadius, o.simpleCutRadius, result.code);

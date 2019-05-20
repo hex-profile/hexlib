@@ -162,7 +162,7 @@ template <typename Type, typename Dst>
 stdbool visualizeScalarMatrix
 (
     const GpuMatrix<const Type>& src,
-    const LinearTransform<Point<float32> >& coordBackTransform,
+    const LinearTransform<Point<float32>>& coordBackTransform,
     int channel,
     const LinearTransform<float32>& valueTransform,
     InterpType upsampleType,
@@ -387,7 +387,7 @@ template <typename Type, typename Dst>
 stdbool upconvertValueMatrix
 (
     const GpuMatrix<const Type>& src,
-    const LinearTransform<Point<float32> >& coordBackTransform,
+    const LinearTransform<Point<float32>>& coordBackTransform,
     const LinearTransform<float32>& valueTransform,
     InterpType upsampleType,
     BorderMode borderMode,

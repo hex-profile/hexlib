@@ -39,10 +39,10 @@ template <typename Type, Space n>
 bool TfiltParam<Type, n>::addPrepare(const TempoScale& periodUp, const TempoScale& periodDn, TfiltSpeed& tfiltSpeed, float32 frameRate)
 {
     float32 betaUp = npassDecayAlpha(periodUp.alpha(frameRate), n);
-    require(def(betaUp));
+    ensure(def(betaUp));
 
     float32 betaDn = npassDecayAlpha(periodDn.alpha(frameRate), n);
-    require(def(betaDn));
+    ensure(def(betaDn));
 
     tfiltSpeed.betaUp = betaUp;
     tfiltSpeed.betaDn = betaDn;
@@ -60,7 +60,7 @@ template <typename Type, Space n>
 bool TfiltParam<Type, n>::add(const Type& value, const TempoScale& periodUp, const TempoScale& periodDn, float32 frameRate)
 {
     TfiltSpeed tfiltSpeed;
-    require(addPrepare(periodUp, periodDn, tfiltSpeed, frameRate));
+    ensure(addPrepare(periodUp, periodDn, tfiltSpeed, frameRate));
     addApply(value, tfiltSpeed);
 
     return true;
@@ -115,8 +115,8 @@ void TfiltNorm<Type, n>::reset()
 template <typename Type, Space n>
 bool TfiltNorm<Type, n>::add(const Type& value, const TempoScale& periodUp, const TempoScale& periodDn, float32 frameRate)
 {
-    require(avgV.add(value, periodUp, periodDn, frameRate));
-    require(avg1.add(convertNearest<Single>(1), periodUp, periodDn, frameRate));
+    ensure(avgV.add(value, periodUp, periodDn, frameRate));
+    ensure(avg1.add(convertNearest<Single>(1), periodUp, periodDn, frameRate));
 
     return true;
 }

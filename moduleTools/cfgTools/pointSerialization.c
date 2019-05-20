@@ -18,9 +18,9 @@ struct CfgWrite<PointFamily>
     template <typename PointType>
     static inline bool func(CfgWriteStream& s, const PointType& value)
     {
-        require(cfgWrite(s, value.X));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.Y));
+        ensure(cfgWrite(s, value.X));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.Y));
         return true;
     }
 };
@@ -37,11 +37,11 @@ struct CfgWrite<Point3DFamily>
     template <typename PointType>
     static inline bool func(CfgWriteStream& s, const PointType& value)
     {
-        require(cfgWrite(s, value.X));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.Y));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.Z));
+        ensure(cfgWrite(s, value.X));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.Y));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.Z));
         return true;
     }
 };
@@ -58,13 +58,13 @@ struct CfgWrite<Point4DFamily>
     template <typename PointType>
     static inline bool func(CfgWriteStream& s, const PointType& value)
     {
-        require(cfgWrite(s, value.X));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.Y));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.Z));
-        require(cfgWrite(s, STR(", ")));
-        require(cfgWrite(s, value.W));
+        ensure(cfgWrite(s, value.X));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.Y));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.Z));
+        ensure(cfgWrite(s, STR(", ")));
+        ensure(cfgWrite(s, value.W));
         return true;
     }
 };
@@ -79,22 +79,22 @@ inline bool skipComma(CfgReadStream& s)
 {
     CharType tmp(0);
 
-    require(s.readChars(&tmp, 1));
+    ensure(s.readChars(&tmp, 1));
 
     if_not (tmp == ' ')
-        require(s.unreadChar());
+        ensure(s.unreadChar());
 
     ////
 
-    require(s.readChars(&tmp, 1));
-    require(tmp == ',');
+    ensure(s.readChars(&tmp, 1));
+    ensure(tmp == ',');
 
     ////
 
-    require(s.readChars(&tmp, 1));
+    ensure(s.readChars(&tmp, 1));
 
     if_not (tmp == ' ')
-        require(s.unreadChar());
+        ensure(s.unreadChar());
 
     return true;
 }
@@ -113,9 +113,9 @@ struct CfgRead<PointFamily>
     {
         PointType newValue(value);
 
-        require(cfgRead(s, newValue.X));
-        require(skipComma(s));
-        require(cfgRead(s, newValue.Y));
+        ensure(cfgRead(s, newValue.X));
+        ensure(skipComma(s));
+        ensure(cfgRead(s, newValue.Y));
 
         value = newValue;
 
@@ -137,11 +137,11 @@ struct CfgRead<Point3DFamily>
     {
         PointType newValue(value);
 
-        require(cfgRead(s, newValue.X));
-        require(skipComma(s));
-        require(cfgRead(s, newValue.Y));
-        require(skipComma(s));
-        require(cfgRead(s, newValue.Z));
+        ensure(cfgRead(s, newValue.X));
+        ensure(skipComma(s));
+        ensure(cfgRead(s, newValue.Y));
+        ensure(skipComma(s));
+        ensure(cfgRead(s, newValue.Z));
 
         value = newValue;
 
@@ -163,13 +163,13 @@ struct CfgRead<Point4DFamily>
     {
         PointType newValue(value);
 
-        require(cfgRead(s, newValue.X));
-        require(skipComma(s));
-        require(cfgRead(s, newValue.Y));
-        require(skipComma(s));
-        require(cfgRead(s, newValue.Z));
-        require(skipComma(s));
-        require(cfgRead(s, newValue.W));
+        ensure(cfgRead(s, newValue.X));
+        ensure(skipComma(s));
+        ensure(cfgRead(s, newValue.Y));
+        ensure(skipComma(s));
+        ensure(cfgRead(s, newValue.Z));
+        ensure(skipComma(s));
+        ensure(cfgRead(s, newValue.W));
 
         value = newValue;
 

@@ -49,7 +49,7 @@ public:
     stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
     {
         result.clear();
-        require(printMsgTrace(kit.errorLogEx, STR("Texture allocation is too slow for temporary memory."), msgErr, stdPassThru));
+        printMsgTrace(kit.errorLogEx, STR("Texture allocation is too slow for temporary memory."), msgErr, stdPassThru);
         return false;
     }
 
@@ -96,7 +96,7 @@ void MemController::deinit()
 //================================================================
 
 template <typename AddrU, typename Kit>
-inline stdbool memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignment, stdPars(Kit))
+inline bool memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignment, stdPars(Kit))
 {
     return printMsg
     (
@@ -173,7 +173,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
             GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
         );
 
-        bool allocOk = target.realloc(stdPassKit(reallocKit));
+        bool allocOk = errorBlock(target.realloc(stdPassKit(reallocKit)));
 
         ////
 
@@ -259,7 +259,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
         cpuStateMemory.dealloc(); // Don't double mem usage.
         cpuStateAlignment = 1;
 
-        cpuAllocOk = cpuStateMemory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass);
+        cpuAllocOk = errorBlock(cpuStateMemory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass));
 
         if (cpuAllocOk)
             cpuStateAlignment = cpuAlignment;
@@ -274,7 +274,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
         gpuStateMemory.dealloc(); // Don't double mem usage.
         gpuStateAlignment = 1;
 
-        gpuAllocOk = gpuStateMemory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass);
+        gpuAllocOk = errorBlock(gpuStateMemory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass));
 
         if (gpuAllocOk)
             gpuStateAlignment = gpuAlignment;
@@ -286,8 +286,8 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     //
     //----------------------------------------------------------------
 
-    if_not (cpuAllocOk) stdDiscard(memFailReport(STR("CPU state"), cpuMemSize, cpuAlignment, stdPass));
-    if_not (gpuAllocOk) stdDiscard(memFailReport(STR("GPU state"), gpuMemSize, gpuAlignment, stdPass));
+    if_not (cpuAllocOk) memFailReport(STR("CPU state"), cpuMemSize, cpuAlignment, stdPass);
+    if_not (gpuAllocOk) memFailReport(STR("GPU state"), gpuMemSize, gpuAlignment, stdPass);
 
     if (cpuFastResize && gpuFastResize)
         stateActivity.fastAllocCount++;
@@ -480,7 +480,7 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
         cpuTempMemory.dealloc(); // Don't double mem usage.
         cpuTempAlignment = 1;
 
-        cpuAllocOk = cpuTempMemory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass);
+        cpuAllocOk = errorBlock(cpuTempMemory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass));
 
         if (cpuAllocOk)
             cpuTempAlignment = cpuAlignment;
@@ -495,7 +495,7 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
         gpuTempMemory.dealloc(); // Don't double mem usage.
         gpuTempAlignment = 1;
 
-        gpuAllocOk = gpuTempMemory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass);
+        gpuAllocOk = errorBlock(gpuTempMemory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass));
 
         if (gpuAllocOk)
             gpuTempAlignment = gpuAlignment;
