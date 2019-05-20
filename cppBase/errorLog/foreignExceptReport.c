@@ -21,10 +21,12 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept
     {
         std::rethrow_exception(exceptionPtr);
     }
+#if HEXLIB_ERROR_HANDLING == 1
     catch (const ExceptFailure&)
     {
         // Native exception.
     }
+#endif
     catch (const std::exception& e)
     {
         printMsgTrace(kit.errorLogEx, STR("Standard C++ library exception: %0."), e.what(), msgErr, stdPassThru);
