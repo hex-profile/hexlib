@@ -133,7 +133,7 @@ public:
 
     inline bool resize(Space size)
     {
-        require(SpaceU(size) <= SpaceU(theAllocSize));
+        ensure(SpaceU(size) <= SpaceU(theAllocSize));
         BaseArray::assign(theAllocPtr, size, arrayPreconditionsAreVerified());
 
         return true;

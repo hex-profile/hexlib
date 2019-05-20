@@ -12,6 +12,7 @@
 #include "errorLog/errorLog.h"
 #include "errorLog/debugBreak.h"
 #include "numbers/int/intType.h"
+#include "storage/rememberCleanup.h"
 
 //================================================================
 //
@@ -83,6 +84,8 @@ private:
 
 stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
 {
+    stdBegin;
+
     section.clear();
 
     auto& sectionEx = section.data.recast<CriticalSectionWin32>();
@@ -90,7 +93,7 @@ stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdP
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
 
-    return true;
+    stdEnd;
 }
 
 //================================================================
@@ -290,15 +293,23 @@ public:
 
     virtual bool setPriority(ThreadPriority priority)
     {
-        return SetThreadPriority(handle, threadPriorityToWin32(priority)) != 0;
+        ensure(opened);
+        ensure(SetThreadPriority(handle, threadPriorityToWin32(priority)) != 0);
+        return true;
     }
 
 public:
 
-    ThreadControllerWin32(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, stdbool& ok, stdPars(ErrorLogKit))
+    ~ThreadControllerWin32() {close();}
+
+public:
+
+    // Open is atomic
+    stdbool open(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, stdPars(ErrorLogKit))
     {
         stdBegin;
-        ok = false;
+        
+        REQUIRE(!opened);
 
         ////
 
@@ -306,27 +317,32 @@ public:
         callerParams.threadParams = threadParams;
 
         unsigned vcStackSize = 0;
-        REQUIREV(convertExact(stackSize, vcStackSize));
+        REQUIRE(convertExact(stackSize, vcStackSize));
         handle = (void*) _beginthreadex(NULL, vcStackSize, threadCallerFunc, &callerParams, 0, NULL);
-        REQUIREV(handle != 0);
+        REQUIRE(handle != 0);
 
         ////
 
-        DEBUG_ONLY(testPtr = malloc(11);)
-        ok = true;
-        stdEndv;
+        DEBUG_ONLY(testPtr = malloc(11);) // do not check the debug allocation
+        opened = true;
+
+        stdEnd;
     }
 
-public:
-
-    ~ThreadControllerWin32()
+    void close()
     {
-        DEBUG_BREAK_CHECK(WaitForSingleObject(handle, INFINITE) == WAIT_OBJECT_0);
-        DEBUG_BREAK_CHECK(CloseHandle(handle) != 0);
-        DEBUG_ONLY(free(testPtr); testPtr = 0;)
+        if (opened) 
+        {
+            DEBUG_BREAK_CHECK(WaitForSingleObject(handle, INFINITE) == WAIT_OBJECT_0);
+            DEBUG_BREAK_CHECK(CloseHandle(handle) != 0);
+            DEBUG_ONLY(free(testPtr); testPtr = 0;)
+            opened = false;
+        }
     }
 
 private:
+
+    bool opened = false;
 
     HANDLE handle = 0;
 
@@ -364,16 +380,23 @@ public:
 
 stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
+    stdBegin;
+
     threadControl.waitAndClear();
 
     auto& threadControlEx = threadControl.data.recast<ThreadControllerWin32>();
 
-    stdbool ok = false;
-    constructParams(threadControlEx, ThreadControllerWin32, (threadFunc, threadParams, stackSize, ok, stdPassThru));
-    require(ok);
+    constructDefault(threadControlEx);
+    REMEMBER_CLEANUP_EX(destructControl, destruct(threadControlEx));
 
+    require(threadControlEx.open(threadFunc, threadParams, stackSize, stdPassThru));
+
+    ////
+
+    destructControl.cancel();
     threadControl.intrface = &threadControlEx;
-    return true;
+
+    stdEnd;
 }
 
 //================================================================
@@ -384,6 +407,8 @@ stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadPar
 
 stdbool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
+    stdBegin;
+
     threadControl.waitAndClear();
 
     auto& threadControlEx = threadControl.data.recast<CurrentThreadWin32>();
@@ -391,7 +416,7 @@ stdbool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPa
     constructDefault(threadControlEx);
     threadControl.intrface = &threadControlEx;
 
-    return true;
+    stdEnd;
 }
 
 //----------------------------------------------------------------

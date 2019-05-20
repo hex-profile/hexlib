@@ -42,7 +42,7 @@ static const float32 halfLifePoints[] =
 
 bool getMultiStageAlpha(float32 desiredHalfLife, Space stageCount, float32& result)
 {
-    require(stageCount >= 0 && stageCount < COMPILE_ARRAY_SIZE(halfLifePoints));
+    ensure(stageCount >= 0 && stageCount < COMPILE_ARRAY_SIZE(halfLifePoints));
     float32 unscaledHalfLifePoint = halfLifePoints[stageCount];
 
     ////
@@ -51,7 +51,7 @@ bool getMultiStageAlpha(float32 desiredHalfLife, Space stageCount, float32& resu
     float32 mu = expf(-divScale);
 
     result = 1 - mu;
-    require(def(result) && result >= 0.f && result <= 1.f);
+    ensure(def(result) && result >= 0.f && result <= 1.f);
 
     return true;
 }

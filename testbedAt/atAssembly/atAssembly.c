@@ -522,7 +522,7 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     metadataConfig.loadVars(serializer);
 
     metadataConfig.saveVars(serializer, true);
-    metadataConfig.updateFile(true, stdPass); // Correct the config file.
+    errorBlock(metadataConfig.updateFile(true, stdPass)); // Correct the config file.
 
     // Update the file properties after correction.
     require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass)); 
@@ -716,13 +716,13 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     configEditor = defaultEditor;
     REMEMBER_CLEANUP1_EX(configEditorCleanup, configEditor.clear(), SimpleString&, configEditor);
 
-    stdDiscard(configFile.loadFile(SimpleString(engineModule->getName()) + ".cfg", stdPassKit(kitCombine(kit, fileToolsKit))));
+    errorBlock(configFile.loadFile(SimpleString(engineModule->getName()) + ".cfg", stdPassKit(kitCombine(kit, fileToolsKit))));
     REMEMBER_CLEANUP1_EX(configFileCleanup, configFile.unloadFile(), ConfigFile&, configFile);
 
     configFile.loadVars(*this);
 
     configFile.saveVars(*this, true);
-    configFile.updateFile(true, stdPassKit(kitCombine(kit, fileToolsKit))); // fix potential errors
+    errorBlock(configFile.updateFile(true, stdPassKit(kitCombine(kit, fileToolsKit)))); // fix potential errors
 
     //
     // Register signals
@@ -795,7 +795,7 @@ stdvoid AtAssemblyImpl::finalize(stdPars(InitKit))
     //
 
     configFile.saveVars(*this, false);
-    configFile.updateFile(false, stdPassKit(kitCombine(kit, fileToolsKit)));
+    errorBlock(configFile.updateFile(false, stdPassKit(kitCombine(kit, fileToolsKit))));
 
     ////
 
@@ -1033,14 +1033,14 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
         configFile.saveVars(*this, false);
 
         // Edit the file
-        configFile.editFile(configEditor(), stdPass);
+        errorBlock(configFile.editFile(configEditor(), stdPass));
 
         // Load vars
         configFile.loadVars(*this);
 
         // Fix incorrect values in the file
         configFile.saveVars(*this, true);
-        configFile.updateFile(true, stdPass);
+        errorBlock(configFile.updateFile(true, stdPass));
     }
 
     //----------------------------------------------------------------
@@ -1077,7 +1077,7 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
     if (configUpdateDecimator.shouldUpdate(kit.timer))
     {
         configFile.saveVars(*this, false);
-        configFile.updateFile(false, stdPass);
+        errorBlock(configFile.updateFile(false, stdPass));
     }
 
     ////
@@ -1206,7 +1206,7 @@ public:
         return base.isThreadProtected();
     }
 
-    stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+    bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
     {
         bool ok = base.addMsgTrace(v, msgKind, stdNullPassThru);
 

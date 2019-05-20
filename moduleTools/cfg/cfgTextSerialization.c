@@ -33,8 +33,8 @@ public:
 bool CfgRead<bool>::func(CfgReadStream& s, bool& value)
 {
     CfgOutputStringSingleChar result;
-    require(s.readString(result));
-    require(result.charCount >= size_t{1});
+    ensure(s.readString(result));
+    ensure(result.charCount >= size_t{1});
 
     ////
 
@@ -43,7 +43,7 @@ bool CfgRead<bool>::func(CfgReadStream& s, bool& value)
     bool detect0 = (ch == '0' || ch == 'N' || ch == 'n');
     bool detect1 = (ch == '1' || ch == 'Y' || ch == 'y');
 
-    require(detect0 || detect1);
+    ensure(detect0 || detect1);
 
     ////
 

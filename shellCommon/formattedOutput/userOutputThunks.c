@@ -83,10 +83,8 @@ bool ErrorLogExThunk::isThreadProtected() const
 //
 //================================================================
 
-stdbool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+bool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
 {
-    stdNullBegin;
-
     const TraceScope* p = &TRACE_SCOPE(stdTraceName);
 
     if (msgLog)
@@ -110,5 +108,5 @@ stdbool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind,
         }
     }
 
-    stdEnd;
+    return true;
 }

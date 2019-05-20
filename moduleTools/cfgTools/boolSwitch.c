@@ -63,10 +63,10 @@ public:
 
     virtual bool getName(CfgOutputString& result) const
     {
-        require(SerializeStandardSignal::getName(result));
+        ensure(SerializeStandardSignal::getName(result));
 
         if (namePostfix.size)
-            require(result.addStr(namePostfix));
+            ensure(result.addStr(namePostfix));
 
         return true;
     }

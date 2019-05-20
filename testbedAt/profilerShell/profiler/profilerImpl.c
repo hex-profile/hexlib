@@ -84,7 +84,7 @@ void ProfilerImpl::resetMemory()
     nodeRefOwner.disconnectAll();
 
     ARRAY_EXPOSE(nodePool);
-    requirev(nodePoolSize >= 1);
+    ensurev(nodePoolSize >= 1);
     currentScope = unsafePtr(nodePoolPtr, 1);
     currentScope->init(CT("<all>"));
     nodeCount = 1;
@@ -124,7 +124,7 @@ inline void ProfilerImpl::enter(ProfilerScopeEx& scope, TraceLocation location, 
         {
             const ProfilerDeviceKit& kit = *deviceControl;
             TRACE_ROOT_STD;
-            stdDiscard(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
+            errorBlock(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
         }
     }
 
@@ -213,7 +213,7 @@ inline void ProfilerImpl::leave(ProfilerScopeEx& scope)
             {
                 const ProfilerDeviceKit& kit = *deviceControl;
                 TRACE_ROOT_STD;
-                stdDiscard(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
+                errorBlock(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
             }
         }
     }

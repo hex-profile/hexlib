@@ -49,15 +49,15 @@ public:
         for (size_t k = 0; k < positionCount; ++k)
         {
             if (k != 0)
-                require(cfgWrite(s, !block ? STR(", ") : STR("\n")));
+                ensure(cfgWrite(s, !block ? STR(", ") : STR("\n")));
 
             if (prefix)
             {
-                require(cfgWrite(s, k));
-                require(cfgWrite(s, STR(" ")));
+                ensure(cfgWrite(s, k));
+                ensure(cfgWrite(s, STR(" ")));
             }
 
-            require(cfgWrite(s, descPtr[k].name));
+            ensure(cfgWrite(s, descPtr[k].name));
 
             const CharArray& key = descPtr[k].key;
 
@@ -77,7 +77,7 @@ public:
     bool getTextComment(CfgWriteStream& s) const
     {
         if_not (longComment())
-            require(getComment(false, s));
+            ensure(getComment(false, s));
 
         return true;
     }
@@ -85,7 +85,7 @@ public:
     bool getBlockComment(CfgWriteStream& s) const
     {
         if (longComment())
-            require(getComment(true, s));
+            ensure(getComment(true, s));
 
         return true;
     }
@@ -121,8 +121,8 @@ public:
 
     virtual bool getName(CfgOutputString& result) const
     {
-        require(result.addStr(prefix));
-        require(result.addStr(STR("/-> ")));
+        ensure(result.addStr(prefix));
+        ensure(result.addStr(STR("/-> ")));
         return SerializeStandardSignal::getName(result);
     }
 

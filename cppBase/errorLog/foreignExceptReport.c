@@ -21,16 +21,16 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept
     {
         std::rethrow_exception(exceptionPtr);
     }
-    catch (const Failure&)
+    catch (const ExceptFailure&)
     {
         // Native exception.
     }
     catch (const std::exception& e)
     {
-        stdDiscard(printMsgTrace(kit.errorLogEx, STR("Standard C++ library exception: %0."), e.what(), msgErr, stdPassThru));
+        printMsgTrace(kit.errorLogEx, STR("Standard C++ library exception: %0."), e.what(), msgErr, stdPassThru);
     }
     catch (...)
     {
-        stdDiscard(printMsgTrace(kit.errorLogEx, STR("Unrecognized external exception."), msgErr, stdPassThru));
+        printMsgTrace(kit.errorLogEx, STR("Unrecognized external exception."), msgErr, stdPassThru);
     }
 }

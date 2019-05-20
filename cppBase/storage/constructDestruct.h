@@ -71,7 +71,7 @@ inline Type& constructParamsAux__(Type& x)
 //----------------------------------------------------------------
 
 #define constructParams(x, ClassName, params) \
-    (new ((NewLocalizer*) (void*) &(constructParamsAux__< ClassName >(x))) ClassName params)
+    (new ((NewLocalizer*) (void*) &(constructParamsAux__<ClassName>(x))) ClassName params)
 
 //================================================================
 //

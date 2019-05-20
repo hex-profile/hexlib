@@ -43,7 +43,7 @@ public:
 public:
 
     stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
-    stdbool setFakeImage(stdPars(ProcessKit)) {return true;}
+    stdbool setFakeImage(stdPars(ProcessKit)) {returnSuccess;}
     stdbool updateImage(stdPars(ProcessKit));
     stdbool clearQueue(stdPars(ProcessKit));
     stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));

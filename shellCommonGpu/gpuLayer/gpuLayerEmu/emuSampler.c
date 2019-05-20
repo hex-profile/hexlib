@@ -572,7 +572,7 @@ void emuSamplerRead1Dfetch(const EmuSamplerData& data, Space offset, void* resul
     ARRAY_EXPOSE_EX(info.array, array);
 
     // Read element
-    requirev(DEBUG_BREAK_CHECK(SpaceU(offset) < SpaceU(arraySize)));
+    ensurev(DEBUG_BREAK_CHECK(SpaceU(offset) < SpaceU(arraySize)));
     MemType value = arrayPtr[offset];
 
     // Extend integer type or convert to normalized float

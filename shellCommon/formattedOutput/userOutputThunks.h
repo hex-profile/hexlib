@@ -49,7 +49,7 @@ public:
 
     bool isThreadProtected() const;
 
-    stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars);
+    bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars);
 
 public:
 
