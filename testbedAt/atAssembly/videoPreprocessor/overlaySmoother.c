@@ -456,7 +456,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
         AtProviderFromCpuImage provider(image->matrix, kit);
 
         TimeMoment renderBegin = timer.moment();
-        REQUIRE(shared.outputInterface->setImage(image->matrix.size(), provider, stdPass));
+        require(shared.outputInterface->setImage(image->matrix.size(), provider, stdPass));
         TimeMoment renderEnd = timer.moment();
 
         ////

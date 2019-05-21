@@ -257,7 +257,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
 
     ////
 
-    if_not (memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass))
+    if_not (errorBlock(memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass)))
     {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
         returnFalse;
@@ -377,15 +377,14 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFi
 
     ////
 
-    if_not (launchEditor(configEditor, filename, stdPass))
+    if_not (errorBlock(launchEditor(configEditor, filename, stdPass)))
     {
-        if_not (launchEditor(CT("notepad"), filename, stdPass))
-            returnFalse;
+        require(launchEditor(CT("notepad"), filename, stdPass));
     }
 
     ////
 
-    if_not (memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass))
+    if_not (errorBlock(memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass)))
     {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
         returnFalse;

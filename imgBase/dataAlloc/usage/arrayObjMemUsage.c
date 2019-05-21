@@ -49,7 +49,7 @@ stdbool arrayObjMemUsage(stdPars(TestKit))
 
     // Allocate array, call default constructors of elements and check error.
     // If reallocation fails, array has zero size.
-    REQUIRE(m0.realloc(33, stdPass));
+    require(m0.realloc(33, stdPass));
 
     // Call element destructors and deallocate memory.
     // The container's destructor will call element destructors and deallocate memory automatically.

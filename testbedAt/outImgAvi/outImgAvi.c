@@ -622,7 +622,7 @@ stdbool AviWriter::writeImage
     REQUIRE(safeMul(alignedPitch, imageSize.Y, tmpSize));
 
     if_not (buffer.resize(tmpSize))
-        REQUIRE(buffer.realloc(tmpSize, imageProvider.baseByteAlignment(), kit.malloc, stdPass));
+        require(buffer.realloc(tmpSize, imageProvider.baseByteAlignment(), kit.malloc, stdPass));
 
     ARRAY_EXPOSE(buffer);
 

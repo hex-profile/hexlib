@@ -687,7 +687,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 
 stdvoid getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
-    if_not (getCodeBlockCore(location, o, sourceCache, result, stdPassThru))
+    if_not (errorBlock(getCodeBlockCore(location, o, sourceCache, result, stdPassThru)))
     {
         result.clear();
         result.userMsg = location;
@@ -1540,7 +1540,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
     }
 
-    REQUIRE(file.flushClose(stdPass));
+    require(file.flushClose(stdPass));
 
     //----------------------------------------------------------------
     //

@@ -43,7 +43,7 @@ stdbool ProfilerImpl::realloc(Space capacity, stdPars(AllocKit))
     //
 
     REQUIRE(capacity >= 1);
-    REQUIRE(nodePool.realloc(capacity, cpuBaseByteAlignment, kit.malloc, stdPass));
+    require(nodePool.realloc(capacity, cpuBaseByteAlignment, kit.malloc, stdPass));
 
     ARRAY_EXPOSE(nodePool);
     REQUIRE(nodePoolSize >= 1);

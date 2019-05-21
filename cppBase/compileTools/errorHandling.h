@@ -9,8 +9,6 @@
 
 #define HEXLIB_ERROR_HANDLING 0
 
-#define HEXLIB_ERROR_HANDLING_EXPERIMENTAL 1
-
 //================================================================
 //
 // Select version.
