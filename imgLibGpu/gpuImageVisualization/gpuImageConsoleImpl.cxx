@@ -657,36 +657,38 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     //
     //----------------------------------------------------------------
 
-    breakBlock_
+    auto printTextValue = [&] () -> stdbool
     {
-        breakRequire(hint.target == ImgOutputOverlay);
-        breakRequire(kit.userPoint.valid);
-
         Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // Space format
         Point<float32> srcPos = coordBackC1 * dstPos;
 
         Point<Space> srcInt = convertNearest<Space>(srcPos - 0.5f); // Back to grid and round
 
-        breakRequire(allv(img.size() >= 1));
+        require(allv(img.size() >= 1));
         srcInt = clampRange(srcInt, point(0), img.size() - 1);
 
         GpuMatrix<const Type> gpuElement;
-        breakRequire(img.subs(srcInt, point(1), gpuElement));
+        require(img.subs(srcInt, point(1), gpuElement));
 
         MatrixMemory<Type> cpuElement;
-        breakRequire(cpuElement.reallocForGpuExch(point(1), stdPass));
+        require(cpuElement.reallocForGpuExch(point(1), stdPass));
 
         GpuCopyThunk gpuCopy;
-        breakRequire(gpuCopy(gpuElement, cpuElement, stdPass));
+        require(gpuCopy(gpuElement, cpuElement, stdPass));
         gpuCopy.waitClear();
 
         if (kit.dataProcessing && getTextEnabled())
         {
             MATRIX_EXPOSE(cpuElement);
             Type value = *cpuElementMemPtr;
-            printMsgL(kit, STR("Value[%0] = %1"), srcInt, fltg(convertFloat32(value), 4));
+            require(printMsgL(kit, STR("Value[%0] = %1"), srcInt, fltg(convertFloat32(value), 4)));
         }
-    }
+
+        returnTrue;
+    };
+
+    if (hint.target == ImgOutputOverlay && kit.userPoint.valid)
+        errorBlock(printTextValue());
 
     //// 
 
@@ -812,26 +814,24 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
 
     ////
 
-    breakBlock_
+    auto drawArrow = [&] () -> stdbool
     {
-        breakRequire(kit.userPoint.valid);
-
         Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // Space format
         Point<float32> srcPos = coordBackMul * dstPos + coordBackAdd;
 
         Point<Space> srcInt = convertToNearestIndex(srcPos);
 
-        breakRequire(allv(image.size() >= 1));
+        require(allv(image.size() >= 1));
         srcInt = clampRange(srcInt, point(0), image.size() - 1);
 
         GpuMatrix<const Vector> gpuElement;
-        breakRequire(image.subs(srcInt, point(1), gpuElement));
+        require(image.subs(srcInt, point(1), gpuElement));
 
         MatrixMemory<Vector> cpuElement;
-        breakRequire(cpuElement.reallocForGpuExch(point(1), stdPass));
+        require(cpuElement.reallocForGpuExch(point(1), stdPass));
 
         GpuCopyThunk gpuCopy;
-        breakRequire(gpuCopy(gpuElement, cpuElement, stdPass));
+        require(gpuCopy(gpuElement, cpuElement, stdPass));
         gpuCopy.waitClear();
 
         ////
@@ -850,14 +850,14 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
 
         ////
 
-        breakRequire(def(vectorValue));
+        require(def(vectorValue));
 
         ////
 
         Point<float32> vectorSrcPos = convertIndexToPos(srcInt);
         Point<float32> vectorDstPos = (vectorSrcPos - coordBackAdd) / coordBackMul;
 
-        breakRequire
+        require
         (
             imposeVectorArrow
             (
@@ -867,7 +867,12 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
                 stdPass
             )
         );
-    }
+
+        returnTrue;
+    };
+
+    if (kit.userPoint.valid)
+        errorBlock(drawArrow());
 
     ////
 

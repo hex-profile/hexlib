@@ -24,10 +24,7 @@ class stdbool
 
 public:
     
-#if HEXLIB_ERROR_HANDLING_EXPERIMENTAL
-    explicit 
-#endif
-    sysinline stdbool(bool value)
+    sysinline explicit stdbool(bool value)
         : value(value) {}
 
     sysinline bool getSuccessValue() const 
@@ -41,8 +38,8 @@ private:
 
 //----------------------------------------------------------------
 
-sysinline bool allv(const stdbool& value)
-    {return value.getSuccessValue();}
+sysinline stdbool allv(const stdbool& value)
+    {return value;}
 
 //================================================================
 //
@@ -65,17 +62,21 @@ sysinline bool allv(const stdbool& value)
 //
 //================================================================
 
-#if HEXLIB_ERROR_HANDLING_EXPERIMENTAL
+template <typename Type>
+sysinline bool requireHelper(const Type& value);
 
-    #define require(condition) \
-        if (allv(condition)) ; else return stdbool(false)
+template <>
+sysinline bool requireHelper(const stdbool& value)
+    {return value.getSuccessValue();}
 
-#else
+template <>
+sysinline bool requireHelper(const bool& value)
+    {return value;}
 
-    #define require(condition) \
-        if (allv(condition)) ; else return false
+//----------------------------------------------------------------
 
-#endif
+#define require(condition) \
+    if (requireHelper(allv(condition))) ; else return stdbool(false)
 
 //================================================================
 //

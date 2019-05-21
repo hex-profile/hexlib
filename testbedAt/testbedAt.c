@@ -790,7 +790,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
 
     ////
 
-    if_not (getVideoName(*api, client->videofileName, mallocAllocator, stdPass))
+    if_not (errorBlock(getVideoName(*api, client->videofileName, mallocAllocator, stdPass)))
         client->videofileName.resizeNull();
 
     ////

@@ -204,11 +204,10 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
     //----------------------------------------------------------------
     //
-    // Continuous report
+    // Quick report
     //
     //----------------------------------------------------------------
 
-    if (1)
     {
         CHECK(profilerImpl.checkResetScope());
 
@@ -228,35 +227,38 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     //
     //----------------------------------------------------------------
 
-    breakBlock_
+    auto makeHtmlReport = [&] () -> stdbool
     {
-        breakRequire(htmlReportSignal != 0);
-
-        ////
-
         if_not (htmlOutputDir().length() > 0)
         {
             printMsgL(kit, STR("<%0> is not set"), htmlOutputDirName(), msgErr);
-            breakFalse;
+            returnFalse;
         }
 
         ////
 
         using namespace profilerReport;
 
-        breakRequire(CHECK(profilerImpl.checkResetScope()));
+        require(CHECK(profilerImpl.checkResetScope()));
 
         TimeMoment reportBegin = kit.timer.moment();
     
         ReportFileKit kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
-        breakRequire(htmlReport.makeReport(MakeReportParams(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
+        require(htmlReport.makeReport(MakeReportParams(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
             cycleCount, processingThroughput, htmlOutputDir().cstr()), stdPassKit(kitEx)));
 
         float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
 
         printMsg(kit.localLog, STR("Profiler report saved to %0 (%1 ms)"), htmlOutputDir().cstr(), fltf(reportTime * 1e3f, 2), msgWarn);
-    }
+
+        returnTrue;
+    };
+
+    ////
+
+    if (htmlReportSignal != 0)
+        errorBlock(makeHtmlReport());
 
     //----------------------------------------------------------------
     //

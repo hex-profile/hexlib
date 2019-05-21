@@ -178,12 +178,12 @@ sysinline bool operator ==(const float16& A, const float16& B)
 
 //================================================================
 //
-// compareResults
+// checkEqualResults
 //
 //================================================================
 
 template <typename Type>
-stdbool compareResults(const Array<const Type>& ref, const Array<const Type>& tst, Space& badIndex, stdPars(CpuFuncKit))
+stdbool checkEqualResults(const Array<const Type>& ref, const Array<const Type>& tst, Space& badIndex, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
         returnTrue;
@@ -344,7 +344,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 
     Space badIdx = 0;
 
-    if_not (errorBlock(compareResults<float16>(gpuResultCopy, cpuResult, badIdx, stdPass)))
+    if_not (errorBlock(checkEqualResults<float16>(gpuResultCopy, cpuResult, badIdx, stdPass)))
     {
         ARRAY_EXPOSE(srcCopy);
         ARRAY_EXPOSE(gpuResultCopy);
@@ -456,7 +456,7 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 
     Space badIdx = 0;
 
-    if_not (compareResults<uint32>(gpuResultCopy, cpuResult, badIdx, stdPass))
+    if_not (errorBlock(checkEqualResults<uint32>(gpuResultCopy, cpuResult, badIdx, stdPass)))
     {
         ARRAY_EXPOSE(srcCopy);
         ARRAY_EXPOSE(gpuResultCopy);

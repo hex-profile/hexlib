@@ -497,7 +497,7 @@ stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
     for (Space k = 0; k < frameHistoryCapacity; ++k)
     {
         FrameSnapshot* f = frameHistory.add();
-        REQUIRE(f->frameMemory.realloc(desiredFrameSize, stdPass));
+        require(f->frameMemory.realloc(desiredFrameSize, stdPass));
         f->frame = f->frameMemory;
     }
 
@@ -553,35 +553,36 @@ stdbool VideoPreprocessorImpl::processTarget
     //
     //----------------------------------------------------------------
 
-    breakBlock(outAviOk)
+    auto setAviOutput = [&] () -> stdbool
     {
-        if_not (aviConfig.savingActive)
-            breakFalse;
-
         if_not (aviConfig.outputDir->length() != 0)
         {
             printMsgL(kit, STR("AVI Saving: <%0> is not set (Testbed->Config->Edit)"), aviConfig.outputDirName(), msgWarn);
-            breakFalse;
+            returnFalse;
         }
 
-        breakBlock(setOk)
-        {
-            breakRequire(outImgAvi.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
-            breakRequire(outImgAvi.setCodec(outImgAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass));
-            breakRequire(outImgAvi.setFps(aviConfig.outputFps, stdPass));
-            breakRequire(outImgAvi.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass));
-        }
+        require(outImgAvi.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
+        require(outImgAvi.setCodec(outImgAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass));
+        require(outImgAvi.setFps(aviConfig.outputFps, stdPass));
+        require(outImgAvi.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass));
 
-        if_not (setOk)
-        {
+        returnTrue;
+    };
+
+    ////
+
+    bool outAviOk = false;
+    
+    if (aviConfig.savingActive)
+    {
+        outAviOk = errorBlock(setAviOutput());
+
+        if (outAviOk)
+            printMsgL(kit, STR("AVI Saving: Files are saved to %0 (playback %1 fps, compressor '%2')"),
+                aviConfig.outputDir->cstr(), aviConfig.outputFps(), aviConfig.outputCodec->cstr());
+        else
             printMsgL(kit, STR("AVI Saving: Error happened"), msgWarn);
-            breakFalse;
-        }
     }
-
-    if (outAviOk)
-        printMsgL(kit, STR("AVI Saving: Files are saved to %0 (playback %1 fps, compressor '%2')"),
-            aviConfig.outputDir->cstr(), aviConfig.outputFps(), aviConfig.outputCodec->cstr());
 
     ////
 

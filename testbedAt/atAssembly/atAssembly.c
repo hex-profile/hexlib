@@ -1264,7 +1264,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     using namespace signalImpl;
 
     if_not (signalHist.resize(lastSignalCount))
-        CHECK(signalHist.realloc(lastSignalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+        require(signalHist.realloc(lastSignalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
 
     bool anyEventsFound = false;
     bool realEventsFound = false;
@@ -1316,9 +1316,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //----------------------------------------------------------------
 
     bool frameAdvance = false;
-
-    if_not (frameChangeDetector.check(kit.atVideoInfo, frameAdvance, stdPass))
-        frameAdvance = true;
+    require(frameChangeDetector.check(kit.atVideoInfo, frameAdvance, stdPass));
 
     //----------------------------------------------------------------
     //
