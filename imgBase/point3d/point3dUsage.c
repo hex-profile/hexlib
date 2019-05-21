@@ -75,7 +75,7 @@ stdbool point3dUsage()
 
     // Reduction of Point3D<bool> to bool.
     require(allv(A >= 0));
-    if (anyv(A < 0)) return false;
+    if (anyv(A < 0)) returnFalse;
 
     // Min, max, clampRange functions.
     Point3D<int> t1 = minv(A, B);
@@ -84,5 +84,5 @@ stdbool point3dUsage()
     Point3D<int> t4 = clampMax(A, 10);
     // Point3D<int> t5 = clampRange(A, 0, 10);
 
-    return true;
+    returnTrue;
 }

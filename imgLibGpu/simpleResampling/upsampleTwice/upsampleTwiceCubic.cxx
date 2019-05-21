@@ -168,7 +168,7 @@ stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     //
     // The kernel covers destination 2k+1, 2k+2.

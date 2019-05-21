@@ -15,7 +15,7 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     MATRIX_EXPOSE(error);
 
@@ -63,7 +63,7 @@ stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanErr
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     MATRIX_EXPOSE(error);
 
@@ -111,7 +111,7 @@ stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAv
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     MATRIX_EXPOSE(data);
 
@@ -172,7 +172,7 @@ stdbool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsEr
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     MATRIX_EXPOSE(error);
 

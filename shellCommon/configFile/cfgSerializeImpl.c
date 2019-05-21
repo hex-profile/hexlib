@@ -56,7 +56,7 @@ public:
     bool writeChars(const CharType* array, size_t size)
     {
         try {stream.write(array, size); ensure(!!stream);}
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
         return true;
     }
 
@@ -67,7 +67,7 @@ public:
     bool writeCstr(const CharType* cstr)
     {
         try {stream << cstr; ensure(!!stream);}
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
         return true;
     }
 
@@ -80,7 +80,7 @@ public:
         bool write(Type value) \
         { \
             try {stream << value; ensure(!!stream);} \
-            catch (const exception&) {ensure(false);} \
+            catch (const exception&) {return false;} \
             return true; \
         }
 
@@ -94,7 +94,7 @@ public:
     {
         if (precision == 0) precision = FLT_DIG+1;
         try {stream << setprecision(precision) << value; ensure(!!stream);}
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
         return true;
     }
 
@@ -102,7 +102,7 @@ public:
     {
         if (precision == 0) precision = DBL_DIG+1;
         try {stream << setprecision(precision) << value; ensure(!!stream);}
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
         return true;
     }
 
@@ -146,7 +146,7 @@ public:
     bool unreadChar()
     {
         try {stream.unget(); ensure(!!stream);}
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
         return true;
     }
 
@@ -157,7 +157,7 @@ public:
     bool readChars(CharType* result, size_t size)
     {
         try {stream.read(result, size); ensure(!!stream);}
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
         return true;
     }
 
@@ -168,7 +168,7 @@ public:
         bool read(Type& result) \
         { \
             try {stream >> result; ensure(!!stream);} \
-            catch (const exception&) {ensure(false);} \
+            catch (const exception&) {return false;} \
             return true; \
         }
 
@@ -191,7 +191,7 @@ public:
             ensure(result.addBuf(s.c_str(), s.size()));
 
         }
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
 
         return true;
     }
@@ -217,7 +217,7 @@ public:
             NamePart tmp(String(bufArray, bufSize));
             container.push_front(tmp);
         }
-        catch (const exception&) {ensure(false);}
+        catch (const exception&) {return false;}
 
         return true;
     }

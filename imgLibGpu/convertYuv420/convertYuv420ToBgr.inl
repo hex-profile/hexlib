@@ -271,7 +271,7 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     stdBeginScoped;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     stdEnterElemCount(areaOf(dst.size() >> 1));
 

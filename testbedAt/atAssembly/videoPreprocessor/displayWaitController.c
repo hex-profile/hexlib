@@ -40,7 +40,7 @@ stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
     {
         lastOutput = kit.timer.moment();
         lastOutputInit = true;
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------

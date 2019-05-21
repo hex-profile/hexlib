@@ -99,7 +99,7 @@ void ProfilerImpl::resetMemory()
 bool ProfilerImpl::checkResetScope()
 {
     ARRAY_EXPOSE(nodePool);
-    require(nodePoolSize >= 1);
+    ensure(nodePoolSize >= 1);
 
     ////
 

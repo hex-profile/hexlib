@@ -41,7 +41,7 @@ stdbool copyMatrixAsArray(const MatrixEx<SrcPtr>& srcMatrix, const MatrixEx<DstP
     ////
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     ////
 

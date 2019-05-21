@@ -53,7 +53,7 @@ public:
         ////
 
         if_not (kit.dataProcessing)
-            return true;
+            returnTrue;
 
         ////
 

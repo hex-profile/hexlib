@@ -271,7 +271,7 @@ FOREACH_VISUALIZATION_TYPE(TMP_MACRO)
     ) \
     { \
         CALL_KERNEL(VectorType) \
-        return true; \
+        returnTrue; \
     }
 
 TMP_MACRO(float16_x2)

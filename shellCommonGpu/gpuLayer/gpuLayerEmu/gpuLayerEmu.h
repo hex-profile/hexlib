@@ -71,7 +71,7 @@ public:
 
     stdbool createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars);
     static void destroyContext(GpuContextDeallocContext& deallocContext);
-    stdbool setThreadContext(const GpuContext& context, stdNullPars) {return true;}
+    stdbool setThreadContext(const GpuContext& context, stdNullPars) {returnTrue;}
 
     //
     // Module
@@ -80,7 +80,7 @@ public:
     stdbool createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdNullPars)
     {
         result.clear();
-        return true;
+        returnTrue;
     }
 
     //
@@ -90,7 +90,7 @@ public:
     stdbool createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdNullPars)
     {
         result.clear();
-        return true;
+        returnTrue;
     }
 
     //
@@ -100,7 +100,7 @@ public:
     stdbool getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdNullPars)
     {
         result.clear();
-        return true;
+        returnTrue;
     }
 
     //
@@ -133,7 +133,7 @@ public:
     stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
     {
         result.clear();
-        return true;
+        returnTrue;
     }
 
     //

@@ -57,13 +57,13 @@
         stdBeginScoped; \
         \
         if_not (kit.dataProcessing) \
-            return true; \
+            returnTrue; \
         \
         uint32 elemCount = areaOf(groupCount) * (groupSizeX) * (groupSizeY); \
         stdEnterElemCount(elemCount); \
         \
         if_not (groupCount.X > 0 && groupCount.Y > 0) \
-            return true; \
+            returnTrue; \
         \
         GPT_FOREACH_SAMPLER(samplerList, GPT_BIND_SAMPLER, prefix) \
         \

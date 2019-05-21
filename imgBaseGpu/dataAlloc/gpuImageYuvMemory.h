@@ -63,7 +63,7 @@ public:
         require(chroma.reallocEx(chromaSize, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru));
 
         deallocCleanup.cancel();
-        return true;
+        returnTrue;
     }
 
     template <typename Kit>

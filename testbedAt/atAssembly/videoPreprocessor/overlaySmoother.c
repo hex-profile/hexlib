@@ -318,7 +318,7 @@ struct SharedStruct
         stdBegin;
 
         if (initialized)
-            returnSuccess;
+            returnTrue;
 
         ////
 
@@ -425,7 +425,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
         float32 timeToWait = clampMin(targetDelay - elapsedTime, 0.f);
 
         if (targetSmoothing && timeToWait > 0)
-            {resultWaitTime = timeToWait; returnSuccess;}
+            {resultWaitTime = timeToWait; returnTrue;}
     }
 
     //----------------------------------------------------------------
@@ -444,7 +444,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
             queueSize >= 1 && shared.outputInterface != 0;
 
         if_not (everythingIsReady)
-            {resultWaitTime = float32Nan(); returnSuccess;}
+            {resultWaitTime = float32Nan(); returnTrue;}
 
         ////
 

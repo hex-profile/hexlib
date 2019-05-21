@@ -43,7 +43,7 @@ public:
     virtual bool getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidLayout& layout) const
     {
         GpuPyramidLayout baseLayout;
-        require(basePyramid->getGpuLayout(basePointer, baseLayout));
+        ensure(basePyramid->getGpuLayout(basePointer, baseLayout));
 
         ////
 

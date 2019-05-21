@@ -101,7 +101,7 @@ public:
         CpuAddrU availSpace = memEnd - memPtr;
 
         // Does the unaligned size fit into the available space?
-        require(size <= availSpace);
+        ensure(size <= availSpace);
 
         //
         // The unaligned size fits into the available space AND

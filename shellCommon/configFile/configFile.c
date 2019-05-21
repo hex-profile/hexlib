@@ -178,7 +178,7 @@ public:
     void loadVars(CfgSerialization& serialization);
     void saveVars(CfgSerialization& serialization, bool forceUpdate);
 
-    bool updateFile(bool forceUpdate, stdPars(CfgFileKit));
+    stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
 
     stdbool editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
 
@@ -236,7 +236,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
     if (cfgFilename.length() == 0)
     {
         updateFileEnabled = false;
-        return false;
+        returnFalse;
     }
 
     ////
@@ -252,7 +252,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
     {
         printMsg(kit.msgLog, STR("Cannot get absolute path of config file '%0'"), cfgFilename.cstr(), msgWarn);
         updateFileEnabled = false;
-        return false;
+        returnFalse;
     }
 
     ////
@@ -260,7 +260,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
     if_not (memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass))
     {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
-        return false;
+        returnFalse;
     }
 
     memoryChanged = false;
@@ -315,13 +315,13 @@ void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate)
 //
 //================================================================
 
-bool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
+stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 {
     if_not (updateFileEnabled)
-        return false;
+        returnFalse;
 
     if_not (forceUpdate || memoryChanged)
-        return true;
+        returnTrue;
 
     //
     // update file
@@ -335,10 +335,10 @@ bool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
     {
         printMsg(kit.msgLog, STR("Cannot save config file %0, updating is stopped"), filename.cstr(), msgWarn);
         updateFileEnabled = false;
-        return false;
+        returnFalse;
     }
 
-    return true;
+    returnTrue;
 }
 
 //================================================================
@@ -350,12 +350,12 @@ bool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filename, stdPars(MsgLogKit))
 {
     SimpleString cmdLine = configEditor + CT(" \"") + filename + CT("\"");
-    if_not (cmdLine.ok()) return false;
+    require(cmdLine.ok());
 
     ProcessToolImplThunk processTool(kit.msgLog);
     require(processTool.runAndWaitProcess(cmdLine.cstr()));
 
-    return true;
+    returnTrue;
 }
 
 //================================================================
@@ -380,7 +380,7 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFi
     if_not (launchEditor(configEditor, filename, stdPass))
     {
         if_not (launchEditor(CT("notepad"), filename, stdPass))
-            return false;
+            returnFalse;
     }
 
     ////
@@ -388,7 +388,7 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFi
     if_not (memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass))
     {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
-        return false;
+        returnFalse;
     }
 
     memoryChanged = false;

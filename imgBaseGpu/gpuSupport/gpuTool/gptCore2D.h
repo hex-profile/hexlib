@@ -82,7 +82,7 @@
         stdBegin; \
         \
         if_not (kit.dataProcessing) \
-            return true; \
+            returnTrue; \
         \
         Point<Space> globSize = point(0); \
         GPT_FOREACH(matrixList, GPT_GET_SIZE) \
@@ -94,7 +94,7 @@
         REQUIRE(superTaskCount >= 0); \
         \
         if_not (groupCountX && groupCountY && superTaskCount) \
-            return true; \
+            returnTrue; \
         \
         GPT_FOREACH_SAMPLER(samplerList, GPT_BIND_SAMPLER, prefix) \
         \

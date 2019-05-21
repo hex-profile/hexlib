@@ -76,7 +76,7 @@ public:
 
     bool resize(AddrU size) // rearrange without reallocation
     {
-        require(SpaceU(size) <= SpaceU(allocSize));
+        ensure(SpaceU(size) <= SpaceU(allocSize));
         currentSize = size;
 
         return true;

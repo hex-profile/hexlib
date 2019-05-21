@@ -22,15 +22,25 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept;
 //
 //================================================================
 
-#define foreignExceptReportBeg \
-    \
-    try {
+template <typename Action, typename Kit>
+sysinline bool foreignErrorBlockHelper(const Action& action, const Kit& kit)
+{
+    bool ok = false;
 
-#define foreignExceptReportEnd \
-    \
-    } \
-    catch (...) \
-    { \
-        reportForeignException(stdPass); \
-        exceptThrowFailure(); \
+    try
+    {
+        action();
+        ok = true;
     }
+    catch (...) 
+    {
+        reportForeignException(stdPass);
+    }
+
+    return ok;
+}
+
+//----------------------------------------------------------------
+
+#define foreignErrorBlock(action) \
+    errorBlock(foreignErrorBlockHelper([&] () {action;}, kit))

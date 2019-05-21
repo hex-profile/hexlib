@@ -28,10 +28,10 @@ bool LogToStlConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         FormatStreamStlThunk formatToStream(stringStream);
 
         v.func(v.value, formatToStream);
-        require(formatToStream.isOk());
+        ensure(formatToStream.isOk());
 
         stringStream << endl;
-        require(!!stringStream);
+        ensure(!!stringStream);
 
         {
             lock_guard<decltype(mutex)> guard(mutex);
@@ -53,7 +53,7 @@ bool LogToStlConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         }
 
     }
-    catch (const exception&) {require(false);}
+    catch (const exception&) {return false;}
 
     return true;
 }

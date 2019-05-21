@@ -25,7 +25,7 @@ public:
     {
         GUARD_IF_LOCK_CREATED;
 
-        require(baseWriter.add(text, kind, moment));
+        ensure(baseWriter.add(text, kind, moment));
         return true;
     }
 
@@ -33,7 +33,7 @@ public:
     {
         GUARD_IF_LOCK_CREATED;
 
-        require(baseWriter.clear());
+        ensure(baseWriter.clear());
         return true;
     }
 
@@ -43,7 +43,7 @@ public:
     {
         GUARD_IF_LOCK_CREATED;
 
-        require(baseReader.readRange(receiver, rowOrg, rowEnd));
+        ensure(baseReader.readRange(receiver, rowOrg, rowEnd));
         return true;
     }
 

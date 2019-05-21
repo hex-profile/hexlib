@@ -464,7 +464,7 @@ public:
     ~StreamEx() {destroy();}
 
     stdbool create(const GpuContext& context, stdPars(ErrorLogExKit))
-        {this->context = context; return true;}
+        {this->context = context; returnTrue;}
 
     void destroy()
         {}
@@ -679,7 +679,7 @@ inline stdbool genericArrayCopy
         if (gpuEnqueueMode == GpuEnqueueNormal) \
             require(genericArrayCopy(srcAddr, dstAddr, size, uncast(uncast(stream).getContext()), stdPassThru)); \
         \
-        return true; \
+        returnTrue; \
     }
 
 TMP_MACRO(copyArrayCpuCpu, CpuAddrU, CpuAddrU);
@@ -798,7 +798,7 @@ inline stdbool genericMatrixCopy
             ); \
         } \
         \
-        return true; \
+        returnTrue; \
     }
 
 TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU);
@@ -936,7 +936,7 @@ stdbool EmuExecApiThunk::callKernel
 
 stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
 {
-    return true;
+    returnTrue;
 }
 
 //================================================================
@@ -951,29 +951,29 @@ stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
 
 stdbool EmuExecApiThunk::putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
 {
-    return true;
+    returnTrue;
 }
 
 stdbool EmuExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
 {
-    return true;
+    returnTrue;
 }
 
 stdbool EmuExecApiThunk::checkEvent(const GpuEvent& event, stdNullPars)
 {
-    return true;
+    returnTrue;
 }
 
 stdbool EmuExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
 {
     realWaitHappened = false;
-    return true;
+    returnTrue;
 }
 
 stdbool EmuExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
 {
     time = 0;
-    return true;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

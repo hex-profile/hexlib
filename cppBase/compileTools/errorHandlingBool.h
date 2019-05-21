@@ -46,15 +46,15 @@ sysinline bool allv(const stdbool& value)
 
 //================================================================
 //
-// returnSuccess
-// returnFailure
+// returnTrue
+// returnFalse
 //
 //================================================================
 
-#define returnSuccess \
+#define returnTrue \
     return stdbool(true)
 
-#define returnFailure \
+#define returnFalse \
     return stdbool(false)
 
 //================================================================
@@ -83,31 +83,7 @@ sysinline bool allv(const stdbool& value)
 //
 //================================================================
 
-#if HEXLIB_ERROR_HANDLING == 0
-
-    sysinline bool errorBlock(const stdbool& value)
-    {
-        return value.getSuccessValue();
-    }
-
-#elif HEXLIB_ERROR_HANDLING == 1
-
-    template <typename Action>
-    sysinline bool exceptBlockHelper(const Action& action)
-    {
-        bool ok = false;
-
-        try
-        {
-            action();
-            ok = true;
-        }
-        catch (...) {}
-
-        return ok;
-    }
-
-    #define errorBlock(action) \
-        exceptBlockHelper([&] () {action;})
-
-#endif
+sysinline bool errorBlock(const stdbool& value)
+{
+    return value.getSuccessValue();
+}

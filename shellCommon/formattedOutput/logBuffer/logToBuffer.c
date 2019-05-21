@@ -22,8 +22,8 @@ bool LogToBufferThunk::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         FormatStreamStlThunk formatToStream(stringStream);
 
         v.func(v.value, formatToStream);
-        require(formatToStream.isOk());
-        require(!!stringStream);
+        ensure(formatToStream.isOk());
+        ensure(!!stringStream);
 
         StlString str = stringStream.rdbuf()->str();
 
@@ -32,7 +32,7 @@ bool LogToBufferThunk::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     }
     catch (const exception&)
     {
-        require(false);
+        ensure(false);
     }
 
     return true;

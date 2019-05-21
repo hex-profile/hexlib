@@ -61,9 +61,12 @@ public:
         bool ok = !!stream;
 
         if_not (ok)
+        {
             CHECK_EX(stream.eof(), printMsg(kit.msgLog, STR("Cannot read file %0"), openedFilename));
+            returnFalse;
+        }
 
-        return ok;
+        returnTrue;
     }
 
 private:
@@ -184,12 +187,12 @@ public:
             FormatStreamStlThunk formatToStream(stream);
 
             v.func(v.value, formatToStream);
-            require(formatToStream.isOk());
+            ensure(formatToStream.isOk());
 
             stream << endl;
-            require(!!stream);
+            ensure(!!stream);
         }
-        catch (const exception&) {require(false);}
+        catch (const exception&) {return false;}
 
         return true;
     }
@@ -230,7 +233,7 @@ public:
     {
         stream.flush();
         REQUIRE_MSG1(!!stream, STR("Cannot write to file %0"), openedFilename);
-        return true;
+        returnTrue;
     }
 
     stdbool flushClose(stdPars(MsgLogKit))
@@ -240,7 +243,7 @@ public:
         stream.close();
         stream.clear();
         REQUIRE_MSG1(ok, STR("Cannot write to file %0"), openedFilename);
-        return true;
+        returnTrue;
     }
 
 private:

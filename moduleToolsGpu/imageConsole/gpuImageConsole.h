@@ -359,24 +359,24 @@ struct GpuImageConsoleNull : public GpuImageConsole
     // Basic control functions.
     //
 
-    stdbool clear(stdNullPars) {return true;}
-    stdbool update(stdNullPars) {return true;}
+    stdbool clear(stdNullPars) {returnTrue;}
+    stdbool update(stdNullPars) {returnTrue;}
 
     //
     // Basic output interaces.
     //
 
-    stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars) {return true;}
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) {return true;}
+    stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars) {returnTrue;}
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) {returnTrue;}
 
 
     //
     // Video overlay output.
     //
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars) {return true;}
-    stdbool overlaySetFakeImage(stdNullPars) {return true;}
-    stdbool overlayUpdate(stdNullPars) {return true;}
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars) {returnTrue;}
+    stdbool overlaySetFakeImage(stdNullPars) {returnTrue;}
+    stdbool overlayUpdate(stdNullPars) {returnTrue;}
 
     //
     //
@@ -405,7 +405,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdNullPars \
         ) \
         { \
-            return true; \
+            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_SCALAR_TYPE(TMP_MACRO, _)
@@ -433,7 +433,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdNullPars \
         ) \
         { \
-            return true; \
+            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_VECTOR_TYPE(TMP_MACRO, _)
@@ -460,7 +460,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdNullPars \
         ) \
         { \
-            return true; \
+            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_VECTOR_IMAGE_TYPE(TMP_MACRO, o)
@@ -476,7 +476,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
     #define TMP_MACRO(Type, _) \
         \
         stdbool addYuvImage420(const GpuPackedYuv<const Type>& image, const ImgOutputHint& hint, stdNullPars) \
-            {return true;}
+            {returnTrue;}
 
     IMAGE_CONSOLE_FOREACH_YUV420_TYPE(TMP_MACRO, _)
 
@@ -502,7 +502,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdNullPars \
         ) \
         { \
-            return true; \
+            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_X4_TYPE(TMP_MACRO, addYuvColorImage)

@@ -802,7 +802,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     if (prepOff)
     {
         require(processCropFrontend(target, inputFrame, frameIndex, stdPassKit(kitMonitorEx)));
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------

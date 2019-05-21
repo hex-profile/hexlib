@@ -173,7 +173,7 @@ bool OutputLogToAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     #endif
 
     }
-    catch (const std::exception&) {ensure(false);}
+    catch (const std::exception&) {return false;}
 
     return true;
 }
@@ -215,7 +215,7 @@ public:
                 stringStream.rdbuf()->str().c_str()) != 0
         );
 
-        returnSuccess;
+        returnTrue;
     }
 
     stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
@@ -245,19 +245,19 @@ public:
                 stringStream.rdbuf()->str().c_str()) != 0
         );
 
-        returnSuccess;
+        returnTrue;
     }
 
     stdbool clear(stdNullPars)
     {
         require(api->outimg_clear(api) != 0);
-        returnSuccess;
+        returnTrue;
     }
 
     stdbool update(stdNullPars)
     {
         require(api->outimg_update(api) != 0);
-        returnSuccess;
+        returnTrue;
     }
 
 public:
@@ -399,19 +399,19 @@ public:
             require(api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         }
 
-        returnSuccess;
+        returnTrue;
     }
 
     stdbool setFakeImage(stdNullPars)
     {
-        returnSuccess;
+        returnTrue;
     }
 
     stdbool updateImage(stdNullPars)
     {
         at_bool result = api->video_image_update(api);
         require(DEBUG_BREAK_CHECK(result != 0));
-        returnSuccess;
+        returnTrue;
     }
 
 public:
@@ -444,7 +444,7 @@ public:
         AtImageProviderThunk atProvider(imageProvider, TRACE_SCOPE(stdTraceName));
 
         require(base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
-        returnSuccess;
+        returnTrue;
     }
 
     AtAsyncOverlayImpl()
@@ -645,7 +645,7 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const AtEn
     clientCleanup.cancel();
     *instance = client;
 
-    returnSuccess;
+    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -856,7 +856,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
 
     require(client->assembly.process(stdPassKit(processKit)));
 
-    returnSuccess;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

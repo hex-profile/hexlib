@@ -432,7 +432,7 @@ public:
                 ioGuard.reassign(stream, kit.gpuStreamWaiting);
         }
 
-        returnSuccess;
+        returnTrue;
     }
 
     ////

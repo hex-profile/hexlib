@@ -31,7 +31,7 @@ class GpuTextureAllocIgnore : public GpuTextureAllocator
     stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
     {
         result.clear();
-        return true;
+        returnTrue;
     }
 };
 
@@ -50,7 +50,7 @@ public:
     {
         result.clear();
         printMsgTrace(kit.errorLogEx, STR("Texture allocation is too slow for temporary memory."), msgErr, stdPassThru);
-        return false;
+        returnFalse;
     }
 
     inline GpuTextureAllocFail(const ErrorLogExKit& kit)
@@ -131,7 +131,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
         stateUsage.gpuMemSize = gpuStateMemory.size();
         stateUsage.cpuAlignment = cpuStateAlignment;
         stateUsage.gpuAlignment = gpuStateAlignment;
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -180,7 +180,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
         if_not (allocOk)
         {
             printMsg(kit.localLog, STR("State memory: System realloc failed"), msgErr);
-            return false;
+            returnFalse;
         }
 
         stateActivity.sysAllocCount++;
@@ -191,7 +191,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
         ////
 
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -381,7 +381,7 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
     //----------------------------------------------------------------
 
     if (MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY)
-        return true;
+        returnTrue;
 
     //----------------------------------------------------------------
     //
@@ -451,7 +451,7 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
     if (MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY)
     {
         tempActivity.sysAllocCount++;
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -576,7 +576,7 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
 
         require(target.process(stdPassKit(processKit)));
 
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------

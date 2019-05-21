@@ -33,7 +33,7 @@ bool convertControlled(Src src, Dst& dst);
 
 bool convertControlled(Space src, DWORD& dst)
 {
-    require(src >= 0 && src <= 0x7FFFFFFF); // DWORD is signed 32-bit
+    ensure(src >= 0 && src <= 0x7FFFFFFF); // DWORD is signed 32-bit
     dst = src;
     return true;
 }
@@ -42,7 +42,7 @@ bool convertControlled(Space src, DWORD& dst)
 
 bool convertControlled(Space src, LONG& dst)
 {
-    require(src >= LONG_MIN && src <= LONG_MAX); // LONG is signed 32-bit
+    ensure(src >= LONG_MIN && src <= LONG_MAX); // LONG is signed 32-bit
     dst = src;
     return true;
 }
@@ -458,7 +458,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
     if_not (aviFile.open(filename))
     {
         printMsg(kit.msgLog, STR("Cannot write file %0"), filename, msgErr);
-        return false;
+        returnFalse;
     }
 
     REMEMBER_CLEANUP1_EX(aviFileClose, aviFile.close(), AviFile&, aviFile);
@@ -498,7 +498,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
     if_not (aviStreamCompressed.create(aviStreamBase, &options))
     {
         printMsg(kit.msgLog, STR("Cannot create compressed AVI stream for %0"), filename, msgErr);
-        return false;
+        returnFalse;
     }
 
     ////
@@ -506,7 +506,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
     if_not (AVIStreamSetFormat(aviStreamCompressed, 0, &format, sizeof(format)) == 0)
     {
         printMsg(kit.msgLog, STR("Cannot set compressed AVI stream for %s"), filename, msgErr);
-        return false;
+        returnFalse;
     }
 
     //
@@ -562,7 +562,7 @@ stdbool AviWriter::writeImage
         codec == lastCodec &&
         lastResult == false
     )
-        return false;
+        returnFalse;
 
     lastBasename = basename;
     lastSize = imageSize;
@@ -716,8 +716,8 @@ public:
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
     stdbool setFps(FPS fps, stdPars(Kit));
-    stdbool setCodec(Codec codec, stdPars(Kit)) {currentCodec = codec; return true;}
-    stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit)) {currentMaxSegmentFrames = maxSegmentFrames; return true;}
+    stdbool setCodec(Codec codec, stdPars(Kit)) {currentCodec = codec; returnTrue;}
+    stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit)) {currentMaxSegmentFrames = maxSegmentFrames; returnTrue;}
 
 private:
 
@@ -752,7 +752,7 @@ private:
 //================================================================
 
 OutImgAvi::OutImgAvi()
-    {instance.create<OutImgAviImpl>();}
+    {}
 
 OutImgAvi::~OutImgAvi()
     {}
@@ -760,27 +760,27 @@ OutImgAvi::~OutImgAvi()
 ////
 
 stdbool OutImgAvi::saveImage(const Matrix<const uint8>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return !instance ? false : instance->saveImage(img, desc, id, stdPassThru);}
+    {return instance->saveImage(img, desc, id, stdPassThru);}
 
 stdbool OutImgAvi::saveImage(const Matrix<const uint8_x4>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return !instance ? false : instance->saveImage(img, desc, id, stdPassThru);}
+    {return instance->saveImage(img, desc, id, stdPassThru);}
 
 stdbool OutImgAvi::saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return !instance ? false : instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
+    {return instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
 
 ////
 
 stdbool OutImgAvi::setOutputDir(const CharType* outputDir, stdPars(Kit))
-    {return !instance ? false : instance->setOutputDir(outputDir, stdPassThru);}
+    {return instance->setOutputDir(outputDir, stdPassThru);}
 
 stdbool OutImgAvi::setFps(const FPS& fps, stdPars(Kit))
-    {return !instance ? false : instance->setFps(fps, stdPassThru);}
+    {return instance->setFps(fps, stdPassThru);}
 
 stdbool OutImgAvi::setCodec(const Codec& codec, stdPars(Kit))
-    {return !instance ? false : instance->setCodec(codec, stdPassThru);}
+    {return instance->setCodec(codec, stdPassThru);}
 
 stdbool OutImgAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
-    {return !instance ? false : instance->setMaxSegmentFrames(maxSegmentFrames, stdPassThru);}
+    {return instance->setMaxSegmentFrames(maxSegmentFrames, stdPassThru);}
 
 //================================================================
 //
@@ -807,10 +807,10 @@ stdbool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
     catch (const std::exception& e)
     {
         printMsg(kit.msgLog, STR("OutImgAvi: STL exception: %0"), e.what(), msgErr);
-        return false;
+        returnFalse;
     }
 
-    return true;
+    returnTrue;
 }
 
 //================================================================
@@ -923,7 +923,7 @@ stdbool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImagePr
     catch (const std::exception& e)
     {
         printMsg(kit.msgLog, STR("OutImgAvi: STL exception: %0"), e.what(), msgErr);
-        return false;
+        returnFalse;
     }
 
     stdEnd;

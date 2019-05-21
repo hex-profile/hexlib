@@ -21,6 +21,7 @@
 #include "formattedOutput/userOutputThunks.h"
 #include "formattedOutput/logToStlConsole.h"
 #include "fileToolsImpl/fileToolsImpl.h"
+#include "errorLog/foreignErrorBlock.h"
 
 using namespace std;
 
@@ -170,7 +171,7 @@ stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
     if_not (createOk)
     {
         printMsg(kit.msgLog, STR("Cannot launch %0"), cmdLine, msgErr);
-        return false;
+        returnFalse;
     }
 
     WaitForSingleObject(pi.hProcess, INFINITE);
@@ -368,7 +369,7 @@ stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString&
 bool lineIsSpace(const CharType* strBeg, const CharType* strEnd)
 {
     for (const CharType* ptr = strBeg; ptr != strEnd; ++ptr)
-        require(isAnySpace(*ptr));
+        ensure(isAnySpace(*ptr));
 
     return true;
 }
@@ -386,10 +387,10 @@ bool lineIsPreprocessorLineDirective(const CharType* strBeg, const CharType* str
 
     skipSpaceTab(ptr, end);
 
-    require(skipText(ptr, end, STR("#")));
+    ensure(skipText(ptr, end, STR("#")));
     skipSpaceTab(ptr, end);
 
-    require(skipText(ptr, end, STR("line")));
+    ensure(skipText(ptr, end, STR("line")));
 
     return true;
 }
@@ -463,7 +464,7 @@ bool sourcesAreIdentical(const CharType* oldPtr, size_t oldSize, const CharType*
 
         if (!oldOk || !newOk) // cant read
         {
-            require(!oldOk && !newOk);
+            ensure(!oldOk && !newOk);
             break;
         }
 
@@ -472,8 +473,8 @@ bool sourcesAreIdentical(const CharType* oldPtr, size_t oldSize, const CharType*
         size_t oldLineSize = oldLineEnd - oldLineBeg;
         size_t newLineSize = newLineEnd - newLineBeg;
 
-        require(oldLineSize == newLineSize);
-        require(memcmp(oldLineBeg, newLineBeg, oldLineSize * sizeof(CharType)) == 0);
+        ensure(oldLineSize == newLineSize);
+        ensure(memcmp(oldLineBeg, newLineBeg, oldLineSize * sizeof(CharType)) == 0);
     }
 
     ////
@@ -579,7 +580,7 @@ inline bool findNextWordOnLetter(const CharType*& ptr, const CharType* end, Char
     for (;;)
     {
         skipSpaceTab(ptr, end);
-        require(ptr != end);
+        ensure(ptr != end);
 
         if (*ptr == letter)
             return true;
@@ -600,11 +601,11 @@ inline bool tryParseTextureDef(const CharType*& ptr, const CharType* end, vector
 {
     const CharType* p = ptr;
 
-    require(skipTextThenSpace(p, end, STR("extern")));
-    require(skipTextThenSpace(p, end, STR("\"C\"")));
-    require(skipTextThenSpace(p, end, STR("{")));
-    require(skipTextThenSpace(p, end, STR("texture")));
-    require(skipTextThenSpace(p, end, STR("<")));
+    ensure(skipTextThenSpace(p, end, STR("extern")));
+    ensure(skipTextThenSpace(p, end, STR("\"C\"")));
+    ensure(skipTextThenSpace(p, end, STR("{")));
+    ensure(skipTextThenSpace(p, end, STR("texture")));
+    ensure(skipTextThenSpace(p, end, STR("<")));
 
     //
     // Scan until all matching '>' are encountered
@@ -619,13 +620,13 @@ inline bool tryParseTextureDef(const CharType*& ptr, const CharType* end, vector
         if (braceLevel <= 0) break;
     }
 
-    require(p != end && braceLevel == 0);
-    require(skipTextThenSpace(p, end, STR(">")));
+    ensure(p != end && braceLevel == 0);
+    ensure(skipTextThenSpace(p, end, STR(">")));
 
     ////
 
     const CharType* identBegin = p;
-    require(skipIdent(p, end));
+    ensure(skipIdent(p, end));
     const CharType* identEnd = p;
 
     StlString samplerName(identBegin, identEnd);
@@ -851,7 +852,7 @@ stdbool compileDevicePartToBin
         if (sourcesAreIdentical(&oldData[0], oldSize, &cupData[0], cupSize))
         {
             remove(cupPath.c_str());
-            return true;
+            returnTrue;
         }
     }
 
@@ -1128,7 +1129,7 @@ bool importUnicodeString(StlString::const_iterator ptr, StlString::const_iterato
     {
         CharType c0 = *ptr++;
         CharType c1 = *ptr++;
-        require(c1 == 0 && c0 >= 0 && c0 <= 0x7F);
+        ensure(c1 == 0 && c0 >= 0 && c0 <= 0x7F);
         result[i] = c0;
     }
 
@@ -1141,34 +1142,8 @@ bool importUnicodeString(StlString::const_iterator ptr, StlString::const_iterato
 //
 //================================================================
 
-bool mainFunc(int argCount, const CharType* argStr[])
+stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 {
-
-    //----------------------------------------------------------------
-    //
-    // Text logs and trace root
-    //
-    //----------------------------------------------------------------
-
-#ifdef _DEBUG
-    LogToStlConsole msgLog(true);
-#else
-    LogToStlConsole msgLog(false);
-#endif
-
-    ErrorLogThunk errorLog(msgLog);
-    ErrorLogExThunk errorLogEx(msgLog);
-    FileToolsImpl fileTools;
-
-    CompilerKit kit = kitCombine
-    (
-        ErrorLogKit(errorLog),
-        ErrorLogExKit(errorLogEx),
-        MsgLogKit(msgLog),
-        FileToolsKit(fileTools)
-    );
-
-    TRACE_ROOT(stdTraceName, TRACE_AUTO_LOCATION);
 
     //----------------------------------------------------------------
     //
@@ -1221,7 +1196,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
                 if_not (importUnicodeString(content.begin() + 2, content.end(), tmp))
                 {
                     printMsg(kit.msgLog, STR("Non-ASCII characters in response file %0"), rspFileName);
-                    return false;
+                    returnFalse;
                 }
 
                 tmp.swap(content);
@@ -1296,7 +1271,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
 
         require(runProcess(clArgs, stdPass));
 
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -1520,7 +1495,7 @@ bool mainFunc(int argCount, const CharType* argStr[])
     //
     //
 
-    return true;
+    returnTrue;
 }
 
 //================================================================
@@ -1531,18 +1506,40 @@ bool mainFunc(int argCount, const CharType* argStr[])
 
 int main(int argCount, const CharType* argStr[])
 {
-    bool ok = false;
+    //----------------------------------------------------------------
+    //
+    // Text logs and trace root
+    //
+    //----------------------------------------------------------------
 
-    ////
+#ifdef _DEBUG
+    LogToStlConsole msgLog(true);
+#else
+    LogToStlConsole msgLog(false);
+#endif
 
-    try
-    {
-        ok = mainFunc(argCount, argStr);
-    }
-    catch (const exception& e)
-    {
-        fprintf(stderr, "STL exception: %s\n", e.what());
-    }
+    ErrorLogThunk errorLog(msgLog);
+    ErrorLogExThunk errorLogEx(msgLog);
+    FileToolsImpl fileTools;
+
+    CompilerKit kit = kitCombine
+    (
+        ErrorLogKit(errorLog),
+        ErrorLogExKit(errorLogEx),
+        MsgLogKit(msgLog),
+        FileToolsKit(fileTools)
+    );
+
+    TRACE_ROOT(stdTraceName, TRACE_AUTO_LOCATION);
+
+    //----------------------------------------------------------------
+    //
+    // Core
+    //
+    //----------------------------------------------------------------
+
+    // ```
+    bool ok = errorBlock(mainFunc(argCount, argStr, stdPass));
 
     ////
 
@@ -1550,6 +1547,8 @@ int main(int argCount, const CharType* argStr[])
         fprintf(stderr, "Heap memory is damaged!\n");
     else if_not (checkHeapLeaks())
         fprintf(stderr, "Memory leaks are detected!\n");
+
+    ////
 
     return ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

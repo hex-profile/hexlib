@@ -1,4 +1,4 @@
-#include "foreignExceptReport.h"
+#include "foreignErrorBlock.h"
 
 #include <exception>
 
@@ -21,16 +21,19 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept
     {
         std::rethrow_exception(exceptionPtr);
     }
+
 #if HEXLIB_ERROR_HANDLING == 1
     catch (const ExceptFailure&)
     {
-        // Native exception.
+        // The native exception.
     }
 #endif
+
     catch (const std::exception& e)
     {
         printMsgTrace(kit.errorLogEx, STR("Standard C++ library exception: %0."), e.what(), msgErr, stdPassThru);
     }
+
     catch (...)
     {
         printMsgTrace(kit.errorLogEx, STR("Unrecognized external exception."), msgErr, stdPassThru);

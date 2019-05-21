@@ -15,9 +15,9 @@ public:
 
     bool readRange(LogBufferReceiver& receiver, RowInt rowOrg, RowInt rowEnd)
     {
-        require(rowOrg == 0 && rowEnd == LogBufferEnd);
-        require(logA.readRange(receiver, 0, LogBufferEnd));
-        require(logB.readRange(receiver, 0, LogBufferEnd));
+        ensure(rowOrg == 0 && rowEnd == LogBufferEnd);
+        ensure(logA.readRange(receiver, 0, LogBufferEnd));
+        ensure(logB.readRange(receiver, 0, LogBufferEnd));
         return true;
     }
 
