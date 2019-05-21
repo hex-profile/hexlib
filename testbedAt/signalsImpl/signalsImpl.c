@@ -56,7 +56,7 @@ bool getSignalNamePath(const CfgNamespace* scope, const CfgSerializeSignal& sign
 {
     // Get main part
     GetStdString getName(result);
-    require(signal.getName(getName));
+    ensure(signal.getName(getName));
 
     // Get namespace scope
     for (const CfgNamespace* p = scope; p != 0; p = p->prev)

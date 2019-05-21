@@ -366,7 +366,7 @@ stdbool getFileProperties(const CharType* filename, FileProperties& result, stdP
     result = FileProperties{};
 
     if_not (kit.fileTools.fileExists(filename))
-        return true;
+        returnTrue;
 
     result.exists = true;
     REQUIRE(kit.fileTools.getChangeTime(filename, result.changeTime));
@@ -416,7 +416,7 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& stea
     //
 
     if_not (strEqual(inputName, currentInputName.charArray()))
-        return true;
+        returnTrue;
 
     //
     // Config properties.
@@ -426,7 +426,7 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& stea
     require(getFileProperties(currentConfigName.cstr(), properties, stdPass));
     
     if_not (properties == currentProperties)
-        return true;
+        returnTrue;
 
     ////
 
@@ -455,7 +455,7 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     require(checkSteady(inputName, steady, stdPass));
 
     if (steady)
-        return true;
+        returnTrue;
 
     //----------------------------------------------------------------
     //
@@ -1327,7 +1327,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //----------------------------------------------------------------
 
     if_not (frameAdvance || realEventsFound || !anyEventsFound)
-        return true;
+        returnTrue;
 
     kit.localLog.clear();
     require(kit.atImgConsole.clear(stdPass));

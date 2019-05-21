@@ -76,7 +76,7 @@ stdbool pointUsage()
 
     // Reduction of Point<bool> to bool.
     require(allv(A >= 0));
-    if (anyv(A < 0)) return false;
+    if (anyv(A < 0)) returnFalse;
 
     // Min, max, clampRange functions.
     Point<int> t1 = minv(A, B);
@@ -85,5 +85,5 @@ stdbool pointUsage()
     Point<int> t4 = clampMax(A, 10);
     Point<int> t5 = clampRange(A, 0, 10);
 
-    return true;
+    returnTrue;
 }

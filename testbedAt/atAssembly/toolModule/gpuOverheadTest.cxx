@@ -119,7 +119,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
     stdBegin;
 
     if_not (active) 
-        return true;
+        returnTrue;
 
 #if 0 && HEXLIB_PLATFORM == 1 // After stream implementation was changed, the test is broken
 

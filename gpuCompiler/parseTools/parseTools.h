@@ -56,7 +56,7 @@ inline bool skipIdent(const CharType*& ptr, const CharType* end)
 {
     const CharType* s = ptr;
 
-    require(s != end && isIdent1st(*s));
+    ensure(s != end && isIdent1st(*s));
 
     ++s;
 
@@ -82,10 +82,10 @@ inline bool skipCppComment(const CharType*& ptr, const CharType* end)
 {
     const CharType* s = ptr;
 
-    require(s != end && *s == '/');
+    ensure(s != end && *s == '/');
     ++s;
 
-    require(s != end && *s == '/');
+    ensure(s != end && *s == '/');
 	++s;
 
     s = end;
@@ -111,7 +111,7 @@ inline bool skipCstr(const CharType*& ptr, const CharType* end)
 
     ////
 
-    require(s != end && (*s == '"' || *s == '\''));
+    ensure(s != end && (*s == '"' || *s == '\''));
     CharType quote = *s;
     ++s;
 
@@ -125,7 +125,7 @@ inline bool skipCstr(const CharType*& ptr, const CharType* end)
         ++s;
     }
 
-    require(s != end && *s == quote);
+    ensure(s != end && *s == quote);
     ++s;
 
     ptr = s;
@@ -176,7 +176,7 @@ inline bool skipText(const CharType*& strPtr, const CharType* strEnd, const Char
 
 inline bool skipTextThenSpace(const CharType*& strPtr, const CharType* strEnd, const CharArray& text)
 {
-    require(skipText(strPtr, strEnd, text));
+    ensure(skipText(strPtr, strEnd, text));
     skipSpaceTab(strPtr, strEnd);
     return true;
 }

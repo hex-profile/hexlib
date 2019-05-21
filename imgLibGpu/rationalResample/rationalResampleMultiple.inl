@@ -258,7 +258,7 @@ stdbool FUNCNAME
     ////
 
     if_not (kit.dataProcessing) // all allocations done
-        return true;
+        returnTrue;
 
     ////
 

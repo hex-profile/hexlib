@@ -133,8 +133,8 @@ void GpuMatrixMemory<Type>::dealloc()
 template <typename Type>
 bool GpuMatrixMemory<Type>::resize(Space sizeX, Space sizeY)
 {
-    require(SpaceU(sizeX) <= SpaceU(allocSize.X));
-    require(SpaceU(sizeY) <= SpaceU(allocSize.Y));
+    ensure(SpaceU(sizeX) <= SpaceU(allocSize.X));
+    ensure(SpaceU(sizeY) <= SpaceU(allocSize.Y));
 
     Space alignedSizeX = (sizeX + allocAlignMask) & (~allocAlignMask); // overflow impossible
     BaseMatrix::assign(allocPtr, alignedSizeX, sizeX, sizeY, matrixPreconditionsAreVerified());

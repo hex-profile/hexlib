@@ -62,10 +62,20 @@ class GpuBaseAtConsoleThunk : public GpuBaseConsole
 public:
 
     stdbool clear(stdNullPars)
-        {return !kit.dataProcessing ? true : atImgConsole.clear(stdPassThru);}
+    {
+        if (kit.dataProcessing) 
+            require(atImgConsole.clear(stdPassThru)); 
+
+        returnTrue;
+    }
 
     stdbool update(stdNullPars)
-        {return !kit.dataProcessing ? true : atImgConsole.update(stdPassThru);}
+    {
+        if (kit.dataProcessing)
+            require(atImgConsole.update(stdPassThru));
+
+        returnTrue;
+    }
 
 public:
 
@@ -77,10 +87,20 @@ public:
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars);
 
     stdbool overlaySetFakeImage(stdNullPars)
-        {return !kit.dataProcessing ? true : atVideoOverlay.setFakeImage(stdPassThru);}
+    {
+        if (kit.dataProcessing)
+            require(atVideoOverlay.setFakeImage(stdPassThru));
+
+        returnTrue;
+    }
 
     stdbool overlayUpdate(stdNullPars)
-        {return !kit.dataProcessing ? true : atVideoOverlay.updateImage(stdPassThru);}
+    {
+        if (kit.dataProcessing) 
+            require(atVideoOverlay.updateImage(stdPassThru));
+
+        returnTrue;
+    }
 
 public:
 

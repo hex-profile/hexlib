@@ -255,7 +255,7 @@ public:
     stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
     {
         result.clear();
-        return true;
+        returnTrue;
     }
 
     GpuEventAllocatorSupressor(const ErrorLogExKit& kit)
@@ -281,7 +281,7 @@ public:
     stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
     {
         result.clear();
-        return true;
+        returnTrue;
     }
 
     GpuTextureAllocatorSupressor(const ErrorLogExKit& kit)

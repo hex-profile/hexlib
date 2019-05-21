@@ -183,7 +183,7 @@ COMPILE_ASSERT(COMPILE_ARRAY_SIZE(cudaChannelXlat) == GpuChannelTypeCount);
 
 inline bool cudaChannelFormat(GpuChannelType chanType, CUarray_format& result)
 {
-    require(size_t(chanType) < size_t(COMPILE_ARRAY_SIZE(cudaChannelXlat)));
+    ensure(size_t(chanType) < size_t(COMPILE_ARRAY_SIZE(cudaChannelXlat)));
     result = cudaChannelXlat[size_t(chanType)];
     return true;
 }
@@ -788,7 +788,7 @@ struct CudaCpuAllocCore
 stdbool CudaCpuAllocThunk::alloc(const GpuContext& context, CpuAddrU size, CpuAddrU alignment, GpuMemoryOwner& owner, CpuAddrU& result, stdNullPars)
 {
     if (size == 0)
-        {result = 0; owner.clear(); return true;}
+        {result = 0; owner.clear(); returnTrue;}
 
     CudaCpuAllocCore coreAlloc;
     return sysAllocAlignShell<CpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
@@ -864,7 +864,7 @@ struct CudaGpuAllocCore
 stdbool CudaGpuAllocThunk::alloc(const GpuContext& context, GpuAddrU size, GpuAddrU alignment, GpuMemoryOwner& owner, GpuAddrU& result, stdNullPars)
 {
     if (size == 0)
-        {result = 0; owner.clear(); return true;}
+        {result = 0; owner.clear(); returnTrue;}
 
     CudaGpuAllocCore coreAlloc;
     return sysAllocAlignShell<GpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
@@ -1050,7 +1050,7 @@ sysinline stdbool flushCoverageRecord(CoverageRecord& r, bool& syncFlagLatch, Pr
     stdBegin;
 
     if_not (r.profilerNode.connected() && profiler)
-        return true;
+        returnTrue;
 
     ////
 
@@ -1981,7 +1981,7 @@ stdbool CudaExecApiThunk::setSamplerImage
     REQUIRE(imageSize >= 0);
 
     if_not (imageSize >= 1)
-        return true;
+        returnTrue;
 
     //
     // Get texref
@@ -2259,7 +2259,7 @@ stdbool CudaExecApiThunk::callKernel
                 printMsgTrace(kit.errorLogEx, STR("CUDA error: kernel returned %0, groupCount {%1}, threadCount {%2}."),
                     cudaErr, groupCount, threadCount, msgErr, stdPassThru);
 
-                return false;
+                returnFalse;
             }
         }
 

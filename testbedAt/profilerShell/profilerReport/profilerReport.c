@@ -149,10 +149,10 @@ bool parseLocation(const StlString& location, StlString& filename, uint32& line,
 
     const CharType* p = strEnd;
 
-    require(p != strBegin && p[-1] == ')');
+    ensure(p != strBegin && p[-1] == ')');
     --p;
 
-    require(p != strBegin && p[-1] >= '0' && p[-1] <= '9');
+    ensure(p != strBegin && p[-1] >= '0' && p[-1] <= '9');
     uint32 number = p[-1] - '0';
     --p;
 
@@ -166,7 +166,7 @@ bool parseLocation(const StlString& location, StlString& filename, uint32& line,
 
     ////
 
-    require(p != strBegin && p[-1] == '(');
+    ensure(p != strBegin && p[-1] == '(');
     --p;
 
     while (p != strBegin && p[-1] == ' ')
@@ -413,7 +413,7 @@ stdbool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& resu
     //
 
     if_not (rowIndex >= firstRow && rowIndex <= lastRow)
-        return false;
+        returnFalse;
 
     //----------------------------------------------------------------
     //
@@ -621,7 +621,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
     if_not (parseLocation(location, filename, lineNumber, userMsg))
     {
         printMsg(kit.msgLog, STR("Failed to parse location %0"), location, msgErr);
-        return false;
+        returnFalse;
     }
 
     //
@@ -1610,7 +1610,7 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
     result = &seachResult.first->second;
 
     if (!seachResult.second)
-        return true;
+        returnTrue;
 
     //
     // Try to read file

@@ -166,7 +166,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         REMEMBER_CLEANUP(*frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment()));
 
         require(target.process(stdPassKit(ProfilerKit(nullptr))));
-        returnSuccess;
+        returnTrue;
     }
 
     //----------------------------------------------------------------

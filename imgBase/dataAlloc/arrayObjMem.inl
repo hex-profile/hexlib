@@ -32,7 +32,7 @@ stdbool ArrayObjMem<Type>::realloc(Space size, Space byteAlignment, AllocatorObj
 
     ////
 
-    return true;
+    returnTrue;
 }
 
 //================================================================

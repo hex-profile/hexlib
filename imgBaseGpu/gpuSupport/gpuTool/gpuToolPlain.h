@@ -64,7 +64,7 @@
         stdBeginScoped; \
         \
         if_not (kit.dataProcessing) \
-            return true; \
+            returnTrue; \
         \
         stdEnterElemCount(globSize); \
         \
@@ -73,7 +73,7 @@
         Space groupCount = divUpNonneg(globSize, chunkSize); \
         \
         if_not (groupCount != 0) \
-            return true; \
+            returnTrue; \
         \
         GPT_FOREACH_SAMPLER(samplerList, GPT_BIND_SAMPLER, prefix) \
         \

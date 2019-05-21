@@ -6,6 +6,7 @@
 #include "kits/msgLogsKit.h"
 #include "interfaces/fileTools.h"
 #include "allocation/mallocKit.h"
+#include "storage/dynamicClass.h"
 
 namespace outImgAvi {
 
@@ -55,8 +56,8 @@ public:
     stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit));
 
 private:
-
-    ObjectHolder<class OutImgAviImpl> instance;
+                
+    DynamicClass<class OutImgAviImpl> instance;
 
 };
 
@@ -123,7 +124,7 @@ public:
 
     stdbool updateImage(stdNullPars) 
     {
-        return true;
+        returnTrue;
     }
 
 private:

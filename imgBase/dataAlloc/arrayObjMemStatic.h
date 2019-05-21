@@ -49,7 +49,7 @@ public:
 
     inline bool reallocStatic(Space newSize)
     {
-        require(SpaceU(newSize) <= SpaceU(maxSize));
+        ensure(SpaceU(newSize) <= SpaceU(maxSize));
 
         dealloc();
 

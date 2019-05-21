@@ -119,7 +119,7 @@ static const CharType quoteEnd = '\'';
 static bool parseString(const CharType*& p, String& result)
 {
     // then comes string in quotes
-    require(*p == quoteBeg); ++p;
+    ensure(*p == quoteBeg); ++p;
 
     size_t n = strlen(p);
     vector<CharType> tmp(n); // for max number
@@ -146,7 +146,7 @@ static bool parseString(const CharType*& p, String& result)
     }
 
     // String should end in appropriate way
-    require(!literally && *p == quoteEnd);
+    ensure(!literally && *p == quoteEnd);
     p++;
 
     // Transfer the string
@@ -994,7 +994,7 @@ public:
         {
             Memory::const_iterator p = memory.find(name);
 
-            require(p != memory.end());
+            ensure(p != memory.end());
 
             value = p->second.value;
             valueComment = p->second.valueComment;

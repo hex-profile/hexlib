@@ -236,7 +236,7 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true; // no allocation
+        returnTrue; // no allocation
 
     ////
 

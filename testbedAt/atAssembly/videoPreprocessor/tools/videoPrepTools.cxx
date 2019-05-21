@@ -73,7 +73,7 @@ stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& 
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     ////
 

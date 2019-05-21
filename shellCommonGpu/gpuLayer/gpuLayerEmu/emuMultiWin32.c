@@ -390,7 +390,7 @@ stdbool EmuMultiWin32::launchKernel
     REQUIRE(groupCount >= 0);
 
     if_not (allv(groupCount >= 1))
-        return true;
+        returnTrue;
 
     //
     // Give tasks to all thread servers, using uniform partition.

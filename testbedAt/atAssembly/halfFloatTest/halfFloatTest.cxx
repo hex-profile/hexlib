@@ -110,7 +110,7 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     ////
 
@@ -143,7 +143,7 @@ stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& ds
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     ////
 
@@ -185,10 +185,8 @@ sysinline bool operator ==(const float16& A, const float16& B)
 template <typename Type>
 stdbool compareResults(const Array<const Type>& ref, const Array<const Type>& tst, Space& badIndex, stdPars(CpuFuncKit))
 {
-    stdBegin;
-  
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     ////
 
@@ -205,7 +203,7 @@ stdbool compareResults(const Array<const Type>& ref, const Array<const Type>& ts
     bool allOk = memcmp(unsafePtr(refPtr, size), unsafePtr(tstPtr, size), sizeof(float16) * size) == 0;
 
     if (allOk)
-        return true;
+        returnTrue;
 
     ////
 
@@ -226,9 +224,7 @@ stdbool compareResults(const Array<const Type>& ref, const Array<const Type>& ts
 
     REQUIRE(badIdx != TYPE_MAX(Space));
     badIndex = badIdx;
-    return false;
-
-    stdEnd;
+    returnFalse;
 }
 
 //================================================================
@@ -348,7 +344,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 
     Space badIdx = 0;
 
-    if_not (compareResults<float16>(gpuResultCopy, cpuResult, badIdx, stdPass))
+    if_not (errorBlock(compareResults<float16>(gpuResultCopy, cpuResult, badIdx, stdPass)))
     {
         ARRAY_EXPOSE(srcCopy);
         ARRAY_EXPOSE(gpuResultCopy);
@@ -364,7 +360,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
             packTestPass, badIdx,
             msgErr);
 
-        return false;
+        returnFalse;
     }
 
     //
@@ -475,7 +471,7 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
             badIdx,
             msgErr);
 
-        return false;
+        returnFalse;
     }
 
     stdEnd;
@@ -508,7 +504,7 @@ stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
         if (kit.dataProcessing)
             unpackTestFinished = true;
 
-        return true;
+        returnTrue;
     }
 
     //----------------------------------------------------------------

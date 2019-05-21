@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename Kit>
-inline stdbool checkCudaHelper(CUresult cudaErr, const CharType* statement, stdPars(Kit))
+inline bool checkCudaHelper(CUresult cudaErr, const CharType* statement, stdPars(Kit))
 {
     if (cudaErr == CUDA_SUCCESS)
         return true;
@@ -32,4 +32,3 @@ inline stdbool checkCudaHelper(CUresult cudaErr, const CharType* statement, stdP
 
 #define DEBUG_BREAK_CHECK_CUDA(statement) \
     DEBUG_BREAK_CHECK((statement) == CUDA_SUCCESS)
-

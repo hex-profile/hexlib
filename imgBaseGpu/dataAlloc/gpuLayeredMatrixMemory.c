@@ -13,7 +13,7 @@
 inline bool computeAlignedSize(Space size, Space alignmentMask, Space& result)
 {
     Space sizePlusMask = 0;
-    require(safeAdd(size, alignmentMask, sizePlusMask));
+    ensure(safeAdd(size, alignmentMask, sizePlusMask));
 
     result = sizePlusMask & (~alignmentMask);
     return true;
@@ -158,9 +158,9 @@ void GpuLayeredMatrixMemory<Type>::dealloc()
 template <typename Type>
 bool GpuLayeredMatrixMemory<Type>::resize(Space layerCount, Space sizeX, Space sizeY)
 {
-    require(layerCount <= allocLayerCount);
-    require(SpaceU(sizeX) <= SpaceU(allocSize.X));
-    require(SpaceU(sizeY) <= SpaceU(allocSize.Y));
+    ensure(layerCount <= allocLayerCount);
+    ensure(SpaceU(sizeX) <= SpaceU(allocSize.X));
+    ensure(SpaceU(sizeY) <= SpaceU(allocSize.Y));
 
     //
     // Pitch is compressed for better DRAM locality

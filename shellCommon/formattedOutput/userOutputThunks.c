@@ -91,8 +91,8 @@ bool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, st
     {
         MsgLogGuard guard(*msgLog);
 
-        require(printMsg(*msgLog, STR("%0"), v, msgKind));
-        require(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
+        ensure(printMsg(*msgLog, STR("%0"), v, msgKind));
+        ensure(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
 
         int32 depth = 0;
 
@@ -100,11 +100,11 @@ bool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, st
         {
             if_not (depth < MAX_TRACE_DEPTH)
             {
-                require(printMsg(*msgLog, STR("    ... and so on"), msgKind));
+                ensure(printMsg(*msgLog, STR("    ... and so on"), msgKind));
                 break;
             }
 
-            require(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
+            ensure(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
         }
     }
 

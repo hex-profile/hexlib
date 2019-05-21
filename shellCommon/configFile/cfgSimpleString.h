@@ -134,14 +134,14 @@ private:
 
     bool getName(CfgOutputString& result) const
     {
-        require(nameDesc.size != 0);
-        require(result.addStr(nameDesc));
+        ensure(nameDesc.size != 0);
+        ensure(result.addStr(nameDesc));
         return true;
     }
 
     bool getTextValue(CfgWriteStream& s) const
     {
-        require(s.writeStr(charArrayFromPtr(baseVar->cstr())));
+        ensure(s.writeStr(charArrayFromPtr(baseVar->cstr())));
         return true;
     }
 
@@ -149,16 +149,16 @@ private:
     {
         SimpleString tmp;
         OutputSimpleString output(tmp);
-        require(s.readString(output));
-        require(tmp.ok());
+        ensure(s.readString(output));
+        ensure(tmp.ok());
         baseVar = tmp;
         return true;
     }
 
     bool getTextComment(CfgWriteStream& s) const
     {
-        require(comment.size != 0);
-        require(cfgWrite(s, comment));
+        ensure(comment.size != 0);
+        ensure(cfgWrite(s, comment));
         return true;
     }
 

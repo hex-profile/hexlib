@@ -69,25 +69,25 @@ class GpuBaseConsoleIgnoreThunk : public GpuBaseConsole
 public:
 
     stdbool clear(stdNullPars)
-        {return true;}
+        {returnTrue;}
 
     stdbool update(stdNullPars)
-        {return true;}
+        {returnTrue;}
 
     stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-        {return true;}
+        {returnTrue;}
 
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-        {return true;}
+        {returnTrue;}
 
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
-        {return true;}
+        {returnTrue;}
 
     stdbool overlaySetFakeImage(stdNullPars)
-        {return true;}
+        {returnTrue;}
 
     stdbool overlayUpdate(stdNullPars)
-        {return true;}
+        {returnTrue;}
 
     bool getTextEnabled()
         {return false;}

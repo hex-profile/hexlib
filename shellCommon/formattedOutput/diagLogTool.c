@@ -25,15 +25,15 @@ bool DiagLogMsgLog::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         FormatStreamStlThunk formatToStream(stringStream);
 
         v.func(v.value, formatToStream);
-        require(formatToStream.isOk());
-        require(!!stringStream);
+        ensure(formatToStream.isOk());
+        ensure(!!stringStream);
 
         const auto& str = stringStream.rdbuf()->str();
         output->add(str.c_str(), msgKind);
     }
     catch (const exception&)
     {
-        require(false);
+        ensure(false);
     }
 
     return true;

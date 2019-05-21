@@ -177,7 +177,7 @@ stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Ds
     stdBegin;
 
     if_not (kit.dataProcessing)
-        return true;
+        returnTrue;
 
     using FilterX = FilterLanczos2;
     using FilterY = FilterLanczos2;

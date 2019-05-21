@@ -41,15 +41,15 @@ sysinline stdbool allv(const stdbool& value)
 
 //================================================================
 //
-// returnSuccess
-// returnFailure
+// returnTrue
+// returnFalse
 //
 //================================================================
 
-#define returnSuccess \
+#define returnTrue \
     return stdbool()
 
-#define returnFailure \
+#define returnFalse \
     exceptThrowFailure()
 
 //================================================================
@@ -82,3 +82,27 @@ sysinline void require(const Type& value)
 {
     exceptEnsure(allv(condition))
 }
+
+//================================================================
+//
+// exceptBlockHelper
+//
+//================================================================
+
+template <typename Action>
+sysinline bool exceptBlockHelper(const Action& action)
+{
+    bool ok = false;
+
+    try
+    {
+        action();
+        ok = true;
+    }
+    catch (...) {}
+
+    return ok;
+}
+
+#define errorBlock(action) \
+    exceptBlockHelper([&] () {action;})

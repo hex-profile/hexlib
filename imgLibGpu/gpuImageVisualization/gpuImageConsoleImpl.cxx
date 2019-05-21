@@ -930,7 +930,7 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
     if (vectorDisplayMode == VectorDisplayX || vectorDisplayMode == VectorDisplayY)
     {
         require(addMatrixChan(image, vectorDisplayMode == VectorDisplayY, -maxVector, +maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPass));
-        return true;
+        returnTrue;
     }
 
     //

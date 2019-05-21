@@ -178,7 +178,7 @@ bool GpuPyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidL
     ARRAY_EXPOSE(pyramidArray);
 
     Space levelCount = pyramidArraySize;
-    require(levelCount <= GpuPyramidLayout::maxLevels);
+    ensure(levelCount <= GpuPyramidLayout::maxLevels);
 
     Space layerCount = currentLayerCount;
 

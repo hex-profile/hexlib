@@ -78,7 +78,7 @@ bool frameNameEqual(const Array<const CharType>& a, const Array<const CharType>&
 
     ////
 
-    require(aSize == bSize);
+    ensure(aSize == bSize);
     Space size = aSize;
 
     ////
@@ -88,7 +88,7 @@ bool frameNameEqual(const Array<const CharType>& a, const Array<const CharType>&
     for (Space i = 0; i < size; ++i)
         orMask |= (aPtr[i] ^ bPtr[i]);
 
-    require(orMask == 0);
+    ensure(orMask == 0);
 
     return true;
 }
@@ -101,15 +101,15 @@ bool frameNameEqual(const Array<const CharType>& a, const Array<const CharType>&
 
 bool frameStateEqual(const FrameDesc& a, const FrameDesc& b)
 {
-    require(frameNameEqual(a.name, b.name));
+    ensure(frameNameEqual(a.name, b.name));
 
-    require(a.frameIndex == b.frameIndex);
-    require(a.frameCount == b.frameCount);
+    ensure(a.frameIndex == b.frameIndex);
+    ensure(a.frameCount == b.frameCount);
 
-    require(a.interlacedMode == b.interlacedMode);
-    require(a.interlacedLower == b.interlacedLower);
+    ensure(a.interlacedMode == b.interlacedMode);
+    ensure(a.interlacedLower == b.interlacedLower);
 
-    require(a.imageSize == b.imageSize);
+    ensure(a.imageSize == b.imageSize);
 
     return true;
 }

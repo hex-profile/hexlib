@@ -122,7 +122,7 @@
 //================================================================
 
 #define stdEnd \
-    returnSuccess \
+    returnTrue \
 
 #define stdEndv \
     return \
