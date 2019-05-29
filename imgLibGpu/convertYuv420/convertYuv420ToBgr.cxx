@@ -85,7 +85,6 @@ devDefineSampler(chromaSamplerV, DevSampler2D, DevSamplerFloat, 1)
 
 #define CONVERT_YUV 0x27F51A5A
 #define CONVERT_RGB 0x5E597E75
-#define CONVERT_OPPONENT 0xD6B672E7
 
 //================================================================
 //

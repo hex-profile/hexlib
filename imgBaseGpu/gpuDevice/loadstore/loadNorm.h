@@ -7,18 +7,6 @@
 
 //================================================================
 //
-// LoadNorm
-//
-//================================================================
-
-template <typename Type>
-struct LoadNormResult
-{
-    using T = VECTOR_REBASE(Type, float32);
-};
-
-//================================================================
-//
 // loadNormCore<float32>
 //
 //================================================================
@@ -174,13 +162,13 @@ sysinline float32_x4 loadNormCore(const int16_x4* src)
 //================================================================
 
 template <typename Pointer>
-sysinline typename LoadNormResult<typename PtrElemType<Pointer>::T>::T loadNorm(Pointer srcPtr)
+sysinline auto loadNorm(Pointer srcPtr)
 {
     return loadNormCore<LoadNormal>(unsafePtr(srcPtr, 1));
 }
 
 template <typename Pointer>
-sysinline typename LoadNormResult<typename PtrElemType<Pointer>::T>::T loadNormViaSamplerCache(Pointer srcPtr)
+sysinline auto loadNormViaSamplerCache(Pointer srcPtr)
 {
     return loadNormCore<LoadViaSamplerCache>(unsafePtr(srcPtr, 1));
 }
