@@ -3,16 +3,16 @@
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
 
-namespace conservativeResampling {
+namespace gaussSincResampling {
 
 //================================================================
 //
-// upsampleTwice
+// upsampleTwiceBalanced
 //
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool upsampleTwice(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
+stdbool upsampleTwiceBalanced(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 

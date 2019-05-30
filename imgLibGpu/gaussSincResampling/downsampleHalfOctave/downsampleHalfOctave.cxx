@@ -10,13 +10,13 @@
 #include "vectorTypes/vectorOperations.h"
 #include "simpleConvolutionSeparable.inl"
 #include "numbers/mathIntrinsics.h"
-#include "conservativeResampling/conservativeResamplingSettings.h"
+#include "gaussSincResampling/gaussSincResamplingSettings.h"
 
 #if HOSTCODE
 #include "dataAlloc/gpuMatrixMemory.h"
 #endif
 
-namespace conservativeResampling {
+namespace gaussSincResampling {
 namespace downsampleHalfOctave {
 
 //================================================================
@@ -45,8 +45,8 @@ sysinline float32 sinc(float32 x)
 
 //----------------------------------------------------------------
 
-#define SIGMA conservativeResampling::sigma()
-#define THETA conservativeResampling::theta()
+#define SIGMA gaussSincResampling::sigma
+#define THETA gaussSincResampling::conservativeTheta
 
 //----------------------------------------------------------------
 
@@ -59,7 +59,7 @@ sysinline float32 downsampleKernel(float32 x)
 
 #define DOWNSAMPLE_HALF_OCTAVE_FACTOR 1.41421356f
 
-const Space downHoFilterLength = Space(2 * conservativeResampling::radius * DOWNSAMPLE_HALF_OCTAVE_FACTOR + 0.999999f);
+const Space downHoFilterLength = Space(2 * gaussSincResampling::radius * DOWNSAMPLE_HALF_OCTAVE_FACTOR + 0.999999f);
 
 //================================================================
 //
@@ -77,7 +77,7 @@ static const Space dhoAlongThreads = 32;
 //
 //================================================================
 
-#define FILTER_RADIUS conservativeResampling::radius
+#define FILTER_RADIUS gaussSincResampling::radius
 
 #define PIXEL float16
 # include "downsampleHalfOctave.inl"
@@ -106,7 +106,7 @@ GPUTOOL_2D_BEG
 {
     float32 srcOrgFrac = Xs / vGlobSize.X;
 
-    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * conservativeResampling::radius;
+    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * gaussSincResampling::radius;
 
     float32 filterBaseOfs = (-radius + 1.0f - srcOrgFrac);
     float32 coeff = downsampleKernel((filterBaseOfs + Y) * (1.f / DOWNSAMPLE_HALF_OCTAVE_FACTOR));
@@ -142,7 +142,7 @@ GPUTOOL_2D_BEG
 {
     float32 srcOrgFrac = Ys / vGlobSize.Y;
 
-    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * conservativeResampling::radius;
+    const float32 radius = DOWNSAMPLE_HALF_OCTAVE_FACTOR * gaussSincResampling::radius;
 
     float32 filterBaseOfs = (-radius + 1.0f - srcOrgFrac);
     float32 coeff = downsampleKernel((filterBaseOfs + X) * (1.f / DOWNSAMPLE_HALF_OCTAVE_FACTOR));
@@ -163,13 +163,13 @@ GPUTOOL_2D_END
 
 //================================================================
 //
-// DownsampleHalfOctave::realloc
+// DownsampleHalfOctaveConservative::realloc
 //
 //================================================================
 
 #if HOSTCODE 
 
-stdbool DownsampleHalfOctave::realloc(stdPars(GpuProcessKit))
+stdbool DownsampleHalfOctaveConservative::realloc(stdPars(GpuProcessKit))
 {
     stdBegin;
 

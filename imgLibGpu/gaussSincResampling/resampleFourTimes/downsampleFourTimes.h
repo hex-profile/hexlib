@@ -3,16 +3,16 @@
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
 
-namespace conservativeResampling {
+namespace gaussSincResampling {
 
 //================================================================
 //
-// upsampleFourTimes
+// downsampleFourTimesConservative
 //
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool upsampleFourTimes
+stdbool downsampleFourTimesConservative
 (
     const GpuMatrix<const Src>& src,
     const GpuMatrix<Dst>& dst,
@@ -21,7 +21,7 @@ stdbool upsampleFourTimes
 );
 
 template <typename Src, typename Interm, typename Dst>
-stdbool upsampleFourTimesDual
+stdbool downsampleFourTimesConservativeDual
 (
     const GpuMatrix<const Src>& srcA,
     const GpuMatrix<Dst>& dstA,

@@ -242,13 +242,13 @@ GPUTOOL_2D_END
 
 //================================================================
 //
-// DownsampleHalfOctave::process
+// DownsampleHalfOctaveConservative::process
 //
 //================================================================
 
 #if HOSTCODE
 
-stdbool DownsampleHalfOctave::process(const GpuMatrix<const PIXEL>& src, const GpuMatrix<PIXEL>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit))
+stdbool DownsampleHalfOctaveConservative::process(const GpuMatrix<const PIXEL>& src, const GpuMatrix<PIXEL>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit))
 {
     stdBegin;
 
