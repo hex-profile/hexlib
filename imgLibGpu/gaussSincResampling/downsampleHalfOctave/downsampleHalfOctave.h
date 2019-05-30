@@ -3,16 +3,16 @@
 #include "dataAlloc/gpuMatrixMemory.h"
 #include "gpuProcessHeader.h"
 
-namespace conservativeResampling {
+namespace gaussSincResampling {
 namespace downsampleHalfOctave {
 
 //================================================================
 //
-// DownsampleHalfOctave
+// DownsampleHalfOctaveConservative
 //
 //================================================================
 
-class DownsampleHalfOctave
+class DownsampleHalfOctaveConservative
 {
 
 public:

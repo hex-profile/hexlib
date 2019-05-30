@@ -2,7 +2,7 @@
 #include "upsampleTwice.h"
 #endif
 
-#include "conservativeResampling/conservativeResamplingSettings.h"
+#include "gaussSincResampling/gaussSincResamplingSettings.h"
 
 //================================================================
 //
@@ -10,15 +10,16 @@
 //
 //================================================================
 
-COMPILE_ASSERT(CONSERVATIVE_RESAMPLING_QUALITY == 0);
-static devConstant float32 FILTER0[] = {+0.00219537f, -0.00068659f, -0.00598392f, +0.01810818f, -0.02823106f, +0.01893732f, +0.03197533f, -0.14547108f, +0.40408355f, +0.72100016f, +0.02912540f, -0.08955916f, +0.06913369f, -0.03092485f, +0.00295006f, +0.00800217f, -0.00756503f, +0.00364235f, -0.00073186f};
-static devConstant float32 FILTER1[] = {-0.00073186f, +0.00364235f, -0.00756503f, +0.00800217f, +0.00295006f, -0.03092485f, +0.06913369f, -0.08955916f, +0.02912540f, +0.72100016f, +0.40408355f, -0.14547108f, +0.03197533f, +0.01893732f, -0.02823106f, +0.01810818f, -0.00598392f, -0.00068659f, +0.00219537f};
-static const Space FILTER_SRC_SHIFT = -9;
+
+COMPILE_ASSERT(GAUSS_SINC_RESAMPLING_QUALITY == 0);
+static devConstant float32 FILTER0[] = {+0.00265213f, -0.00623483f, +0.01352500f, -0.02747154f, +0.05375393f, -0.10846222f, +0.29078630f, +0.89693080f, -0.16504324f, +0.07548820f, -0.03850145f, +0.01940955f, -0.00926903f, +0.00411005f, -0.00167367f};
+static devConstant float32 FILTER1[] = {-0.00167367f, +0.00411005f, -0.00926903f, +0.01940955f, -0.03850145f, +0.07548820f, -0.16504324f, +0.89693080f, +0.29078630f, -0.10846222f, +0.05375393f, -0.02747154f, +0.01352500f, -0.00623483f, +0.00265213f};
+static const Space FILTER_SRC_SHIFT = -7;
 
 //----------------------------------------------------------------
 
-#define FUNCSPACE conservativeResampling
-#define FUNCNAME upsampleTwice
+#define FUNCSPACE gaussSincResampling
+#define FUNCNAME upsampleTwiceBalanced
 
 #define PACK_SIZE 2
 #define PACK_TO_SRC_FACTOR 1

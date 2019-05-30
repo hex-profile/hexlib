@@ -3,7 +3,7 @@
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
 
-namespace conservativeResampling {
+namespace gaussSincResampling {
 
 //================================================================
 //

@@ -3,11 +3,11 @@
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
 
-namespace conservativeResampling {
+namespace gaussSincResampling {
 
 //================================================================
 //
-// downsampleTwice
+// downsampleTwiceConservative
 //
 // 0.30 ms FullHD in YUV420 on GTX780
 //
@@ -18,7 +18,7 @@ namespace conservativeResampling {
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleTwice(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
+stdbool downsampleTwiceConservative(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 
