@@ -91,7 +91,7 @@
         \
         Space groupCountX = divUpNonneg(globSize.X, tileSizeX); \
         Space groupCountY = divUpNonneg(globSize.Y, tileSizeY); \
-        REQUIRE(superTaskCount >= 0); \
+        REQUIRE(superTaskCount >= 1); \
         \
         if_not (groupCountX && groupCountY && superTaskCount) \
             returnTrue; \

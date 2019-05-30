@@ -119,8 +119,6 @@
 
 #define GPT_EXPOSE_SAMPLER(Type, name, interp, border, prefix) \
     const Point<float32>& name##Texstep = o.name##Texstep; MAKE_VARIABLE_USED(name##Texstep); \
-    const InterpType name##Interp = (interp); MAKE_VARIABLE_USED(name##Interp); \
-    const BorderMode name##Border = (border); MAKE_VARIABLE_USED(name##Border); \
     auto name##Sampler = PREP_PASTE3(prefix, name, Sampler); GPT_MAKE_SAMPLER_USED(name##Sampler);
 
 #define GPT_EXPOSE_MATRIX(Type, name) \
