@@ -1154,5 +1154,5 @@ tartOffset[p] + i) / filterSum[p]) end do;\n  printf(\"\\n\\n\");\nend
 652f, -0.12686379f, +0.00583154f, +0.03512213f, -0.03347612f, +0.01709
 718f, -0.00337366f, -0.00253125f, +0.00291439f, " }}{PARA 6 "" 1 "" 
 {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK 
-"152 0 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 
+"121 6 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 
 1 1 }
