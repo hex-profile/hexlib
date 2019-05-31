@@ -4,11 +4,11 @@
 
 //================================================================
 //
-// require
+// ensure
 //
 //================================================================
 
-#define require(condition) \
+#define ensure(condition) \
     if (condition) ; else return false
 
 //================================================================
@@ -36,11 +36,11 @@ bool arrayBaseCompileTest(const uint8_t* srcPtr, Space srcSize)
     example.assignNull();
 
     // Access array details (decomposing array is better way):
-    require(example.ptr() != 0);
-    require(example.size() != 0);
+    ensure(example.ptr() != 0);
+    ensure(example.size() != 0);
 
     // Check that array has non-zero size
-    require(hasData(example));
+    ensure(hasData(example));
 
     return true;
 }

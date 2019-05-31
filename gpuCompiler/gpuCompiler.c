@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
+#include <vector>
 
 #include "cmdLine/cmdLine.h"
 #include "parseTools/parseTools.h"
@@ -1538,15 +1539,14 @@ int main(int argCount, const CharType* argStr[])
     //
     //----------------------------------------------------------------
 
-    // ```
-    bool ok = errorBlock(mainFunc(argCount, argStr, stdPass));
+    bool ok = foreignErrorBlock(mainFunc(argCount, argStr, stdPass));
 
     ////
 
     if_not (checkHeapIntegrity())
-        fprintf(stderr, "Heap memory is damaged!\n");
+        printMsg(kit.msgLog, STR("Heap memory is damaged!"), msgErr);
     else if_not (checkHeapLeaks())
-        fprintf(stderr, "Memory leaks are detected!\n");
+        printMsg(kit.msgLog, STR("Memory leaks are detected!"), msgErr);
 
     ////
 

@@ -560,7 +560,7 @@ class AtAssemblyImpl : public CfgSerialization
 public:
 
     stdbool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
-    stdvoid finalize(stdPars(InitKit));
+    void finalize(stdPars(InitKit));
     stdbool process(stdPars(ProcessKit));
     void serialize(const CfgSerializeKit& kit);
 
@@ -778,7 +778,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
 //
 //================================================================
 
-stdvoid AtAssemblyImpl::finalize(stdPars(InitKit))
+void AtAssemblyImpl::finalize(stdPars(InitKit))
 {
     stdBegin;
 
@@ -1384,7 +1384,7 @@ AtAssembly::~AtAssembly()
 stdbool AtAssembly::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
     {return instance->init(engineFactory, stdPassThru);}
 
-stdvoid AtAssembly::finalize(stdPars(InitKit))
+void AtAssembly::finalize(stdPars(InitKit))
     {return instance->finalize(stdPassThru);}
 
 stdbool AtAssembly::process(stdPars(ProcessKit))

@@ -20,14 +20,6 @@ void exceptThrowFailure();
 
 //================================================================
 //
-// stdvoid
-//
-//================================================================
-
-using stdvoid = void;
-
-//================================================================
-//
 // stdbool
 //
 //================================================================
@@ -50,7 +42,7 @@ sysinline stdbool allv(const stdbool& value)
     return stdbool()
 
 #define returnFalse \
-    exceptThrowFailure()
+    return (exceptThrowFailure(), stdbool())
 
 //================================================================
 //
@@ -61,27 +53,25 @@ sysinline stdbool allv(const stdbool& value)
 //================================================================
 
 template <typename Type>
-sysinline void exceptEnsure(const Type& value);
+sysinline void requireHelper(const Type& value)
+    MISSING_FUNCTION_BODY
 
 template <>
-sysinline void exceptEnsure(const stdbool& value)
+sysinline void requireHelper(const stdbool& value)
 {
 }
 
 template <>
-sysinline void exceptEnsure(const bool& value)
+sysinline void requireHelper(const bool& value)
 {
-    if_not (value)
+    if (!value) 
         exceptThrowFailure();
 }
 
 //----------------------------------------------------------------
 
-template <typename Type>
-sysinline void require(const Type& value)
-{
-    exceptEnsure(allv(condition))
-}
+#define require(value) \
+    requireHelper(allv(value))
 
 //================================================================
 //
@@ -92,17 +82,19 @@ sysinline void require(const Type& value)
 template <typename Action>
 sysinline bool exceptBlockHelper(const Action& action)
 {
-    bool ok = false;
-
     try
     {
         action();
-        ok = true;
     }
-    catch (...) {}
+    catch (...) 
+    {
+        return false;
+    }
 
-    return ok;
+    return true;
 }
+
+//----------------------------------------------------------------
 
 #define errorBlock(action) \
     exceptBlockHelper([&] () {action;})

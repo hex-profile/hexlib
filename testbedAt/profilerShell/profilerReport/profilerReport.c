@@ -685,7 +685,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 //
 //================================================================
 
-stdvoid getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
+void getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
     if_not (errorBlock(getCodeBlockCore(location, o, sourceCache, result, stdPassThru)))
     {

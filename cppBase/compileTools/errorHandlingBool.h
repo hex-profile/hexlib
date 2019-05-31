@@ -4,11 +4,15 @@
 
 //================================================================
 //
-// stdvoid
+// HEXLIB_STDBOOL_CLASS
 //
 //================================================================
 
-using stdvoid = void;
+#ifdef _DEBUG
+    #define HEXLIB_STDBOOL_CLASS 1
+#else
+    #define HEXLIB_STDBOOL_CLASS 0
+#endif
 
 //================================================================
 //
@@ -16,30 +20,39 @@ using stdvoid = void;
 //
 //================================================================
 
-class stdbool 
-#if HEXLIB_PLATFORM == 0
-    [[nodiscard]]
-#endif
-{
+#if !HEXLIB_STDBOOL_CLASS
 
-public:
+    using stdbool = bool;
+
+#else
+
+    class stdbool 
+    #if HEXLIB_PLATFORM == 0
+        [[nodiscard]]
+    #endif
+    {
+
+    public:
     
-    sysinline explicit stdbool(bool value)
-        : value(value) {}
+        sysinline explicit stdbool(bool value)
+            : value(value) {}
 
-    sysinline bool getSuccessValue() const 
+        sysinline bool getSuccessValue() const 
+            {return value;}
+
+    private:
+
+        bool value;
+
+    };
+
+    ////
+
+    sysinline stdbool allv(const stdbool& value)
         {return value;}
 
-private:
+#endif
 
-    bool value;
-
-};
-
-//----------------------------------------------------------------
-
-sysinline stdbool allv(const stdbool& value)
-    {return value;}
 
 //================================================================
 //
@@ -65,9 +78,17 @@ sysinline stdbool allv(const stdbool& value)
 template <typename Type>
 sysinline bool requireHelper(const Type& value);
 
-template <>
-sysinline bool requireHelper(const stdbool& value)
-    {return value.getSuccessValue();}
+////
+
+#if HEXLIB_STDBOOL_CLASS
+
+    template <>
+    sysinline bool requireHelper(const stdbool& value)
+        {return value.getSuccessValue();}
+
+#endif
+
+////
 
 template <>
 sysinline bool requireHelper(const bool& value)
@@ -86,5 +107,11 @@ sysinline bool requireHelper(const bool& value)
 
 sysinline bool errorBlock(const stdbool& value)
 {
+
+#if !HEXLIB_STDBOOL_CLASS
+    return value;
+#else
     return value.getSuccessValue();
+#endif
+
 }

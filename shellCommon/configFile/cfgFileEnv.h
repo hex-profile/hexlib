@@ -14,7 +14,6 @@ namespace cfgVarsImpl {
 //----------------------------------------------------------------
 //
 // Keeps string text cfg variables and saves/loads them to/from a file.
-// Functions do not throw exceptions!
 //
 //================================================================
 
@@ -59,10 +58,16 @@ public:
         {if (impl) impl->eraseAll();}
 
     stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
-        {return !impl ? stdbool(false) : impl->loadFromFile(filename, fileTools, stdPassThru);}
+    {
+        require(impl);
+        return impl->loadFromFile(filename, fileTools, stdPassThru);
+    }
 
     stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
-        {return !impl ? stdbool(false) : impl->saveToFile(filename, fileTools, stdPassThru);}
+    {
+        require(impl);
+        return impl->saveToFile(filename, fileTools, stdPassThru);
+    }
 
 public:
 

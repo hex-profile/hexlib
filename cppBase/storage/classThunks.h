@@ -136,10 +136,10 @@
 //----------------------------------------------------------------
 
 #define CLASSTHUNK_VOID_STD0(Class, func, Kit) \
-    CLASSTHUNK_STDEX0(Class, stdvoid, void(), func, PREP_EMPTY, Kit)
+    CLASSTHUNK_STDEX0(Class, void, void(), func, PREP_EMPTY, Kit)
 
 #define CLASSTHUNK_VOID_STD1(Class, func, Type0, Kit) \
-    CLASSTHUNK_STDEX1(Class, stdvoid, void(), func, Type0, Kit)
+    CLASSTHUNK_STDEX1(Class, void, void(), func, Type0, Kit)
 
 #define CLASSTHUNK_VOID_STD2(Class, func, Type0, Type1, Kit) \
-    CLASSTHUNK_STDEX2(Class, stdvoid, void(), func, Type0, Type1, Kit)
+    CLASSTHUNK_STDEX2(Class, void, void(), func, Type0, Type1, Kit)

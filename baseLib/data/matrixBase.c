@@ -2,11 +2,11 @@
 
 //================================================================
 //
-// require
+// ensure
 //
 //================================================================
 
-#define require(condition) \
+#define ensure(condition) \
     if (condition) ; else return false
 
 //================================================================
@@ -22,8 +22,8 @@
 template <Space elemSize>
 bool matrixBaseIsValid(Space sizeX, Space sizeY, Space pitch)
 {
-    require(sizeX >= 0);
-    require(sizeY >= 0);
+    ensure(sizeX >= 0);
+    ensure(sizeY >= 0);
 
     ////
 
@@ -33,12 +33,12 @@ bool matrixBaseIsValid(Space sizeX, Space sizeY, Space pitch)
     ////
 
     Space absPitch = pitch < 0 ? -pitch : pitch;
-    require(sizeX <= absPitch);
+    ensure(sizeX <= absPitch);
 
     if (sizeY >= 1)
     {
         Space maxWidth = maxArea / sizeY;
-        require(absPitch <= maxWidth);
+        ensure(absPitch <= maxWidth);
     }
 
     return true;
@@ -81,13 +81,13 @@ bool matrixBaseCompileTest(uint8_t* srcMemPtr, Space srcMemPitch, Space srcSizeX
     MatrixBase<const uint8_t> arrayFromMatrix = someArray;
 
     // Access matrix details (decomposing matrix is better way):
-    require(example.memPtr() != 0);
-    require(example.memPitch() != 0);
-    require(example.sizeX() != 0);
-    require(example.sizeY() != 0);
+    ensure(example.memPtr() != 0);
+    ensure(example.memPitch() != 0);
+    ensure(example.sizeX() != 0);
+    ensure(example.sizeY() != 0);
 
     // Check that a matrix has non-zero size
-    require(hasData(example));
+    ensure(hasData(example));
 
     return true;
 }
