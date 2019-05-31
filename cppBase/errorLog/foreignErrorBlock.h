@@ -1,9 +1,8 @@
 #pragma once
 
-#include "userOutput/errorLogExKit.h"
-#include "stdFunc/stdFunc.h"
-
 #include "compileTools/errorHandling.h"
+#include "stdFunc/stdFunc.h"
+#include "userOutput/errorLogExKit.h"
 
 //================================================================
 //
@@ -17,30 +16,31 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept;
 //
 // foreignExceptReport*
 //
-// Any foreign exception is reported to error log 
-// and re-thrown as a native "ExceptFailure".
-//
 //================================================================
 
 template <typename Action, typename Kit>
-sysinline bool foreignErrorBlockHelper(const Action& action, const Kit& kit)
+sysinline bool foreignErrorBlockHelper(const Action& action, stdPars(Kit))
 {
-    bool ok = false;
-
     try
     {
+    #if HEXLIB_ERROR_HANDLING == 0
+        return errorBlock(action());
+    #elif HEXLIB_ERROR_HANDLING == 1
         action();
-        ok = true;
+    #else
+        #error
+    #endif
     }
     catch (...) 
     {
-        reportForeignException(stdPass);
+        reportForeignException(stdPassThru);
+        return false;
     }
 
-    return ok;
+    return true;
 }
 
 //----------------------------------------------------------------
 
 #define foreignErrorBlock(action) \
-    errorBlock(foreignErrorBlockHelper([&] () {action;}, kit))
+    foreignErrorBlockHelper([&] () -> stdbool {return (action);}, stdPass)

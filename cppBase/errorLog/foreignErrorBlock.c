@@ -13,29 +13,44 @@
 
 void reportForeignException(stdPars(ErrorLogExKit)) noexcept
 {
-    auto exceptionPtr = std::current_exception();
-
-    ////
-
-    try
+    try 
     {
-        std::rethrow_exception(exceptionPtr);
-    }
 
-#if HEXLIB_ERROR_HANDLING == 1
-    catch (const ExceptFailure&)
-    {
-        // The native exception.
-    }
-#endif
+        auto exceptionPtr = std::current_exception();
 
-    catch (const std::exception& e)
-    {
-        printMsgTrace(kit.errorLogEx, STR("Standard C++ library exception: %0."), e.what(), msgErr, stdPassThru);
-    }
+        ////
 
+        try
+        {
+            std::rethrow_exception(exceptionPtr);
+        }
+
+    #if HEXLIB_ERROR_HANDLING == 1
+
+        catch (const ExceptFailure&)
+        {
+            // The native exception.
+        }
+
+    #endif
+
+        catch (const CharType* msg)
+        {
+            printMsgTrace(kit.errorLogEx, STR("%0."), msg, msgErr, stdPassThru);
+        }
+
+        catch (const std::exception& e)
+        {
+            printMsgTrace(kit.errorLogEx, STR("Standard C++ library exception: %0."), e.what(), msgErr, stdPassThru);
+        }
+
+        catch (...)
+        {
+            printMsgTrace(kit.errorLogEx, STR("Unrecognized foreign exception."), msgErr, stdPassThru);
+        }
+
+    }
     catch (...)
     {
-        printMsgTrace(kit.errorLogEx, STR("Unrecognized external exception."), msgErr, stdPassThru);
     }
 }

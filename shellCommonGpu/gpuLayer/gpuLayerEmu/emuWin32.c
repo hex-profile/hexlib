@@ -205,7 +205,6 @@ void EmuWin32::destroy()
 //================================================================
 //
 // CHECK_RETURN
-// CHECK_THROW
 //
 //================================================================
 
@@ -227,9 +226,6 @@ void EmuWin32::destroy()
 
 #define CHECK_THROW_EX(condition, errorValue) \
     if (condition) ; else throw (errorValue)
-
-#define CHECK_THROW(condition) \
-    CHECK_THROW_EX(condition, EMU_ERRMSG(condition))
 
 //================================================================
 //

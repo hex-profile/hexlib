@@ -44,7 +44,7 @@ public:
 public:
 
     stdbool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
-    stdvoid finalize(stdPars(InitKit));
+    void finalize(stdPars(InitKit));
 
     stdbool process(stdPars(ProcessKit));
 
