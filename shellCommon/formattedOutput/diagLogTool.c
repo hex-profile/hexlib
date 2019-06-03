@@ -33,7 +33,7 @@ bool DiagLogMsgLog::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     }
     catch (const exception&)
     {
-        ensure(false);
+        return false;
     }
 
     return true;

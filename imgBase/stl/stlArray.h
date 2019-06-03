@@ -47,9 +47,10 @@ public:
 
         dealloc();
 
+        REQUIRE(newSize >= 0);
+
         try
         {
-            REQUIRE(newSize >= 0);
             data.resize(newSize);
         }
         catch (...)

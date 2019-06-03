@@ -84,7 +84,7 @@ sysinline bool exceptBlockHelper(const Action& action)
 {
     try
     {
-        action();
+        action(); // stdbool value is not used
     }
     catch (...) 
     {
@@ -97,4 +97,4 @@ sysinline bool exceptBlockHelper(const Action& action)
 //----------------------------------------------------------------
 
 #define errorBlock(action) \
-    exceptBlockHelper([&] () {action;})
+    exceptBlockHelper([&] () -> stdbool {return (action);})
