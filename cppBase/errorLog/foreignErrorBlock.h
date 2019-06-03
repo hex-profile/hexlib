@@ -8,6 +8,8 @@
 //
 // reportForeignException
 //
+// Should be called from a "catch" block.
+//
 //================================================================
 
 void reportForeignException(stdPars(ErrorLogExKit)) noexcept;

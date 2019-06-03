@@ -24,7 +24,7 @@ bool LogBufferStl::add(const CharArray& text, MsgKind kind, const TimeMoment& mo
     }
     catch (const std::exception&)
     {
-        ensure(false);
+        return false;
     }
 
     return true;
