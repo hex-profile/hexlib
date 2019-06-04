@@ -53,7 +53,7 @@ sysinline Point<Float> circleCCW(const Float& v);
         return result;
     }
 
-#elif defined(_GNU_SOURCE)
+#elif defined(__GNUC__)
 
     template <>
     sysinline Point<float32> circleCCW(const float32& v)
@@ -96,14 +96,6 @@ sysinline Point<Float> circleCCW(const Float& v);
 // complexMul
 //
 //================================================================
-
-template <typename Float>
-sysinline Float complexMulX(const Float& AX, const Float& AY, const Float& BX, const Float& BY)
-    {return AX * BX - AY * BY;}
-
-template <typename Float>
-sysinline Float complexMulY(const Float& AX, const Float& AY, const Float& BX, const Float& BY)
-    {return AX * BY + AY * BX;}
 
 template <typename Float>
 sysinline Point<Float> complexMul(const Point<Float>& A, const Point<Float>& B)
