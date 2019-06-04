@@ -3,6 +3,7 @@
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "readInterpolate/gpuTexCubic.h"
 #include "vectorTypes/vectorOperations.h"
+#include "gpuSupport/gpuTexTools.h"
 
 //================================================================
 //
@@ -20,8 +21,7 @@
         ((Point<float32>, transMul)) ((Point<float32>, transAdd)), \
         \
         { \
-            float32 srcX = complexMulX(Xs, Ys, transMul.X, transMul.Y) + transAdd.X; \
-            float32 srcY = complexMulY(Xs, Ys, transMul.X, transMul.Y) + transAdd.Y; \
+            Point<float32> srcPos = complexMul(point(Xs, Ys), transMul) + transAdd; \
             \
             float32_x4 result = sampleTerm; \
             \
@@ -29,8 +29,8 @@
         } \
     )
 
-TMP_MACRO(rotateImageLinearZero, INTERP_LINEAR, BORDER_ZERO, devTex2D(srcSampler, srcX * srcTexstep.X, srcY * srcTexstep.Y))
-TMP_MACRO(rotateImageLinearMirror, INTERP_LINEAR, BORDER_MIRROR, devTex2D(srcSampler, srcX * srcTexstep.X, srcY * srcTexstep.Y))
+TMP_MACRO(rotateImageLinearZero, INTERP_LINEAR, BORDER_ZERO, tex2D(srcSampler, srcPos * srcTexstep))
+TMP_MACRO(rotateImageLinearMirror, INTERP_LINEAR, BORDER_MIRROR, tex2D(srcSampler, srcPos * srcTexstep))
 
-TMP_MACRO(rotateImageCubicZero, INTERP_NONE, BORDER_ZERO, texCubic2D(srcSampler, point(srcX, srcY), srcTexstep))
-TMP_MACRO(rotateImageCubicMirror, INTERP_NONE, BORDER_MIRROR, texCubic2D(srcSampler, point(srcX, srcY), srcTexstep))
+TMP_MACRO(rotateImageCubicZero, INTERP_NONE, BORDER_ZERO, texCubic2D(srcSampler, srcPos, srcTexstep))
+TMP_MACRO(rotateImageCubicMirror, INTERP_NONE, BORDER_MIRROR, texCubic2D(srcSampler, srcPos, srcTexstep))
