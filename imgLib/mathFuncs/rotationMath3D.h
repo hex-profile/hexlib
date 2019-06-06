@@ -10,7 +10,7 @@
 //
 //================================================================
 
-#if 1
+#if 0
 
     #define QUAT_TEMPLATE
 
@@ -182,11 +182,10 @@ sysinline Point3D<Float> quatUnitLogSpecial(const Point4D<Float>& Q)
     Float rX = quatReal(Q);
 
     //
-    // To minimize angle magnitude,
-    // always use (rX > 0) and (rY > 0).
+    // To minimize angle magnitude, use (rX > 0) and (rY > 0).
     //
-    // If rX < 0, invert the whole quaternion, 
-    // which doesn't change its SO(3) rotation.
+    // If rX < 0, invert the input quaternion, 
+    // which does not change its SO(3) rotation action.
     //
 
     if (rX < 0)

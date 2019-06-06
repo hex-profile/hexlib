@@ -2,13 +2,13 @@
 
 #include "errorLog/errorLogKit.h"
 #include "stdFunc/stdFunc.h"
-#include "storage/staticClass.h"
 #include "userOutput/msgLogKit.h"
 #include "cfg/cfgInterfaceFwd.h"
 #include "timer/timer.h"
 #include "simpleString/simpleString.h"
 #include "configFile/cfgSerialization.h"
 #include "interfaces/fileTools.h"
+#include "storage/dynamicClass.h"
 
 namespace cfgVarsImpl {
 
@@ -100,7 +100,7 @@ public:
 
 private:
 
-    StaticClass<class ConfigFileImpl, 256> instance;
+    DynamicClass<class ConfigFileImpl> instance;
 
 };
 

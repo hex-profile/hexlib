@@ -52,7 +52,7 @@ public:
 
 private:
 
-    StaticClass<class HtmlReportImpl, 1 << 8> instance;
+    DynamicClass<class HtmlReportImpl> instance;
 
 };
 
