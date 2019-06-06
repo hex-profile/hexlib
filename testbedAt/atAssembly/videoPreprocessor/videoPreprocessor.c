@@ -823,7 +823,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 
     ////
 
-    Point<float32> forwardRotation = conjugate(circleCCW(rotationAngle()));
+    Point<float32> forwardRotation = complexConjugate(circleCCW(rotationAngle()));
 
     ////
 
@@ -843,7 +843,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
         {
             srcFrame = flipMatrix(srcFrame);
             processedFrame = flipMatrix(processedFrameMemory);
-            usedRotation = conjugate(usedRotation);
+            usedRotation = complexConjugate(usedRotation);
         }
 
         ////

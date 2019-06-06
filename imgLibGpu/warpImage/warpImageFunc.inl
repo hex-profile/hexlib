@@ -7,7 +7,7 @@
 #include "vectorTypes/vectorOperations.h"
 #include "bsplinePrefilter/bsplinePrefilterSettings.h"
 #include "bsplinePrefilter/bsplinePrefilter.h"
-#include "numbers/lt/ltType.h"
+#include "types/lt/ltType.h"
 
 #if HOSTCODE
 #include "dataAlloc/gpuMatrixMemory.h"

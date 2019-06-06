@@ -1,6 +1,6 @@
 #pragma once
 
-#include "numbers/lt/ltBase.h"
+#include "types/lt/ltBase.h"
 #include "numbers/interface/numberInterface.h"
 
 //================================================================

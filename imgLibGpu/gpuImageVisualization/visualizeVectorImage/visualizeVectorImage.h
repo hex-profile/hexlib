@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gpuProcessHeader.h"
-#include "numbers/lt/ltBase.h"
+#include "types/lt/ltBase.h"
 #include "imageRead/interpType.h"
 #include "imageRead/borderMode.h"
 

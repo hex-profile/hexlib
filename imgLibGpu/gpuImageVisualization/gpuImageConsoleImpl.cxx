@@ -14,7 +14,7 @@
 #include "convertYuv420/convertYuvRgbFunc.h"
 #include "flipMatrix.h"
 #include "readInterpolate/gpuTexCubic.h"
-#include "numbers/lt/ltType.h"
+#include "types/lt/ltType.h"
 
 #if HOSTCODE
 #include "errorLog/errorLog.h"
