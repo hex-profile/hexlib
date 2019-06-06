@@ -998,7 +998,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
         AtProviderFromGpuImage imageProvider(kit);
         require(imageProvider.setImage(croppedFrame, stdPass));
 
-        require(kit.atVideoOverlay.setImage(croppedFrame.size(), imageProvider, STR("Cropped Frame"), 0, true, stdPass));
+        require(kit.atVideoOverlay.setImage(croppedFrame.size(), imageProvider, STR("Input Frame"), 0, true, stdPass));
     }
 
     ////
