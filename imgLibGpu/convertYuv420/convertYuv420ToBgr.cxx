@@ -12,7 +12,7 @@
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "gpuSupport/gpuTexTools.h"
 #include "kit/kit.h"
-#include "numbers/lt/ltType.h"
+#include "types/lt/ltType.h"
 #include "readBordered.h"
 
 //================================================================

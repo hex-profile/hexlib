@@ -403,19 +403,21 @@ VEC4X_DEFINE_FUNC1(absv)
 
 //================================================================
 //
-// conjugate
+// complexConjugate
 // complexMul
 // scalarProd
 //
 //================================================================
 
-sysinline float32_x2 conjugate(const float32_x2& p)
+sysinline float32_x2 complexConjugate(const float32_x2& p)
     {return make_float32_x2(p.x, -p.y);}
 
 //----------------------------------------------------------------
 
 sysinline float32_x2 complexMul(const float32_x2& a, const float32_x2& b)
     {return make_float32_x2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);}
+
+//----------------------------------------------------------------
 
 sysinline float32_x2 complexMad(const float32_x2& sum, const float32_x2& a, const float32_x2& b)
 {
@@ -448,16 +450,15 @@ sysinline float32 componentSum(const float32_x4& vec)
 
 //================================================================
 //
-// pi32
-// pi64
+// pi
 //
 //================================================================
 
 #ifndef ROTATION_PI_DEFINED
 #define ROTATION_PI_DEFINED
 
-constexpr float32 pi32 = 3.14159265358979324f;
-constexpr float64 pi64 = 3.14159265358979324;
+template <typename Float>
+constexpr Float pi = Float(3.14159265358979324);
 
 #endif
 
@@ -467,25 +468,14 @@ constexpr float64 pi64 = 3.14159265358979324;
 //
 //================================================================
 
-#if defined(__CUDA_ARCH__)
-
-sysinline float32_x2 circleCcw(const float32& v)
+template <typename Float>
+sysinline auto circleCcw(Float v)
 {
-    float32 angle = v * (2 * pi32);
-    float32_x2 result;
-    __sincosf(angle, &result.y, &result.x);
-    return result;
+    Float angle = v * Float(2 * pi<Float>);
+    Float resultX, resultY;
+    nativeCosSin(angle, resultX, resultY);
+    return makeVec2(resultX, resultY);
 }
-
-#else
-
-sysinline float32_x2 circleCcw(const float32& v)
-{
-    float32 angle = v * (2 * pi32);
-    return make_float32_x2(cosf(angle), sinf(angle));
-}
-
-#endif
 
 //================================================================
 //
@@ -531,6 +521,8 @@ sysinline void vectorDecompose(const float32_x2& vec, float32& vectorLengthSq, f
     if (vectorLengthSq == 0)
         {vectorLength = 0; vectorDir.x = 1; vectorDir.y = 0;}
 }
+
+//----------------------------------------------------------------
 
 sysinline void vectorDecompose(const float32_x4& vec, float32& vectorLengthSq, float32& vectorDivLen, float32& vectorLength, float32_x4& vectorDir)
 {

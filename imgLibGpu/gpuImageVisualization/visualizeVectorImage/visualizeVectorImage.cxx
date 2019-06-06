@@ -7,7 +7,7 @@
 #include "gpuSupport/gpuTool.h"
 #include "vectorTypes/vectorOperations.h"
 #include "readInterpolate/gpuTexCubic.h"
-#include "numbers/lt/ltType.h"
+#include "types/lt/ltType.h"
 #include "gpuSupport/gpuTexTools.h"
 #include "mathFuncs/rotationMath.h"
 #include "mathFuncs/gaussApprox.h"
@@ -83,7 +83,7 @@ sysinline uint8_x4 computeVectorVisualization(const float32_x2& value, bool gray
 
 #if 0
 
-    H = atan2f(value.y, value.x) * (1.f / 2 / pi32);
+    H = atan2f(value.y, value.x) * (1.f / 2 / pi<float32>);
     if (H < 0) H += 1;
 
 #else
@@ -310,7 +310,7 @@ GPUTOOL_2D_BEG
 #if DEVCODE
 {
     VECTOR_DECOMPOSE_EX(vec, vectorValue);
-    Point<float32> revPos = complexMul(point(Xs, Ys) - vectorBegin, conjugate(vecDir));
+    Point<float32> revPos = complexMul(point(Xs, Ys) - vectorBegin, complexConjugate(vecDir));
 
     ////
 

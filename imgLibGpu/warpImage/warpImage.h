@@ -3,7 +3,7 @@
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
 #include "imageRead/interpType.h"
-#include "numbers/lt/ltBase.h"
+#include "types/lt/ltBase.h"
 
 //================================================================
 //

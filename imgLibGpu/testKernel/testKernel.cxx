@@ -1,11 +1,5 @@
-#include "gpuDevice/gpuDevice.h"
-#include "numbers/mathIntrinsics.h"
-#include "readBordered.h"
-#include "data/gpuMatrix.h"
-#include "vectorTypes/vectorOperations.h"
-#include "mathFuncs/gaussApprox.h"
-#include "rndgen/rndgenFloat.h"
-#include "readInterpolate/cubicCoeffs.h"
+#include "mathFuncs/rotationMath3D.h"
+#include "numbers/float/floatType.h"
 
 //================================================================
 //
@@ -17,8 +11,9 @@
 
 #if __CUDA_ARCH__
 
-__global__ void testKernel(char* a, float* b, double* result)
+__global__ void testKernel(const Point4D<float32>* Q, const Point3D<float32>* V, Point3D<float32>* result)
 {
+    *result = quatRotateVec(*Q, *V);
 }
 
 #endif

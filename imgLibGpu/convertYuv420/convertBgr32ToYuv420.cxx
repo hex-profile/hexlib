@@ -11,7 +11,7 @@
 #include "gpuDevice/gpuDevice.h"
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "convertYuv420/convertYuvRgbFunc.h"
-#include "numbers/lt/ltType.h"
+#include "types/lt/ltType.h"
 #include "gpuSupport/gpuTexTools.h"
 
 //================================================================

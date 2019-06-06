@@ -14,7 +14,7 @@
 #include "userOutput/printMsg.h"
 #include "history/historyObj.h"
 #include "dataAlloc/arrayObjMem.inl"
-#include "numbers/lt/ltBase.h"
+#include "types/lt/ltBase.h"
 #include "numbers/divRound.h"
 #include "gpuLayer/gpuLayerCuda/cudaErrorReport.h"
 

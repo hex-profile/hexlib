@@ -1,22 +1,19 @@
 #pragma once
 
-#include <cmath>
-
 #include "point/point.h"
 #include "numbers/mathIntrinsics.h"
 
 //================================================================
 //
-// pi32
-// pi64
+// pi
 //
 //================================================================
 
 #ifndef ROTATION_PI_DEFINED
 #define ROTATION_PI_DEFINED
 
-constexpr float32 pi32 = 3.14159265358979324f;
-constexpr float64 pi64 = 3.14159265358979324;
+template <typename Float>
+constexpr Float pi = Float(3.14159265358979324);
 
 #endif
 
@@ -29,67 +26,13 @@ constexpr float64 pi64 = 3.14159265358979324;
 //================================================================
 
 template <typename Float>
-sysinline Point<Float> circleCCW(const Float& v);
-
-//----------------------------------------------------------------
-
-#if defined(__CUDA_ARCH__)
-
-    template <>
-    sysinline Point<float32> circleCCW(const float32& v)
-    {
-        float32 angle = v * (2 * pi32);
-        Point<float32> result;
-        __sincosf(angle, &result.Y, &result.X);
-        return result;
-    }
-
-    template <>
-    sysinline Point<float64> circleCCW(const float64& v)
-    {
-        float64 angle = v * (2 * pi64);
-        Point<float64> result;
-        sincos(angle, &result.Y, &result.X);
-        return result;
-    }
-
-#elif defined(__GNUC__)
-
-    template <>
-    sysinline Point<float32> circleCCW(const float32& v)
-    {
-        float32 angle = v * (2 * pi32);
-        Point<float32> result;
-        sincosf(angle, &result.Y, &result.X);
-        return result;
-    }
-
-    template <>
-    sysinline Point<float64> circleCCW(const float64& v)
-    {
-        float64 angle = v * (2 * pi64);
-        Point<float64> result;
-        sincos(angle, &result.Y, &result.X);
-        return result;
-    }
-
-#else
-
-    template <>
-    sysinline Point<float32> circleCCW(const float32& v)
-    {
-        float32 angle = v * (2 * pi32);
-        return point(cosf(angle), sinf(angle));
-    }
-
-    template <>
-    sysinline Point<float64> circleCCW(const float64& v)
-    {
-        float64 angle = v * (2 * pi64);
-        return point(cos(angle), sin(angle));
-    }
-
-#endif
+sysinline Point<Float> circleCCW(Float v)
+{
+    Float angle = v * Float(2 * pi<Float>);
+    Point<Float> result;
+    nativeCosSin(angle, result.X, result.Y);
+    return result;
+}
 
 //================================================================
 //
@@ -103,12 +46,12 @@ sysinline Point<Float> complexMul(const Point<Float>& A, const Point<Float>& B)
 
 //================================================================
 //
-// conjugate
+// complexConjugate
 //
 //================================================================
 
 template <typename Float>
-sysinline Point<Float> conjugate(const Point<Float>& P)
+sysinline Point<Float> complexConjugate(const Point<Float>& P)
     {return point(+P.X, -P.Y);}
 
 //================================================================
@@ -189,22 +132,10 @@ sysinline Point<Float> vectorNormalize(const Point<Float>& vec)
 //================================================================
 
 template <typename Float>
-sysinline Float getPhase(const Point<Float>& vec);
-
-template <>
-sysinline float32 getPhase(const Point<float32>& vec)
+sysinline Float getPhase(const Point<Float>& vec)
 {
-    float32 result = atan2f(vec.Y, vec.X);
-    result *= (1 / (2 * pi32));
-    if_not (def(result)) result = 0;
-    return result;
-}
-
-template <>
-sysinline float64 getPhase(const Point<float64>& vec)
-{
-    float64 result = atan2(vec.Y, vec.X);
-    result *= (1 / (2 * pi64));
+    Float result = nativeAtan2(vec.Y, vec.X);
+    result *= (1 / (2 * pi<Float>));
     if_not (def(result)) result = 0;
     return result;
 }
@@ -218,19 +149,20 @@ sysinline float64 getPhase(const Point<float64>& vec)
 //
 //================================================================
 
-sysinline float32 approxPhase(const Point<float32>& value)
+template <typename Float>
+sysinline Float approxPhase(const Point<Float>& value)
 {
-    float32 aX = absv(value.X);
-    float32 aY = absv(value.Y);
+    Float aX = absv(value.X);
+    Float aY = absv(value.Y);
 
-    float32 minXY = minv(aX, aY);
-    float32 maxXY = maxv(aX, aY);
+    Float minXY = minv(aX, aY);
+    Float maxXY = maxv(aX, aY);
 
-    float32 D = nativeDivide(minXY, maxXY);
+    Float D = nativeDivide(minXY, maxXY);
     if (maxXY == 0) D = 0; // range [0..1]
 
     // Cubic polynom approximation, at interval ends x=0 and x=1 both value and 1st derivative are equal to real function.
-    float32 result = (0.1591549430918954f + ((-0.02288735772973838f) + (-0.01126758536215698f) * D) * D) * D;
+    Float result = (0.1591549430918954f + ((-0.02288735772973838f) + (-0.01126758536215698f) * D) * D) * D;
 
     if (aY >= aX)
         result = 0.25f - result;

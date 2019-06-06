@@ -3,6 +3,8 @@
 #ifndef HEXLIB_POINT3D_BASE
 #define HEXLIB_POINT3D_BASE
 
+#include "compileTools/compileTools.h"
+
 //================================================================
 //
 // Point3D
@@ -26,7 +28,7 @@ struct Point3D
 //================================================================
 
 template <typename Type>
-inline Point3D<Type> point3D(const Type& X, const Type& Y, const Type& Z)
+sysinline Point3D<Type> point3D(const Type& X, const Type& Y, const Type& Z)
 {
     Point3D<Type> result;
     result.X = X;
@@ -36,7 +38,7 @@ inline Point3D<Type> point3D(const Type& X, const Type& Y, const Type& Z)
 }
 
 template <typename Type>
-inline Point3D<Type> point3D(const Type& value)
+sysinline Point3D<Type> point3D(const Type& value)
 {
     Point3D<Type> result;
     result.X = value;

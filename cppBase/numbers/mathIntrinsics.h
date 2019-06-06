@@ -236,3 +236,65 @@ sysinline Type nativePow2(const Type& value);
         {return expf(0.6931471805599453f * value);}
 
 #endif
+
+//================================================================
+//
+// nativeCosSin
+//
+//================================================================
+
+template <typename Float>
+sysinline void nativeCosSin(Float angle, Float& rX, Float& rY);
+
+//----------------------------------------------------------------
+
+#if defined(__CUDA_ARCH__)
+
+    template <>
+    sysinline void nativeCosSin(float32 angle, float32& rX, float32& rY)
+        {__sincosf(angle, &rY, &rX);}
+
+    template <>
+    sysinline void nativeCosSin(float64 angle, float64& rX, float64& rY)
+        {sincos(angle, &rY, &rX);}
+
+#elif defined(__GNUC__)
+
+    template <>
+    sysinline Point<float32> nativeCosSin(float32 angle, float32& rX, float32& rY)
+        {sincosf(angle, &rY, &rX);}
+
+    template <>
+    sysinline Point<float64> nativeCosSin(float64 angle, float64& rX, float64& rY)
+        {sincos(angle, &rY, &rX);}
+
+#else
+
+    template <>
+    sysinline void nativeCosSin(float32 angle, float32& rX, float32& rY)
+        {rX = cosf(angle); rY = sinf(angle);}
+
+    template <>
+    sysinline void nativeCosSin(float64 angle, float64& rX, float64& rY)
+        {rX = cos(angle); rY = sin(angle);}
+
+#endif
+
+//================================================================
+//
+// nativeAtan2
+//
+// Returns value in range [-Pi, +Pi].
+//
+//================================================================
+
+template <typename Float>
+sysinline Float nativeAtan2(Float rY, Float rX);
+
+template <>
+sysinline float32 nativeAtan2(float32 rY, float32 rX)
+    {return atan2f(rY, rX);}
+
+template <>
+sysinline float64 nativeAtan2(float64 rY, float64 rX)
+    {return atan2(rY, rX);}
