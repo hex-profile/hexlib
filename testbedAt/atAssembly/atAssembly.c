@@ -4,7 +4,6 @@
 
 #include "atAssembly/frameAdvanceKit.h"
 #include "atAssembly/frameChange.h"
-#include "atAssembly/toolModule/toolModule.h"
 #include "cfgTools/boolSwitch.h"
 #include "compileTools/classContext.h"
 #include "configFile/cfgSimpleString.h"
@@ -28,6 +27,8 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsgEx.h"
 #include "charType/strUtils.h"
+#include "videoPreprocessor/videoPreprocessor.h"
+#include "tests/testShell/testShell.h"
 
 namespace atStartup {
 
@@ -60,9 +61,9 @@ inline bool uncommonActivity(const ReallocActivity& stateActivity, const Realloc
 //
 //================================================================
 
-using ToolModule = toolModule::ToolModule;
-using ToolTarget = toolModule::ToolTarget;
-using ToolTargetProcessKit = toolModule::ToolTargetProcessKit;
+using ToolModule = videoPreprocessor::VideoPreprocessor;
+using ToolTarget = videoPreprocessor::VideoPrepTarget;
+using ToolTargetProcessKit = videoPreprocessor::ProcessTargetKit;
 
 //================================================================
 //
@@ -696,7 +697,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     // Create engine
     //
 
-    engineModule = move(engineFactory.create());
+    engineModule = testShell::testShellCreate(engineFactory.create());
     REQUIRE(!!engineModule);
 
     //
