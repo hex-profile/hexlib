@@ -4,7 +4,7 @@
 
 #include "atAssembly/frameAdvanceKit.h"
 #include "atAssembly/frameChange.h"
-#include "atAssembly/videoPreprocessor/videoPreprocessor.h"
+#include "atAssembly/toolModule/toolModule.h"
 #include "cfgTools/boolSwitch.h"
 #include "compileTools/classContext.h"
 #include "configFile/cfgSimpleString.h"
@@ -60,9 +60,9 @@ inline bool uncommonActivity(const ReallocActivity& stateActivity, const Realloc
 //
 //================================================================
 
-using ToolModule = videoPreprocessor::VideoPreprocessor;
-using ToolTarget = videoPreprocessor::VideoPrepTarget;
-using ToolTargetProcessKit = videoPreprocessor::ProcessTargetKit;
+using ToolModule = toolModule::ToolModule;
+using ToolTarget = toolModule::ToolTarget;
+using ToolTargetProcessKit = toolModule::ToolTargetProcessKit;
 
 //================================================================
 //

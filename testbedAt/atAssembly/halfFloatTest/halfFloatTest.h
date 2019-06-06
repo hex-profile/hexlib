@@ -38,7 +38,7 @@ public:
 
 private:
 
-    StaticClass<class HalfFloatTestImpl, 256> instance;
+    DynamicClass<class HalfFloatTestImpl> instance;
 
 };
 

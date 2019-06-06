@@ -58,7 +58,7 @@ public:
 
 private:
 
-    StaticClass<class OverlaySmootherImpl, 1 << 13> instance;
+    DynamicClass<class OverlaySmootherImpl> instance;
 
 };
 
