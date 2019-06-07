@@ -16,17 +16,17 @@ using ProcessParams = GpuRgbFrameKit;
 
 //================================================================
 //
-// ResampleTest
+// ResamplingTest
 //
 //================================================================
 
-class ResampleTest
+class ResamplingTest
 {
 
 public:
 
-    ResampleTest();
-    ~ResampleTest();
+    ResamplingTest();
+    ~ResamplingTest();
 
 public:
 
@@ -39,7 +39,7 @@ public:
 
 private:
 
-    DynamicClass<class ResampleTestImpl> instance;
+    DynamicClass<class ResamplingTestImpl> instance;
 
 };
 

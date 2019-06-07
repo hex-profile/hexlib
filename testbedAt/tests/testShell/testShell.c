@@ -1,9 +1,10 @@
 #include "testShell.h"
 
 #include "storage/classThunks.h"
-#include "tests/resamplingTest/resamplingTest.h"
 #include "cfg/cfgInterface.h"
 #include "compileTools/classContext.h"
+#include "tests/resamplingTest/resamplingTest.h"
+#include "tests/rotation3dTest/rotation3dTest.h"
 
 namespace testShell {
 
@@ -54,7 +55,8 @@ private:
 
 private:
 
-    resamplingTest::ResampleTest resamplingTest;
+    resamplingTest::ResamplingTest resamplingTest;
+    Rotation3DTest rotation3dTest;
 
 };
 
@@ -82,6 +84,11 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
             CFG_NAMESPACE("Resampling Test");
             resamplingTest.serialize(kit);
         }
+
+        {
+            CFG_NAMESPACE("Rotation 3D Test");
+            rotation3dTest.serialize(kit);
+        }
     }
 }
 
@@ -103,6 +110,12 @@ stdbool TestShellImpl::process(stdPars(AtEngineProcessKit))
     if (resamplingTest.active())
     {
         require(resamplingTest.process(resamplingTest::ProcessParams(kit.gpuRgbFrame), stdPass));
+        returnTrue;
+    }
+
+    if (rotation3dTest.active())
+    {
+        require(rotation3dTest.process(stdPass));
         returnTrue;
     }
 

@@ -77,7 +77,7 @@ private:
 
     ////
 
-    BoolSwitch<true> displayFrameTime;
+    BoolSwitch<false> displayFrameTime;
     static const Space frameTimeHistCapacity = 128;
     HistoryObjStatic<float32, frameTimeHistCapacity> frameTimeHist;
 
