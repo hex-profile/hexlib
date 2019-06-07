@@ -296,13 +296,13 @@ GPUTOOL_2D
 
 //================================================================
 //
-// ResampleTestImpl
+// ResamplingTestImpl
 //
 //================================================================
 
 #if HOSTCODE
 
-class ResampleTestImpl
+class ResamplingTestImpl
 {
 
 public:
@@ -323,18 +323,18 @@ private:
 
 //----------------------------------------------------------------
 
-CLASSTHUNK_CONSTRUCT_DESTRUCT(ResampleTest)
-CLASSTHUNK_VOID1(ResampleTest, serialize, const ModuleSerializeKit&)
-CLASSTHUNK_BOOL_CONST0(ResampleTest, active)
-CLASSTHUNK_BOOL_STD1(ResampleTest, process, const ProcessParams&, GpuModuleProcessKit)
+CLASSTHUNK_CONSTRUCT_DESTRUCT(ResamplingTest)
+CLASSTHUNK_VOID1(ResamplingTest, serialize, const ModuleSerializeKit&)
+CLASSTHUNK_BOOL_CONST0(ResamplingTest, active)
+CLASSTHUNK_BOOL_STD1(ResamplingTest, process, const ProcessParams&, GpuModuleProcessKit)
 
 //================================================================
 //
-// ResampleTestImpl::serialize
+// ResamplingTestImpl::serialize
 //
 //================================================================
 
-void ResampleTestImpl::serialize(const ModuleSerializeKit& kit)
+void ResamplingTestImpl::serialize(const ModuleSerializeKit& kit)
 {
     displaySwitch.serialize
     (
@@ -351,11 +351,11 @@ void ResampleTestImpl::serialize(const ModuleSerializeKit& kit)
 
 //================================================================
 //
-// ResampleTestImpl::process
+// ResamplingTestImpl::process
 //
 //================================================================
 
-stdbool ResampleTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
+stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
 {
     stdBegin;
 
