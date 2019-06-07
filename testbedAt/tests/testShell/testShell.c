@@ -1,7 +1,7 @@
 #include "testShell.h"
 
 #include "storage/classThunks.h"
-#include "tests/resampleTest/resampleTest.h"
+#include "tests/resamplingTest/resamplingTest.h"
 #include "cfg/cfgInterface.h"
 #include "compileTools/classContext.h"
 
@@ -54,7 +54,7 @@ private:
 
 private:
 
-    resampleTest::ResampleTest resampleTest;
+    resamplingTest::ResampleTest resamplingTest;
 
 };
 
@@ -80,7 +80,7 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
 
         {
             CFG_NAMESPACE("Resampling Test");
-            resampleTest.serialize(kit);
+            resamplingTest.serialize(kit);
         }
     }
 }
@@ -100,9 +100,9 @@ stdbool TestShellImpl::process(stdPars(AtEngineProcessKit))
     //
     //----------------------------------------------------------------
 
-    if (resampleTest.active())
+    if (resamplingTest.active())
     {
-        require(resampleTest.process(resampleTest::ProcessParams(kit.gpuRgbFrame), stdPass));
+        require(resamplingTest.process(resamplingTest::ProcessParams(kit.gpuRgbFrame), stdPass));
         returnTrue;
     }
 

@@ -4,7 +4,7 @@
 #include "storage/dynamicClass.h"
 #include "kits/gpuRgbFrameKit.h"
 
-namespace resampleTest {
+namespace resamplingTest {
 
 //================================================================
 //

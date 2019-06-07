@@ -1,4 +1,4 @@
-#include "resampleTest.h"
+#include "resamplingTest.h"
 
 #include "vectorTypes/half/halfType.h"
 #include "gpuSupport/gpuTool.h"
@@ -30,7 +30,7 @@
 #include "userOutput/printMsgEx.h"
 #endif
 
-namespace resampleTest {
+namespace resamplingTest {
 
 //================================================================
 //
@@ -170,7 +170,7 @@ public:
 #define FUNCNAME resamplePyramidModel
 #define PIXEL FloatPixel
 #define KERNEL GaussSinc
-# include "resampleTest.inl"
+# include "resamplingTest.inl"
 #undef PIXEL
 #undef KERNEL 
 #undef FUNCNAME
@@ -178,7 +178,7 @@ public:
 #define FUNCNAME resampleGaussModel
 #define PIXEL FloatPixel
 #define KERNEL GaussKernel
-# include "resampleTest.inl"
+# include "resamplingTest.inl"
 #undef PIXEL
 #undef KERNEL 
 #undef FUNCNAME
@@ -186,7 +186,7 @@ public:
 #define FUNCNAME resampleCubicModel
 #define PIXEL FloatPixel
 #define KERNEL CubicKernel
-# include "resampleTest.inl"
+# include "resamplingTest.inl"
 #undef PIXEL
 #undef KERNEL 
 #undef FUNCNAME
