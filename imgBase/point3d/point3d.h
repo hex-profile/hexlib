@@ -406,3 +406,37 @@ POINT3D_DEFINE_FUNC3(clampRange)
 POINT3D_DEFINE_FUNC1(floorf)
 POINT3D_DEFINE_FUNC1(ceilf)
 POINT3D_DEFINE_FUNC1(absv)
+
+//================================================================
+//
+// vectorLengthSq
+//
+//================================================================
+
+template <typename Float>
+sysinline Float vectorLengthSq(const Point3D<Float>& vec)
+    {return square(vec.X) + square(vec.Y) + square(vec.Z);}
+
+//================================================================
+//
+// vectorDecompose
+//
+//================================================================
+
+template <typename Float>
+sysinline void vectorDecompose(const Point3D<Float>& vec, Float& vectorLengthSq, Float& vectorDivLen, Float& vectorLength, Point3D<Float>& vectorDir)
+{
+    vectorLengthSq = square(vec.X) + square(vec.Y) + square(vec.Z);
+    vectorDivLen = recipSqrt(vectorLengthSq);
+    vectorLength = vectorLengthSq * vectorDivLen;
+    vectorDir = vec * vectorDivLen;
+
+    if (vectorLengthSq == 0)
+    {
+        vectorLength = 0;
+
+        vectorDir.X = 1;
+        vectorDir.Y = 0;
+        vectorDir.Z = 0;
+    }
+}

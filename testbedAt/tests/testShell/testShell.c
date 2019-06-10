@@ -109,13 +109,13 @@ stdbool TestShellImpl::process(stdPars(AtEngineProcessKit))
 
     if (resamplingTest.active())
     {
-        require(resamplingTest.process(resamplingTest::ProcessParams(kit.gpuRgbFrame), stdPass));
+        errorBlock(resamplingTest.process(resamplingTest::ProcessParams(kit.gpuRgbFrame), stdPass));
         returnTrue;
     }
 
     if (rotation3dTest.active())
     {
-        require(rotation3dTest.process(stdPass));
+        errorBlock(rotation3dTest.process(stdPass));
         returnTrue;
     }
 
