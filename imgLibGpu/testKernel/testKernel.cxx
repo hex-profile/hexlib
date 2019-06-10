@@ -1,4 +1,4 @@
-#include "mathFuncs/rotationMath3D.h"
+#include "mathFuncs/rotationMath3d.h"
 #include "numbers/float/floatType.h"
 
 //================================================================

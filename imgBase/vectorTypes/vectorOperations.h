@@ -491,20 +491,6 @@ sysinline float32 vectorLengthSq(const float32_x4& vec)
 
 //================================================================
 //
-// vectorLength
-//
-//================================================================
-
-template <typename VectorType>
-sysinline float32 vectorLength(const VectorType& vec)
-{
-    float32 lenSq = vectorLengthSq(vec);
-    float32 result = fastSqrt(lenSq);
-    return result;
-}
-
-//================================================================
-//
 // vectorDecompose
 //
 // Decomposition of a vector to the polar form.
@@ -519,7 +505,12 @@ sysinline void vectorDecompose(const float32_x2& vec, float32& vectorLengthSq, f
     vectorDir = vec * vectorDivLen;
 
     if (vectorLengthSq == 0)
-        {vectorLength = 0; vectorDir.x = 1; vectorDir.y = 0;}
+    {
+        vectorLength = 0; 
+
+        vectorDir.x = 1; 
+        vectorDir.y = 0;
+    }
 }
 
 //----------------------------------------------------------------
@@ -532,5 +523,12 @@ sysinline void vectorDecompose(const float32_x4& vec, float32& vectorLengthSq, f
     vectorDir = vec * vectorDivLen;
 
     if (vectorLengthSq == 0)
-        {vectorLength = 0; vectorDir.x = 1; vectorDir.y = 0; vectorDir.z = 0; vectorDir.w = 0;}
+    {
+        vectorLength = 0; 
+
+        vectorDir.x = 1; 
+        vectorDir.y = 0; 
+        vectorDir.z = 0; 
+        vectorDir.w = 0;
+    }
 }

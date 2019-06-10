@@ -412,3 +412,38 @@ POINT4D_DEFINE_FUNC3(clampRange)
 POINT4D_DEFINE_FUNC1(floorf)
 POINT4D_DEFINE_FUNC1(ceilf)
 POINT4D_DEFINE_FUNC1(absv)
+
+//================================================================
+//
+// vectorLengthSq
+//
+//================================================================
+
+template <typename Float>
+sysinline Float vectorLengthSq(const Point4D<Float>& vec)
+    {return square(vec.X) + square(vec.Y) + square(vec.Z) + square(vec.W);}
+
+//================================================================
+//
+// vectorDecompose
+//
+//================================================================
+
+template <typename Float>
+sysinline void vectorDecompose(const Point4D<Float>& vec, Float& vectorLengthSq, Float& vectorDivLen, Float& vectorLength, Point4D<Float>& vectorDir)
+{
+    vectorLengthSq = square(vec.X) + square(vec.Y) + square(vec.Z) + square(vec.W);
+    vectorDivLen = recipSqrt(vectorLengthSq);
+    vectorLength = vectorLengthSq * vectorDivLen;
+    vectorDir = vec * vectorDivLen;
+
+    if (vectorLengthSq == 0)
+    {
+        vectorLength = 0;
+
+        vectorDir.X = 1;
+        vectorDir.Y = 0;
+        vectorDir.Z = 0;
+        vectorDir.W = 0;
+    }
+}

@@ -66,65 +66,6 @@ sysinline Float scalarProd(const Point<Float>& A, const Point<Float>& B)
 
 //================================================================
 //
-// vectorLengthSq
-//
-//================================================================
-
-template <typename Float>
-sysinline Float vectorLengthSq(const Point<Float>& vec)
-    {return square(vec.X) + square(vec.Y);}
-
-//================================================================
-//
-// vectorLength
-//
-//================================================================
-
-template <typename Float>
-sysinline Float vectorLength(const Point<Float>& vec)
-{
-    Float lenSq = vectorLengthSq(vec);
-    Float result = fastSqrt(lenSq);
-    return result;
-}
-
-//================================================================
-//
-// vectorDecompose
-//
-//================================================================
-
-template <typename Float>
-sysinline void vectorDecompose(const Point<Float>& vec, Float& vectorLengthSq, Float& vectorDivLen, Float& vectorLength, Point<Float>& vectorDir)
-{
-    vectorLengthSq = square(vec.X) + square(vec.Y);
-    vectorDivLen = recipSqrt(vectorLengthSq);
-    vectorLength = vectorLengthSq * vectorDivLen;
-    vectorDir = vec * vectorDivLen;
-
-    if (vectorLengthSq == 0)
-    {
-        vectorLength = 0;
-        vectorDir.X = 1;
-        vectorDir.Y = 0;
-    }
-}
-
-//================================================================
-//
-// vectorNormalize
-//
-//================================================================
-
-template <typename Float>
-sysinline Point<Float> vectorNormalize(const Point<Float>& vec)
-{
-    VECTOR_DECOMPOSE(vec);
-    return vecDir;
-}
-
-//================================================================
-//
 // getPhase
 //
 // Returns value in range [-1/2, +1/2]

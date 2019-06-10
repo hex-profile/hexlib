@@ -1074,6 +1074,18 @@ sysinline Type square(const Type& value)
 
 //================================================================
 //
+// vectorLength
+//
+//================================================================
+
+template <typename Vector>
+sysinline auto vectorLength(const Vector& vec)
+{
+    return fastSqrt(vectorLengthSq(vec));
+}
+
+//================================================================
+//
 // VECTOR_DECOMPOSE
 //
 //================================================================
@@ -1087,3 +1099,16 @@ sysinline Type square(const Type& value)
 
 #define VECTOR_DECOMPOSE(vec) \
     VECTOR_DECOMPOSE_EX(vec, vec)
+
+//================================================================
+//
+// vectorNormalize
+//
+//================================================================
+
+template <typename Vector>
+sysinline Vector vectorNormalize(const Vector& vec)
+{
+    VECTOR_DECOMPOSE(vec);
+    return vecDir;
+}

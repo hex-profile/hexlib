@@ -126,10 +126,14 @@ public:
     bool addMsg(const FormatOutputAtom& v, MsgKind msgKind);
 
     bool clear()
-        {return clearFunc(api) != 0;}
+    {
+        return clearFunc(api) != 0;
+    }
 
     bool update()
-        {return updateFunc(api) != 0;}
+    {
+        return updateFunc(api) != 0;
+    }
 
 private:
 
