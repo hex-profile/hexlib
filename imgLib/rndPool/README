@@ -1,0 +1,2 @@
+Tools to add pixel noise to images on GPU in stateless fashion using pixel seed initialized from distributiveHash() function 
+with argument combined from given uint base and flat uint view of X/Y pixel coordinates.
