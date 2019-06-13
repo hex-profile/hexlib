@@ -949,8 +949,8 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     {
         //
         // Pipeline control on execution stage:
-        // in any case, rollback 1 frame (advance 0), because all neccessary advancing
-        // was made on counting stage.
+        // in any case, rollback 1 frame (stay on the same frame), because all neccessary advancing
+        // was made on successful counting stage.
         //
 
         PipeControl pipeControl(1, false);

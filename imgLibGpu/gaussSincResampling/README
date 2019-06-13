@@ -9,8 +9,8 @@ gauss1(x, sigma) = exp(-x^2 / sigma^2 / 2).
 In frequency domain, this kernel is box blurred by gaussian:
 sinc in frequency domain is box, gauss in frequency domain is gauss and multiplication becomes convolution.
 
-For downsampling functions, the tradeoff "loosing resolution <-> having aliasing artifacts"
-is shifted totally to "no aliasing artifacts" side and such functions are named "conservative".
+For downsampling functions, the tradeoff between loosing resolution and having aliasing artifacts
+is totally shifted to "no aliasing artifacts" side and such functions are named "conservative".
 
 For this purpose, the kernel is scaled up by "theta" parameter:
 kernel(x) = baseKernel(x / theta) / theta.

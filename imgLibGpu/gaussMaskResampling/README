@@ -1,0 +1,4 @@
+Gaussian resampling module only for resampling masks and building pyramids of masks.
+
+The gaussian kernel uses very low sigma=0.6, so it is unsuitable 
+for normal downsampling purposes due to high passing of aliasing artifacts.
