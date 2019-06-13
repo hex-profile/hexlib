@@ -1,0 +1,161 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 0 1 255 0 0 1 0 1 0 0 
+1 0 0 0 0 1 }{CSTYLE "2D Math" -1 2 "Times" 0 1 0 0 0 0 0 0 2 0 0 0 0 
+0 0 1 }{CSTYLE "2D Output" 2 20 "" 0 1 0 0 255 1 0 0 0 0 0 0 0 0 0 1 }
+{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 
+2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Text Output" -1 6 
+1 {CSTYLE "" -1 -1 "Courier" 1 10 0 0 255 1 2 2 2 2 2 1 2 1 3 1 }1 1 
+0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Output" -1 11 1 {CSTYLE "" -1 
+-1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 3 0 0 0 0 1 0 1 0 2 2 
+0 1 }{PSTYLE "Maple Output" -1 12 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 
+0 1 2 2 2 2 2 2 1 1 1 1 }1 3 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple P
+lot" -1 13 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 
+1 }3 1 0 0 0 0 1 0 1 0 2 2 0 1 }}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "restart;" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 14 "assume(s > 0);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 53 "gauss := unapply(exp(-x^2/s^2/2)/sqrt(2*Pi)/s, x, s):" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 41 "gauss1 := unapply(exp(-x^2/s
+^2/2), x, s):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 61 "Gauss := unapply(inttrans[fo
+urier](gauss(x, s), x, w), w, s);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>
+%&GaussGf*6$%\"wG%#s|irG6\"6$%)operatorG%&arrowGF)-%$expG6#,$*&#\"\"\"
+\"\"#F3*&)9$F4F3)9%F4F3F3!\"\"F)F)F)" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 42 "Gaussf := unapply(Gauss(2*Pi*f, s), f, s);" }}{PARA 
+11 "" 1 "" {XPPMATH 20 "6#>%'GaussfGf*6$%\"fG%#s|irG6\"6$%)operatorG%&
+arrowGF)-%$expG6#,$**\"\"#\"\"\")%#PiGF2F3)9$F2F3)9%F2F3!\"\"F)F)F)" }
+}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 19 "targetSigma := 0.6;" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#>%,targetSigmaG$\"\"'!\"\"" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 39 "plot(Gaussf(f, targetSigma), f = 0.
+.1);" }}{PARA 13 "" 1 "" {GLPLOT2D 837 837 837 {PLOTDATA 2 "6%-%'CURVE
+SG6$7S7$$\"\"!F)$\"\"\"F)7$$\"3emmm;arz@!#>$\"3#[T_`k%Hm**!#=7$$\"3[LL
+$e9ui2%F/$\"3K<T$f1>E))*F27$$\"3nmmm\"z_\"4iF/$\"3@/<ImEvH(*F27$$\"3[m
+mmT&phN)F/$\"3^.t)3^?f^*F27$$\"3CLLe*=)H\\5F2$\"3m(e\"\\RDUZ#*F27$$\"3
+gmm\"z/3uC\"F2$\"3I6`+k\"4K&*)F27$$\"3%)***\\7LRDX\"F2$\"3F5K7fPo2')F2
+7$$\"3]mm\"zR'ok;F2$\"3Rnh@:i`7#)F27$$\"3w***\\i5`h(=F2$\"3]As=Y>)py(F
+27$$\"3WLLL3En$4#F2$\"3Bb0uG&>NK(F27$$\"3qmm;/RE&G#F2$\"3_DMt?om**oF27
+$$\"3\")*****\\K]4]#F2$\"3b&GWQbS;T'F27$$\"3$******\\PAvr#F2$\"3,<8+fk
+%o\"fF27$$\"3)******\\nHi#HF2$\"3/CmR0HvTaF27$$\"3jmm\"z*ev:JF2$\"3oU3
+z_yZ;]F27$$\"3?LLL347TLF2$\"3G$G(RdymBXF27$$\"3,LLLLY.KNF2$\"30&=gv)p#
+47%F27$$\"3w***\\7o7Tv$F2$\"3'R:f(=^JtOF27$$\"3'GLLLQ*o]RF2$\"3w;*zAU&
+\\)H$F27$$\"3A++D\"=lj;%F2$\"3FKI\\p#\\E\"HF27$$\"31++vV&R<P%F2$\"3IcY
+&\\;;9d#F27$$\"3WLL$e9Ege%F2$\"3b8tL(=NNC#F27$$\"3GLLeR\"3Gy%F2$\"33]j
+sH+0o>F27$$\"3cmm;/T1&*\\F2$\"3C+\"*zk%)=)p\"F27$$\"3&em;zRQb@&F2$\"3w
+k18`D9Z9F27$$\"3\\***\\(=>Y2aF2$\"3qCNrH6'>D\"F27$$\"39mm;zXu9cF2$\"37
+i1Z#=UV1\"F27$$\"3l******\\y))GeF2$\"33J9&z-vB%*)F/7$$\"3'*)***\\i_QQg
+F2$\"3M;4?`m@%\\(F/7$$\"3@***\\7y%3TiF2$\"37/2!e&GHziF/7$$\"35****\\P!
+[hY'F2$\"3U+vZU8ZC^F/7$$\"3kKLL$Qx$omF2$\"36M$etw@IC%F/7$$\"3!)*****\\
+P+V)oF2$\"33jZyw))QYMF/7$$\"3?mm\"zpe*zqF2$\"3J#GJti0#QGF/7$$\"3%)****
+*\\#\\'QH(F2$\"37\"*=YE%f6G#F/7$$\"3GKLe9S8&\\(F2$\"3-zW8RkEY=F/7$$\"3
+R***\\i?=bq(F2$\"3eHS?zu&4Z\"F/7$$\"3\"HLL$3s?6zF2$\"3K`&*=f$e2<\"F/7$
+$\"3a***\\7`Wl7)F2$\"3%*HFM5\"3)f\"*!#?7$$\"3#pmmm'*RRL)F2$\"3U%Q-w)yr
+'=(F[x7$$\"3Qmm;a<.Y&)F2$\"3mi64!z8Cd&F[x7$$\"3=LLe9tOc()F2$\"3sTLq%oz
+DI%F[x7$$\"3u******\\Qk\\*)F2$\"3#z&>S6`xtLF[x7$$\"3CLL$3dg6<*F2$\"3W5
+)GNi3l`#F[x7$$\"3ImmmmxGp$*F2$\"3E0ENn$eP&>F[x7$$\"3A++D\"oK0e*F2$\"3?
+Bp4Wa/q9F[x7$$\"3A++v=5s#y*F2$\"3*er'3,8.86F[x7$F*$\"3]wq9Nmu+#)!#@-%'
+COLOURG6&%$RGBG$\"*++++\"!\")F(F(-%+AXESLABELSG6$%\"fGQ!6\"-%%VIEWG6$;
+F(F*%(DEFAULTG" 1 2 0 1 10 0 2 9 1 4 2 1.000000 45.000000 45.000000 0 
+0 "Curve 1" }}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 17 "# Downsample 1.5X" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 17 "f := 1.5: # Scale
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 56 "initialSigma := targetSigma; # sigma for unsca
+led kernel" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%-initialSigmaG$\"\"'!
+\"\"" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 89 "sustainingSigma := \+
+sqrt(targetSigma^2 - (targetSigma / f)^2); # sigma for unscaled kernel
+" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*nextSigmaG$\"+bf8sW!#5" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "#===========================
+=======================================" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 33 "# Down
+sample 1.5X (initial sigma)" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "#==================
+================================================" }}}{EXCHG {PARA 0 ">
+ " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 13 
+"scale := 3/2:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "lookCount
+ := 20;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*lookCountG\"#?" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 73 "filterCenters := evalf(seq((
+(idx + 1/2) * scale), idx = 0..lookCount-1));" }}{PARA 12 "" 1 "" 
+{XPPMATH 20 "6#>%.filterCentersG66$\"+++++v!#5$\"++++]A!\"*$\"++++]PF+
+$\"++++]_F+$\"++++]nF+$\"++++]#)F+$\"++++](*F+$\"++++D6!\")$\"++++v7F8
+$\"++++D9F8$\"++++v:F8$\"++++D<F8$\"++++v=F8$\"++++D?F8$\"++++v@F8$\"+
++++DBF8$\"++++vCF8$\"++++DEF8$\"++++vFF8$\"++++DHF8" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 12 "period := 2;" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#>%'periodG\"\"#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 68 "#-------------------------------------------------------------
+------" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 10 "diam := 7:" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 80 "startIndex := seq(round(filterCenters[k] - (diam-1)/2
+ - 1/2), k = 1..lookCount);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%+star
+tIndexG66!\"$!\"\"\"\"!\"\"#\"\"$\"\"&\"\"'\"\")\"\"*\"#6\"#7\"#9\"#:
+\"#<\"#=\"#?\"#@\"#B\"#C\"#E" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 89 "avgStartIndex := round(sum(filterCenters[k] - (diam-1)/2 - 1/2, \+
+k = 1..period) / period);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.avgSta
+rtIndexG!\"#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "startOffset
+ := evalf(seq((avgStartIndex + 1/2) - filterCenters[k], k = 1..lookCou
+nt));" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,startOffsetG66$!++++]A!\"*
+$!++++]PF($!++++]_F($!++++]nF($!++++]#)F($!++++](*F($!++++D6!\")$!++++
+v7F5$!++++D9F5$!++++v:F5$!++++D<F5$!++++v=F5$!++++D?F5$!++++v@F5$!++++
+DBF5$!++++vCF5$!++++DEF5$!++++vFF5$!++++DHF5$!++++vIF5" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "kernelScaled := unapply(gauss(x / s
+cale, initialSigma) / scale, x):" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 138 "-log[2
+](1 - sum(abs(kernelScaled(k + startOffset[1])), k = 0..diam-1) / sum(
+abs(kernelScaled(startOffset[1] + k)), k = -200..diam-1+200));" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+6)Gl0\"!\")" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(abs(kernelScaled(k + startOff
+set[2])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[2] + k)), \+
+k = -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+6)Gl0\"
+!\")" }}}{EXCHG {PARA 11 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 59 "s1 := sum(kernelScaled(k + startOffset[1]), k = \+
+0..diam-1);" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 59 "s2 := sum(kernelScal
+ed(k + startOffset[2]), k = 0..diam-1);" }}{PARA 11 "" 1 "" {XPPMATH 
+20 "6#>%#s1G$\"+!>+M***!#5" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%#s2G$
+\"+!>+M***!#5" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from
+ 0 to diam-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[1] + i) \+
+/ s1) end do;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.01948875f, +0.1690731
+2f, +0.42677512f, +0.31344228f, +0.06698076f, +0.00416463f, +0.0000753
+4f, " }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from 0 to dia
+m-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[2] + i) / s2) end
+ do;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.00007534f, +0.00416463f, +0.06
+698076f, +0.31344228f, +0.42677512f, +0.16907312f, +0.01948875f, " }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 68 "#--------------------------------------------------
+-----------------" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 10 "diam := 7:" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 80 "startIndex := seq(round(filterCenters[k] \+
+- (diam-1)/2 - 1/2), k = 1..lookCount);" }}{PARA 11 "" 1 "" {XPPMATH 
+20 "6#>%+startIndexG66!\"$!\"\"\"\"!\"\"#\"\"$\"\"&\"\"'\"\")\"\"*\"#6
+\"#7\"#9\"#:\"#<\"#=\"#?\"#@\"#B\"#C\"#E" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 89 "avgStartIndex := round(sum(filterCenters[k] - (diam-1
+)/2 - 1/2, k = 1..period) / period);" }}{PARA 11 "" 1 "" {XPPMATH 20 "
+6#>%.avgStartIndexG!\"#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "
+startOffset := evalf(seq((avgStartIndex + 1/2) - filterCenters[k], k =
+ 1..lookCount));" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,startOffsetG66$
+!++++]A!\"*$!++++]PF($!++++]_F($!++++]nF($!++++]#)F($!++++](*F($!++++D
+6!\")$!++++v7F5$!++++D9F5$!++++v:F5$!++++D<F5$!++++v=F5$!++++D?F5$!+++
++v@F5$!++++DBF5$!++++vCF5$!++++DEF5$!++++vFF5$!++++DHF5$!++++vIF5" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 70 "kernelScaled := unapply(gaus
+s(x / scale, sustainingSigma) / scale, x):" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 138 "-log
+[2](1 - sum(abs(kernelScaled(k + startOffset[1])), k = 0..diam-1) / su
+m(abs(kernelScaled(startOffset[1] + k)), k = -200..diam-1+200));" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+QJ5o<!\")" }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(abs(kernelScaled(k + startOffse
+t[2])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[2] + k)), k \+
+= -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+QJ5o<!\")
+" }}}{EXCHG {PARA 11 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 59 "s1 := sum(kernelScaled(k + startOffset[1]), k = 0..
+diam-1);" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 59 "s2 := sum(kernelScaled(
+k + startOffset[2]), k = 0..diam-1);" }}{PARA 11 "" 1 "" {XPPMATH 20 "
+6#>%#s1G$\"+2C&*****!#5" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%#s2G$\"+2
+C&*****!#5" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from 0 \+
+to diam-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[1] + i) / s
+1) end do;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.00214486f, +0.10479062f,
+ +0.55481288f, +0.31832579f, +0.01979239f, +0.00013336f, +0.00000010f,
+ " }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from 0 to diam-1
+ do printf(\"%+.8ff, \", kernelScaled(startOffset[2] + i) / s2) end do
+;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.00000010f, +0.00013336f, +0.01979
+239f, +0.31832579f, +0.55481288f, +0.10479062f, +0.00214486f, " }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK "17 0 0" 0 }
+{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
