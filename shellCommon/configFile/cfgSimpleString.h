@@ -73,6 +73,13 @@ public:
 
 public:
 
+    void clear()
+    {
+        value.clear();
+    }
+
+public:
+
     operator const SimpleString& () const
         {return value;}
 
@@ -131,6 +138,9 @@ private:
 
     void clearChanged() const
         {baseVar.changed = false;}
+
+    void resetValue() const // ```
+        {baseVar.clear();}
 
     bool getName(CfgOutputString& result) const
     {

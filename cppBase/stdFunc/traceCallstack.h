@@ -155,9 +155,13 @@ public:
 
 ////
 
-// @@@ is by-value or by-ref more efficent?
+//
+// TRACE_PARAMS: Passing the trace scope by value instead of reference is a bit better for normal calls (at least on MSVC)
+// and a bit worse for pass-thru calls, but there are much more normal calls in application code.
+//
+
 #define TRACE_PARAMS(trace) \
-    const TraceScope& TRACE_SCOPE(trace)
+    const TraceScope TRACE_SCOPE(trace)
 
 #define TRACE_REASSEMBLE(trace)
 

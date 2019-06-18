@@ -39,6 +39,14 @@ inline void constructDefault(Type& x)
 //----------------------------------------------------------------
 
 template <typename Type>
+inline void constructDefaultInit(Type& x)
+{
+    new ((NewLocalizer*) (void*) &x) Type{};
+}
+
+//----------------------------------------------------------------
+
+template <typename Type>
 inline void constructCopy(Type& x, const Type& v)
 {
     new ((NewLocalizer*) (void*) &x) Type(v);

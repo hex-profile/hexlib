@@ -21,6 +21,8 @@ namespace cfgVarsImpl {
 bool cfgvarChanged(CfgSerialization& serialization);
 void cfgvarClearChanged(CfgSerialization& serialization);
 
+void cfgvarResetValue(CfgSerialization& serialization);
+
 //================================================================
 //
 // ConfigUpdateDecimator
@@ -113,3 +115,4 @@ using cfgVarsImpl::CfgFileKit;
 using cfgVarsImpl::ConfigUpdateDecimator;
 using cfgVarsImpl::cfgvarChanged;
 using cfgVarsImpl::cfgvarClearChanged;
+using cfgVarsImpl::cfgvarResetValue;

@@ -51,6 +51,9 @@ struct CfgSerializeVariable
     virtual bool changed() const =0;
     virtual void clearChanged() const =0;
 
+    // Set default variable value.
+    virtual void resetValue() const =0;
+
     // Get the variable name.
     virtual bool getName(CfgOutputString& result) const =0;
 
