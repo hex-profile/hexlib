@@ -389,8 +389,9 @@ public:
 
     KIT_COMBINE3(UpdateKit, DiagnosticKit, LocalLogKit, FileToolsKit);
 
-    stdbool checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit));
-    stdbool updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit));
+    stdbool checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit));
+    stdbool reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit));
+    stdbool saveVariablesOnChange(CfgSerialization& serialization, stdPars(UpdateKit));
 
 private:
 
@@ -406,7 +407,7 @@ private:
 //
 //================================================================
 
-stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& steady, stdPars(UpdateKit))
+stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit))
 {
     stdBegin;
 
@@ -438,11 +439,11 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, bool& stea
 
 //================================================================
 //
-// InputMetadataHandler::updateMetadataOnChange
+// InputMetadataHandler::reloadFileOnChange
 //
 //================================================================
 
-stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName, AtEngine& receiver, stdPars(UpdateKit))
+stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit))
 {
     stdBegin;
 
@@ -453,7 +454,8 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     //----------------------------------------------------------------
 
     bool steady = false;
-    require(checkSteady(inputName, steady, stdPass));
+
+    require(checkSteady(inputName, serialization, steady, stdPass));
 
     if (steady)
         returnTrue;
@@ -466,9 +468,9 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
 
     printMsgL(kit, STR("Reloading metadata config."), msgWarn);
 
-    receiver.inputMetadataReset();
+    cfgvarResetValue(serialization);
 
-    REMEMBER_CLEANUP_EX(resetState, {receiver.inputMetadataReset(); currentInputName.clear(); currentConfigName.clear(); currentProperties = FileProperties{};});
+    REMEMBER_CLEANUP_EX(resetStateCleanup, {resetObject(*this); cfgvarResetValue(serialization);});
 
     //----------------------------------------------------------------
     //
@@ -510,19 +512,9 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     //
     //----------------------------------------------------------------
 
-    class SerializeToInputMetadata : public CfgSerialization
-    {
-        void serialize(const CfgSerializeKit& kit) {receiver.inputMetadataSerialize(kit);}
+    metadataConfig.loadVars(serialization);
 
-        CLASS_CONTEXT(SerializeToInputMetadata, ((AtEngine&, receiver)));
-    };
-
-    ////
-
-    SerializeToInputMetadata serializer(receiver);
-    metadataConfig.loadVars(serializer);
-
-    metadataConfig.saveVars(serializer, true);
+    metadataConfig.saveVars(serialization, true);
     errorBlock(metadataConfig.updateFile(true, stdPass)); // Correct the config file.
 
     // Update the file properties after correction.
@@ -534,7 +526,55 @@ stdbool InputMetadataHandler::updateMetadataOnChange(const CharArray& inputName,
     //
     //----------------------------------------------------------------
 
-    resetState.cancel();
+    resetStateCleanup.cancel();
+
+    stdEnd;
+}
+
+//================================================================
+//
+// InputMetadataHandler::saveVariablesOnChange
+//
+//================================================================
+
+stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serialization, stdPars(UpdateKit))
+{
+    stdBegin;
+
+    //----------------------------------------------------------------
+    //
+    // Check steadiness.
+    //
+    //----------------------------------------------------------------
+
+    if_not (cfgvarChanged(serialization))
+        returnTrue;
+
+    if_not (currentProperties.exists)
+        returnTrue;
+
+    //----------------------------------------------------------------
+    //
+    // Update the config.
+    //
+    //----------------------------------------------------------------
+
+    printMsg(kit.localLog, STR("Updating metadata config."), msgWarn);
+
+    REMEMBER_CLEANUP_EX(resetStateCleanup, {resetObject(*this);});
+
+    ////
+
+    ConfigFile metadataConfig;
+    require(metadataConfig.loadFile(currentConfigName, stdPass));
+
+    metadataConfig.saveVars(serialization, false);
+    require(metadataConfig.updateFile(false, stdPass));
+
+    // Update the file properties.
+    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass)); 
+
+    resetStateCleanup.cancel();
 
     stdEnd;
 }
@@ -849,9 +889,22 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     //
     //----------------------------------------------------------------
 
+    class SerializeInputMetadata : public CfgSerialization
+    {
+        void serialize(const CfgSerializeKit& kit) {engine.inputMetadataSerialize(kit);}
+        CLASS_CONTEXT(SerializeInputMetadata, ((AtEngine&, engine)));
+    };
+
+    SerializeInputMetadata metadataSerialization(*engineModule);
+
+    ////
+
     Point<Space> engineFrameSize = toolModule.outputFrameSize();
 
-    require(inputMetadataHandler.updateMetadataOnChange(kit.atVideoInfo.videofileName, *engineModule, stdPass));
+    require(inputMetadataHandler.reloadFileOnChange(kit.atVideoInfo.videofileName, metadataSerialization, stdPass));
+    REMEMBER_CLEANUP(errorBlock(inputMetadataHandler.saveVariablesOnChange(metadataSerialization, stdPass)));
+
+    ////
 
     engineModule->setInputResolution(engineFrameSize);
 

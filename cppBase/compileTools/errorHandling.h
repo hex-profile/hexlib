@@ -8,7 +8,7 @@
 //================================================================
 
 #ifndef HEXLIB_ERROR_HANDLING
-    #define HEXLIB_ERROR_HANDLING 1
+    #define HEXLIB_ERROR_HANDLING 0
 #endif
 
 //================================================================

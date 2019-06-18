@@ -905,8 +905,8 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
     REQUIRE(upsampleFactor >= 1.f);
     Point<float32> coordBackMul = 1.f / upsampleFactor;
 
-    REQUIRE(maxVector != 0);
-    float32 valueFactor = 1 / maxVector;
+    REQUIRE(def(maxVector));
+    float32 valueFactor = nativeRecipZero(maxVector);
 
     ////
 

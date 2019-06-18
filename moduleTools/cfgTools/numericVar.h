@@ -222,8 +222,14 @@ public:
     {
     }
 
-    bool changed() const {return targetVar.changed;}
-    void clearChanged() const {targetVar.changed = false;}
+    bool changed() const 
+        {return targetVar.changed;}
+
+    void clearChanged() const 
+        {targetVar.changed = false;}
+
+    void resetValue() const
+        {targetVar = targetVar.defaultValue();}
 
 public:
 
