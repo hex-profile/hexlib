@@ -904,13 +904,12 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     ////
 
     Point<Space> engineFrameSize = toolModule.outputFrameSize();
-
-    require(inputMetadataHandler.reloadFileOnChange(kit.atVideoInfo.videofileName, metadataSerialization, stdPass));
-    REMEMBER_CLEANUP(errorBlock(inputMetadataHandler.saveVariablesOnChange(metadataSerialization, stdPass)));
+    engineModule->setInputResolution(engineFrameSize);
 
     ////
 
-    engineModule->setInputResolution(engineFrameSize);
+    require(inputMetadataHandler.reloadFileOnChange(kit.atVideoInfo.videofileName, metadataSerialization, stdPass));
+    REMEMBER_CLEANUP(errorBlock(inputMetadataHandler.saveVariablesOnChange(metadataSerialization, stdPass)));
 
     //----------------------------------------------------------------
     //
