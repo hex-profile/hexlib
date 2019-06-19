@@ -27,13 +27,10 @@ public:
     CharType* getName() const
         {return base->getName();}
 
-    void serialize(const ModuleSerializeKit& kit);
-
     void setInputResolution(const Point<Space>& frameSize)
         {return base->setInputResolution(frameSize);}
 
-    void inputMetadataReset()
-        {return base->inputMetadataReset();}
+    void serialize(const ModuleSerializeKit& kit);
 
     void inputMetadataSerialize(const CfgSerializeKit& kit)
         {return base->inputMetadataSerialize(kit);}
