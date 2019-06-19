@@ -625,10 +625,21 @@ private:
     // Config file
     //
 
+    static const CharType* getDefaultConfigEditor()
+    {
+        const CharType* result = getenv(CT("HEXLIB_CONFIG_EDITOR"));
+        if (!result) result = CT("notepad");
+        return result;
+    }
+
     ConfigFile configFile;
     ConfigUpdateDecimator configUpdateDecimator;
-    SimpleStringVar configEditor;
+    SimpleStringVar configEditor{getDefaultConfigEditor()};
     StandardSignal configEditSignal;
+
+    //
+    //
+    //
 
     uint32 overlayOwnerID = 0;
     StandardSignal deactivateOverlay;
@@ -700,7 +711,7 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
             {
                 CFG_NAMESPACE("Config");
                 configEditSignal.serialize(kit, STR("Edit"), STR("`"), STR("Press Tilde"));
-                kit.visitor(kit.scope, SerializeSimpleString(configEditor, STR("Editor")));
+                configEditor.serialize(kit, STR("Editor"));
             }
 
             profilerShell.serialize(kit);
@@ -751,12 +762,6 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     // Config file
     //
 
-    CharType* defaultEditor = getenv(CT("HEXLIB_CONFIG_EDITOR"));
-    if (defaultEditor == 0) defaultEditor = CT("notepad");
-
-    configEditor = defaultEditor;
-    REMEMBER_CLEANUP1_EX(configEditorCleanup, configEditor.clear(), SimpleString&, configEditor);
-
     errorBlock(configFile.loadFile(SimpleString(engineModule->getName()) + ".cfg", stdPassKit(kitCombine(kit, fileToolsKit))));
     REMEMBER_CLEANUP1_EX(configFileCleanup, configFile.unloadFile(), ConfigFile&, configFile);
 
@@ -803,7 +808,6 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     //
 
     signalsCleanup.cancel();
-    configEditorCleanup.cancel();
     configFileCleanup.cancel();
     profilerCleanup.cancel();
     gpuContextCleanup.cancel();

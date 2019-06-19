@@ -271,16 +271,16 @@ SimpleString& SimpleString::operator +=(const SimpleString& that)
 
 bool operator ==(const SimpleString& A, const SimpleString& B)
 {
-    if_not (A.theOk && B.theOk)
+    if_not (A.ok() && B.ok())
         return false;
 
-    bool AEmpty = (A.theData == 0 || A.theData->length() == 0);
-    bool BEmpty = (B.theData == 0 || B.theData->length() == 0);
+    bool filledA = (A.length() != 0);
+    bool filledB = (B.length() != 0);
 
-    if (AEmpty && BEmpty)
+    if (!filledA && !filledA)
         return true;
 
-    if_not (A.theData != 0 && B.theData != 0)
+    if_not (filledA && filledB)
         return false;
 
     return (*A.theData) == (*B.theData);

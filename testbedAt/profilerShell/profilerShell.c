@@ -46,7 +46,7 @@ void ProfilerShell::serialize(const ModuleSerializeKit& kit)
 
         {
             CFG_NAMESPACE("HTML Report");
-            kit.visitor(kit.scope, SerializeSimpleString(htmlOutputDir, htmlOutputDirName(), STR("Use double backslashes, for example C:\\\\Temp")));
+            htmlOutputDir.serialize(kit, htmlOutputDirName(), STR("Use double backslashes, for example C:\\\\Temp"));
             htmlReport.serialize(kit);
         }
     }

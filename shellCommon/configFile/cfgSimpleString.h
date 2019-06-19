@@ -47,14 +47,12 @@ class SimpleStringVar
 
 public:
 
-    SimpleStringVar()
-        {}
-
-    SimpleStringVar(const SimpleString& value)
-        {operator =(value);}
-
-    SimpleStringVar(const CharType* value)
-        {operator =(SimpleString(value));}
+    template <typename DefaultValue>
+    SimpleStringVar(const DefaultValue& defaultValue)
+    {
+        this->value = defaultValue;
+        this->defaultValue = defaultValue;
+    }
 
 public:
 
@@ -73,9 +71,9 @@ public:
 
 public:
 
-    void clear()
+    void resetValue()
     {
-        value.clear();
+        value = defaultValue;
     }
 
 public:
@@ -97,12 +95,21 @@ public:
 
     const SimpleString* operator ->() const
         {return &value;}
+public:
+
+    //
+    // Returns true if the variable was NOT changed.
+    //
+
+    inline bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment = STR(""), const CharArray& blockComment = STR(""));
+
+    friend class SerializeSimpleStringVar;
 
 private:
 
-    friend class SerializeSimpleString;
-
     SimpleString value;
+    SimpleString defaultValue;
+
     bool changed = false;
 
 };
@@ -113,21 +120,23 @@ private:
 //
 //================================================================
 
-class SerializeSimpleString : public CfgSerializeVariable
+class SerializeSimpleStringVar : public CfgSerializeVariable
 {
 
 public:
 
-    inline SerializeSimpleString
+    inline SerializeSimpleStringVar
     (
         SimpleStringVar& baseVar,
         const CharArray& nameDesc,
-        const CharArray& comment = STR("")
+        const CharArray& comment,
+        const CharArray& blockComment
     )
         :
         baseVar(baseVar),
         nameDesc(nameDesc),
-        comment(comment)
+        comment(comment),
+        blockComment(blockComment)
     {
     }
 
@@ -139,8 +148,8 @@ private:
     void clearChanged() const
         {baseVar.changed = false;}
 
-    void resetValue() const // ```
-        {baseVar.clear();}
+    void resetValue() const
+        {baseVar.resetValue();}
 
     bool getName(CfgOutputString& result) const
     {
@@ -173,13 +182,31 @@ private:
     }
 
     bool getBlockComment(CfgWriteStream& s) const
-        {return true;}
+    {
+        ensure(cfgWrite(s, blockComment));
+        return true;
+    }
 
 private:
 
     SimpleStringVar& baseVar;
 
-    CharArray const nameDesc;
-    CharArray const comment;
+    const CharArray nameDesc;
+    const CharArray comment;
+    const CharArray blockComment;
 
 };
+
+//================================================================
+//
+// NumericVar<Type>::serialize
+//
+//================================================================
+
+inline bool SimpleStringVar::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment, const CharArray& blockComment)
+{
+    auto oldValue = value;
+    SerializeSimpleStringVar serializeVar(*this, name, comment, blockComment);
+    kit.visitor(kit.scope, serializeVar);
+    return allv(oldValue == value);
+}
