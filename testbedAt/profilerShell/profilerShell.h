@@ -57,7 +57,7 @@ private:
 
     StandardSignal htmlReportSignal;
     static CharArray htmlOutputDirName() {return STR("Output Directory");}
-    SimpleStringVar htmlOutputDir;
+    SimpleStringVar htmlOutputDir{STR("")};
     profilerReport::HtmlReport htmlReport;
 
     ////

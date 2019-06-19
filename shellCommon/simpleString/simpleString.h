@@ -87,7 +87,8 @@ public:
     inline SimpleString(const SimpleString& that)
         {initializeEmpty(); assign(that);}
 
-    inline SimpleString& operator =(const SimpleString& that)
+    template <typename That>
+    inline SimpleString& operator =(const That& that)
         {assign(that); return *this;}
 
     //----------------------------------------------------------------
@@ -141,6 +142,7 @@ public:
 
     inline void invalidate()
         {theOk = false;}
+
     //----------------------------------------------------------------
     //
     //

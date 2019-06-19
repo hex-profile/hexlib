@@ -141,17 +141,9 @@ public:
     BoolSwitch<false> savingActive;
     NumericVarStatic<int32, 1, 1024, 60> outputFps;
     CharArray outputDirName() {return STR("Output Directory");}
-    SimpleStringVar outputDir;
-    SimpleStringVar outputCodec;
+    SimpleStringVar outputDir{STR("")};
+    SimpleStringVar outputCodec{STR("DIB ")};
     NumericVarStatic<int32, 0, 0x7FFFFFFF, 0> maxSegmentFrames;
-
-public:
-
-    AviOutputConfig()
-    {
-        outputDir = CT("");
-        outputCodec = CT("DIB ");
-    }
 
 public:
 
@@ -160,8 +152,8 @@ public:
         savingActive.serialize(kit, STR("Active"));
         outputFps.serialize(kit, STR("Playback FPS"), STR("Playback framerate specified in AVI header"));
 
-        kit.visitor(kit.scope, SerializeSimpleString(outputDir, outputDirName(), STR("Use double backslashes, for example C:\\\\Temp")));
-        kit.visitor(kit.scope, SerializeSimpleString(outputCodec, STR("Compressor FourCC"), STR("Use 'DIB ' for uncompressed, 'ffds' for ffdshow")));
+        outputDir.serialize(kit, outputDirName(), STR("Use double backslashes, for example C:\\\\Temp"));
+        outputCodec.serialize(kit, STR("Compressor FourCC"), STR("Use 'DIB ' for uncompressed, 'ffds' for ffdshow"));
 
         maxSegmentFrames.serialize(kit, STR("Max Video Segment Frames"));
     }

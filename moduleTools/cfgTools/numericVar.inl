@@ -77,6 +77,6 @@ bool SerializeNumericVar<Type>::getTextComment(CfgWriteStream& s) const
 template <typename Type>
 bool SerializeNumericVar<Type>::getBlockComment(CfgWriteStream& s) const
 {
-    cfgWrite(s, blockComment);
+    ensure(cfgWrite(s, blockComment));
     return true;
 }
