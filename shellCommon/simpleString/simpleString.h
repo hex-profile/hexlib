@@ -2,93 +2,67 @@
 
 #include <string.h>
 
+#include "charType/charArray.h"
 #include "charType/charType.h"
 #include "compileTools/compileTools.h"
-#include "numbers/interface/numberInterface.h"
-#include "charType/charArray.h"
 #include "numbers/int/intType.h"
 
 //================================================================
 //
 // SimpleString
 //
-// String with built-in error state.
+// String with built-in error state (like NAN for numbers).
 //
 //----------------------------------------------------------------
 //
-// If the string is in error state:
+// If the string is in the error state:
 //
-// cstr() returns empty string.
-// operator bool() returns false.
-// length() returns 0.
+// * cstr() returns empty string,
+// * isOk() returns false,
+// * length() returns 0.
 //
-// On any operation, if you do not have enough memory, the string sets error state.
-// Also error state is inherited when assigning another SimpleString, which is in error state.
+// At any operation, if there is not enough memory, a string sets the error state.
+// The error state is inherited when assigning another SimpleString which is in the error state.
 //
-// Error state can be cleared in assignment, if operation is successful and assigned value
+// The error state can be cleared in assignment, if operation is successful and assigned value is good.
 //
-// clear() resets the error state assuredly and makes the string empty.
+// clear() resets the error state and makes the string empty.
 //
-// Assigning an empty string also is guaranteed to reset error state.
+// Assigning an empty string is guaranteed to reset error state.
 //
 //================================================================
 
 class SimpleString
 {
 
-    //----------------------------------------------------------------
-    //
-    //
-    //
-    //----------------------------------------------------------------
-
-private:
-
-    // Content ptr
-    struct StringData* theData;
-
-    // Error absense flag;
-    bool theOk;
-
-    //
-    // theOk == true && theData == 0:
-    // Empty string is valid.
-    //
-    // theOk == true && theData != 0:
-    // Valid string is contained in theData.
-    //
-    // theOk == false && any theData
-    // String is invalid and blank
-    //
-
-private:
-
-    inline void initializeEmpty()
-        {theData = 0; theOk = true;}
-
-    void deallocate();
-
-    //----------------------------------------------------------------
-    //
-    //
-    //
-    //----------------------------------------------------------------
-
 public:
 
-    inline SimpleString()
-        {initializeEmpty();}
+    sysinline SimpleString()
+        {}
 
-    inline ~SimpleString()
+    sysinline ~SimpleString()
         {deallocate();}
 
 public:
 
-    inline SimpleString(const SimpleString& that)
-        {initializeEmpty(); assign(that);}
+    sysinline SimpleString(const SimpleString& that)
+        {assign(that);}
+
+    sysinline SimpleString& operator =(const SimpleString& that)
+        {assign(that); return *this;}
+
+public:
 
     template <typename That>
-    inline SimpleString& operator =(const That& that)
+    sysinline SimpleString(const That& that)
+        {assign(that);}
+
+    template <typename That1, typename That2>
+    sysinline SimpleString(const That1& that1, const That2& that2)
+        {assign(that1, that2);}
+
+    template <typename That>
+    sysinline SimpleString& operator =(const That& that)
         {assign(that); return *this;}
 
     //----------------------------------------------------------------
@@ -99,30 +73,7 @@ public:
 
 public:
 
-    inline SimpleString(const CharType* cstr)
-        {initializeEmpty(); assign(cstr);}
-
-    inline SimpleString(const CharType* bufPtr, size_t bufLen)
-        {initializeEmpty(); assign(bufPtr, bufLen);}
-
-    inline SimpleString(const CharArray& str)
-        {initializeEmpty(); assign(str.ptr, str.size);}
-
-    inline SimpleString& operator =(const CharType* cstr)
-        {assign(cstr); return *this;}
-
-    inline SimpleString& operator =(const CharArray& str)
-        {assign(str.ptr, str.size); return *this;}
-
-    //----------------------------------------------------------------
-    //
-    //
-    //
-    //----------------------------------------------------------------
-
-public:
-
-    inline bool ok() const
+    sysinline bool isOk() const
         {return theOk;}
 
     size_t length() const;
@@ -140,7 +91,7 @@ public:
 
 public:
 
-    inline void invalidate()
+    sysinline void invalidate()
         {theOk = false;}
 
     //----------------------------------------------------------------
@@ -161,7 +112,7 @@ public:
 
 public:
 
-    inline void clear()
+    sysinline void clear()
         {deallocate(); theOk = true;}
 
     //----------------------------------------------------------------
@@ -175,6 +126,9 @@ public:
     void assign(const CharType* bufPtr, size_t bufLen);
     void assign(CharType fillValue, size_t bufSize);
 
+    void assign(const CharArray& that)
+        {assign(that.ptr, that.size);}
+
     //----------------------------------------------------------------
     //
     //
@@ -185,30 +139,66 @@ public:
 
     friend bool operator ==(const SimpleString& A, const SimpleString& B);
 
-    inline friend bool operator !=(const SimpleString& A, const SimpleString& B)
+    sysinline friend bool operator !=(const SimpleString& A, const SimpleString& B)
         {return !(A == B);}
 
 public:
 
-    friend inline void exchange(SimpleString& A, SimpleString& B)
+    friend sysinline void exchange(SimpleString& A, SimpleString& B)
     {
         exchange(A.theOk, B.theOk);
         exchange(A.theData, B.theData);
     }
 
+private:
+
+    void deallocate();
+
+private:
+
+    //
+    // theOk == true && theData == 0:
+    // Empty string is valid.
+    //
+    // theOk == true && theData != 0:
+    // Valid string is contained in theData.
+    //
+    // theOk == false && any theData
+    // String is invalid and blank
+    //
+
+    // Content ptr
+    struct StringData* theData = nullptr;
+
+    // Error absense flag;
+    bool theOk = true;
+
 };
 
 //================================================================
 //
-//
+// def
 //
 //================================================================
 
-inline SimpleString operator +(const SimpleString& X, const SimpleString& Y)
-    {SimpleString result(X); result += Y; return result;}
+sysinline bool def(const SimpleString& str)
+    {return str.isOk();}
 
-inline SimpleString operator +(const SimpleString& X, const CharType* Y)
+//================================================================
+//
+// operator +
+//
+//================================================================
+
+sysinline SimpleString operator +(const SimpleString& X, const SimpleString& Y)
+{
+    SimpleString result(X); 
+    result += Y; 
+    return result;
+}
+
+sysinline SimpleString operator +(const SimpleString& X, const CharType* Y)
     {SimpleString result(X); result += SimpleString(Y); return result;}
 
-inline SimpleString operator +(const CharType* X, const SimpleString& Y)
+sysinline SimpleString operator +(const CharType* X, const SimpleString& Y)
     {SimpleString result(X); result += Y; return result;}

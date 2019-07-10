@@ -660,8 +660,9 @@ stdbool VideoPreprocessorImpl::processTarget
     //----------------------------------------------------------------
 
     DisplayDelayerThunk displayDelayer(displayWaitController, kit);
+    InputVideoNameKit inputVideoNameKit(kit.atVideoInfo.videofileName);
 
-    require(target.process(stdPassKit(kitCombine(kit, GpuRgbFrameKit(inputFrame), DisplayDelayerKit(displayDelayer)))));
+    require(target.process(stdPassKit(kitCombine(kit, GpuRgbFrameKit(inputFrame), inputVideoNameKit, DisplayDelayerKit(displayDelayer)))));
 
     ////
 

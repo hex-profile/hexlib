@@ -3,6 +3,8 @@
 #include "charType/charType.h"
 #include "compileTools/compileTools.h"
 
+#include <string.h>
+
 //================================================================
 //
 // CharType array definitions.
@@ -80,3 +82,16 @@ COMPILE_ASSERT(COMPILE_ARRAY_SIZE(CT("1234")) == 5);
 //================================================================
 
 CharArray charArrayFromPtr(const CharType* cstring);
+
+//================================================================
+//
+// strEqual
+//
+//================================================================
+
+sysinline bool strEqual(const CharArray& a, const CharArray& b)
+{
+    return
+        a.size == b.size &&
+        memcmp(a.ptr, b.ptr, a.size * sizeof(CharType)) == 0;
+}

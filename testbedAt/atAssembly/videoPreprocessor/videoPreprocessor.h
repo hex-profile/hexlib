@@ -9,6 +9,7 @@
 #include "kits/alternativeVersionKit.h"
 #include "kits/displayParamsKit.h"
 #include "kits/gpuRgbFrameKit.h"
+#include "kits/inputVideoNameKit.h"
 #include "kits/userPoint.h"
 #include "vectorTypes/vectorBase.h"
 #include "storage/dynamicClass.h"
@@ -21,7 +22,7 @@ namespace videoPreprocessor {
 //
 //================================================================
 
-KIT_COMBINE7(ProcessTargetKit, GpuImageConsoleKit, GpuRgbFrameKit, PipeControlKit, AlternativeVersionKit, OutputLevelKit, DisplayParamsKit, UserPointKit);
+KIT_COMBINE8(ProcessTargetKit, GpuImageConsoleKit, GpuRgbFrameKit, InputVideoNameKit, PipeControlKit, AlternativeVersionKit, OutputLevelKit, DisplayParamsKit, UserPointKit);
 
 //================================================================
 //
