@@ -5,6 +5,7 @@
 #include "kits/alternativeVersionKit.h"
 #include "kits/displayParamsKit.h"
 #include "kits/gpuRgbFrameKit.h"
+#include "kits/inputVideoNameKit.h"
 #include "kits/processInspector.h"
 #include "storage/smartPtr.h"
 #include "vectorTypes/vectorBase.h"
@@ -16,7 +17,7 @@
 //================================================================
 
 KIT_COMBINE2(AtEngineReallocKit, GpuModuleReallocKit, GpuBlockAllocatorKit);
-KIT_COMBINE2(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit);
+KIT_COMBINE3(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit, InputVideoNameKit);
 
 //================================================================
 //

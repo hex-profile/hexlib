@@ -342,17 +342,13 @@ sysinline auto def(const Type& value)
 //
 //================================================================
 
-template <typename Type>
-sysinline auto def(const Type& v0, const Type& v1)
-    {return def(v0) && def(v1);}
-
-template <typename Type>
-sysinline auto def(const Type& v0, const Type& v1, const Type& v2)
-    {return def(v0) && def(v1) && def(v2);}
-
-template <typename Type>
-sysinline auto def(const Type& v0, const Type& v1, const Type& v2, const Type& v3)
-    {return def(v0) && def(v1) && def(v2) && def(v3);}
+template <typename T0, typename... Types>
+sysinline auto def(const T0& v0, const Types&... values)
+{
+    auto result = def(v0);
+    int tmp[] = {(result = result && def(values), 0)...};
+    return result;
+}
 
 //================================================================
 //

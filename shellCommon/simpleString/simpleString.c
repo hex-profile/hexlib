@@ -7,7 +7,7 @@
 
 //================================================================
 //
-//
+// formatOutput
 //
 //================================================================
 
@@ -27,10 +27,10 @@ struct StringData : public std::basic_string<CharType>
 {
     using Base = std::basic_string<CharType>;
 
-    inline StringData(const CharType* bufPtr, size_t bufSize)
+    sysinline StringData(const CharType* bufPtr, size_t bufSize)
         : Base(bufPtr, bufSize) {}
 
-    inline StringData(size_t bufSize, CharType fillValue)
+    sysinline StringData(size_t bufSize, CharType fillValue)
         : Base(bufSize, fillValue) {}
 };
 
@@ -44,14 +44,14 @@ void SimpleString::deallocate()
 {
     try
     {
-        if (theData) delete theData;
+        delete theData;
     }
     catch (const std::exception&)
     {
         // just in case, but only crazy STL can throw it in destructor
     }
 
-    theData = 0;
+    theData = nullptr;
 }
 
 //================================================================
@@ -62,6 +62,11 @@ void SimpleString::deallocate()
 
 void SimpleString::assign(const SimpleString& that)
 {
+    if (this == &that)
+        return;
+
+    ////
+
     theOk = false;
 
     ////
@@ -126,6 +131,7 @@ void SimpleString::assign(const CharType* bufPtr, size_t bufSize)
         else
         {
             theData = new (std::nothrow) StringData(bufPtr, bufSize);
+
             if_not (theData)
                 return;
         }
@@ -271,7 +277,7 @@ SimpleString& SimpleString::operator +=(const SimpleString& that)
 
 bool operator ==(const SimpleString& A, const SimpleString& B)
 {
-    if_not (A.ok() && B.ok())
+    if_not (def(A) && def(B))
         return false;
 
     bool filledA = (A.length() != 0);

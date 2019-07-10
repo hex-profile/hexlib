@@ -26,7 +26,6 @@
 #include "timerImpl/timerImpl.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsgEx.h"
-#include "charType/strUtils.h"
 #include "videoPreprocessor/videoPreprocessor.h"
 #include "tests/testShell/testShell.h"
 
@@ -479,7 +478,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     //----------------------------------------------------------------
 
     currentInputName = inputName;
-    REQUIRE(currentInputName.ok());
+    REQUIRE(def(currentInputName));
 
     ////
 
@@ -489,7 +488,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
     currentConfigName.assign(inputName.ptr, usedLength);
     currentConfigName += ".cfg";
-    REQUIRE(currentConfigName.ok());
+    REQUIRE(def(currentConfigName));
 
     ////
 

@@ -25,9 +25,9 @@ public:
     bool addBuf(const CharType* bufArray, size_t bufSize)
     {
         str += SimpleString(bufArray, bufSize);
-        bool ok = str.ok();
+        bool ok = def(str);
 
-        if_not (str.ok())
+        if_not (def(str))
             str.clear();
 
         return ok;
@@ -62,7 +62,7 @@ public:
         {
             value = X;
 
-            if_not (value.ok())
+            if_not (def(value))
                 value.clear();
 
             changed = true;
@@ -169,7 +169,7 @@ private:
         SimpleString tmp;
         OutputSimpleString output(tmp);
         ensure(s.readString(output));
-        ensure(tmp.ok());
+        ensure(def(tmp));
         baseVar = tmp;
         return true;
     }

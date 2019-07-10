@@ -237,7 +237,7 @@ public:
     bool setBuffer(const CharType* bufArray, size_t bufSize)
     {
         str.assign(bufArray, bufSize);
-        return str.ok();
+        return def(str);
     }
 };
 
@@ -271,9 +271,9 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
 
     if_not
     (
-        cfgFilename.ok() &&
+        def(cfgFilename) &&
         kit.fileTools.expandPath(cfgFilename.cstr(), getFilename) &&
-        filename.ok()
+        def(filename)
     )
     {
         printMsg(kit.msgLog, STR("Cannot get absolute path of config file '%0'"), cfgFilename.cstr(), msgWarn);
@@ -376,7 +376,7 @@ stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filename, stdPars(MsgLogKit))
 {
     SimpleString cmdLine = configEditor + CT(" \"") + filename + CT("\"");
-    require(cmdLine.ok());
+    require(def(cmdLine));
 
     ProcessToolImplThunk processTool(kit.msgLog);
     require(processTool.runAndWaitProcess(cmdLine.cstr()));
