@@ -20,7 +20,6 @@ namespace cfgVarsImpl {
 
 bool cfgvarChanged(CfgSerialization& serialization);
 void cfgvarClearChanged(CfgSerialization& serialization);
-
 void cfgvarResetValue(CfgSerialization& serialization);
 
 //================================================================
@@ -38,11 +37,7 @@ public:
     {
         TimeMoment currentTime = timer.moment();
 
-        if
-        (
-            updateFileTimeInitialized
-            && timer.diff(updateFileTime, currentTime) < 2.0f
-        )
+        if (updateFileTimeInitialized && timer.diff(updateFileTime, currentTime) < 2.0f)
             return false; // time is not passed, do not update
 
         updateFileTimeInitialized = true;
@@ -87,7 +82,7 @@ public:
 public:
 
     void loadVars(CfgSerialization& serialization);
-    void saveVars(CfgSerialization& serialization, bool forceUpdate);
+    void saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened = nullptr);
 
     stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
 

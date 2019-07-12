@@ -202,7 +202,7 @@ public:
     void unloadFile();
 
     void loadVars(CfgSerialization& serialization);
-    void saveVars(CfgSerialization& serialization, bool forceUpdate);
+    void saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened);
 
     stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
 
@@ -325,12 +325,19 @@ void ConfigFileImpl::loadVars(CfgSerialization& serialization)
 //
 //================================================================
 
-void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate)
+void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened)
 {
+    if (updateHappened) 
+        *updateHappened = false;
+
     if (forceUpdate || cfgvarChanged(serialization))
     {
+        if (updateHappened) 
+            *updateHappened = true;
+
         saveVarsToStringEnv(serialization, 0, memory);
         cfgvarClearChanged(serialization);
+
         memoryChanged = true;
     }
 }
@@ -444,8 +451,8 @@ void ConfigFile::unloadFile()
 void ConfigFile::loadVars(CfgSerialization& serialization)
     {instance->loadVars(serialization);}
 
-void ConfigFile::saveVars(CfgSerialization& serialization, bool forceUpdate)
-    {instance->saveVars(serialization, forceUpdate);}
+void ConfigFile::saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened)
+    {instance->saveVars(serialization, forceUpdate, updateHappened);}
 
 stdbool ConfigFile::updateFile(bool forceUpdate, stdPars(CfgFileKit))
     {return instance->updateFile(forceUpdate, stdPassThru);}

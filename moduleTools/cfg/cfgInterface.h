@@ -61,7 +61,7 @@ struct CfgSerializeVariable
     virtual bool getTextValue(CfgWriteStream& s) const =0;
 
     // Load the value from text format.
-    // If the function fails, the variable value should stay unchanged.
+    // If the function fails, the variable value should not be changed.
     virtual bool setTextValue(CfgReadStream& s) const =0;
 
     // Get the variable text comment.
