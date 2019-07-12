@@ -3,9 +3,7 @@
 #ifndef HEXLIB_MOVEMENT_3D
 #define HEXLIB_MOVEMENT_3D
 
-#include "point3d/point3dBase.h"
-#include "point4d/point4dBase.h"
-#include "compileTools/compileTools.h"
+#include "types/pointTypes.h"
 
 //================================================================
 //
@@ -25,7 +23,7 @@ struct Movement3D
 //----------------------------------------------------------------
 
 template <typename Float>
-sysinline Movement3D<Float> movement3D(const Point4D<Float>& rotation, const Point3D<Float>& translation)
+inline Movement3D<Float> movement3D(const Point4D<Float>& rotation, const Point3D<Float>& translation)
 {
     Movement3D<Float> result;
     result.rotation = rotation;
