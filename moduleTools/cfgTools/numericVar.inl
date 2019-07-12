@@ -38,9 +38,8 @@ bool SerializeNumericVar<Type>::getTextValue(CfgWriteStream& s) const
 template <typename Type>
 bool SerializeNumericVar<Type>::setTextValue(CfgReadStream& s) const 
 {
-    Type readValue = targetVar.defaultValue();
+    Type readValue;
     ensure(cfgRead(s, readValue));
-
     targetVar = readValue;
     return true;
 }

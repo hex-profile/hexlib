@@ -283,7 +283,7 @@ bool operator ==(const SimpleString& A, const SimpleString& B)
     bool filledA = (A.length() != 0);
     bool filledB = (B.length() != 0);
 
-    if (!filledA && !filledA)
+    if (!filledA && !filledB)
         return true;
 
     if_not (filledA && filledB)

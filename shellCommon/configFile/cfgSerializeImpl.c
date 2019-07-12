@@ -261,34 +261,36 @@ bool getVarNamePath(const CfgNamespace* scope, const CfgSerializeVariable& var, 
 //
 //================================================================
 
-bool loadVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringEnv& stringEnv)
+void loadVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringEnv& stringEnv)
 {
     //
     // Get the variable name.
     //
 
     NameContainer name;
-    ensure(getVarNamePath(scope, var, name));
+    ensurev(getVarNamePath(scope, var, name));
 
     //
-    // Try to get string value.
+    // Get string value and comments.
     //
 
     String varValue;
     String varComment;
     String varBlockComment;
-
-    ensure(stringEnv.get(name, varValue, varComment, varBlockComment));
+    ensurev(stringEnv.get(name, varValue, varComment, varBlockComment));
 
     //
-    // And to set variable value.
+    // Set variable value.
     //
 
-    ReadStreamStlThunk tmp(varValue.c_str()); // [D184B846]
+    ReadStreamStlThunk tmp(varValue.c_str());
+    ensurev(var.setTextValue(tmp));
 
-    ensure(var.setTextValue(tmp));
+    //
+    // The variable value successfully loaded, clear the changed flag.
+    //
 
-    return true;
+    var.clearChanged();
 }
 
 //================================================================
@@ -327,7 +329,7 @@ public:
 //
 //================================================================
 
-bool saveVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringEnv& stringEnv)
+void saveVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringEnv& stringEnv)
 {
 
     //
@@ -335,7 +337,7 @@ bool saveVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
     //
 
     NameContainer name;
-    ensure(getVarNamePath(scope, var, name));
+    ensurev(getVarNamePath(scope, var, name));
 
     //
     // Get text representation of the variable's value
@@ -374,7 +376,7 @@ bool saveVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
     String commentStr = comment.str();
     String blockCommentStr = blockComment.str();
 
-    ensure
+    ensurev
     (
         stringEnv.set
         (
@@ -384,8 +386,6 @@ bool saveVar(const CfgNamespace* scope, const CfgSerializeVariable& var, StringE
             !blockCommentStr.empty() ? blockCommentStr : oldBlockComment // if empty, take the old one
         )
     );
-
-    return true;
 }
 
 //================================================================
@@ -411,7 +411,8 @@ public:
     }
 
     void operator()(const CfgNamespace* scope, const CfgSerializeSignal& signal)
-        {}
+    {
+    }
 
 };
 

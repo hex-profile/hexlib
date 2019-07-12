@@ -19,7 +19,6 @@ bool SerializeBoolVar::setTextValue(CfgReadStream& s)
 {
     bool readValue = false;
     ensure(cfgRead(s, readValue));
-
     var = readValue;
     return true;
 }

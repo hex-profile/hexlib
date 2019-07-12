@@ -1126,14 +1126,18 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 
     //----------------------------------------------------------------
     //
-    // Update config (once per 2 sec if there are any modifications)
+    // Update config (once per a sec if there are any modifications)
     //
     //----------------------------------------------------------------
 
     if (configUpdateDecimator.shouldUpdate(kit.timer))
     {
-        configFile.saveVars(*this, false);
+        bool updateHappened = false;
+        configFile.saveVars(*this, false, &updateHappened);
         errorBlock(configFile.updateFile(false, stdPass));
+
+        if (updateHappened)
+            printMsgL(kit, STR("Saving config file"), msgWarn);
     }
 
     ////
