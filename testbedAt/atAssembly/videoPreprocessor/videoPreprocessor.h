@@ -22,7 +22,7 @@ namespace videoPreprocessor {
 //
 //================================================================
 
-KIT_COMBINE8(ProcessTargetKit, GpuImageConsoleKit, GpuRgbFrameKit, InputVideoNameKit, PipeControlKit, AlternativeVersionKit, OutputLevelKit, DisplayParamsKit, UserPointKit);
+KIT_COMBINE7(ProcessTargetKit, GpuImageConsoleKit, GpuRgbFrameKit, PipeControlKit, AlternativeVersionKit, OutputLevelKit, DisplayParamsKit, UserPointKit);
 
 //================================================================
 //
