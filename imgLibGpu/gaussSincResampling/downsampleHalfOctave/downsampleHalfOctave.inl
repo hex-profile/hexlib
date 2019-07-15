@@ -250,8 +250,6 @@ GPUTOOL_2D_END
 
 stdbool DownsampleHalfOctaveConservative::process(const GpuMatrix<const PIXEL>& src, const GpuMatrix<PIXEL>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     REQUIRE(allocated);
 
     GPU_MATRIX_ALLOC(tmp, PIXEL, point(dst.sizeX(), src.sizeY()));
@@ -267,7 +265,7 @@ stdbool DownsampleHalfOctaveConservative::process(const GpuMatrix<const PIXEL>& 
         require(PREP_PASTE(downsampleHalfOctaveModelVertical, PIXEL)(tmp, dst, stdPass));
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif

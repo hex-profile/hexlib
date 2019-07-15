@@ -117,8 +117,6 @@ inline bool memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignm
 
 stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Skip if realloc is not required
@@ -361,7 +359,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -372,8 +370,6 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
 stdbool MemController::processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, stdPars(ProcessKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Direct-mode allocation for debugging.
@@ -435,7 +431,7 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -446,8 +442,6 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 
 stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit))
 {
-    stdBegin;
-
     if (MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY)
     {
         tempActivity.sysAllocCount++;
@@ -532,7 +526,7 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -543,8 +537,6 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
 
 stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Direct-mode allocation for debugging.
@@ -644,7 +636,7 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

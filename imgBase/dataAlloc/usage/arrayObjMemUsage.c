@@ -42,8 +42,6 @@ KIT_COMBINE3(TestKit, CpuFastAllocKit, ErrorLogKit, DataProcessingKit);
 
 stdbool arrayObjMemUsage(stdPars(TestKit))
 {
-    stdBegin;
-
     // Construct empty array; no memory allocation performed.
     ArrayObjMem<MyClass> m0;
 
@@ -63,5 +61,5 @@ stdbool arrayObjMemUsage(stdPars(TestKit))
     // Get current allocated size.
     REQUIRE(m0.maxSize() == 33);
 
-    stdEnd;
+    returnTrue;
 }

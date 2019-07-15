@@ -134,8 +134,6 @@ void FiberOwner::destroy()
 
 stdbool EmuWin32::create(stdPars(CreateKit))
 {
-    stdBegin;
-
     //
     // Deallocate everything and set to zero
     //
@@ -182,7 +180,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

@@ -55,8 +55,6 @@ KIT_CREATE4(
 
 stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Space treeLevel, const TraceScope* nodeScope, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // This node
@@ -112,7 +110,7 @@ stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Sp
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -214,8 +212,6 @@ stdbool namedNodesReport
     stdPars(ReportKit)
 )
 {
-    stdBegin;
-
     REQUIRE(cycleCount >= 0);
     require(cycleCount >= 1);
 
@@ -253,7 +249,7 @@ stdbool namedNodesReport
     DisplayReportParams o(tickFactor, cycleCount, fullRunTime, visitor);
     require(displayProfilerTree(*rootNode, o, 0, 0, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -26,10 +26,6 @@ stdbool typeTest1
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
-    ////
-
     for (int32 i = 0; i < N; ++i)
     {
         REQUIRE(bool(Perk::equal(Perk::opStd(sample[i]), Perk::opTest(sample[i]))));
@@ -37,7 +33,7 @@ stdbool typeTest1
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -56,10 +52,6 @@ stdbool typeTest2
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
-    ////
-
     for (int32 iA = 0; iA < countA; ++iA)
     {
         for (int32 iB = 0; iB < countB; ++iB)
@@ -80,7 +72,7 @@ stdbool typeTest2
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -312,8 +304,6 @@ stdbool testUnaryPlusMinus
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 128];
 
     for (int32 i = 0; i < COMPILE_ARRAY_SIZE(specialCases); ++i)
@@ -324,7 +314,7 @@ stdbool testUnaryPlusMinus
 
     require(typeTest1<Test>(allCases, COMPILE_ARRAY_SIZE(allCases), stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -376,10 +366,6 @@ struct Name : StdTest<Perk> \
 template <typename Perk, typename Test>
 stdbool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
-    ////
-
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 64];
 
     for (int32 i = 0; i < COMPILE_ARRAY_SIZE(specialCases); ++i)
@@ -400,7 +386,7 @@ stdbool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit
         )
     );
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -418,10 +404,6 @@ DEFINE_SIMPLE_BINARY_TRAIT(Multiplication, *)
 template <typename Perk>
 stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
-    ////
-
     typedef Multiplication<Perk> Test;
 
     require((testBinarySpecialCasesAndRandom<Perk, Test>(rndgen, stdPass)));
@@ -468,7 +450,7 @@ stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -520,12 +502,10 @@ struct Division : StdTest<Perk>
 template <typename Perk>
 stdbool testDivision(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     bool ok = testBinarySpecialCasesAndRandom<Perk, Division<Perk>>(rndgen, stdPass);
     require(ok);
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -578,11 +558,9 @@ struct Remainder : StdTest<Perk>
 template <typename Perk>
 stdbool testRemainder(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     require(testBinarySpecialCasesAndRandom<Perk, Remainder<Perk>>(rndgen, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -598,11 +576,9 @@ DEFINE_SIMPLE_BINARY_TRAIT(Addition, +)
 template <typename Perk>
 stdbool testAddition(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     require(testBinarySpecialCasesAndRandom<Perk, Addition<Perk>>(rndgen, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -618,11 +594,9 @@ DEFINE_SIMPLE_BINARY_TRAIT(Subtraction, -)
 template <typename Perk>
 stdbool testSubtraction(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     require(testBinarySpecialCasesAndRandom<Perk, Subtraction<Perk>>(rndgen, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -718,10 +692,6 @@ struct ShiftLeft : StdTest<Perk>
 template <typename Perk, typename Test>
 stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
-    ////
-
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 64];
 
     for (int32 i = 0; i < COMPILE_ARRAY_SIZE(specialCases); ++i)
@@ -742,7 +712,7 @@ stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
         )
     );
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -754,8 +724,6 @@ stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 template <typename Perk>
 stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     require((testUnaryPlusMinus<Perk, UnaryMinus<Perk>>(rndgen, stdPass)));
     require((testUnaryPlusMinus<Perk, UnaryPlus<Perk>>(rndgen, stdPass)));
 
@@ -770,7 +738,7 @@ stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
     require((testShift<Perk, ShiftLeft<Perk>>(rndgen, stdPass)));
     require((testShift<Perk, ShiftRight<Perk>>(rndgen, stdPass)));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -781,12 +749,10 @@ stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 
 stdbool safeint32Test(stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     RndgenState rndgen(0x8FA9E36D);
     require(burninTest<safeint32::Type>(rndgen, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

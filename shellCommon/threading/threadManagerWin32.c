@@ -84,8 +84,6 @@ private:
 
 stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
 {
-    stdBegin;
-
     section.clear();
 
     auto& sectionEx = section.data.recast<CriticalSectionWin32>();
@@ -93,7 +91,7 @@ stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdP
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -142,8 +140,6 @@ public:
 
     stdbool create(bool manualReset, stdPars(ThreadToolKit))
     {
-        stdBegin;
-
         clear();
 
         ////
@@ -155,7 +151,7 @@ public:
 
         DEBUG_ONLY(testPtr = malloc(3);)
 
-        stdEnd;
+        returnTrue;
     }
 
 public:
@@ -193,8 +189,6 @@ private:
 
 stdbool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
 {
-    stdBegin;
-
     event.clear();
 
     ////
@@ -208,7 +202,7 @@ stdbool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, std
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -307,8 +301,6 @@ public:
     // Open is atomic
     stdbool open(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, stdPars(ErrorLogKit))
     {
-        stdBegin;
-        
         REQUIRE(!opened);
 
         ////
@@ -326,7 +318,7 @@ public:
         DEBUG_ONLY(testPtr = malloc(11);) // do not check the debug allocation
         opened = true;
 
-        stdEnd;
+        returnTrue;
     }
 
     void close()
@@ -380,8 +372,6 @@ public:
 
 stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
-    stdBegin;
-
     threadControl.waitAndClear();
 
     auto& threadControlEx = threadControl.data.recast<ThreadControllerWin32>();
@@ -396,7 +386,7 @@ stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadPar
     destructControl.cancel();
     threadControl.intrface = &threadControlEx;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -407,8 +397,6 @@ stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadPar
 
 stdbool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
-    stdBegin;
-
     threadControl.waitAndClear();
 
     auto& threadControlEx = threadControl.data.recast<CurrentThreadWin32>();
@@ -416,7 +404,7 @@ stdbool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPa
     constructDefault(threadControlEx);
     threadControl.intrface = &threadControlEx;
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

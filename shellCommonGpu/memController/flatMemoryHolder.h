@@ -45,7 +45,7 @@ public:
 
         currentSize = size;
 
-        stdEnd;
+        returnTrue;
     }
 
     ////

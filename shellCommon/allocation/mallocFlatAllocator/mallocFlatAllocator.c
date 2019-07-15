@@ -15,8 +15,6 @@ struct MallocCore
 {
     inline stdbool operator()(AddrU& result, AddrU allocSize, stdPars(ErrorLogKit))
     {
-        stdBegin;
-
         REQUIRE(allocSize <= TYPE_MAX(size_t));
         void* allocPtr = malloc(size_t(allocSize));
 
@@ -25,7 +23,7 @@ struct MallocCore
         COMPILE_ASSERT(sizeof(void*) <= sizeof(AddrU));
         result = (AddrU) allocPtr;
 
-        stdEnd;
+        returnTrue;
     }
 };
 

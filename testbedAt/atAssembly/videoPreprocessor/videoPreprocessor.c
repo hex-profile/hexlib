@@ -474,10 +474,6 @@ bool VideoPreprocessorImpl::reallocValid() const
 
 stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
 {
-    stdBegin;
-
-    ////
-
     allocFrameSize = point(0);
 
     ////
@@ -509,7 +505,7 @@ stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
 
     allocFrameSize = desiredFrameSize;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -537,7 +533,7 @@ stdbool VideoPreprocessorImpl::processTarget
     stdPars(ProcessKit)
 )
 {
-    stdBeginScoped;
+    stdScopedBegin;
 
     //----------------------------------------------------------------
     //
@@ -665,7 +661,7 @@ stdbool VideoPreprocessorImpl::processTarget
 
     ////
 
-    stdEndScoped;
+    stdScopedEnd;
 }
 
 //================================================================
@@ -682,7 +678,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
     stdPars(ProcessKit)
 )
 {
-    stdBeginScoped;
+    stdScopedBegin;
 
     //----------------------------------------------------------------
     //
@@ -756,7 +752,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 
     require(processOk);
 
-    stdEndScoped;
+    stdScopedEnd;
 }
 
 //================================================================
@@ -773,8 +769,6 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     stdPars(ProcessKit)
 )
 {
-    stdBegin;
-
     Point<Space> frameSize = inputFrame.size();
 
     AtOverlayMonitor atOverlayMonitor(kit.atVideoOverlay);
@@ -910,7 +904,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -927,10 +921,6 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     stdPars(ProcessKit)
 )
 {
-    stdBegin;
-
-    ////
-
     Point<Space> frameSize = inputFrame.size();
 
     Point<Space> cropSize = clampRange(cropSizeCfg(), point(0), frameSize);
@@ -995,7 +985,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1006,7 +996,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
 stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessKit))
 {
-    stdBeginScoped;
+    stdScopedBegin;
 
     Matrix<const uint8_x4> cpuFrame = kit.atVideoFrame;
 
@@ -1155,7 +1145,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     ////
 
-    stdEndScoped;
+    stdScopedEnd;
 }
 
 //================================================================

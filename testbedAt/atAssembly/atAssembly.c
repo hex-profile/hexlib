@@ -237,8 +237,6 @@ public:
 
     stdbool process(stdPars(ToolTargetProcessKit))
     {
-        stdBegin;
-
         EngineMemControllerTarget engineThunk(engine, baseKit, kit);
 
         MemoryUsage tempUsage;
@@ -246,7 +244,7 @@ public:
 
         maxTempUsage = maxOf(maxTempUsage, tempUsage);
 
-        stdEnd;
+        returnTrue;
     }
 
 public:
@@ -289,8 +287,6 @@ public:
 
     stdbool process(stdPars(ToolTargetProcessKit))
     {
-        stdBegin;
-
         EngineMemControllerTarget engineThunk(engine, baseKit, kit);
 
         MemoryUsage tempUsage;
@@ -298,7 +294,7 @@ public:
 
         maxTempUsage = maxOf(maxTempUsage, tempUsage);
 
-        stdEnd;
+        returnTrue;
     }
 
 public:
@@ -361,8 +357,6 @@ inline bool operator==(const FileProperties& a, const FileProperties& b)
 template <typename Kit>
 stdbool getFileProperties(const CharType* filename, FileProperties& result, stdPars(Kit))
 {
-    stdBegin;
-
     result = FileProperties{};
 
     if_not (kit.fileTools.fileExists(filename))
@@ -372,7 +366,7 @@ stdbool getFileProperties(const CharType* filename, FileProperties& result, stdP
     REQUIRE(kit.fileTools.getChangeTime(filename, result.changeTime));
     REQUIRE(kit.fileTools.getFileSize(filename, result.fileSize));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -408,8 +402,6 @@ private:
 
 stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit))
 {
-    stdBegin;
-
     steady = false;
 
     //
@@ -433,7 +425,7 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSeriali
 
     steady = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -444,8 +436,6 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSeriali
 
 stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Check steadiness.
@@ -527,7 +517,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
     resetStateCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -538,8 +528,6 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
 stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serialization, stdPars(UpdateKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Check steadiness.
@@ -575,7 +563,7 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
 
     resetStateCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -739,8 +727,6 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
 
 stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
 {
-    stdBegin;
-
     initialized = false;
 
     //
@@ -813,7 +799,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
 
     initialized = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -824,8 +810,6 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
 
 void AtAssemblyImpl::finalize(stdPars(InitKit))
 {
-    stdBegin;
-
     if_not (initialized)
         return;
 
@@ -840,10 +824,6 @@ void AtAssemblyImpl::finalize(stdPars(InitKit))
 
     configFile.saveVars(*this, false);
     errorBlock(configFile.updateFile(false, stdPassKit(kitCombine(kit, fileToolsKit))));
-
-    ////
-
-    stdEndv;
 }
 
 //================================================================
@@ -854,8 +834,6 @@ void AtAssemblyImpl::finalize(stdPars(InitKit))
 
 stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 {
-    stdBegin;
-
     using namespace memController;
 
     Point<Space> inputFrameSize = kit.atVideoFrame.size();
@@ -1028,7 +1006,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         CHECK(actualEngineTempUsage == engineTempUsage);
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1078,8 +1056,6 @@ void profilerGpuFlush(void* context)
 
 stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Edit config
@@ -1145,7 +1121,7 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1293,7 +1269,7 @@ private:
 
 stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 {
-    stdBeginScoped;
+    stdScopedBegin;
 
     REQUIRE_EX(initialized, printMsg(kit.localLog, STR("Initialization failed, processing is disabled"), msgWarn));
 
@@ -1429,7 +1405,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 
     ////
 
-    stdEndScoped;
+    stdScopedEnd;
 }
 
 //================================================================

@@ -36,8 +36,7 @@ static const Space EMU_TEX_ROW_ALIGNMENT = 32;
 
 stdbool EmuInitApiThunk::initialize(stdNullPars)
 {
-    stdBegin;
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -48,9 +47,8 @@ stdbool EmuInitApiThunk::initialize(stdNullPars)
 
 stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
 {
-    stdBegin;
     deviceCount = 1;
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -61,8 +59,6 @@ stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
 
 stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdNullPars)
 {
-    stdBegin;
-
     using namespace emuMultiProc;
 
     REQUIRE(deviceIndex == 0);
@@ -77,7 +73,7 @@ stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& propert
     properties.maxThreadCount = point(EMU_MAX_THREAD_COUNT_X, EMU_MAX_THREAD_COUNT_Y);
     properties.maxGroupArea = EMU_MAX_THREAD_COUNT;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -116,8 +112,6 @@ public:
 
     stdbool create(const GpuProperties& gpuProperties, stdPars(CreateKit))
     {
-        stdBegin;
-
         Space cpuCount = emuMultiProc::getCpuCount();
 
 
@@ -133,7 +127,7 @@ public:
 
         emuLockCleanup.cancel();
 
-        stdEnd;
+        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -153,12 +147,10 @@ public:
         stdPars(ErrorLogKit)
     )
     {
-        stdBegin;
-
         CRITSEC_GUARD(emuLock);
         return emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru);
 
-        stdEnd;
+        returnTrue;
     }
 
 public:
@@ -197,8 +189,6 @@ inline ContextEx& uncast(const GpuContext& context)
 
 stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars)
 {
-    stdBegin;
-
     result.clear();
     baseContext = 0;
 
@@ -231,7 +221,7 @@ stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& resul
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -291,8 +281,6 @@ struct EmuTexture
 
 stdbool emuAllocateTexture(Space sizeX, Space sizeY, GpuChannelType chanType, int rank, Byte*& sysAllocPtr, EmuTexture& result, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     REQUIRE(sizeX >= 0 && sizeY >= 0);
 
     //
@@ -373,7 +361,7 @@ stdbool emuAllocateTexture(Space sizeX, Space sizeY, GpuChannelType chanType, in
     result.imageBytePitch = alignedRowByteSize;
     result.imageSize = point(sizeX, sizeY);
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -395,8 +383,6 @@ struct EmuTextureContext
 
 stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
 {
-    stdBegin;
-
     ++textureAllocCount;
 
     ////
@@ -420,7 +406,7 @@ stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Sp
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -499,8 +485,6 @@ inline StreamEx& uncast(const GpuStream& stream)
 
 stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars)
 {
-    stdBegin;
-
     result.clear();
     baseStream = 0;
 
@@ -525,7 +509,7 @@ stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream
 
     streamAllocCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -635,8 +619,6 @@ inline stdbool genericArrayCopy
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     REQUIRE(byteSize >= 0);
 
     ////
@@ -660,7 +642,7 @@ inline stdbool genericArrayCopy
         )
     );
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -744,8 +726,6 @@ inline stdbool genericMatrixCopy
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     CopyMatrixParams params(srcPtr, srcBytePitch, dstPtr, dstBytePitch, byteSizeX, sizeY);
 
     require
@@ -760,7 +740,7 @@ inline stdbool genericMatrixCopy
         )
     );
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -896,8 +876,6 @@ stdbool EmuExecApiThunk::callKernel
     stdNullPars
 )
 {
-    stdBegin;
-
     ContextEx& ctx = uncast(uncast(stream).getContext());
 
     EmuKernelFunc* kernelFunc = kernelLink.func;
@@ -921,7 +899,7 @@ stdbool EmuExecApiThunk::callKernel
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

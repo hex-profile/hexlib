@@ -202,8 +202,6 @@ stdbool FUNCNAME
     stdPars(GpuProcessKit)
 )
 {
-    stdBegin;
-
     using namespace PREP_PASTE(FUNCNAME, Space);
 
     ////
@@ -347,7 +345,7 @@ stdbool FUNCNAME
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -165,8 +165,6 @@ devDefineSampler(srcSampler4, DevSampler2D, DevSamplerFloat, 4)
 template <typename Src, typename Dst>
 stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     if_not (kit.dataProcessing)
         returnTrue;
 
@@ -220,7 +218,7 @@ stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

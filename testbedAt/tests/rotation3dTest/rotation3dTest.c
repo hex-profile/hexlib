@@ -65,8 +65,6 @@ void Rotation3DTestImpl::serialize(const ModuleSerializeKit& kit)
 
 stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
 {
-    stdBegin;
-
     DisplayType displayType = kit.outputLevel >= OUTPUT_RENDER ? displaySwitch : DisplayNothing;
 
     if (displayType == DisplayNothing)
@@ -221,5 +219,5 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }

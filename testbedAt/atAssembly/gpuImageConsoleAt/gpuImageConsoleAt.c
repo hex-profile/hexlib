@@ -25,15 +25,13 @@
 
 stdbool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
 {
-    stdBegin;
-
     Space absPitch = absv(image.memPitch());
     REQUIRE(image.sizeX() <= absPitch);
 
     require(buffer.realloc(absPitch * image.sizeY(), stdPass));
     gpuImage = image;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -44,8 +42,6 @@ stdbool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image,
 
 stdbool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullPars)
 {
-    stdBegin;
-
     GpuMatrix<const uint8_x4> src = gpuImage;
     Matrix<uint8_x4> dst = dest;
 
@@ -89,7 +85,7 @@ stdbool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullP
         require(copyMatrixAsArray(srcProper, dst, copyToAtBuffer, stdPass));
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -101,8 +97,6 @@ stdbool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullP
 template <typename Type>
 stdbool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars)
 {
-    stdBegin;
-
     if (hint.target == ImgOutputOverlay)
     {
         AtProviderFromGpuImage imageProvider(kit);
@@ -147,7 +141,7 @@ stdbool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpu
         }
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -162,10 +156,6 @@ INSTANTIATE_FUNC(GpuBaseAtConsoleThunk::addImageCopyImpl<uint8_x4>)
 
 stdbool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
 {
-    stdBegin;
-
-    ////
-  
     GPU_MATRIX_ALLOC(gpuImageMemory, uint8_x4, size);
     GpuMatrix<uint8_x4> gpuImage = flipMatrix(gpuImageMemory);
     require(img.saveImage(gpuImage, stdPass));
@@ -181,5 +171,5 @@ stdbool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, cons
 
     ////
 
-    stdEnd;
+    returnTrue;
 }

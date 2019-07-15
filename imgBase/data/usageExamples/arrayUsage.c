@@ -10,8 +10,6 @@
 
 stdbool arrayUsage(stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     const int srcSize = 10;
     uint8 srcArray[srcSize];
     uint8* srcPtr = srcArray;
@@ -68,5 +66,5 @@ stdbool arrayUsage(stdPars(ErrorLogKit))
     REQUIRE(hasData(example));
     REQUIRE(hasData(example.size()));
 
-    stdEnd;
+    returnTrue;
 }

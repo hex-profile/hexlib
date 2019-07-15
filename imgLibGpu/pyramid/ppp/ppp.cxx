@@ -31,8 +31,6 @@ stdbool getTotalPyramidTileCount
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     REQUIRE(tileSize >= 1);
 
     ////
@@ -67,7 +65,7 @@ stdbool getTotalPyramidTileCount
     resultTileCount = totalTileCount;
     configHash = hash; 
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -89,8 +87,6 @@ stdbool getTotalPyramidTileCount
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     REQUIRE(tileSize >= 1);
 
     RndgenState hash = 0;
@@ -124,7 +120,7 @@ stdbool getTotalPyramidTileCount
     resultTotalTileCount = totalTileCount;
     configHash = hash; 
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -242,8 +238,6 @@ stdbool prepareGuidingArray
     stdPars(GpuProcessKit)
 )
 {
-    stdBegin;
-
     Space levelCount = pyramid.levelCount();
     REQUIRE(levelCount <= maxSupportedLevels);
     REQUIRE(tileSize >= 1);
@@ -275,7 +269,7 @@ stdbool prepareGuidingArray
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -290,8 +284,6 @@ stdbool prepareGuidingArray
 
 stdbool checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& guide, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     Space totalTileCount = 0;
     uint32 configHash = 0;
     REQUIRE(guide.tileSize >= 1);
@@ -301,7 +293,7 @@ stdbool checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& gu
     REQUIRE(guide.guideArray.size() == totalTileCount);
     REQUIRE(guide.levelCount == layout.levelCount);
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -316,8 +308,6 @@ stdbool checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& gu
 
 stdbool PyramidGuideMemory::realloc(const PyramidStructure& pyramid, const Point<Space>& tileSize, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     dealloc();
 
     ////
@@ -342,7 +332,7 @@ stdbool PyramidGuideMemory::realloc(const PyramidStructure& pyramid, const Point
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif

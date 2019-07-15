@@ -23,8 +23,6 @@ void DisplayWaitController::serialize(const ModuleSerializeKit& kit)
 
 stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
 {
-    stdBegin;
-
     float32 targetDelay = targetDelayMs * 1e-3f;
 
     if (waitActive && displayTime)
@@ -95,5 +93,5 @@ stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
 
     lastOutput = outputMoment;
 
-    stdEnd;
+    returnTrue;
 }

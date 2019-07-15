@@ -117,8 +117,6 @@ stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdP
 
 stdbool ThreadManagerLinux::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
 {
-    stdBegin;
-
     event.clear();
 
     ////
@@ -127,7 +125,7 @@ stdbool ThreadManagerLinux::createEvent(bool manualReset, EventOwner& event, std
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

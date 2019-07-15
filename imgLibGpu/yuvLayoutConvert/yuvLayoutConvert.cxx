@@ -105,10 +105,6 @@ GPUTOOL_2D_END
 template <>
 stdbool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
-    ////
-
     Point<Space> imageSize = dst.luma.size();
     REQUIRE(yuv420SizeValid(imageSize));
     REQUIRE(src.size() == yuv420TotalArea(imageSize));
@@ -120,7 +116,7 @@ stdbool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuPackedYuv<
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -136,9 +132,8 @@ stdbool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuPackedYuv<
 template <>
 stdbool convertRawToYuv420(const GpuArray<const uint16>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit))
 {
-    stdBegin;
     REQUIRE(false); // not implemented
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -224,10 +219,6 @@ GPUTOOL_2D_END
 template <>
 stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<uint8>& dst, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
-    ////
-
     Point<Space> imageSize = src.luma.size();
     REQUIRE(yuv420SizeValid(imageSize));
     REQUIRE(dst.size() == yuv420TotalArea(imageSize));
@@ -239,7 +230,7 @@ stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<u
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -255,11 +246,9 @@ stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<u
 template <>
 stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<uint16>& dst, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     REQUIRE(false); // not implemented
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif

@@ -18,8 +18,6 @@ public:
     template <typename Kit>
     inline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, AllocatorObject<CpuAddrU>& allocator, stdPars(Kit))
     {
-        stdBegin;
-
         this->data.assignNull();
         this->size = point(0);
 
@@ -35,7 +33,7 @@ public:
         this->data = allocData;
         this->size = size;
 
-        stdEnd;
+        returnTrue;
     }
 
 public:

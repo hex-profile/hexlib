@@ -46,8 +46,6 @@ stdbool GpuPyramidMemory<Type>::reallocEx
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     dealloc();
 
     ////
@@ -87,7 +85,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
     currentLayerCount = newLayers;
     deallocCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

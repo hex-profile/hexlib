@@ -357,8 +357,6 @@ void ResamplingTestImpl::serialize(const ModuleSerializeKit& kit)
 
 stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
 {
-    stdBegin;
-
     DisplayType displayType = kit.outputLevel >= OUTPUT_RENDER ? displaySwitch : DisplayNothing;
 
     if (displayType == DisplayNothing)
@@ -562,7 +560,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

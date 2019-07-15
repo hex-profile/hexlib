@@ -70,8 +70,6 @@ devDefineKernel(copyRectKernel, CopyRectKernel, o)
 
 stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     if_not (kit.dataProcessing)
         returnTrue;
 
@@ -114,7 +112,7 @@ stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& 
         )
     );
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif

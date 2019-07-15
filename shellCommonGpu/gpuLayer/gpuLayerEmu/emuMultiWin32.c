@@ -208,8 +208,6 @@ private:
 
 stdbool ServerKeeper::create(stdPars(CreateKit))
 {
-    stdBegin;
-
     //
     // Deallocate and set to zero
     //
@@ -252,7 +250,7 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     finishEventCleanup.cancel();
     emulatorPtrCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -333,8 +331,6 @@ void EmuMultiWin32::destroy()
 
 stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
 {
-    stdBegin;
-
     destroy();
 
     //
@@ -360,7 +356,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
 
     serverArrayCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -378,8 +374,6 @@ stdbool EmuMultiWin32::launchKernel
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     REQUIRE(created());
 
     //
@@ -453,7 +447,7 @@ stdbool EmuMultiWin32::launchKernel
 
     REQUIRE_EX(recordedError == 0, kit.errorLog.addErrorTrace(recordedError, TRACE_PASSTHRU(stdTraceName)));
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -21,25 +21,25 @@ class GpuProhibitedConsoleThunk : public GpuBaseConsole
 public:
 
     stdbool clear(stdNullPars)
-        {stdBegin; REQUIRE(false); stdEnd;}
+        {REQUIRE(false); returnTrue;}
 
     stdbool update(stdNullPars)
-        {stdBegin; REQUIRE(false); stdEnd;}
+        {REQUIRE(false); returnTrue;}
 
     stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-        {stdBegin; REQUIRE(false); stdEnd;}
+        {REQUIRE(false); returnTrue;}
 
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-        {stdBegin; REQUIRE(false); stdEnd;}
+        {REQUIRE(false); returnTrue;}
 
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
-        {stdBegin; REQUIRE(false); stdEnd;}
+        {REQUIRE(false); returnTrue;}
 
     stdbool overlaySetFakeImage(stdNullPars)
-        {stdBegin; REQUIRE(false); stdEnd;}
+        {REQUIRE(false); returnTrue;}
 
     stdbool overlayUpdate(stdNullPars)
-        {stdBegin; REQUIRE(false); stdEnd;}
+        {REQUIRE(false); returnTrue;}
 
     bool getTextEnabled()
         {return false;}

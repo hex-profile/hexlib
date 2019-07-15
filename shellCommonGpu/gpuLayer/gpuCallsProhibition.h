@@ -12,9 +12,8 @@
 //================================================================
 
 #define GPU_PROHIBITED_API_CALL \
-    stdBegin; \
     REQUIRE_TRACE0(false, STR("Prohibited GPU API call in memory counting phase")); \
-    stdEnd
+    returnTrue
 
 //================================================================
 //

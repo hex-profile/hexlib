@@ -365,8 +365,6 @@ static stdbool setupSamplerImage
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     state.reset();
     auto& info = state.data.recast<EmuSamplerInfo2D<MemType>>();
 
@@ -438,7 +436,7 @@ static stdbool setupSamplerImage
 
     state.tex2D = func;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -481,8 +479,6 @@ stdbool emuSetSamplerImage
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     SetupEmuSamplerImage* setupFunc = 0;
 
     ////
@@ -537,7 +533,7 @@ stdbool emuSetSamplerImage
     REQUIRE(sampler.state != 0);
     require(setupFunc(*sampler.state, imageBaseAddr, imageBytePitch, imageSize, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -599,8 +595,6 @@ static stdbool setupSamplerArray
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     state.reset();
     auto& info = state.data.recast<EmuSamplerInfo1D<MemType>>();
 
@@ -651,7 +645,7 @@ static stdbool setupSamplerArray
     REQUIRE(func);
     state.tex1Dfetch = func;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -692,8 +686,6 @@ stdbool emuSetSamplerArray
     stdPars(ErrorLogKit)
 )
 {
-    stdBegin;
-
     SetupEmuSamplerArray* setupFunc = 0;
 
     ////
@@ -745,7 +737,7 @@ stdbool emuSetSamplerArray
     REQUIRE(sampler.state != 0);
     require(setupFunc(*sampler.state, arrayAddr, arrayByteSize, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

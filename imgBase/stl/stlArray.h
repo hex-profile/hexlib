@@ -43,8 +43,6 @@ public:
 
     sysinline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
     {
-        stdBegin;
-
         dealloc();
 
         REQUIRE(newSize >= 0);
@@ -60,7 +58,7 @@ public:
 
         BaseArray::assign(newSize ? &data[0] : nullptr, newSize);
 
-        stdEnd;
+        returnTrue;
     }
 
 public:

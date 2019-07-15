@@ -10,8 +10,6 @@
 
 stdbool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     MATRIX_EXPOSE(src);
     const uint8* srcMemPtrUnsafe = unsafePtr(srcMemPtr, srcSizeX, srcSizeY);
 
@@ -77,5 +75,5 @@ stdbool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
     REQUIRE(hasData(example));
     REQUIRE(hasData(example.size()));
 
-    stdEnd;
+    returnTrue;
 }

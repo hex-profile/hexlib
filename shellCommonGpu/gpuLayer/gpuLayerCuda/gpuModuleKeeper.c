@@ -46,8 +46,6 @@
 
 stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 {
-    stdBegin;
-
     destroy();
 
     //----------------------------------------------------------------
@@ -232,7 +230,7 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
     loaded = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -265,8 +263,6 @@ void GpuModuleKeeper::destroy()
 
 stdbool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const
 {
-    stdBegin;
-
     REQUIRE(loaded);
 
     const GpuKernelLink& desc = link;
@@ -287,7 +283,7 @@ stdbool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kerne
     REQUIRE(SpaceU(kernelIdx) < SpaceU(kernelHandleSize));
     kernel = kernelHandlePtr[kernelIdx];
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -298,8 +294,6 @@ stdbool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kerne
 
 stdbool GpuModuleKeeper::fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const
 {
-    stdBegin;
-
     REQUIRE(loaded);
 
     const GpuSamplerLink& desc = link;
@@ -320,5 +314,5 @@ stdbool GpuModuleKeeper::fetchSampler(const GpuSamplerLink& link, GpuSampler& sa
     REQUIRE(SpaceU(samplerIdx) < SpaceU(samplerHandleSize));
     sampler = samplerHandlePtr[samplerIdx];
 
-    stdEnd;
+    returnTrue;
 }

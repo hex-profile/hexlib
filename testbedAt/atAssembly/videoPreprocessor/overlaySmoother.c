@@ -95,10 +95,6 @@ private:
 
 stdbool AtProviderFromCpuImage::saveImage(const Matrix<ColorPixel>& dest, stdNullPars)
 {
-    stdBegin;
-
-    ////
-
     Matrix<const ColorPixel> src = cpuImage;
     Matrix<ColorPixel> dst = dest;
 
@@ -135,7 +131,7 @@ stdbool AtProviderFromCpuImage::saveImage(const Matrix<ColorPixel>& dest, stdNul
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -167,8 +163,6 @@ inline void exchange(QueueImage& a, QueueImage& b)
 template <typename Kit>
 stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider<uint8_x4>& provider, QueueImage& dst, stdPars(Kit))
 {
-    stdBegin;
-
     Space desiredPitch = provider.getPitch();
     Space memPitch = absv(desiredPitch);
     REQUIRE(size.X <= memPitch);
@@ -204,7 +198,7 @@ stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider<uint8_x4>& pr
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -315,8 +309,6 @@ struct SharedStruct
 
     stdbool init(stdPars(InitKit))
     {
-        stdBegin;
-
         if (initialized)
             returnTrue;
 
@@ -359,7 +351,7 @@ struct SharedStruct
         totalCleanup.cancel();
         initialized = true;
 
-        stdEnd;
+        returnTrue;
     }
 
 };
@@ -396,8 +388,6 @@ public:
 
 stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeMoment& lastOutput, Timer& timer, float32& resultWaitTime, uint32 outputFrameCount, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Check if need to wait for output
@@ -487,7 +477,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
     ////
 
     resultWaitTime = 0;
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -498,8 +488,6 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
 
 stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     TimerImpl timer;
 
     TimeMoment lastOutput;
@@ -547,7 +535,7 @@ stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
 
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -746,8 +734,6 @@ void OverlaySmootherImpl::deinit()
 
 stdbool OverlaySmootherImpl::init(stdPars(InitKit))
 {
-    stdBegin;
-
     deinit();
 
     //
@@ -777,7 +763,7 @@ stdbool OverlaySmootherImpl::init(stdPars(InitKit))
 
     initialized = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -820,8 +806,6 @@ void OverlaySmootherImpl::setOutputInterface(AtAsyncOverlay* output)
 
 stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
 {
-    stdBegin;
-
     require(initialized && shared.running());
 
     ////
@@ -1035,7 +1019,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider<
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1046,8 +1030,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider<
 
 stdbool OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
 {
-    stdBegin;
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1058,8 +1041,6 @@ stdbool OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
 
 stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
 {
-    stdBegin;
-
     require(initialized && shared.running());
 
     {
@@ -1067,7 +1048,7 @@ stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
         shared.queue.clear();
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1078,8 +1059,6 @@ stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
 
 stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
 {
-    stdBegin;
-
     require(initialized && shared.running());
 
     {
@@ -1095,7 +1074,7 @@ stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
             shared.queue.clear();
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1106,8 +1085,6 @@ stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
 
 stdbool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
 {
-    stdBegin;
-
     require(initialized && shared.running());
 
     //----------------------------------------------------------------
@@ -1132,7 +1109,7 @@ stdbool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

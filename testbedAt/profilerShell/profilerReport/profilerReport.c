@@ -45,10 +45,6 @@ struct SourceCache
 
 stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 {
-    stdBegin;
-
-    ////
-
     StlString thisFilename = outputDirPrefix + CT("profiler.css");
 
     OutputTextFile file;
@@ -67,7 +63,7 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -78,10 +74,6 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 
 stdbool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
 {
-    stdBegin;
-
-    ////
-
     StlString javascriptText =
     # include "profiler.js"
     ;
@@ -93,7 +85,7 @@ stdbool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -248,8 +240,6 @@ bool getIndent(const StlString& str, Space& result)
 
 stdbool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& result, Space maxScanDistance, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     using namespace std;
 
     Space rowCount = Space(text.size());
@@ -431,7 +421,7 @@ stdbool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& resu
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -606,8 +596,6 @@ KIT_CREATE3
 
 stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
-    stdBegin;
-
     result.clear();
 
     ////
@@ -676,7 +664,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1031,8 +1019,6 @@ inline FormatNumber<float32> formatTime(const float32& value, const DisplayParam
 
 stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisInfo, const StlString& parentHtml, const HtmlReportParams& o, stdPars(ReportKit))
 {
-    stdBegin;
-
     using namespace std;
 
     float32 timeThresholdFraction = o.displayParams.timeThresholdFraction;
@@ -1559,7 +1545,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1596,8 +1582,6 @@ private:
 
 stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit))
 {
-    stdBegin;
-
     using namespace std;
 
     //
@@ -1652,7 +1636,7 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1769,8 +1753,6 @@ void HtmlReportImpl::serialize(const ModuleSerializeKit& kit)
 
 stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFileKit))
 {
-    stdBegin;
-
     REQUIRE(o.cycleCount >= 0);
     require(o.cycleCount >= 1);
 
@@ -1873,7 +1855,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

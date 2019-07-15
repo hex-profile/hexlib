@@ -233,8 +233,6 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
     stdPars(GpuProcessKit)
 )
 {
-    stdBegin;
-
     if_not (kit.dataProcessing)
         returnTrue; // no allocation
 
@@ -298,7 +296,7 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
