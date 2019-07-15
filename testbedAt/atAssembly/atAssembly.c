@@ -894,11 +894,14 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     class SerializeInputMetadata : public CfgSerialization
     {
-        void serialize(const CfgSerializeKit& kit) {engine.inputMetadataSerialize(kit);}
-        CLASS_CONTEXT(SerializeInputMetadata, ((AtEngine&, engine)));
+        void serialize(const CfgSerializeKit& kit) 
+            {engine.inputMetadataSerialize(kitCombine(kit, extraKit));}
+
+        CLASS_CONTEXT(SerializeInputMetadata, ((AtEngine&, engine)) ((InputVideoNameKit, extraKit)));
     };
 
-    SerializeInputMetadata metadataSerialization(*engineModule);
+    InputVideoNameKit inputVideoNameKit(kit.atVideoInfo.videofileName);
+    SerializeInputMetadata metadataSerialization(*engineModule, inputVideoNameKit);
 
     ////
 
