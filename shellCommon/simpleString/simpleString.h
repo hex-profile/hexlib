@@ -78,9 +78,22 @@ public:
 
     size_t length() const;
 
+    sysinline size_t size() const
+        {return length();}
+
+public:
+
     const CharType* cstr() const;
 
-    CharArray charArray() const
+    sysinline operator const CharType* () const 
+        {return cstr();}
+
+public:
+
+    sysinline operator CharArray () const 
+        {return CharArray(cstr(), length());}
+
+    sysinline CharArray charArray() const
         {return CharArray(cstr(), length());}
 
     //----------------------------------------------------------------
