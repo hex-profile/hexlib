@@ -25,10 +25,10 @@ public:
 
 public:
 
-    uint64 getSize()
+    uint64 getSize() const
         {return currentSize;}
 
-    uint64 getPosition()
+    uint64 getPosition() const 
         {return currentPosition;}
 
     stdbool setPosition(uint64 pos, stdPars(FileDiagKit));

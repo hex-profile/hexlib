@@ -531,7 +531,7 @@ public:
     //
 
     template <typename OtherPointer>
-    sysinline bool asArray(Array<OtherPointer>& result) const
+    sysinline bool asArray(ArrayEx<OtherPointer>& result) const
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 

@@ -42,8 +42,8 @@ struct BinaryOutputStream
 
 struct FilePositioning
 {
-    virtual uint64 getSize() =0;
-    virtual uint64 getPosition() =0;
+    virtual uint64 getSize() const =0;
+    virtual uint64 getPosition() const =0;
 
     virtual stdbool setPosition(uint64 pos, stdPars(FileDiagKit)) =0;
 };
