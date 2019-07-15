@@ -32,7 +32,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
 
-    void inputMetadataSerialize(const CfgSerializeKit& kit)
+    void inputMetadataSerialize(const InputMetadataSerializeKit& kit)
         {return base->inputMetadataSerialize(kit);}
 
     bool reallocValid() const

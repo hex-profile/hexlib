@@ -21,6 +21,14 @@ KIT_COMBINE2(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit);
 
 //================================================================
 //
+// InputMetadataSerializeKit
+//
+//================================================================
+
+KIT_COMBINE2(InputMetadataSerializeKit, CfgSerializeKit, InputVideoNameKit);
+
+//================================================================
+//
 // AtEngine
 //
 //================================================================
@@ -31,7 +39,7 @@ struct AtEngine
 
     virtual void setInputResolution(const Point<Space>& frameSize) =0;
     virtual void serialize(const ModuleSerializeKit& kit) =0;
-    virtual void inputMetadataSerialize(const CfgSerializeKit& kit) =0;
+    virtual void inputMetadataSerialize(const InputMetadataSerializeKit& kit) =0;
 
     virtual bool reallocValid() const =0;
     virtual stdbool realloc(stdPars(AtEngineReallocKit)) =0;
