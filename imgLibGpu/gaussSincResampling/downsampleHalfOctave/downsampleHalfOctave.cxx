@@ -171,8 +171,6 @@ GPUTOOL_2D_END
 
 stdbool DownsampleHalfOctaveConservative::realloc(stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     allocated = false;
 
     require(coeffs.realloc(point(downHoFilterLength, phaseCount), stdPass));
@@ -180,7 +178,7 @@ stdbool DownsampleHalfOctaveConservative::realloc(stdPars(GpuProcessKit))
 
     allocated = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif

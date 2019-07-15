@@ -171,8 +171,6 @@ stdbool visualizeScalarMatrix
     stdPars(GpuProcessKit)
 )
 {
-    stdBegin;
-
     const int vectorRank = VectorTypeRank<Type>::val;
     COMPILE_ASSERT(vectorRank == 1 || vectorRank == 2 || vectorRank == 4);
 
@@ -263,7 +261,7 @@ stdbool visualizeScalarMatrix
         );
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -395,8 +393,6 @@ stdbool upconvertValueMatrix
     stdPars(GpuProcessKit)
 )
 {
-    stdBegin;
-
     const int vectorRank = VectorTypeRank<Type>::val;
     COMPILE_ASSERT(vectorRank == 1 || vectorRank == 2 || vectorRank == 4);
 
@@ -463,7 +459,7 @@ stdbool upconvertValueMatrix
         );
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -551,8 +547,6 @@ private:
 template <typename Type>
 stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
 {
-    stdBegin;
-
     Point<float32> coordBackC0 = point(0.f);
 
     ////
@@ -574,7 +568,7 @@ stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& 
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -597,8 +591,6 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     stdNullPars
 )
 {
-    stdBegin;
-
     REQUIRE(upsampleSize >= 0);
 
     Point<Space> outputSize = upsampleSize;
@@ -692,7 +684,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
     //// 
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -791,10 +783,6 @@ private:
 template <typename Vector>
 stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
 {
-    stdBegin;
-
-    ////
-
     Point<float32> coordBackAdd = point(0.f);
 
     if (overlayCentering)
@@ -876,7 +864,7 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -898,10 +886,6 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
     stdNullPars
 )
 {
-    stdBegin;
-
-    ////
-
     REQUIRE(upsampleFactor >= 1.f);
     Point<float32> coordBackMul = 1.f / upsampleFactor;
 
@@ -969,7 +953,7 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -994,10 +978,9 @@ public:
 
     stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
     {
-        stdBegin;
         REQUIRE(equalSize(image.luma, dest));
         require(convertYuv420ToBgr<Pixel>(image.luma, image.chroma, nullptr, nullptr, point(0), make_uint8_x4(0, 0, 0, 0), dest, stdPass)); // 0.22 ms
-        stdEnd;
+        returnTrue;
     }
 
     Yuv420ConvertProvider(const GpuPackedYuv<const Pixel>& image, const GpuProcessKit& kit)
@@ -1024,8 +1007,6 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
     stdNullPars
 )
 {
-    stdBegin;
-
     //
     //
     //
@@ -1049,7 +1030,7 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -1132,8 +1113,6 @@ GPUTOOL_2D_END
 template <typename Type>
 stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
 {
-    stdBegin;
-
     Point<float32> coordBackC0 = point(0.f);
 
     ////
@@ -1168,7 +1147,7 @@ stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>&
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -1191,8 +1170,6 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
     stdNullPars
 )
 {
-    stdBegin;
-
     REQUIRE(upsampleSize >= 0);
 
     Point<Space> outputSize = upsampleSize;
@@ -1229,7 +1206,7 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
             fltf(minVal, 3), fltf(maxVal, 3), fltf(-nativeLog2(maxVal - minVal), 1)), stdPass));
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

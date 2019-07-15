@@ -119,8 +119,6 @@ String mapToFilename(const String& s)
 
 stdbool formatAtomToString(const FormatOutputAtom& v, String& result, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     std::basic_stringstream<CharType> stringStream;
     FormatStreamStlThunk formatToStream(stringStream);
 
@@ -130,7 +128,7 @@ stdbool formatAtomToString(const FormatOutputAtom& v, String& result, stdPars(Er
 
     result = stringStream.str();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -150,8 +148,6 @@ static const size_t bmpAlignmentMask = 3;
 template <typename Element>
 stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     REQUIRE(sizeX >= 0);
 
     REQUIRE(sizeX <= spaceMax / Space(sizeof(Element)));
@@ -165,7 +161,7 @@ stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 
     pitch = bufSizeX;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -188,8 +184,6 @@ struct BitmapinfoPalette : public BITMAPINFO
 template <typename Element>
 stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     BITMAPINFOHEADER& bmi = result.bmiHeader;
 
     ////
@@ -233,7 +227,7 @@ stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, st
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -445,8 +439,6 @@ private:
 template <typename Element>
 stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit))
 {
-    stdBegin;
-
     //
     // close
     //
@@ -523,7 +515,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -546,8 +538,6 @@ stdbool AviWriter::writeImage
     stdPars(Kit)
 )
 {
-    stdBegin;
-
     REQUIRE(maxSegmentFrames >= 0);
 
     //
@@ -663,7 +653,7 @@ stdbool AviWriter::writeImage
 
     lastResult = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -821,12 +811,10 @@ stdbool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 
 stdbool OutImgAviImpl::setFps(FPS fps, stdPars(Kit))
 {
-    stdBegin;
-
     REQUIRE(fps >= 1 && fps <= 1024);
     currentFps = fps;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -873,8 +861,6 @@ private:
 template <typename Element>
 stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, stdNullPars)
 {
-    stdBegin;
-
     REQUIRE(source.size() == dest.size());
 
     MATRIX_EXPOSE(source);
@@ -890,7 +876,7 @@ stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, std
         sourceRow += sourceMemPitch;
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -902,8 +888,6 @@ stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, std
 template <typename Element>
 stdbool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImageProvider<Element>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
-    stdBegin;
-
     ArrayMemory<Element>& tmpBuffer = getTmpBuffer<Element>();
 
     try
@@ -926,7 +910,7 @@ stdbool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImagePr
         returnFalse;
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

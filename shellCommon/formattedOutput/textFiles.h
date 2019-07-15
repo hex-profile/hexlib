@@ -25,8 +25,6 @@ public:
 
     stdbool open(StlString filename, stdPars(MsgLogKit))
     {
-        stdBegin;
-
         stream.close();
         stream.clear();
 
@@ -35,7 +33,7 @@ public:
 
         openedFilename = filename;
 
-        stdEnd;
+        returnTrue;
     }
 
     bool getLine(std::basic_string<Type>& s, stdPars(MsgLogKit))
@@ -93,8 +91,6 @@ public:
 
     stdbool open(StlString filename, stdPars(MsgLogKit))
     {
-        stdBegin;
-
         using namespace std;
 
         stream.close();
@@ -107,7 +103,7 @@ public:
 
         openedFilename = filename;
 
-        stdEnd;
+        returnTrue;
     }
 
     stdbool getLine(StlString& result, stdPars(MsgLogKit))
@@ -216,8 +212,6 @@ public:
 
     stdbool open(StlString filename, stdPars(MsgLogKit))
     {
-        stdBegin;
-
         stream.close();
         stream.clear();
 
@@ -226,7 +220,7 @@ public:
 
         openedFilename = filename;
 
-        stdEnd;
+        returnTrue;
     }
 
     stdbool flush(stdPars(MsgLogKit))

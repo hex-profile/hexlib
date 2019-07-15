@@ -131,8 +131,6 @@ inline StlString filenameToCString(const StlString& str)
 
 stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
 {
-    stdBegin;
-
     int status = system(cmdLine.c_str());
 
     if_not (status == 0)
@@ -141,7 +139,7 @@ stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
         return false;
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -156,8 +154,6 @@ stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
 
 stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
 {
-    stdBegin;
-
     STARTUPINFO si;
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
@@ -184,7 +180,7 @@ stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif
@@ -197,8 +193,6 @@ stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
 
 stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 {
-    stdBegin;
-
     StlString cmdline;
 
     for (size_t i = 0; i < args.size(); ++i)
@@ -217,7 +211,7 @@ stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 
     require(runProcess(cmdline, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -239,8 +233,6 @@ stdbool parseClArgs
     stdPars(CompilerKit)
 )
 {
-    stdBegin;
-
     int prevOption = 0; // 0, 'I', 'D'
     outputDir = CT("");
     outputFile = CT("");
@@ -318,7 +310,7 @@ stdbool parseClArgs
         }
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -331,8 +323,6 @@ stdbool parseClArgs
 
 stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(CompilerKit))
 {
-    stdBegin;
-
     InputTextFile<CharType> inputStream;
     require(inputStream.open(inputName, stdPass));
 
@@ -358,7 +348,7 @@ stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString&
 
     require(outputStream.flush(stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -722,8 +712,6 @@ stdbool compileDevicePartToBin
     stdPars(CompilerKit)
 )
 {
-    stdBegin;
-
     StlString inputDir;
     StlString inputName;
     StlString inputExt;
@@ -904,7 +892,7 @@ stdbool compileDevicePartToBin
 
     rename(cupPath.c_str(), cachedPath.c_str());
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -923,8 +911,6 @@ stdbool makeCppBinAssembly
     stdPars(CompilerKit)
 )
 {
-    stdBegin;
-
     OutputTextFile outStream;
     require(outStream.open(outPath, stdPass));
 
@@ -1112,7 +1098,7 @@ stdbool makeCppBinAssembly
 
     require(outStream.flush(stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

@@ -15,8 +15,6 @@ KIT_COMBINE2(TestKit, CpuFastAllocKit, ErrorLogKit);
 
 stdbool matrixMemoryUsage(stdPars(TestKit))
 {
-    stdBegin;
-
     // Construct empty matrix; no memory allocation performed.
     MatrixMemory<int> m0;
 
@@ -44,5 +42,5 @@ stdbool matrixMemoryUsage(stdPars(TestKit))
     Matrix<const int> tmp1 = m0;
     Matrix<const int> tmp2 = m0();
 
-    stdEnd;
+    returnTrue;
 }

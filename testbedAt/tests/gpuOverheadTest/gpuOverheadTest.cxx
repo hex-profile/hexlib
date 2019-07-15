@@ -116,8 +116,6 @@ void GpuOverheadTest::serialize(const ModuleSerializeKit& kit)
 
 stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 {
-    stdBegin;
-
     if_not (active) 
         returnTrue;
 
@@ -402,7 +400,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
 #endif
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif

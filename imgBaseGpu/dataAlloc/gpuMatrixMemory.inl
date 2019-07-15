@@ -15,8 +15,6 @@
 template <typename Type>
 stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     Space sizeX = size.X;
     Space sizeY = size.Y;
 
@@ -99,7 +97,7 @@ stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByt
 
     BaseMatrix::assign(newPtr, alignedSizeX, sizeX, sizeY, matrixPreconditionsAreVerified());
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

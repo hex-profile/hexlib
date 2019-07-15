@@ -13,8 +13,6 @@
 template <typename Type>
 stdbool readGpuElement(const GpuMatrix<const Type>& image, const Point<Space>& pos, Type& result, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     GpuMatrix<const Type> gpuElement;
     require(image.subs(pos, point(1), gpuElement));
 
@@ -31,5 +29,5 @@ stdbool readGpuElement(const GpuMatrix<const Type>& image, const Point<Space>& p
         result = *cpuElementMemPtr;
     }
 
-    stdEnd;
+    returnTrue;
 }

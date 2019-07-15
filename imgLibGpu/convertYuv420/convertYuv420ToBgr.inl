@@ -261,7 +261,7 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     stdPars(GpuProcessKit)
 )
 {
-    stdBeginScoped;
+    stdScopedBegin;
 
     if_not (kit.dataProcessing)
         returnTrue;
@@ -359,7 +359,7 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
 
     ////
 
-    stdEndScoped;
+    stdScopedEnd;
 }
 
 #endif

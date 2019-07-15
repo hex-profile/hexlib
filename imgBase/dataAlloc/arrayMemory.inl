@@ -15,8 +15,6 @@
 template <typename Pointer>
 stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     //
     // check size
     //
@@ -52,5 +50,5 @@ stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, Allocat
 
     BaseArray::assign(newPtr, size, arrayPreconditionsAreVerified());
 
-    stdEnd;
+    returnTrue;
 }

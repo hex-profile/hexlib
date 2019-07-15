@@ -79,8 +79,6 @@
         stdPars(GpuProcessKit) \
     ) \
     { \
-        stdBegin; \
-        \
         if_not (kit.dataProcessing) \
             returnTrue; \
         \
@@ -118,7 +116,7 @@
             ) \
         ); \
         \
-        stdEnd; \
+        returnTrue; \
     }
 
 //================================================================

@@ -289,8 +289,6 @@ static const CharType valueSeparator = '=';
 
 stdbool loadFile(const CharType* filename, Memory& memory, FileTools& fileTools, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     try
     {
 
@@ -569,7 +567,7 @@ stdbool loadFile(const CharType* filename, Memory& memory, FileTools& fileTools,
     }
     catch (const exception&) {REQUIRE(false);}
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -904,8 +902,6 @@ static void saveTree
 
 stdbool saveFile(const Memory& memory, const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     try
     {
 
@@ -958,7 +954,7 @@ stdbool saveFile(const Memory& memory, const CharType* filename, FileTools& file
     }
     catch (const exception&) {REQUIRE(false);}
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

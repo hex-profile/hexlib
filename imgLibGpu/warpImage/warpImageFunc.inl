@@ -72,8 +72,6 @@ stdbool warpImage
     stdPars(GpuProcessKit)
 )
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Direct interpolation modes.
@@ -131,7 +129,7 @@ stdbool warpImage
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 #endif

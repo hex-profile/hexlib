@@ -474,9 +474,8 @@ public:
 
     stdbool init(stdPars(InitKit))
     {
-        stdBegin;
         require(kit.threadManager.createCriticalSection(lock, stdPass));
-        stdEnd;
+        returnTrue;
     }
 
 private:
@@ -529,8 +528,6 @@ private:
 
 stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, AllocatorObject<CpuAddrU>& allocator, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     size_t atSizeApi = 0;
     require(api.videofile_name(&api, NULL, 0, &atSizeApi) != 0);
     Space atSize = 0;
@@ -553,7 +550,7 @@ stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, A
 
     require(resultSize == atFullSize);
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

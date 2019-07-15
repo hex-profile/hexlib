@@ -60,14 +60,12 @@ void ProfilerShell::serialize(const ModuleSerializeKit& kit)
 
 stdbool ProfilerShell::init(stdPars(InitKit))
 {
-    stdBegin;
-
     deinit(); // deinit and reset to zero
 
     require(profilerImpl.realloc(profilerCapacity, stdPass));
     require(frameTimeHist.realloc(frameTimeHistCapacity, stdPass));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -92,8 +90,6 @@ void ProfilerShell::deinit()
 
 stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // Frame time report
@@ -276,5 +272,5 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
     require(processOk);
 
-    stdEnd;
+    returnTrue;
 }

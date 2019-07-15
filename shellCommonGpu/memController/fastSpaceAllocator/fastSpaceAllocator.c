@@ -30,8 +30,6 @@ struct FastAllocatorDeallocContext
 template <typename AddrU, bool realAlloc, bool stateMode>
 stdbool FastAllocatorThunk<AddrU, realAlloc, stateMode>::alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
 {
-    stdBegin;
-
     FastAllocatorState<AddrU>& that = castState(state);
 
     // State?
@@ -85,7 +83,7 @@ stdbool FastAllocatorThunk<AddrU, realAlloc, stateMode>::alloc(AllocatorState& s
     AddrU allocatedAddr = that.memAddr + alignedOffset;
     result = realAlloc ? allocatedAddr : 0;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

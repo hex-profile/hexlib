@@ -12,8 +12,6 @@
 
 stdbool GpuPyramidCache::realloc(stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     allocated = false;
 
     ////
@@ -33,7 +31,7 @@ stdbool GpuPyramidCache::realloc(stdPars(GpuProcessKit))
 
     allocated = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -44,8 +42,6 @@ stdbool GpuPyramidCache::realloc(stdPars(GpuProcessKit))
 
 stdbool GpuPyramidCache::slowUpdate(const GpuPyramidLayout& layout, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     REQUIRE(allocated);
 
     ////
@@ -60,5 +56,5 @@ stdbool GpuPyramidCache::slowUpdate(const GpuPyramidLayout& layout, stdPars(GpuP
 
     ////
 
-    stdEnd;
+    returnTrue;
 }

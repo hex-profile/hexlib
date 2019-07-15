@@ -81,16 +81,6 @@
 
 //================================================================
 //
-// stdBegin*
-//
-// Standard beginning of a function.
-//
-//================================================================
-
-#define stdBegin 
-
-//================================================================
-//
 // stdEnter*
 //
 // Open a new scope inside a function.
@@ -115,29 +105,15 @@
 
 //================================================================
 //
-// stdEnd*
-//
-// Standard return from function -- just for style.
-//
-//================================================================
-
-#define stdEnd \
-    returnTrue \
-
-#define stdEndv \
-    return \
-
-//================================================================
-//
 // Scoped variants, just for convenience.
 //
 //================================================================
 
-#define stdBeginScoped \
-    stdBegin; {
+#define stdScopedBegin \
+    {
 
-#define stdEndScoped \
-    stdEnd; }
+#define stdScopedEnd \
+    returnTrue; }
 
 //================================================================
 //

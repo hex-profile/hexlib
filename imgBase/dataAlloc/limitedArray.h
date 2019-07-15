@@ -54,15 +54,13 @@ public:
 
     sysinline stdbool resize(Space newSize, stdPars(ErrorLogKit))
     {
-        stdBegin;
-
         resizeNull();
 
         REQUIRE(SpaceU(newSize) <= maxSize);
         currentSize = newSize;
         updateBaseArray();
 
-        stdEnd;
+        returnTrue;
     }
 
     sysinline void resizeNull()

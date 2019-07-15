@@ -14,8 +14,6 @@ namespace gpuShell {
 
 stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit))
 {
-    stdBegin;
-
     int32 gpuDeviceCount = 0;
     require(kit.gpuInitialization.getDeviceCount(gpuDeviceCount, stdPass));
 
@@ -47,7 +45,7 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
     gpuPropertiesCleanup.cancel();
     gpuContextCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -109,10 +107,6 @@ void GpuShellImpl::serialize(const ModuleSerializeKit& kit)
 
 stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit))
 {
-    stdBegin;
-
-    ////
-
     GpuInitKit initKit = kit.gpuInitApi.getKit();
 
     ////
@@ -198,7 +192,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

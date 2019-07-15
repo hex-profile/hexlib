@@ -54,7 +54,7 @@
         stdPars(GpuProcessKit) \
     ) \
     { \
-        stdBeginScoped; \
+        stdScopedBegin; \
         \
         if_not (kit.dataProcessing) \
             returnTrue; \
@@ -85,7 +85,7 @@
             ) \
         ); \
         \
-        stdEndScoped; \
+        stdScopedEnd; \
     } \
 
 //================================================================

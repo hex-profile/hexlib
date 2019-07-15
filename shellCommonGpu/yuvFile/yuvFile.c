@@ -16,10 +16,6 @@ namespace yuvFile {
 template <typename RawPixel>
 stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit))
 {
-    stdBegin;
-
-    ////
-
     REQUIRE_MSG(yuv420SizeValid(frameSize), STR("YUV video frame size is not valid"));
     Space frameBytes = sizeof(RawPixel) * yuv420TotalArea(frameSize);
     REQUIRE(frameBytes >= 1);
@@ -62,7 +58,7 @@ stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStr
     theFrameCount = frameCount;
     theFrameIndex = frameIndex;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -74,8 +70,6 @@ stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStr
 template <typename RawPixel>
 stdbool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
 {
-    stdBegin;
-
     REQUIRE(frameIndex >= 0 && frameIndex <= theFrameCount);
 
     REQUIRE(theFilePositioning);
@@ -85,7 +79,7 @@ stdbool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
 
     theFrameIndex = frameIndex;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -97,8 +91,6 @@ stdbool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
 template <typename RawPixel>
 stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(DiagnosticKit))
 {
-    stdBegin;
-
     REQUIRE(frame.size() == yuv420TotalArea(theFrameSize));
 
     ////
@@ -109,7 +101,7 @@ stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(Diagn
     require(theInputStream->read(framePtr, sizeof(RawPixel) * frameSize, stdPass));
     ++theFrameIndex;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -121,8 +113,6 @@ stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(Diagn
 template <typename RawPixel>
 stdbool YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPars(DiagnosticKit))
 {
-    stdBegin;
-
     REQUIRE(frame.size() == yuv420TotalArea(theFrameSize));
 
     ////
@@ -135,7 +125,7 @@ stdbool YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPar
 
     theFrameCount = maxv(theFrameCount, theFrameIndex);
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

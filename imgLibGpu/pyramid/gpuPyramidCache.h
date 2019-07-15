@@ -30,8 +30,6 @@ public:
     template <typename Type>
     stdbool getDevicePyramid(const GpuPyramid<Type>& pyramid, GpuPyramidParam<Type>& result, stdPars(GpuProcessKit))
     {
-        stdBegin;
-
         REQUIRE(allocated);
 
         ////
@@ -62,7 +60,7 @@ public:
 
         ////
 
-        stdEnd;
+        returnTrue;
     }
 
 private:

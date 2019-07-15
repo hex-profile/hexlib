@@ -13,8 +13,6 @@ KIT_COMBINE2(TestKit, CpuFastAllocKit, ErrorLogKit);
 
 stdbool arrayMemoryUsage(stdPars(TestKit))
 {
-    stdBegin;
-
     // Construct empty array; no memory allocation performed.
     ArrayMemory<int> m0;
 
@@ -36,5 +34,5 @@ stdbool arrayMemoryUsage(stdPars(TestKit))
     Array<int> tmp0 = m0;
     Array<int> tmp1 = m0();
 
-    stdEnd;
+    returnTrue;
 }

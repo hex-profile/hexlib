@@ -31,10 +31,6 @@ void resetFrameDesc(FrameDesc& desc)
 
 stdbool updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(FrameChangeDetector::Kit))
 {
-    stdBegin;
-
-    ////
-
     Space nameSize = 0;
     REQUIRE(convertExact(info.videofileName.size, nameSize));
 
@@ -62,7 +58,7 @@ stdbool updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(Frame
 
     desc.initialized = true;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -135,8 +131,6 @@ void FrameChangeDetector::reset()
 
 stdbool FrameChangeDetector::check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit))
 {
-    stdBegin;
-
     FrameDesc& prevFrame = frameHist[histIdx ^ 0];
     FrameDesc& currFrame = frameHist[histIdx ^ 1];
 
@@ -156,7 +150,7 @@ stdbool FrameChangeDetector::check(const AtVideoInfo& info, bool& frameAdvance, 
 
     histIdx ^= 1;
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

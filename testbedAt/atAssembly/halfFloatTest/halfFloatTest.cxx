@@ -107,8 +107,6 @@ GPUTOOL_2D
 
 stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst, stdPars(CpuFuncKit))
 {
-    stdBegin;
-
     if_not (kit.dataProcessing)
         returnTrue;
 
@@ -129,7 +127,7 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -140,8 +138,6 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
 
 stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& dst, stdPars(CpuFuncKit))
 {
-    stdBegin;
-
     if_not (kit.dataProcessing)
         returnTrue;
 
@@ -162,7 +158,7 @@ stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& ds
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -267,8 +263,7 @@ private:
 
 stdbool HalfFloatTestImpl::realloc(stdPars(ReallocKit))
 {
-    stdBegin;
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -279,8 +274,6 @@ stdbool HalfFloatTestImpl::realloc(stdPars(ReallocKit))
 
 stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 {
-    stdBegin;
-
     //----------------------------------------------------------------
     //
     // One testing pass
@@ -384,7 +377,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -395,8 +388,6 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 
 stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 {
-    stdBegin;
-
     const Space testSize = 1 << 16;
 
     //----------------------------------------------------------------
@@ -474,7 +465,7 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
         returnFalse;
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -485,8 +476,6 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 
 stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
 {
-    stdBegin;
-
     REQUIRE(reallocValid());
 
     //----------------------------------------------------------------
@@ -525,7 +514,7 @@ stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
         printMsgL(kit, STR("Half-float pack test: %0%%"), fltf(float32(packTestPass) / float32(0x10000) * 100, 1), msgInfo);
     }
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

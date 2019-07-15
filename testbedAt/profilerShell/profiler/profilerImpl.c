@@ -34,8 +34,6 @@ using NodePtr = ProfilerNode*;
 
 stdbool ProfilerImpl::realloc(Space capacity, stdPars(AllocKit))
 {
-    stdBegin;
-
     dealloc();
 
     //
@@ -54,7 +52,7 @@ stdbool ProfilerImpl::realloc(Space capacity, stdPars(AllocKit))
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

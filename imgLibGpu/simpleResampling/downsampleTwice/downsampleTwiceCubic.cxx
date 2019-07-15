@@ -174,8 +174,6 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)) ((typename, FilterX)) ((typename, Fil
 template <typename Src, typename Dst>
 stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, const Point<Space>& srcOfs, stdPars(GpuProcessKit))
 {
-    stdBegin;
-
     if_not (kit.dataProcessing)
         returnTrue;
 
@@ -212,7 +210,7 @@ stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Ds
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -120,12 +120,10 @@ struct GpuStreamWaiting
 template <typename Kit>
 sysinline stdbool gpuSyncCurrentStream(stdPars(Kit))
 {
-    stdBegin;
-
     if (kit.dataProcessing)
         require(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPassThru));
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -267,8 +265,6 @@ struct GpuTransfer
     template <typename Src, typename Dst, typename Kit> \
     inline stdbool enqueueCopy(const ArrayEx<SrcPtr(Src)>& src, const ArrayEx<DstPtr(Dst)>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
     { \
-        stdBegin; \
-        \
         COMPILE_ASSERT(TYPE_EQUAL(Src, Dst) || TYPE_EQUAL(Src, const Dst)); \
         \
         REQUIRE(equalSize(src, dst)); \
@@ -286,7 +282,7 @@ struct GpuTransfer
         ); \
         \
         pureGpu = pureGpuValue; \
-        stdEnd; \
+        returnTrue; \
     }
 
 TMP_COPY_ARRAY_INLINE(copyArrayCpuCpu, CpuAddrU, CpuAddrU, CpuPtr, CpuPtr, false)
@@ -309,8 +305,6 @@ TMP_COPY_ARRAY_INLINE(copyArrayGpuGpu, GpuAddrU, GpuAddrU, GpuPtr, GpuPtr, true)
     template <typename Src, typename Dst, typename Kit> \
     inline stdbool enqueueCopy(const MatrixEx<SrcPtr(Src)>& src, const MatrixEx<DstPtr(Dst)>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
     { \
-        stdBegin; \
-        \
         COMPILE_ASSERT(TYPE_EQUAL(Src, Dst) || TYPE_EQUAL(Src, const Dst)); \
         \
         REQUIRE(equalSize(src, dst)); \
@@ -331,7 +325,7 @@ TMP_COPY_ARRAY_INLINE(copyArrayGpuGpu, GpuAddrU, GpuAddrU, GpuPtr, GpuPtr, true)
         ); \
         \
         pureGpu = pureGpuValue; \
-        stdEnd; \
+        returnTrue; \
     }
 
 TMP_COPY_MATRIX_INLINE(copyMatrixCpuCpu, CpuAddrU, CpuAddrU, CpuPtr, CpuPtr, false)

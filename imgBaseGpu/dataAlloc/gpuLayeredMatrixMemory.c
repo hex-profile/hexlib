@@ -30,8 +30,6 @@ inline bool computeAlignedSize(Space size, Space alignmentMask, Space& result)
 template <typename Type>
 stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
-    stdBegin;
-
     REQUIRE(layerCount >= 1);
 
     Space sizeX = size.X;
@@ -122,7 +120,7 @@ stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Sp
     currentLayerCount = layerCount;
     currentLayerPitch = alignedImageArea;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================

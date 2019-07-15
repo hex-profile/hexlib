@@ -95,10 +95,6 @@ void BinaryFileWin32::close()
 
 stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
 {
-    stdBegin;
-
-    ////
-
     REQUIRE(filename.size >= 0);
     SimpleString newFilename(filename.ptr, filename.size);
 
@@ -134,7 +130,7 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
     currentSize = newSize;
     currentPosition = 0;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -145,8 +141,6 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
 
 stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 {
-    stdBegin;
-
     REQUIRE(handle);
 
     BOOL result = SetEndOfFile(handle);
@@ -154,7 +148,7 @@ stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 
     currentSize = currentPosition;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -165,8 +159,6 @@ stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 
 stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 {
-    stdBegin;
-
     REQUIRE(handle);
     REQUIRE(pos <= currentSize);
 
@@ -182,7 +174,7 @@ stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 
     currentPosition = pos;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -193,8 +185,6 @@ stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 
 stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
-    stdBegin;
-
     REQUIRE(handle != 0);
 
     ////
@@ -233,7 +223,7 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 
     restorePositionCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -244,8 +234,6 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 
 stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
-    stdBegin;
-
     REQUIRE(handle != 0);
 
     ////
@@ -284,7 +272,7 @@ stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(F
 
     restorePositionCleanup.cancel();
 
-    stdEnd;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

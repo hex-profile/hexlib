@@ -15,8 +15,6 @@
 template <typename Pointer, typename Kit>
 inline stdbool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx<Pointer>& result, stdPars(Kit))
 {
-    stdBegin;
-
     MATRIX_EXPOSE_UNSAFE(img, img);
 
     result.assignNull();
@@ -24,7 +22,7 @@ inline stdbool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx
 
     result.assign(imgMemPtr, imgMemPitch * imgSizeY);
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -36,10 +34,6 @@ inline stdbool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx
 template <typename SrcPtr, typename DstPtr, typename Kit>
 stdbool copyMatrixAsArray(const MatrixEx<SrcPtr>& srcMatrix, const MatrixEx<DstPtr>& dstMatrix, GpuCopyThunk& gpuCopy, stdPars(Kit))
 {
-    stdBegin;
-
-    ////
-
     if_not (kit.dataProcessing)
         returnTrue;
 
@@ -75,5 +69,5 @@ stdbool copyMatrixAsArray(const MatrixEx<SrcPtr>& srcMatrix, const MatrixEx<DstP
 
     require(gpuCopy(srcArray, dstArray, stdPass));
 
-    stdEnd;
+    returnTrue;
 }

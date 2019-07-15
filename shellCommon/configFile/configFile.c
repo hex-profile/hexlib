@@ -249,10 +249,6 @@ public:
 
 stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
 {
-    stdBegin;
-
-    ////
-
     memory.eraseAll();
     filename.clear();
     updateFileEnabled = true;
@@ -291,7 +287,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
 
     memoryChanged = false;
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -399,8 +395,6 @@ stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filen
 
 stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
 {
-    stdBegin;
-
     require(updateFileEnabled);
     REQUIRE(filename.length() != 0);
 
@@ -427,7 +421,7 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFi
 
     ////
 
-    stdEnd;
+    returnTrue;
 }
 
 //================================================================
