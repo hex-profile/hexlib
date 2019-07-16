@@ -6,6 +6,7 @@
 #include "dataAlloc/gpuArrayMemory.h"
 #include "gpuMatrixCopy/gpuMatrixCopy.h"
 #include "errorLog/debugBreak.h"
+#include "gpuMatrixSet/gpuMatrixSet.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -27,6 +28,18 @@ stdbool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image,
 {
     Space absPitch = absv(image.memPitch());
     REQUIRE(image.sizeX() <= absPitch);
+
+    ////
+
+    constexpr Space maxAtRowByteAlignment = 64;
+    constexpr Space alignment = maxAtRowByteAlignment / Space(sizeof(uint8_x4));
+    COMPILE_ASSERT(alignment * sizeof(uint8_x4) == maxAtRowByteAlignment);
+
+    COMPILE_ASSERT(alignment >= 1 && COMPILE_IS_POWER2(alignment));
+    require(safeAdd(absPitch, alignment - 1, absPitch));
+    absPitch = absPitch / alignment * alignment;
+
+    ////
 
     require(buffer.realloc(absPitch * image.sizeY(), stdPass));
     gpuImage = image;
@@ -76,7 +89,10 @@ stdbool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullP
         if (dst.memPitch() < 0)
             srcProper = flipMatrix(srcProper);
 
-        ////
+        //
+        // Rearrange on GPU, not very fast, but it's still 
+        // much faster than any manipulation on CPU.
+        //
 
         require(gpuMatrixCopy(src, srcProper, stdPass));
 
