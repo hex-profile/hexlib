@@ -23,11 +23,6 @@
         <DisplayString>{size_t(addr), Xb}</DisplayString>
     </Type>
     
-    <Type Name="GpuMatrix&lt;*&gt;">
-        <AlternativeType Name="GpuMatrixMemory&lt;*&gt;"/>
-        <DisplayString>{theSize.X} x {theSize.Y}, ptr = {theMemPtr,Xb}, pitch = {theMemPitch}</DisplayString>
-    </Type>
-
     <Type Name="Array&lt;*&gt;">
         <AlternativeType Name="ArrayEx&lt;*&gt;"/>
         <AlternativeType Name="ArrayMemory&lt;*&gt;"/>
@@ -48,10 +43,11 @@
     </Type>
 
     <Type Name="Matrix&lt;*&gt;">
-        <AlternativeType Name="MatrixEx&lt;*&gt;"/>
         <AlternativeType Name="MatrixMemory&lt;*&gt;"/>
         <AlternativeType Name="MatrixMemoryEx&lt;*&gt;"/>
+
         <DisplayString>{theSize.X} x {theSize.Y}, ptr = {size_t(theMemPtr),Xb}, pitch = {theMemPitch}</DisplayString>
+        
         <Expand>
             <IndexListItems>
                 <Size>theSize.Y</Size>
@@ -59,5 +55,12 @@
             </IndexListItems>
         </Expand>
     </Type>
+
+    <Type Name="GpuMatrix&lt;*&gt;">
+        <AlternativeType Name="GpuMatrixMemory&lt;*&gt;"/>
+
+        <DisplayString> {theSize.X} x {theSize.Y}, ptr = {theMemPtr}, pitch = {theMemPitch}</DisplayString>
+    </Type>
+
 
 </AutoVisualizer>

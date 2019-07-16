@@ -1,6 +1,7 @@
 #pragma once
 
 #include "data/space.h"
+#include "data/spacex.h"
 #include "point/point.h"
 #include "data/array.h"
 #include "data/pointerInterface.h"
@@ -306,7 +307,7 @@ public:
     bool assign(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
         assignNull();
-        require(memPitch >= 0);
+        ensure(memPitch >= 0);
 
         ////
 
@@ -315,7 +316,8 @@ public:
         if (sizeY >= 1)
         {
             Space lastRow = 0;
-            require(safeMul(memPitch, sizeY-1, lastRow));
+            ensure(safeMul(memPitch, sizeY-1, lastRow));
+
             area = lastRow + sizeX;
         }
 
