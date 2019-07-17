@@ -71,7 +71,7 @@ inline void outputVectorTypeX4(const FormatNumber<VectorType>& number, FormatOut
         {func(formatNumber(convertFloat32(number.value), number.options), outputStream);} \
 
 VECTOR_FLOAT_X2_FOREACH(TMP_MACRO, outputVectorTypeX2)
-VECTOR_FLOAT_X4_FOREACH(TMP_MACRO, outputVectorTypeX2)
+VECTOR_FLOAT_X4_FOREACH(TMP_MACRO, outputVectorTypeX4)
 
 #undef TMP_MACRO
 
@@ -88,6 +88,6 @@ VECTOR_FLOAT_X4_FOREACH(TMP_MACRO, outputVectorTypeX2)
         {func(formatNumber(number.value, number.options), outputStream);} \
 
 VECTOR_INT_X2_FOREACH(TMP_MACRO, outputVectorTypeX2)
-VECTOR_INT_X4_FOREACH(TMP_MACRO, outputVectorTypeX2)
+VECTOR_INT_X4_FOREACH(TMP_MACRO, outputVectorTypeX4)
 
 #undef TMP_MACRO
