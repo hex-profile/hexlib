@@ -33,6 +33,7 @@
 #include "gpuImageVisualization/visualizeVectorImage/visualizeVectorImage.h"
 #include "userOutput/printMsgEx.h"
 #include "imageRead/positionTools.h"
+#include "diagTools/readGpuElement.h"
 #endif
 
 namespace gpuImageConsoleImpl {
@@ -488,6 +489,28 @@ stdbool upconvertValueMatrix
 
 //================================================================
 //
+// getElementAtUserPoint
+//
+//================================================================
+
+template <typename Type, typename Kit>
+stdbool getElementAtUserPoint(const GpuMatrix<const Type>& image, const LinearTransform<Point<float32>>& transform, Point<Space>& resultIdx, Type& resultValue, stdPars(Kit))
+{
+    Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // to space format
+    Point<float32> srcPos = ltApply(dstPos, transform);
+    Point<Space> srcIdx = convertToNearestIndex(srcPos);
+
+    require(allv(image.size() >= 1));
+    srcIdx = clampRange(srcIdx, point(0), image.size() - 1);
+
+    resultIdx = srcIdx;
+    require(readGpuElement(image, srcIdx, resultValue, stdPass));
+
+    returnTrue;
+}
+
+//================================================================
+//
 // ScalarVisualizationParams
 //
 //================================================================
@@ -497,7 +520,7 @@ struct ScalarVisualizationParams
 {
     GpuMatrix<const Type> img;
     int channel;
-    Point<float32> coordBackC1;
+    LinearTransform<Point<float32>> coordBack;
     LinearTransform<float32> valueTransform;
     InterpType upsampleType;
     BorderMode borderMode;
@@ -519,7 +542,7 @@ class ScalarVisualizationProvider : public GpuImageProviderBgr32, private Scalar
     // Thanks GCC 5.4
     using Base::img;
     using Base::channel;
-    using Base::coordBackC1;
+    using Base::coordBack;
     using Base::valueTransform;
     using Base::upsampleType;
     using Base::borderMode;
@@ -547,7 +570,7 @@ private:
 template <typename Type>
 stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
 {
-    Point<float32> coordBackC0 = point(0.f);
+    auto newCoordBack = coordBack;
 
     ////
 
@@ -556,15 +579,15 @@ stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& 
         Point<float32> srcCenter = 0.5f * convertFloat32(img.size());
         Point<float32> dstCenter = 0.5f * convertFloat32(dest.size());
 
-        coordBackC0 = srcCenter - coordBackC1 * dstCenter;
+        newCoordBack.C0 = srcCenter - coordBack.C1 * dstCenter;
 
-        if (allv(coordBackC1 == point(1.f)))
-            coordBackC0 = convertFloat32(convertNearest<Space>(coordBackC0));
+        if (allv(coordBack.C1 == point(1.f)))
+            newCoordBack.C0 = convertFloat32(convertNearest<Space>(newCoordBack.C0));
     }
 
     ////
 
-    require((visualizeScalarMatrix<Type, uint8_x4>(img, linearTransform(coordBackC1, coordBackC0), channel, valueTransform, upsampleType, borderMode, dest, stdPass)));
+    require((visualizeScalarMatrix<Type, uint8_x4>(img, newCoordBack, channel, valueTransform, upsampleType, borderMode, dest, stdPass)));
 
     ////
 
@@ -610,7 +633,8 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     //
 
     REQUIRE(upsampleFactor >= 1.f);
-    Point<float32> coordBackC1 = 1.f / upsampleFactor;
+
+    auto coordBack = linearTransform(1.f / upsampleFactor, point(0.f));
 
     ////
 
@@ -620,7 +644,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
         ////
 
-        require((visualizeScalarMatrix<Type, uint8_x4>(img, linearTransform(coordBackC1, point(0.f)), channel, valueTransform, upsampleType, borderMode, gpuMatrix, stdPass)));
+        require((visualizeScalarMatrix<Type, uint8_x4>(img, coordBack, channel, valueTransform, upsampleType, borderMode, gpuMatrix, stdPass)));
 
         ////
 
@@ -630,7 +654,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     else if (hint.target == ImgOutputOverlay)
     {
 
-        ScalarVisualizationProvider<Type> outputProvider(ScalarVisualizationParams<Type>{img, channel, coordBackC1, valueTransform, upsampleType, borderMode, hint.overlayCentering}, kit);
+        ScalarVisualizationProvider<Type> outputProvider(ScalarVisualizationParams<Type>{img, channel, coordBack, valueTransform, upsampleType, borderMode, hint.overlayCentering}, kit);
 
         require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, paramMsg(STR("%0 [%1, %2] ~%3 bits"), hint.desc, 
             fltf(minVal, 3), fltf(maxVal, 3), fltf(-nativeLog2(maxVal - minVal), 1)), stdPass));
@@ -651,30 +675,12 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
     auto printTextValue = [&] () -> stdbool
     {
-        Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // Space format
-        Point<float32> srcPos = coordBackC1 * dstPos;
+        Point<Space> userIdx{};
+        Type userValue{};
+        require(getElementAtUserPoint(img, coordBack, userIdx, userValue, stdPass));
 
-        Point<Space> srcInt = convertNearest<Space>(srcPos - 0.5f); // Back to grid and round
-
-        require(allv(img.size() >= 1));
-        srcInt = clampRange(srcInt, point(0), img.size() - 1);
-
-        GpuMatrix<const Type> gpuElement;
-        require(img.subs(srcInt, point(1), gpuElement));
-
-        MatrixMemory<Type> cpuElement;
-        require(cpuElement.reallocForGpuExch(point(1), stdPass));
-
-        GpuCopyThunk gpuCopy;
-        require(gpuCopy(gpuElement, cpuElement, stdPass));
-        gpuCopy.waitClear();
-
-        if (kit.dataProcessing && getTextEnabled())
-        {
-            MATRIX_EXPOSE(cpuElement);
-            Type value = *cpuElementMemPtr;
-            require(printMsgL(kit, STR("Value[%0] = %1"), srcInt, fltg(convertFloat32(value), 5)));
-        }
+        if (getTextEnabled())
+            require(printMsgL(kit, STR("Value[%0] = %1"), userIdx, fltg(convertFloat32(userValue), 5)));
 
         returnTrue;
     };
@@ -804,58 +810,20 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
 
     auto drawArrow = [&] () -> stdbool
     {
-        Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // Space format
-        Point<float32> srcPos = coordBackMul * dstPos + coordBackAdd;
+        Vector userValue{};
+        Point<Space> userIndex{};
+        require(getElementAtUserPoint(image, linearTransform(coordBackMul, coordBackAdd), userIndex, userValue, stdPass));
 
-        Point<Space> srcInt = convertToNearestIndex(srcPos);
-
-        require(allv(image.size() >= 1));
-        srcInt = clampRange(srcInt, point(0), image.size() - 1);
-
-        GpuMatrix<const Vector> gpuElement;
-        require(image.subs(srcInt, point(1), gpuElement));
-
-        MatrixMemory<Vector> cpuElement;
-        require(cpuElement.reallocForGpuExch(point(1), stdPass));
-
-        GpuCopyThunk gpuCopy;
-        require(gpuCopy(gpuElement, cpuElement, stdPass));
-        gpuCopy.waitClear();
-
-        ////
-
-        Point<float32> vectorValue = point(0.f);
-
-        if (kit.dataProcessing)
-        {
-            MATRIX_EXPOSE(cpuElement);
-            Vector vectorRaw = *cpuElementMemPtr;
-            vectorValue = convertFloat32(point(vectorRaw.x, vectorRaw.y));
-
-            if (textOutputEnabled)
-                printMsgL(kit, STR("Value[%0] = %1"), srcInt, fltfs(textFactor * vectorValue, 2));
-        }
-
-        ////
-
+        Point<float32> vectorValue = point(convertFloat32(userValue.x), convertFloat32(userValue.y));
         require(def(vectorValue));
 
+        if (textOutputEnabled)
+            printMsgL(kit, STR("Value[%0] = %1"), userIndex, fltfs(textFactor * vectorValue, 2));
+
         ////
 
-        Point<float32> vectorSrcPos = convertIndexToPos(srcInt);
-        Point<float32> vectorDstPos = (vectorSrcPos - coordBackAdd) / coordBackMul;
-
-        require
-        (
-            imposeVectorArrow
-            (
-                dest, 
-                dstPos,
-                arrowFactor * vectorValue, 
-                stdPass
-            )
-        );
-
+        Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // to space format
+        require(imposeVectorArrow(dest, dstPos, arrowFactor * vectorValue, stdPass));
         returnTrue;
     };
 
@@ -1057,7 +1025,7 @@ class UnpackedColorConvertProvider : public GpuImageProviderBgr32, private Scala
     // Thanks GCC 5.4
     using Base::img;
     using Base::channel;
-    using Base::coordBackC1;
+    using Base::coordBack;
     using Base::valueTransform;
     using Base::upsampleType;
     using Base::borderMode;
@@ -1113,7 +1081,7 @@ GPUTOOL_2D_END
 template <typename Type>
 stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
 {
-    Point<float32> coordBackC0 = point(0.f);
+    auto newCoordBack = coordBack;
 
     ////
 
@@ -1122,22 +1090,22 @@ stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>&
         Point<float32> srcCenter = 0.5f * convertFloat32(img.size());
         Point<float32> dstCenter = 0.5f * convertFloat32(dest.size());
 
-        coordBackC0 = srcCenter - coordBackC1 * dstCenter;
+        newCoordBack.C0 = srcCenter - coordBack.C1 * dstCenter;
 
-        if (allv(coordBackC1 == point(1.f)))
-            coordBackC0 = convertFloat32(convertNearest<Space>(coordBackC0));
+        if (allv(coordBack.C1 == point(1.f)))
+            newCoordBack.C0 = convertFloat32(convertNearest<Space>(newCoordBack.C0));
     }
 
     ////
 
     if (colorMode == ColorRgb)
     {
-        require((upconvertValueMatrix<Type, uint8_x4>(img, linearTransform(coordBackC1, coordBackC0), valueTransform, upsampleType, borderMode, dest, stdPass)));
+        require((upconvertValueMatrix<Type, uint8_x4>(img, newCoordBack, valueTransform, upsampleType, borderMode, dest, stdPass)));
     }
     else if (colorMode == ColorYuv)
     {
         GPU_MATRIX_ALLOC(tmp, float16_x4, dest.size());
-        require((upconvertValueMatrix<Type, float16_x4>(img, linearTransform(coordBackC1, coordBackC0), valueTransform, upsampleType, borderMode, tmp, stdPass)));
+        require((upconvertValueMatrix<Type, float16_x4>(img, newCoordBack, valueTransform, upsampleType, borderMode, tmp, stdPass)));
         require(convertPackedYuvToRgb(tmp, dest, stdPass));
     }
     else
@@ -1190,7 +1158,7 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
     //
 
     REQUIRE(upsampleFactor >= 1.f);
-    Point<float32> coordBackC1 = 1.f / upsampleFactor;
+    auto coordBack = linearTransform(1.f / upsampleFactor, point(0.f));
 
     ////
 
@@ -1198,13 +1166,40 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
     {
         UnpackedColorConvertProvider<Type> outputProvider
         (
-            ScalarVisualizationParams<Type>{img, 0, coordBackC1, valueTransform, upsampleType, borderMode, hint.overlayCentering}, 
+            ScalarVisualizationParams<Type>{img, 0, coordBack, valueTransform, upsampleType, borderMode, hint.overlayCentering}, 
             colorMode, kit
         );
 
         require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, paramMsg(STR("%0 [%1, %2] ~%3 bits"), hint.desc, 
             fltf(minVal, 3), fltf(maxVal, 3), fltf(-nativeLog2(maxVal - minVal), 1)), stdPass));
     }
+
+    //----------------------------------------------------------------
+    //
+    // Text value
+    //
+    //----------------------------------------------------------------
+
+    auto printTextValue = [&] () -> stdbool
+    {
+        Point<Space> userIdx{};
+        Type userValue{};
+        require(getElementAtUserPoint(img, coordBack, userIdx, userValue, stdPass));
+
+        if (getTextEnabled())
+        {
+            using Base = VECTOR_BASE(Type);
+            int hexDigits = divUp<int>(sizeof(Base) * CHAR_BIT, 4);
+            require(printMsgL(kit, STR("Value[%0] = %1 (hex %2)"), userIdx, fltg(convertFloat32(userValue), 5), hex(userValue, hexDigits)));
+        }
+
+        returnTrue;
+    };
+
+    if (hint.target == ImgOutputOverlay && kit.userPoint.valid)
+        errorBlock(printTextValue());
+
+    ////
 
     returnTrue;
 }

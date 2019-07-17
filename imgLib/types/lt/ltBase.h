@@ -10,6 +10,7 @@
 //
 //================================================================
 
+// ``` reorder
 template <typename Type>
 struct LinearTransform
 {
