@@ -87,17 +87,17 @@ sysinline const GpuMatrix<const Type>& makeConst(const GpuMatrix<Type>& matrix)
 
 //================================================================
 //
-// recastToNonConst
+// recastElement
 //
-// Removes const qualifier from elements.
-// Avoid using it!
+// Use with caution!
 //
 //================================================================
 
-template <typename Type>
-sysinline const GpuMatrix<Type>& recastToNonConst(const GpuMatrix<const Type>& matrix)
+template <typename Dst, typename Src>
+sysinline const GpuMatrix<Dst>& recastElement(const GpuMatrix<const Src>& matrix)
 {
-    return recastEqualLayout<const GpuMatrix<Type>>(matrix);
+    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
+    return recastEqualLayout<const GpuMatrix<Dst>>(matrix);
 }
 
 //================================================================

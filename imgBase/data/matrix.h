@@ -84,7 +84,7 @@ Matrix<const uint8> tmp2;
 REQUIRE(example.subr(point(10), point(30), tmp2));
 
 // Remove const qualifier from element (avoid using it!)
-Matrix<uint8> tmp3 = recastToNonConst(tmp2);
+Matrix<uint8> tmp3 = recastElement<uint8>(tmp2);
 
 // Check that matrices have equal size.
 REQUIRE(equalSize(example, tmp1, tmp2));
@@ -700,17 +700,17 @@ sysinline const MatrixEx<const Type*>& makeConst(const MatrixEx<Type*>& matrix)
 
 //================================================================
 //
-// recastToNonConst
+// recastElement
 //
-// Removes const qualifier from elements.
-// Avoid using it!
+// Use with caution!
 //
 //================================================================
 
-template <typename Type>
-sysinline const Matrix<Type>& recastToNonConst(const Matrix<const Type>& matrix)
+template <typename Dst, typename Src>
+sysinline const Matrix<Dst>& recastElement(const Matrix<Src>& matrix)
 {
-    return recastEqualLayout<const Matrix<Type>>(matrix);
+    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
+    return recastEqualLayout<const Matrix<Dst>>(matrix);
 }
 
 //================================================================

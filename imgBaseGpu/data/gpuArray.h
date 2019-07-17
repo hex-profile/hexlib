@@ -59,15 +59,15 @@ sysinline const GpuArray<const Type>& makeConst(const GpuArray<Type>& array)
 
 //================================================================
 //
-// recastToNonConst
+// recastElement
 //
-// Removes const qualifier from elements.
-// Avoid using it!
+// Use with caution!
 //
 //================================================================
 
-template <typename Type>
-sysinline const GpuArray<Type>& recastToNonConst(const GpuArray<const Type>& array)
+template <typename Dst, typename Src>
+sysinline const GpuArray<Dst>& recastElement(const GpuArray<Src>& array)
 {
-    return recastEqualLayout<const GpuArray<Type>>(array);
+    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
+    return recastEqualLayout<const GpuArray<Dst>>(array);
 }

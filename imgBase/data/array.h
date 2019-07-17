@@ -66,7 +66,7 @@ Array<const uint8> tmp2;
 REQUIRE(example.subr(10, 30, tmp2));
 
 // Removing const qualifier from elements (avoid this):
-Array<uint8> tmp3 = recastToNonConst(tmp2);
+Array<uint8> tmp3 = recastElement<uint8>(tmp2);
 
 // Check that arrays have equal size.
 REQUIRE(equalSize(example, tmp1, tmp2));
@@ -400,15 +400,15 @@ sysinline const ArrayEx<const Type*>& makeConst(const ArrayEx<Type*>& array)
 
 //================================================================
 //
-// recastToNonConst
-//
-// Removes const qualifier from elements.
-// Avoid using it!
+// recastElement
+// 
+// Use with caution!
 //
 //================================================================
 
-template <typename Type>
-sysinline const Array<Type>& recastToNonConst(const Array<const Type>& array)
+template <typename Dst, typename Src>
+sysinline const Array<Dst>& recastElement(const Array<Src>& array)
 {
-    return recastEqualLayout<const Array<Type>>(array);
+    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
+    return recastEqualLayout<const Array<Dst>>(array);
 }
