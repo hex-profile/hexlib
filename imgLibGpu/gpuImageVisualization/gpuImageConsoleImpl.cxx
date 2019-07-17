@@ -673,7 +673,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
         {
             MATRIX_EXPOSE(cpuElement);
             Type value = *cpuElementMemPtr;
-            require(printMsgL(kit, STR("Value[%0] = %1"), srcInt, fltg(convertFloat32(value), 4)));
+            require(printMsgL(kit, STR("Value[%0] = %1"), srcInt, fltg(convertFloat32(value), 5)));
         }
 
         returnTrue;
