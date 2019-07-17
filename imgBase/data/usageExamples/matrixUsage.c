@@ -65,7 +65,7 @@ stdbool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
     REQUIRE(example.subr(point(10), point(30), tmp2));
 
     // Remove const qualifier from element (avoid using it!)
-    Matrix<uint8> tmp3 = recastToNonConst(tmp2);
+    Matrix<uint8> tmp3 = recastElement<uint8>(tmp2);
 
     // Check that matrices have equal size.
     REQUIRE(equalSize(example, tmp1, tmp2));
