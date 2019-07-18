@@ -6,6 +6,8 @@
 #include <type_traits>
 #include <cstddef>
 
+#include "types/compileTools.h"
+
 //================================================================
 //
 // OpaqueStruct
@@ -22,14 +24,14 @@ class OpaqueStruct
 public:
 
     template <typename Type>
-    inline Type& recast()
+    HEXLIB_INLINE Type& recast()
     {
         static_assert(sizeof(Self) >= sizeof(Type) && alignof(Self) % alignof(Type) == 0, "");
         return * (Type*) this;
     }
 
     template <typename Type>
-    inline const Type& recast() const
+    HEXLIB_INLINE const Type& recast() const
     {
         static_assert(sizeof(Self) >= sizeof(Type) && alignof(Self) % alignof(Type) == 0, "");
         return * (const Type*) this;
@@ -49,7 +51,7 @@ private:
 //================================================================
 
 template <size_t size>
-inline void exchange(OpaqueStruct<size>& a, OpaqueStruct<size>& b)
+HEXLIB_INLINE void exchange(OpaqueStruct<size>& a, OpaqueStruct<size>& b)
 {
     OpaqueStruct<size> tmp = a;
     a = b;

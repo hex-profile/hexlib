@@ -10,12 +10,11 @@
 //
 //================================================================
 
-// ``` reorder
 template <typename Type>
 struct LinearTransform
 {
-    Type C1;
     Type C0;
+    Type C1;
 
     template <typename ValueType>
     sysinline auto operator () (const ValueType& value) const
@@ -24,11 +23,12 @@ struct LinearTransform
 
 //----------------------------------------------------------------
 
+// ```
 template <typename Type>
 sysinline LinearTransform<Type> linearTransform(const Type& C1, const Type& C0)
 {
     LinearTransform<Type> tmp;
-    tmp.C1 = C1;
     tmp.C0 = C0;
+    tmp.C1 = C1;
     return tmp;
 }

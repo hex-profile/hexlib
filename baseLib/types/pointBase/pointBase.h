@@ -3,6 +3,8 @@
 #ifndef HEXLIB_POINT_BASE
 #define HEXLIB_POINT_BASE
 
+#include "types/compileTools.h"
+
 //================================================================
 //
 // Point
@@ -30,7 +32,7 @@ struct Point
 //================================================================
 
 template <typename Type>
-inline Point<Type> point(const Type& X, const Type& Y)
+HEXLIB_INLINE Point<Type> point(const Type& X, const Type& Y)
 {
     Point<Type> result;
     result.X = X;
@@ -39,7 +41,7 @@ inline Point<Type> point(const Type& X, const Type& Y)
 }
 
 template <typename Type>
-inline Point<Type> point(const Type& value)
+HEXLIB_INLINE Point<Type> point(const Type& value)
 {
     Point<Type> result;
     result.X = value;

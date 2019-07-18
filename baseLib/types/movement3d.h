@@ -23,7 +23,7 @@ struct Movement3D
 //----------------------------------------------------------------
 
 template <typename Float>
-inline Movement3D<Float> movement3D(const Point4D<Float>& rotation, const Point3D<Float>& translation)
+HEXLIB_INLINE Movement3D<Float> movement3D(const Point4D<Float>& rotation, const Point3D<Float>& translation)
 {
     Movement3D<Float> result;
     result.rotation = rotation;

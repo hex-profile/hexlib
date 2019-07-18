@@ -3,6 +3,8 @@
 #ifndef HEXLIB_POINT4D_BASE
 #define HEXLIB_POINT4D_BASE
 
+#include "types/compileTools.h"
+
 //================================================================
 //
 // Point4D
@@ -27,7 +29,7 @@ struct Point4D
 //================================================================
 
 template <typename Type>
-inline Point4D<Type> point4D(const Type& X, const Type& Y, const Type& Z, const Type& W)
+HEXLIB_INLINE Point4D<Type> point4D(const Type& X, const Type& Y, const Type& Z, const Type& W)
 {
     Point4D<Type> result;
     result.X = X;
@@ -38,7 +40,7 @@ inline Point4D<Type> point4D(const Type& X, const Type& Y, const Type& Z, const 
 }
 
 template <typename Type>
-inline Point4D<Type> point4D(const Type& value)
+HEXLIB_INLINE Point4D<Type> point4D(const Type& value)
 {
     Point4D<Type> result;
     result.X = value;

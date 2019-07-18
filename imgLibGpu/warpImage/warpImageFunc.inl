@@ -34,7 +34,7 @@
         { \
             Point<float32> pos = point(Xs, Ys); \
             float32_x2 offset = tex2D(mapSampler, pos * mapScaleFactor * mapTexstep); \
-            Point<float32> srcPos = ltApply(pos + mapValueFactor * point(offset.x, offset.y), srcTransform); \
+            Point<float32> srcPos = srcTransform(pos + mapValueFactor * point(offset.x, offset.y)); \
             storeNorm(dst, texStatement); \
         } \
     )
