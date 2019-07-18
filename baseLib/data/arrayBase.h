@@ -3,6 +3,7 @@
 #include <type_traits>
 
 #include "data/space.h"
+#include "types/compileTools.h"
 
 //================================================================
 //
@@ -28,15 +29,15 @@ class ArrayBase
 
 public:
 
-    inline ArrayBase()
+    HEXLIB_INLINE ArrayBase()
         : theSize(0) {}
 
-    inline ArrayBase(Type* ptr, Space size)
+    HEXLIB_INLINE ArrayBase(Type* ptr, Space size)
         {assign(ptr, size);}
 
 public:
 
-    inline bool assign(Type* ptr, Space size)
+    HEXLIB_INLINE bool assign(Type* ptr, Space size)
     {
         constexpr Space maxArraySize = spaceMax / Space(sizeof(Type));
 
@@ -48,7 +49,7 @@ public:
         return ok;
     }
 
-    inline void assignNull()
+    HEXLIB_INLINE void assignNull()
     {
         thePtr = nullptr;
         theSize = 0;
@@ -61,7 +62,7 @@ public:
 public:
 
     template <typename OtherType>
-    inline operator const ArrayBase<OtherType>& () const
+    HEXLIB_INLINE operator const ArrayBase<OtherType>& () const
     {
         using Src = Type;
         using Dst = OtherType;
@@ -79,7 +80,7 @@ public:
     //
 
     template <typename OtherType>
-    inline operator ArrayBase<OtherType> () const
+    HEXLIB_INLINE operator ArrayBase<OtherType> () const
     {
         using Src = Type;
         using Dst = OtherType;
@@ -96,10 +97,10 @@ public:
 
 public:
 
-    inline Space size() const // always >= 0
+    HEXLIB_INLINE Space size() const // always >= 0
         {return theSize;}
 
-    inline Type* ptr() const
+    HEXLIB_INLINE Type* ptr() const
         {return thePtr;}
 
     //
@@ -120,7 +121,7 @@ private:
 //================================================================
 
 template <typename Type>
-inline bool hasData(const ArrayBase<Type>& array)
+HEXLIB_INLINE bool hasData(const ArrayBase<Type>& array)
 {
     return array.size() >= 1;
 }
@@ -132,7 +133,7 @@ inline bool hasData(const ArrayBase<Type>& array)
 //================================================================
 
 template <typename Type>
-inline const ArrayBase<const Type>& makeConst(const ArrayBase<Type>& array)
+HEXLIB_INLINE const ArrayBase<const Type>& makeConst(const ArrayBase<Type>& array)
 {
     static_assert(sizeof(ArrayBase<const Type>) == sizeof(ArrayBase<Type>), "");
     return * (const ArrayBase<const Type>*) &array;

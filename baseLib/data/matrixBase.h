@@ -57,7 +57,7 @@ public:
     // Empty.
     //
 
-    inline MatrixBase()
+    HEXLIB_INLINE MatrixBase()
     {
         assignNull();
     }
@@ -66,7 +66,7 @@ public:
     // Create by parameters.
     //
 
-    inline MatrixBase(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
+    HEXLIB_INLINE MatrixBase(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
         assign(memPtr, memPitch, sizeX, sizeY);
     }
@@ -76,7 +76,7 @@ public:
     //
 
     template <typename OtherType>
-    inline MatrixBase(const ArrayBase<OtherType>& that)
+    HEXLIB_INLINE MatrixBase(const ArrayBase<OtherType>& that)
         :
         theMemPtr(that.thePtr),
         theMemPitch(that.theSize),
@@ -90,7 +90,7 @@ public:
     //
 
     template <typename OtherType>
-    inline operator const MatrixBase<OtherType>& () const
+    HEXLIB_INLINE operator const MatrixBase<OtherType>& () const
     {
         static_assert(CheckConversion<Type, OtherType>::value, "");
         static_assert(sizeof(MatrixBase<Type>) == sizeof(MatrixBase<OtherType>), "");
@@ -103,7 +103,7 @@ public:
     //
 
     template <typename OtherType>
-    inline operator MatrixBase<OtherType> () const
+    HEXLIB_INLINE operator MatrixBase<OtherType> () const
     {
         static_assert(CheckConversion<Type, OtherType>::value, "");
         static_assert(sizeof(MatrixBase<Type>) == sizeof(MatrixBase<OtherType>), "");
@@ -115,7 +115,7 @@ public:
     // Assign by parameters (checked).
     //
 
-    inline bool assign(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
+    HEXLIB_INLINE bool assign(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
         bool ok = matrixBaseIsValid<sizeof(Type)>(sizeX, sizeY, memPitch);
 
@@ -134,7 +134,7 @@ public:
     // Assign empty
     //
 
-    inline void assignNull()
+    HEXLIB_INLINE void assignNull()
     {
         theMemPtr = nullptr;
         theMemPitch = 0;
@@ -146,23 +146,23 @@ public:
     // Get size. Always >= 0.
     //
 
-    inline Space sizeX() const
+    HEXLIB_INLINE Space sizeX() const
         {return theSize.X;}
 
-    inline Space sizeY() const
+    HEXLIB_INLINE Space sizeY() const
         {return theSize.Y;}
 
-    inline const Point<Space>& size() const
+    HEXLIB_INLINE const Point<Space>& size() const
         {return theSize;}
 
     //
     // Get ptr and pitch.
     //
 
-    inline Space memPitch() const
+    HEXLIB_INLINE Space memPitch() const
         {return theMemPitch;}
 
-    inline Type* memPtr() const
+    HEXLIB_INLINE Type* memPtr() const
         {return theMemPtr;}
 
 private:
@@ -195,7 +195,7 @@ private:
 //================================================================
 
 template <typename Type>
-inline const MatrixBase<const Type>& makeConst(const MatrixBase<Type>& matrix)
+HEXLIB_INLINE const MatrixBase<const Type>& makeConst(const MatrixBase<Type>& matrix)
 {
     static_assert(sizeof(MatrixBase<const Type>) == sizeof(MatrixBase<Type>), "");
     static_assert(alignof(MatrixBase<const Type>) == alignof(MatrixBase<Type>), "");
@@ -210,7 +210,7 @@ inline const MatrixBase<const Type>& makeConst(const MatrixBase<Type>& matrix)
 //================================================================
 
 template <typename Type>
-inline bool hasData(const MatrixBase<Type>& matrix)
+HEXLIB_INLINE bool hasData(const MatrixBase<Type>& matrix)
 {
     return matrix.sizeX() >= 1 && matrix.sizeY() >= 1;
 }

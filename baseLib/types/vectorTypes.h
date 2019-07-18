@@ -5,6 +5,7 @@
 
 #include "types/intTypes.h"
 #include "types/floatTypes.h"
+#include "types/compileTools.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -64,30 +65,30 @@
 
 #if defined(__CUDA_ARCH__)
 
-#define TMP_MACRO(scalar, cudaScalar) \
+#define TMP_MACRO(scalar, baseScalar, cudaScalar) \
     \
     using scalar##_x2 = cudaScalar##2; \
     \
-    inline scalar##_x2 make_##scalar##_x2(scalar x, scalar y) \
+    HEXLIB_INLINE scalar##_x2 make_##scalar##_x2(baseScalar x, baseScalar y) \
         {return make_##cudaScalar##2(x, y);} \
     \
     using scalar##_x4 = cudaScalar##4; \
     \
-    inline scalar##_x4 make_##scalar##_x4(scalar x, scalar y, scalar z, scalar w) \
+    HEXLIB_INLINE scalar##_x4 make_##scalar##_x4(baseScalar x, baseScalar y, baseScalar z, baseScalar w) \
         {return make_##cudaScalar##4(x, y, z, w);}
 
 ////
 
-TMP_MACRO(int8, char)
-TMP_MACRO(uint8, uchar)
+TMP_MACRO(int8, int8_t, char)
+TMP_MACRO(uint8, uint8_t, uchar)
 
-TMP_MACRO(int16, short)
-TMP_MACRO(uint16, ushort)
+TMP_MACRO(int16, int16_t, short)
+TMP_MACRO(uint16, uint16_t, ushort)
 
-TMP_MACRO(int32, int)
-TMP_MACRO(uint32, uint)
+TMP_MACRO(int32, int32_t, int)
+TMP_MACRO(uint32, uint32_t, uint)
 
-TMP_MACRO(float32, float)
+TMP_MACRO(float32, float32, float)
 
 ////
 
@@ -109,7 +110,7 @@ TMP_MACRO(float32, float)
         scalar y; \
     }; \
     \
-    inline vector make_##vector(scalar x, scalar y) \
+    HEXLIB_INLINE vector make_##vector(scalar x, scalar y) \
     { \
         vector tmp; \
         tmp.x = x; \
@@ -154,7 +155,7 @@ TMP_MACRO(float32_x2, float32, 8)
         scalar w; \
     }; \
     \
-    inline vector make_##vector(scalar x, scalar y, scalar z, scalar w) \
+    HEXLIB_INLINE vector make_##vector(scalar x, scalar y, scalar z, scalar w) \
     { \
         vector tmp; \
         tmp.x = x; \

@@ -497,7 +497,7 @@ template <typename Type, typename Kit>
 stdbool getElementAtUserPoint(const GpuMatrix<const Type>& image, const LinearTransform<Point<float32>>& transform, Point<Space>& resultIdx, Type& resultValue, stdPars(Kit))
 {
     Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // to space format
-    Point<float32> srcPos = ltApply(dstPos, transform);
+    Point<float32> srcPos = transform(dstPos);
     Point<Space> srcIdx = convertToNearestIndex(srcPos);
 
     require(allv(image.size() >= 1));
