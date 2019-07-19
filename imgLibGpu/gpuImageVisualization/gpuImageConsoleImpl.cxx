@@ -1190,7 +1190,9 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
         {
             using Base = VECTOR_BASE(Type);
             int hexDigits = divUp<int>(sizeof(Base) * CHAR_BIT, 4);
-            require(printMsgL(kit, STR("Value[%0] = %1 (hex %2)"), userIdx, fltg(convertFloat32(userValue), 5), hex(userValue, hexDigits)));
+
+            require(printMsgL(kit, TYPE_IS_BUILTIN_INT(Base) ? STR("Value[%0] = %1 (hex %2)") : STR("Value[%0] = %1"), 
+                userIdx, fltg(convertFloat32(userValue), 5), hex(userValue, hexDigits)));
         }
 
         returnTrue;

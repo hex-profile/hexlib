@@ -3,32 +3,7 @@
 #include "point3d/point3d.h"
 #include "point4d/point4d.h"
 #include "numbers/mathIntrinsics.h"
-
-//================================================================
-//
-// quatReal
-// quatImaginary
-// quatCompose
-//
-//================================================================
-
-template <typename Float>
-sysinline Float quatReal(const Point4D<Float>& Q)
-{
-    return Q.W;
-}
-
-template <typename Float>
-sysinline Point3D<Float> quatImaginary(const Point4D<Float>& Q)
-{
-    return {Q.X, Q.Y, Q.Z};
-}
-
-template <typename Float>
-sysinline Point4D<Float> quatCompose(Float real, const Point3D<Float>& vec)
-{
-    return {vec.X, vec.Y, vec.Z, real};
-}
+#include "mathFuncs/quatBase.h"
 
 //================================================================
 //

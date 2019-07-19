@@ -13,8 +13,8 @@
 template <typename Type>
 struct LinearTransform
 {
-    Type C0;
     Type C1;
+    Type C0;
 
     template <typename ValueType>
     sysinline auto operator () (const ValueType& value) const
@@ -23,7 +23,6 @@ struct LinearTransform
 
 //----------------------------------------------------------------
 
-// ```
 template <typename Type>
 sysinline LinearTransform<Type> linearTransform(const Type& C1, const Type& C0)
 {
