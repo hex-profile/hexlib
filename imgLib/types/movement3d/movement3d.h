@@ -45,3 +45,11 @@ sysinline Movement3D<Float> inverse(const Movement3D<Float>& movement)
     result.translation = -quatRotateVec(oppositeRotation, movement.translation);
     return result;
 }
+
+//----------------------------------------------------------------
+
+template <typename Float>
+sysinline Point3D<Float> applyInverse(const Movement3D<Float>& movement, const Point3D<Float>& vec)
+{
+    return quatRotateVec(quatConjugate(movement.rotation), vec - movement.translation);
+}
