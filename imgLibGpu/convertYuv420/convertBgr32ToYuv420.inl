@@ -277,7 +277,7 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 
     ////
 
-    auto srcFullTransform = ltCombine(srcTransform, linearTransform(computeTexstep(src), point(0.f)));
+    auto srcFullTransform = combine(srcTransform, linearTransform(computeTexstep(src), point(0.f)));
     ConvertBgrYuv420Params<DST_PIXEL, DST_PIXEL2> params{srcFullTransform, dstLuma, dstChroma, dstChromaU, dstChromaV};
 
     require
