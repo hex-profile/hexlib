@@ -133,7 +133,7 @@ sysinline bool anyv(const void* value)
 //================================================================
 
 template <typename Dst, typename Src>
-sysinline Dst soft_cast(Src src)
+sysinline Dst soft_cast(Src&& src)
     {return src;}
 
 //================================================================
