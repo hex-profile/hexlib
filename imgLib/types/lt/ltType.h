@@ -147,9 +147,8 @@ struct ConvertImplFlag<LtFamily, LtFamily, rounding, hint>
 //
 //================================================================
 
-// ```
 template <typename ValueType, typename CoeffType>
-sysinline ValueType ltApply(const ValueType& value, const LinearTransform<CoeffType>& transform)
+sysinline ValueType ltApply(const LinearTransform<CoeffType>& transform, const ValueType& value)
 {
     return value * transform.C1 + transform.C0;
 }
@@ -180,12 +179,12 @@ sysinline LinearTransform<Type> ltByTwoPoints
 
 //================================================================
 //
-// ltInverse
+// inverse
 //
 //================================================================
 
 template <typename Type>
-sysinline LinearTransform<Type> ltInverse(const LinearTransform<Type>& lt)
+sysinline LinearTransform<Type> inverse(const LinearTransform<Type>& lt)
 {
     Type div = convertNearest<Type>(1) / lt.C1;
 
@@ -198,12 +197,12 @@ sysinline LinearTransform<Type> ltInverse(const LinearTransform<Type>& lt)
 
 //================================================================
 //
-// ltCombine
+// combine
 //
 //================================================================
 
 template <typename Type>
-sysinline LinearTransform<Type> ltCombine(const LinearTransform<Type>& A, const LinearTransform<Type>& B)
+sysinline LinearTransform<Type> combine(const LinearTransform<Type>& A, const LinearTransform<Type>& B)
 {
     return linearTransform
     (
