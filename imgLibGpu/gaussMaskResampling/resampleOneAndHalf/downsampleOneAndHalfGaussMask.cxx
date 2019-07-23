@@ -28,9 +28,8 @@ static const Space initialSrcShift = -2;
 
 #define FOREACH_TYPE(action) \
     \
-    TMP_MACRO(uint8, uint8, uint8, 1) \
-    TMP_MACRO(uint16, uint16, uint16, 1) \
-    TMP_MACRO(float16, float16, float16, 1)
+    action(uint8, uint8, uint8, 1) \
+    action(float16, float16, float16, 1)
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
