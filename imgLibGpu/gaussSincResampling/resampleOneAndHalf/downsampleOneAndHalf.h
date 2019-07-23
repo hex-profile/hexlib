@@ -2,6 +2,7 @@
 
 #include "gpuProcessHeader.h"
 #include "imageRead/borderMode.h"
+#include "data/gpuLayeredMatrix.h"
 
 namespace gaussSincResampling {
 
@@ -13,44 +14,27 @@ namespace gaussSincResampling {
 //
 //================================================================
 
-template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndHalfConservative
-(
-    const GpuMatrix<const Src>& src,
-    const GpuMatrix<Dst>& dst,
-    BorderMode borderMode,
-    stdPars(GpuProcessKit)
-);
+//================================================================
+//
+// downsampleOneAndHalfMaxTasks
+//
+//================================================================
+
+constexpr int downsampleOneAndHalfMaxTasks = 4;
+
+//================================================================
+//
+// downsampleOneAndHalfConservative
+// downsampleOneAndHalfConservativeMultitask
+//
+//================================================================
+
+template <typename Src, typename Interm, typename Dst>              
+stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndHalfConservative2
-(
-    const GpuMatrix<const Src>& src0, const GpuMatrix<Dst>& dst0,
-    const GpuMatrix<const Src>& src1, const GpuMatrix<Dst>& dst1,
-    BorderMode borderMode,
-    stdPars(GpuProcessKit)
-);
-
-template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndHalfConservative3
-(
-    const GpuMatrix<const Src>& src0, const GpuMatrix<Dst>& dst0,
-    const GpuMatrix<const Src>& src1, const GpuMatrix<Dst>& dst1,
-    const GpuMatrix<const Src>& src2, const GpuMatrix<Dst>& dst2,
-    BorderMode borderMode, 
-    stdPars(GpuProcessKit)
-);
-
-template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndHalfConservative4
-(
-    const GpuMatrix<const Src>& src0, const GpuMatrix<Dst>& dst0,
-    const GpuMatrix<const Src>& src1, const GpuMatrix<Dst>& dst1,
-    const GpuMatrix<const Src>& src2, const GpuMatrix<Dst>& dst2,
-    const GpuMatrix<const Src>& src3, const GpuMatrix<Dst>& dst3,
-    BorderMode borderMode, 
-    stdPars(GpuProcessKit)
-);
+inline stdbool downsampleOneAndHalfConservative(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
+    {return downsampleOneAndHalfConservativeMultitask<Src, Interm, Dst>(gpuLayeredMatrixFromMatrix(src), gpuLayeredMatrixFromMatrix(dst), borderMode, stdPassThru);}
 
 //================================================================
 //
