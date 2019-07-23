@@ -4,6 +4,29 @@
 
 //================================================================
 //
+// FOREACH_TYPE_SINGLE
+// FOREACH_TYPE_MULTI
+//
+//================================================================
+
+#define FOREACH_TYPE_MULTI(action) \
+    \
+    action(int8, int8, int8, 1) \
+    action(uint8, uint8, uint8, 1) \
+    action(float16, float16, float16, 1) \
+    action(float32, float32, float32, 1)
+
+#define FOREACH_TYPE_SINGLE(action) \
+    \
+    FOREACH_TYPE_MULTI(action) \
+    \
+    action(int8_x2, int8_x2, int8_x2, 2) \
+    action(uint8_x2, uint8_x2, uint8_x2, 2) \
+    action(float16_x2, float16_x2, float16_x2, 2) \
+    action(float32_x2, float32_x2, float32_x2, 2)
+
+//================================================================
+//
 // downsampleOneAndHalfConservative
 //
 //================================================================
@@ -27,27 +50,14 @@ static const Space conservativeFilterSrcShift = -13;
 
 #define HORIZONTAL_FIRST 1
 
-#define FOREACH_TYPE(action) \
-    \
-    action(int8, int8, int8, 1) \
-    action(uint8, uint8, uint8, 1) \
-    action(float16, float16, float16, 1) \
-    \
-    action(int8_x2, int8_x2, int8_x2, 2) \
-    action(uint8_x2, uint8_x2, uint8_x2, 2) \
-    action(float16_x2, float16_x2, float16_x2, 2)
+#define FOREACH_TYPE FOREACH_TYPE_SINGLE
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
 //----------------------------------------------------------------
 
 #undef FOREACH_TYPE
-
-#define FOREACH_TYPE(action) \
-    \
-    action(int8, int8, int8, 1) \
-    action(uint8, uint8, uint8, 1) \
-    action(float16, float16, float16, 1)
+#define FOREACH_TYPE FOREACH_TYPE_MULTI
 
 ////
 
@@ -95,6 +105,9 @@ static devConstant float32 balancedFilter1[] = {-0.00044777f, -0.00085302f, +0.0
 static const Space balancedFilterSrcShift = -10;
 
 //----------------------------------------------------------------
+
+#undef FOREACH_TYPE
+#define FOREACH_TYPE FOREACH_TYPE_SINGLE
 
 #undef FUNCNAME
 #define FUNCNAME downsampleOneAndHalfBalanced
