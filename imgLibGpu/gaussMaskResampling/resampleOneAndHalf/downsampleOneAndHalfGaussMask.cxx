@@ -29,7 +29,8 @@ static const Space initialSrcShift = -2;
 #define FOREACH_TYPE(action) \
     \
     action(uint8, uint8, uint8, 1) \
-    action(float16, float16, float16, 1)
+    action(float16, float16, float16, 1) \
+    action(float32, float32, float32, 1)
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
