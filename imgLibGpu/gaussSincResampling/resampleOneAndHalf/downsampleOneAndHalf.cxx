@@ -39,6 +39,50 @@ static const Space conservativeFilterSrcShift = -13;
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
+//----------------------------------------------------------------
+
+#undef FOREACH_TYPE
+
+#define FOREACH_TYPE(action) \
+    \
+    action(int8, int8, int8, 1) \
+    action(uint8, uint8, uint8, 1) \
+    action(float16, float16, float16, 1)
+
+////
+
+#undef TASK_COUNT
+#define TASK_COUNT 2
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfConservative2
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef TASK_COUNT
+#define TASK_COUNT 3
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfConservative3
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef TASK_COUNT
+#define TASK_COUNT 4
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfConservative4
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef TASK_COUNT
+
 //================================================================
 //
 // downsampleOneAndHalfBalanced
@@ -64,4 +108,3 @@ static const Space balancedFilterSrcShift = -10;
 #define FILTER_SRC_SHIFT balancedFilterSrcShift
 
 # include "rationalResample/rationalResampleMultiple.inl"
-
