@@ -1,6 +1,9 @@
 #include "downsampleOneAndHalfGaussMask.h"
 
 #include "gpuDevice/gpuDevice.h"
+#include "prepTools/prepFor.h"
+
+using namespace gaussMaskResampling;
 
 //================================================================
 //
@@ -15,7 +18,6 @@ static const Space initialSrcShift = -2;
 //----------------------------------------------------------------
 
 #define FUNCSPACE gaussMaskResampling
-#define FUNCNAME downsampleOneAndHalfGaussMaskInitial
 
 #define PACK_SIZE 2
 #define PACK_TO_SRC_FACTOR 3
@@ -32,7 +34,48 @@ static const Space initialSrcShift = -2;
     action(float16, float16, float16, 1) \
     action(float32, float32, float32, 1)
 
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskInitial1
+
+#undef TASK_COUNT
+#define TASK_COUNT 1
 # include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskInitial2
+
+#undef TASK_COUNT
+#define TASK_COUNT 2
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskInitial3
+
+#undef TASK_COUNT
+#define TASK_COUNT 3
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskInitial4
+
+#undef TASK_COUNT
+#define TASK_COUNT 4
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+COMPILE_ASSERT(downsampleOneAndHalfMaxTasks == 4);
 
 //================================================================
 //
@@ -47,7 +90,6 @@ static const Space sustainingSrcShift = -2;
 //----------------------------------------------------------------
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining
 
 #undef FILTER0
 #undef FILTER1
@@ -57,5 +99,119 @@ static const Space sustainingSrcShift = -2;
 #define FILTER1 sustainingFilter1
 #define FILTER_SRC_SHIFT sustainingSrcShift
 
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining1
+
+#undef TASK_COUNT
+#define TASK_COUNT 1
+
 # include "rationalResample/rationalResampleMultiple.inl"
 
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining2
+
+#undef TASK_COUNT
+#define TASK_COUNT 2
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining3
+
+#undef TASK_COUNT
+#define TASK_COUNT 3
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining4
+
+#undef TASK_COUNT
+#define TASK_COUNT 4
+
+# include "rationalResample/rationalResampleMultiple.inl"
+
+////
+
+COMPILE_ASSERT(downsampleOneAndHalfMaxTasks == 4);
+
+//================================================================
+//
+// Host part
+//
+//================================================================
+
+#if HOSTCODE
+
+namespace gaussMaskResampling {
+
+//================================================================
+//
+// downsampleOneAndHalfGaussMaskMultitask
+//
+//================================================================
+
+template <typename Src, typename Interm, typename Dst>              
+stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
+{
+    REQUIRE(equalLayers(src, dst));
+    auto layers = dst.layerCount();
+
+    ////
+
+    #define TMP_PASS(i, _) \
+        src.getLayer(i), dst.getLayer(i)
+
+    #define TMP_MACRO(n, _) \
+        \
+        else if (layers == n) \
+        { \
+            auto func = initial ? \
+                downsampleOneAndHalfGaussMaskInitial##n<Src, Interm, Dst> : \
+                downsampleOneAndHalfGaussMaskSustaining##n<Src, Interm, Dst>; \
+            \
+            require(func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass)); \
+        }
+
+    ////
+
+    #define MAX_TASKS 4
+    COMPILE_ASSERT(MAX_TASKS == downsampleOneAndHalfMaxTasks);
+
+    if (layers == 0)
+    {
+    }
+    PREP_FOR2_FROM1_TO_COUNT(MAX_TASKS, TMP_MACRO, _)
+    else
+    {
+        REQUIRE(false);
+    }
+
+    #undef TMP_MACRO
+    #undef TMP_PASS
+
+    returnTrue;
+}
+
+//----------------------------------------------------------------
+
+#define TMP_MACRO(Src, Interm, Dst, _) \
+    INSTANTIATE_FUNC_EX((downsampleOneAndHalfGaussMaskMultitask<Src, Interm, Dst>), Dst)
+
+FOREACH_TYPE(TMP_MACRO)
+
+#undef TMP_MACRO
+
+//----------------------------------------------------------------
+
+}
+
+#endif

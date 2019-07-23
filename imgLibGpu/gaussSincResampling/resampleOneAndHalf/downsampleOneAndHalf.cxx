@@ -2,23 +2,20 @@
 
 #include "gaussSincResampling/gaussSincResamplingSettings.h"
 
+using namespace gaussSincResampling;
+
 //================================================================
 //
-// FOREACH_TYPE_SINGLE
-// FOREACH_TYPE_MULTI
+// FOREACH_TYPE
 //
 //================================================================
 
-#define FOREACH_TYPE_MULTI(action) \
+#define FOREACH_TYPE(action) \
     \
     action(int8, int8, int8, 1) \
     action(uint8, uint8, uint8, 1) \
     action(float16, float16, float16, 1) \
-    action(float32, float32, float32, 1)
-
-#define FOREACH_TYPE_SINGLE(action) \
-    \
-    FOREACH_TYPE_MULTI(action) \
+    action(float32, float32, float32, 1) \
     \
     action(int8_x2, int8_x2, int8_x2, 2) \
     action(uint8_x2, uint8_x2, uint8_x2, 2) \
@@ -39,7 +36,6 @@ static const Space conservativeFilterSrcShift = -13;
 //----------------------------------------------------------------
 
 #define FUNCSPACE gaussSincResampling
-#define FUNCNAME downsampleOneAndHalfConservative
 
 #define PACK_SIZE 2
 #define PACK_TO_SRC_FACTOR 3
@@ -50,14 +46,17 @@ static const Space conservativeFilterSrcShift = -13;
 
 #define HORIZONTAL_FIRST 1
 
-#define FOREACH_TYPE FOREACH_TYPE_SINGLE
-
 # include "rationalResample/rationalResampleMultiple.inl"
 
 //----------------------------------------------------------------
 
-#undef FOREACH_TYPE
-#define FOREACH_TYPE FOREACH_TYPE_MULTI
+#undef TASK_COUNT
+#define TASK_COUNT 1
+
+#undef FUNCNAME
+#define FUNCNAME downsampleOneAndHalfConservative1
+
+# include "rationalResample/rationalResampleMultiple.inl"
 
 ////
 
@@ -92,6 +91,7 @@ static const Space conservativeFilterSrcShift = -13;
 ////
 
 #undef TASK_COUNT
+COMPILE_ASSERT(downsampleOneAndHalfMaxTasks == 4);
 
 //================================================================
 //
@@ -106,9 +106,6 @@ static const Space balancedFilterSrcShift = -10;
 
 //----------------------------------------------------------------
 
-#undef FOREACH_TYPE
-#define FOREACH_TYPE FOREACH_TYPE_SINGLE
-
 #undef FUNCNAME
 #define FUNCNAME downsampleOneAndHalfBalanced
 
@@ -121,3 +118,73 @@ static const Space balancedFilterSrcShift = -10;
 #define FILTER_SRC_SHIFT balancedFilterSrcShift
 
 # include "rationalResample/rationalResampleMultiple.inl"
+
+//================================================================
+//
+// Host part
+//
+//================================================================
+
+#if HOSTCODE
+
+namespace gaussSincResampling {
+
+//================================================================
+//
+// downsampleOneAndHalfConservativeMultitask
+//
+//================================================================
+
+template <typename Src, typename Interm, typename Dst>              
+stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
+{
+    REQUIRE(equalLayers(src, dst));
+    auto layers = dst.layerCount();
+
+    ////
+
+    #define TMP_PASS(i, _) \
+        src.getLayer(i), dst.getLayer(i)
+
+    #define TMP_MACRO(n, _) \
+        \
+        else if (layers == n) \
+        { \
+            auto func = downsampleOneAndHalfConservative##n<Src, Interm, Dst>; \
+            require(func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass)); \
+        }
+
+    ////
+
+    #define MAX_TASKS 4
+    COMPILE_ASSERT(MAX_TASKS == downsampleOneAndHalfMaxTasks);
+
+    if (layers == 0)
+    {
+    }
+    PREP_FOR2_FROM1_TO_COUNT(MAX_TASKS, TMP_MACRO, _)
+    else
+    {
+        REQUIRE(false);
+    }
+
+    #undef TMP_MACRO
+    #undef TMP_PASS
+
+    returnTrue;
+}
+
+//----------------------------------------------------------------
+
+#define TMP_MACRO(Src, Interm, Dst, _) \
+    INSTANTIATE_FUNC_EX((downsampleOneAndHalfConservativeMultitask<Src, Interm, Dst>), Dst)
+
+FOREACH_TYPE(TMP_MACRO)
+
+#undef TMP_MACRO
+
+//----------------------------------------------------------------
+
+}
+
+#endif
