@@ -2,6 +2,7 @@
 
 #include "binaryFileWin32.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #include "errorLog/debugBreak.h"
@@ -13,53 +14,7 @@
 #include "formatting/formatModifiers.h"
 #include "formattedOutput/requireMsg.h"
 #include "numbers/int/intType.h"
-
-//================================================================
-//
-// Win32Error
-//
-//================================================================
-
-class Win32Error
-{
-
-public:
-
-    operator DWORD () const {return error;}
-    CLASS_CONTEXT(Win32Error, ((DWORD, error)))
-
-};
-
-//----------------------------------------------------------------
-
-template <>
-void formatOutput(const Win32Error& value, FormatOutputStream& outputStream)
-{
-    DWORD err = value;
-
-    LPTSTR formatStr = 0;
-    REMEMBER_CLEANUP1(DEBUG_BREAK_CHECK(LocalFree(formatStr) == 0), LPTSTR, formatStr);
-
-    DWORD formatResult = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, value, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR) &formatStr, 0, NULL);
-
-    ////
-
-    size_t formatLen = strlen(formatStr);
-
-    while (formatLen != 0 && (formatStr[formatLen-1] == '\r' || formatStr[formatLen-1] == '\n'))
-        --formatLen;
-
-    ////
-
-    if (formatResult && formatStr)
-        outputStream.write(CharArray(formatStr, formatLen));
-    else
-    {
-        outputStream.write(STR("Error 0x"));
-        outputStream.write(hex(uint32(value), 8));
-    }
-}
+#include "win32/errorWin32.h"
 
 //================================================================
 //
@@ -67,7 +22,7 @@ void formatOutput(const Win32Error& value, FormatOutputStream& outputStream)
 //
 //================================================================
 
-inline Win32Error getLastError() {return Win32Error(GetLastError());}
+inline ErrorWin32 getLastError() {return ErrorWin32(GetLastError());}
 
 //================================================================
 //
@@ -215,7 +170,7 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 
     CharArray errorMsg = STR("Cannot read %0 bytes at offset %1 from file %2: %3");
     REQUIRE_MSG4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
-    REQUIRE_MSG4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, Win32Error(ERROR_HANDLE_EOF));
+    REQUIRE_MSG4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorWin32(ERROR_HANDLE_EOF));
 
     ////
 
@@ -263,7 +218,7 @@ stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(F
 
     CharArray errorMsg = STR("Cannot write %0 bytes at offset %1 to file %2: %3");
     REQUIRE_MSG4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
-    REQUIRE_MSG4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, Win32Error(ERROR_HANDLE_EOF));
+    REQUIRE_MSG4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorWin32(ERROR_HANDLE_EOF));
 
     ////
 
