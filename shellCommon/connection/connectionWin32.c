@@ -66,14 +66,12 @@ stdbool WinSockLib::open(stdPars(DiagnosticKit))
 
     ////
 
-    WORD wVersionRequested = MAKEWORD(2, 2);
-    WSADATA wsaData;
-    int err = WSAStartup(wVersionRequested, &wsaData);
+    WORD version = MAKEWORD(2, 2);
+    WSADATA data;
+    int err = WSAStartup(version, &data);
     REQUIRE_MSG1(err == 0, STR("Connection: Winsock: Init failed: %0"), ErrorWin32(err));
     REMEMBER_CLEANUP_EX(wsaCleanup, DEBUG_BREAK_CHECK(WSACleanup() == 0)); // WSAStartup returned 0, remember to cleanup.
-
-    REQUIRE_MSG(LOBYTE(wsaData.wVersion) == 2 && HIBYTE(wsaData.wVersion) == 2,
-        STR("Connection: Winsock: Cannot find version 2.2"));
+    REQUIRE_MSG(data.wVersion == version, STR("Connection: Winsock: Cannot find version 2.2."));
 
     ////
 
@@ -113,12 +111,66 @@ WinSockLib winSockLib;
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
-//
+// ConnectionWin32
 //
 //----------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
+stdbool ConnectionWin32::open(const Address& address, float32 timeoutInSec, stdPars(DiagnosticKit))
+{
+    close();
+
+    ////
+
+    require(winSockLib.open(stdPass));
+    REMEMBER_CLEANUP_EX(winSockCleanup, winSockLib.close());
+
+    ////
+
+    isOpened = true;
+    winSockCleanup.cancel();
+    returnTrue;
+}
+
+//================================================================
+//
+// ConnectionWin32::close
+//
+//================================================================
+
+void ConnectionWin32::close()
+{
+    if (isOpened)
+    {
+        isOpened = false;
+        winSockLib.close();
+    }
+}
+
+//================================================================
+//
+// ConnectionWin32::send
+//
+//================================================================
+
+stdbool ConnectionWin32::send(const void* dataPtr, size_t dataSize, float32 timeoutInSec, stdPars(DiagnosticKit))
+{
+    REQUIRE(false);
+    returnTrue;
+}
+
+//================================================================
+//
+// ConnectionWin32::receive
+//
+//================================================================
+
+stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, float32 timeoutInSec, size_t& actualDataSize, stdPars(DiagnosticKit))
+{
+    REQUIRE(false);
+    returnTrue;
+}
 
 //----------------------------------------------------------------
 

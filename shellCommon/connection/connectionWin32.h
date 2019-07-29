@@ -17,6 +17,9 @@ public:
 
     ~ConnectionWin32() {close();}
 
+public:
+
+    virtual bool opened() const {return isOpened;}
     virtual stdbool open(const Address& address, float32 timeoutInSec, stdPars(DiagnosticKit));
     virtual void close();
 
@@ -27,7 +30,7 @@ public:
 
 private:
 
-    bool opened = false;
+    bool isOpened = false;
 
 };
 

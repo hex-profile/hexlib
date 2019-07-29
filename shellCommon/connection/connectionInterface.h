@@ -66,6 +66,7 @@ struct Receiving
 
 struct Opening
 {
+    virtual bool opened() const =0;
     virtual stdbool open(const Address& address, float32 timeoutInSec, stdPars(DiagnosticKit)) =0;
     virtual void close() =0;
 };
