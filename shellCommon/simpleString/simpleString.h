@@ -237,3 +237,4 @@ sysinline SimpleStringEx<Type> operator +(const Type* X, const SimpleStringEx<Ty
 //================================================================
 
 using SimpleString = SimpleStringEx<CharType>;
+using SimpleStringChar = SimpleStringEx<char>;
