@@ -9,34 +9,38 @@
 //
 // CharType array definitions.
 //
-// The project avoids using null-terminated strings,
-// the pair (pointer, size) is used instead, as it's more efficient.
+// A pair of (pointer, size) is more efficient than null-terminated strings.
 //
 //================================================================
 
 //================================================================
 //
-// CharArray
+// CharArrayEx
 //
 //================================================================
 
-class CharArray
+template <typename Type>
+class CharArrayEx
 {
 
 public:
 
-    sysinline CharArray(int=0)
+    sysinline CharArrayEx(int=0)
         : size(0) {}
 
-    sysinline CharArray(const CharType* ptr, size_t size)
+    sysinline CharArrayEx(const Type* ptr, size_t size)
         : ptr(ptr), size(size) {}
 
 public:
 
-    const CharType* ptr;
+    const Type* ptr;
     size_t size;
 
 };
+
+//----------------------------------------------------------------
+
+using CharArray = CharArrayEx<CharType>;
 
 //================================================================
 //

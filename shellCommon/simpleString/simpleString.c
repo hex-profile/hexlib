@@ -12,7 +12,7 @@
 //================================================================
 
 template <>
-void formatOutput(const SimpleString& value, FormatOutputStream& outputStream)
+void formatOutput(const SimpleStringEx<CharType>& value, FormatOutputStream& outputStream)
 {
     outputStream.write(charArrayFromPtr(value.cstr()));
 }
@@ -23,24 +23,26 @@ void formatOutput(const SimpleString& value, FormatOutputStream& outputStream)
 //
 //================================================================
 
-struct StringData : public std::basic_string<CharType>
+template <typename Type>
+struct StringData : public std::basic_string<Type>
 {
-    using Base = std::basic_string<CharType>;
+    using Base = std::basic_string<Type>;
 
-    sysinline StringData(const CharType* bufPtr, size_t bufSize)
+    sysinline StringData(const Type* bufPtr, size_t bufSize)
         : Base(bufPtr, bufSize) {}
 
-    sysinline StringData(size_t bufSize, CharType fillValue)
+    sysinline StringData(size_t bufSize, Type fillValue)
         : Base(bufSize, fillValue) {}
 };
 
 //================================================================
 //
-// SimpleString::deallocate
+// SimpleStringEx<Type>::deallocate
 //
 //================================================================
 
-void SimpleString::deallocate()
+template <typename Type>
+void SimpleStringEx<Type>::deallocate()
 {
     try
     {
@@ -56,11 +58,12 @@ void SimpleString::deallocate()
 
 //================================================================
 //
-// SimpleString::assign(const SimpleString& that)
+// SimpleStringEx<Type>::assign(const SimpleStringEx<Type>& that)
 //
 //================================================================
 
-void SimpleString::assign(const SimpleString& that)
+template <typename Type>
+void SimpleStringEx<Type>::assign(const SimpleStringEx<Type>& that)
 {
     if (this == &that)
         return;
@@ -91,7 +94,7 @@ void SimpleString::assign(const SimpleString& that)
             *theData = *that.theData;
         else
         {
-            theData = new (std::nothrow) StringData(*that.theData);
+            theData = new (std::nothrow) StringData<Type>(*that.theData);
             if_not (theData)
                 return;
         }
@@ -105,11 +108,12 @@ void SimpleString::assign(const SimpleString& that)
 
 //================================================================
 //
-// SimpleString::assign(const CharType* bufPtr, size_t bufSize)
+// SimpleStringEx<Type>::assign(const Type* bufPtr, size_t bufSize)
 //
 //================================================================
 
-void SimpleString::assign(const CharType* bufPtr, size_t bufSize)
+template <typename Type>
+void SimpleStringEx<Type>::assign(const Type* bufPtr, size_t bufSize)
 {
     theOk = false;
 
@@ -130,7 +134,7 @@ void SimpleString::assign(const CharType* bufPtr, size_t bufSize)
             (*theData).assign(bufPtr, bufSize);
         else
         {
-            theData = new (std::nothrow) StringData(bufPtr, bufSize);
+            theData = new (std::nothrow) StringData<Type>(bufPtr, bufSize);
 
             if_not (theData)
                 return;
@@ -145,22 +149,24 @@ void SimpleString::assign(const CharType* bufPtr, size_t bufSize)
 
 //================================================================
 //
-// SimpleString::assign(const CharType* cstr)
+// SimpleStringEx<Type>::assign(const Type* cstr)
 //
 //================================================================
 
-void SimpleString::assign(const CharType* cstr)
-{
-    assign(cstr, strlen(cstr));
-}
+void SimpleStringEx<char>::assign(const char* cstr)
+    {assign(cstr, strlen(cstr));}
+
+void SimpleStringEx<wchar_t>::assign(const wchar_t* cstr)
+    {assign(cstr, wcslen(cstr));}
 
 //================================================================
 //
-// SimpleString::assign(CharType fillValue, size_t bufSize);
+// SimpleStringEx<Type>::assign(Type fillValue, size_t bufSize);
 //
 //================================================================
 
-void SimpleString::assign(CharType fillValue, size_t bufSize)
+template <typename Type>
+void SimpleStringEx<Type>::assign(Type fillValue, size_t bufSize)
 {
     theOk = false;
 
@@ -181,7 +187,7 @@ void SimpleString::assign(CharType fillValue, size_t bufSize)
             (*theData).assign(bufSize, fillValue);
         else
         {
-            theData = new (std::nothrow) StringData(bufSize, fillValue);
+            theData = new (std::nothrow) StringData<Type>(bufSize, fillValue);
 
             if_not (theData)
                 return;
@@ -196,13 +202,16 @@ void SimpleString::assign(CharType fillValue, size_t bufSize)
 
 //================================================================
 //
-// SimpleString::cstr
+// SimpleStringEx<Type>::cstr
 //
 //================================================================
 
-const CharType* SimpleString::cstr() const
+template <typename Type>
+const Type* SimpleStringEx<Type>::cstr() const
 {
-    const CharType* result = CT("");
+    static const Type emptyStr[] = {0};
+
+    const Type* result = emptyStr;
 
     if (theOk && theData)
         result = theData->c_str();
@@ -212,11 +221,12 @@ const CharType* SimpleString::cstr() const
 
 //================================================================
 //
-// SimpleString::length
+// SimpleStringEx<Type>::length
 //
 //================================================================
 
-size_t SimpleString::length() const
+template <typename Type>
+size_t SimpleStringEx<Type>::length() const
 {
     size_t result = 0;
 
@@ -228,11 +238,12 @@ size_t SimpleString::length() const
 
 //================================================================
 //
-// SimpleString::operator +=
+// SimpleStringEx<Type>::operator +=
 //
 //================================================================
 
-SimpleString& SimpleString::operator +=(const SimpleString& that)
+template <typename Type>
+SimpleStringEx<Type>& SimpleStringEx<Type>::operator +=(const SimpleStringEx<Type>& that)
 {
     if_not (this->theOk && that.theOk)
     {
@@ -255,7 +266,7 @@ SimpleString& SimpleString::operator +=(const SimpleString& that)
         }
         else
         {
-            theData = new (std::nothrow) StringData(*that.theData);
+            theData = new (std::nothrow) StringData<Type>(*that.theData);
             if_not (theData) {theOk = false; return *this;}
         }
     }
@@ -271,11 +282,12 @@ SimpleString& SimpleString::operator +=(const SimpleString& that)
 
 //================================================================
 //
-// SimpleString::operator ==
+// SimpleStringEx<Type>::operator ==
 //
 //================================================================
 
-bool operator ==(const SimpleString& A, const SimpleString& B)
+template <typename Type>
+bool stringsEqual(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
 {
     if_not (def(A) && def(B))
         return false;
@@ -291,3 +303,15 @@ bool operator ==(const SimpleString& A, const SimpleString& B)
 
     return (*A.theData) == (*B.theData);
 }
+
+//================================================================
+//
+// Instantiations.
+//
+//================================================================
+
+template class SimpleStringEx<char>;
+template class SimpleStringEx<wchar_t>;
+
+INSTANTIATE_FUNC(stringsEqual<char>)
+INSTANTIATE_FUNC(stringsEqual<wchar_t>)
