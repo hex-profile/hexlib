@@ -6,6 +6,15 @@ namespace connection {
 
 //================================================================
 //
+// Socket
+//
+//================================================================
+
+using Socket = unsigned int;
+constexpr Socket invalidSocket = Socket(-1);
+
+//================================================================
+//
 // ConnectionWin32
 //
 //================================================================
@@ -19,20 +28,26 @@ public:
 
 public:
 
-    virtual bool opened() const {return isOpened;}
-    virtual stdbool open(const Address& address, float32 timeoutInSec, stdPars(DiagnosticKit));
+    virtual bool opened() const {return theOpened;}
+    virtual stdbool open(const Address& address, stdPars(DiagnosticKit));
     virtual void close();
 
 public:
 
-    virtual stdbool send(const void* dataPtr, size_t dataSize, float32 timeoutInSec, stdPars(DiagnosticKit));
-    virtual stdbool receive(void* dataPtr, size_t dataSize, float32 timeoutInSec, size_t& actualDataSize, stdPars(DiagnosticKit));
+    stdbool send(const void* dataPtr, size_t dataSize, stdPars(DiagnosticKit));
+    stdbool receive(void* dataPtr, size_t dataSize, size_t& actualDataSize, stdPars(DiagnosticKit));
 
 private:
 
-    bool isOpened = false;
+    bool theOpened = false;
+    Socket theSocket = invalidSocket;
 
 };
+
+inline void test111()
+{
+    ConnectionWin32 test;// ```
+}
 
 //----------------------------------------------------------------
 
