@@ -1,9 +1,7 @@
 #pragma once
 
 #include "userOutput/diagnosticKit.h"
-#include "charType/charType.h"
 #include "numbers/int/intBase.h"
-#include "numbers/float/floatBase.h"
 #include "stdFunc/stdFunc.h"
 
 namespace connection {
@@ -14,7 +12,7 @@ namespace connection {
 //
 //================================================================
 
-using Host = const CharType*;
+using Host = const char*;
 
 //================================================================
 //
@@ -44,7 +42,7 @@ struct Address
 
 struct Sending
 {
-    virtual stdbool send(const void* dataPtr, size_t dataSize, float32 timeoutInSec, stdPars(DiagnosticKit)) =0;
+    virtual stdbool send(const void* dataPtr, size_t dataSize, stdPars(DiagnosticKit)) =0;
 };
 
 //================================================================
@@ -55,7 +53,7 @@ struct Sending
 
 struct Receiving
 {
-    virtual stdbool receive(void* dataPtr, size_t dataSize, float32 timeoutInSec, size_t& actualDataSize, stdPars(DiagnosticKit)) =0;
+    virtual stdbool receive(void* dataPtr, size_t dataSize, size_t& actualDataSize, stdPars(DiagnosticKit)) =0;
 };
 
 //================================================================
@@ -67,7 +65,7 @@ struct Receiving
 struct Opening
 {
     virtual bool opened() const =0;
-    virtual stdbool open(const Address& address, float32 timeoutInSec, stdPars(DiagnosticKit)) =0;
+    virtual stdbool open(const Address& address, stdPars(DiagnosticKit)) =0;
     virtual void close() =0;
 };
 
