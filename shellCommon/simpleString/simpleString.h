@@ -9,7 +9,16 @@
 
 //================================================================
 //
-// SimpleString
+// StringData
+//
+//================================================================
+
+template <typename Type>
+struct StringData;
+
+//================================================================
+//
+// SimpleStringEx
 //
 // String with built-in error state (like NAN for numbers).
 //
@@ -22,7 +31,7 @@
 // * length() returns 0.
 //
 // At any operation, if there is not enough memory, a string sets the error state.
-// The error state is inherited when assigning another SimpleString which is in the error state.
+// The error state is inherited when assigning another SimpleStringEx which is in the error state.
 //
 // The error state can be cleared in assignment, if operation is successful and assigned value is good.
 //
@@ -32,37 +41,38 @@
 //
 //================================================================
 
-class SimpleString
+template <typename Type>
+class SimpleStringEx
 {
 
 public:
 
-    sysinline SimpleString()
+    sysinline SimpleStringEx()
         {}
 
-    sysinline ~SimpleString()
+    sysinline ~SimpleStringEx()
         {deallocate();}
 
 public:
 
-    sysinline SimpleString(const SimpleString& that)
+    sysinline SimpleStringEx(const SimpleStringEx<Type>& that)
         {assign(that);}
 
-    sysinline SimpleString& operator =(const SimpleString& that)
+    sysinline SimpleStringEx& operator =(const SimpleStringEx<Type>& that)
         {assign(that); return *this;}
 
 public:
 
     template <typename That>
-    sysinline SimpleString(const That& that)
+    sysinline SimpleStringEx(const That& that)
         {assign(that);}
 
     template <typename That1, typename That2>
-    sysinline SimpleString(const That1& that1, const That2& that2)
+    sysinline SimpleStringEx(const That1& that1, const That2& that2)
         {assign(that1, that2);}
 
     template <typename That>
-    sysinline SimpleString& operator =(const That& that)
+    sysinline SimpleStringEx& operator =(const That& that)
         {assign(that); return *this;}
 
     //----------------------------------------------------------------
@@ -83,18 +93,18 @@ public:
 
 public:
 
-    const CharType* cstr() const;
+    const Type* cstr() const;
 
-    sysinline operator const CharType* () const 
+    sysinline operator const Type* () const 
         {return cstr();}
 
 public:
 
-    sysinline operator CharArray () const 
-        {return CharArray(cstr(), length());}
+    sysinline operator CharArrayEx<Type> () const 
+        {return CharArrayEx<Type>(cstr(), length());}
 
-    sysinline CharArray charArray() const
-        {return CharArray(cstr(), length());}
+    sysinline CharArrayEx<Type> charArray() const
+        {return CharArrayEx<Type>(cstr(), length());}
 
     //----------------------------------------------------------------
     //
@@ -115,7 +125,7 @@ public:
 
 public:
 
-    SimpleString& operator +=(const SimpleString& that);
+    SimpleStringEx& operator +=(const SimpleStringEx<Type>& that);
 
     //----------------------------------------------------------------
     //
@@ -134,12 +144,12 @@ public:
     //
     //----------------------------------------------------------------
 
-    void assign(const SimpleString& that);
-    void assign(const CharType* cstr);
-    void assign(const CharType* bufPtr, size_t bufLen);
-    void assign(CharType fillValue, size_t bufSize);
+    void assign(const SimpleStringEx<Type>& that);
+    void assign(const Type* cstr);
+    void assign(const Type* bufPtr, size_t bufLen);
+    void assign(Type fillValue, size_t bufSize);
 
-    void assign(const CharArray& that)
+    void assign(const CharArrayEx<Type>& that)
         {assign(that.ptr, that.size);}
 
     //----------------------------------------------------------------
@@ -150,14 +160,18 @@ public:
 
 public:
 
-    friend bool operator ==(const SimpleString& A, const SimpleString& B);
+    template <typename AnyType>
+    friend bool stringsEqual(const SimpleStringEx<AnyType>& A, const SimpleStringEx<AnyType>& B);
 
-    sysinline friend bool operator !=(const SimpleString& A, const SimpleString& B)
-        {return !(A == B);}
+    sysinline friend bool operator ==(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
+        {return stringsEqual(A, B);}
+
+    sysinline friend bool operator !=(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
+        {return !stringsEqual(A, B);}
 
 public:
 
-    friend sysinline void exchange(SimpleString& A, SimpleString& B)
+    friend sysinline void exchange(SimpleStringEx<Type>& A, SimpleStringEx<Type>& B)
     {
         exchange(A.theOk, B.theOk);
         exchange(A.theData, B.theData);
@@ -181,7 +195,7 @@ private:
     //
 
     // Content ptr
-    struct StringData* theData = nullptr;
+    StringData<Type>* theData = nullptr;
 
     // Error absense flag;
     bool theOk = true;
@@ -194,7 +208,8 @@ private:
 //
 //================================================================
 
-sysinline bool def(const SimpleString& str)
+template <typename Type>
+sysinline bool def(const SimpleStringEx<Type>& str)
     {return str.isOk();}
 
 //================================================================
@@ -203,15 +218,22 @@ sysinline bool def(const SimpleString& str)
 //
 //================================================================
 
-sysinline SimpleString operator +(const SimpleString& X, const SimpleString& Y)
-{
-    SimpleString result(X); 
-    result += Y; 
-    return result;
-}
+template <typename Type>
+sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const SimpleStringEx<Type>& Y)
+    {SimpleStringEx<Type> result(X); result += Y; return result;}
 
-sysinline SimpleString operator +(const SimpleString& X, const CharType* Y)
-    {SimpleString result(X); result += SimpleString(Y); return result;}
+template <typename Type>
+sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const Type* Y)
+    {SimpleStringEx<Type> result(X); result += SimpleStringEx<Type>(Y); return result;}
 
-sysinline SimpleString operator +(const CharType* X, const SimpleString& Y)
-    {SimpleString result(X); result += Y; return result;}
+template <typename Type>
+sysinline SimpleStringEx<Type> operator +(const Type* X, const SimpleStringEx<Type>& Y)
+    {SimpleStringEx<Type> result(X); result += Y; return result;}
+
+//================================================================
+//
+// SimpleString
+//
+//================================================================
+
+using SimpleString = SimpleStringEx<CharType>;
