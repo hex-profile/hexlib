@@ -12,19 +12,20 @@
 //
 //================================================================
 
+template <typename Type>
 class OutputSimpleString : public CfgOutputString
 {
 
-    SimpleString& str;
+    SimpleStringEx<Type>& str;
 
 public:
 
-    inline OutputSimpleString(SimpleString& str)
+    inline OutputSimpleString(SimpleStringEx<Type>& str)
         : str(str) {}
 
-    bool addBuf(const CharType* bufArray, size_t bufSize)
+    bool addBuf(const Type* bufArray, size_t bufSize)
     {
-        str += SimpleString(bufArray, bufSize);
+        str += SimpleStringEx<Type>(bufArray, bufSize);
         bool ok = def(str);
 
         if_not (def(str))
@@ -36,19 +37,20 @@ public:
 
 //================================================================
 //
-// SimpleStringVar
+// SimpleStringVarEx
 //
 // SimpleString which maintains 'changed' flag.
 //
 //================================================================
 
-class SimpleStringVar
+template <typename Type>
+class SimpleStringVarEx
 {
 
 public:
 
     template <typename DefaultValue>
-    SimpleStringVar(const DefaultValue& defaultValue)
+    SimpleStringVarEx(const DefaultValue& defaultValue)
     {
         this->value = defaultValue;
         this->defaultValue = defaultValue;
@@ -56,7 +58,7 @@ public:
 
 public:
 
-    inline void operator =(const SimpleString& X)
+    inline void operator =(const SimpleStringEx<Type>& X)
     {
         if (value != X)
         {
@@ -78,22 +80,22 @@ public:
 
 public:
 
-    operator const SimpleString& () const
+    operator const SimpleStringEx<Type>& () const
         {return value;}
 
-    const SimpleString& operator()() const
+    const SimpleStringEx<Type>& operator()() const
         {return value;}
 
-    operator SimpleString& ()
+    operator SimpleStringEx<Type>& ()
         {return value;}
 
-    SimpleString& operator()()
+    SimpleStringEx<Type>& operator()()
         {return value;}
 
-    SimpleString* operator ->()
+    SimpleStringEx<Type>* operator ->()
         {return &value;}
 
-    const SimpleString* operator ->() const
+    const SimpleStringEx<Type>* operator ->() const
         {return &value;}
 public:
 
@@ -103,12 +105,13 @@ public:
 
     inline bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment = STR(""), const CharArray& blockComment = STR(""));
 
+    template <typename T>
     friend class SerializeSimpleStringVar;
 
 private:
 
-    SimpleString value;
-    SimpleString defaultValue;
+    SimpleStringEx<Type> value;
+    SimpleStringEx<Type> defaultValue;
 
     bool changed = false;
 
@@ -116,10 +119,11 @@ private:
 
 //================================================================
 //
-// CfgSimpleString
+// SerializeSimpleStringVar
 //
 //================================================================
 
+template <typename Type>
 class SerializeSimpleStringVar : public CfgSerializeVariable
 {
 
@@ -127,7 +131,7 @@ public:
 
     inline SerializeSimpleStringVar
     (
-        SimpleStringVar& baseVar,
+        SimpleStringVarEx<Type>& baseVar,
         const CharArray& nameDesc,
         const CharArray& comment,
         const CharArray& blockComment
@@ -166,8 +170,8 @@ private:
 
     bool setTextValue(CfgReadStream& s) const
     {
-        SimpleString tmp;
-        OutputSimpleString output(tmp);
+        SimpleStringEx<Type> tmp;
+        OutputSimpleString<Type> output(tmp);
         ensure(s.readString(output));
         ensure(def(tmp));
         baseVar = tmp;
@@ -189,7 +193,7 @@ private:
 
 private:
 
-    SimpleStringVar& baseVar;
+    SimpleStringVarEx<Type>& baseVar;
 
     const CharArray nameDesc;
     const CharArray comment;
@@ -199,14 +203,23 @@ private:
 
 //================================================================
 //
-// NumericVar<Type>::serialize
+// SimpleStringVarEx<Type>::serialize
 //
 //================================================================
 
-inline bool SimpleStringVar::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment, const CharArray& blockComment)
+template <typename Type>
+inline bool SimpleStringVarEx<Type>::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment, const CharArray& blockComment)
 {
     auto oldValue = value;
-    SerializeSimpleStringVar serializeVar(*this, name, comment, blockComment);
+    SerializeSimpleStringVar<Type> serializeVar(*this, name, comment, blockComment);
     kit.visitor(kit.scope, serializeVar);
     return allv(oldValue == value);
 }
+
+//================================================================
+//
+// SimpleStringVar
+//
+//================================================================
+
+using SimpleStringVar = SimpleStringVarEx<CharType>;
