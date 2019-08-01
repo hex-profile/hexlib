@@ -35,7 +35,7 @@ public:
 public:
 
     stdbool send(const void* dataPtr, size_t dataSize, stdPars(DiagnosticKit));
-    stdbool receive(void* dataPtr, size_t dataSize, size_t& actualDataSize, stdPars(DiagnosticKit));
+    stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(DiagnosticKit));
 
 private:
 

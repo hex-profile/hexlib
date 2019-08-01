@@ -53,7 +53,7 @@ struct Sending
 
 struct Receiving
 {
-    virtual stdbool receive(void* dataPtr, size_t dataSize, size_t& actualDataSize, stdPars(DiagnosticKit)) =0;
+    virtual stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(DiagnosticKit)) =0;
 };
 
 //================================================================

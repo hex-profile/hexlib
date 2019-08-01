@@ -267,7 +267,7 @@ stdbool ConnectionWin32::send(const void* dataPtr, size_t dataSize, stdPars(Diag
 //
 //================================================================
 
-stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& actualDataSize, stdPars(DiagnosticKit))
+stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(DiagnosticKit))
 {
     REQUIRE(theOpened);
 
@@ -275,7 +275,7 @@ stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& actualD
     int actualSize = ::recv(theSocket, (char*) dataPtr, int(dataSize), 0);
     REQUIRE_MSG1(actualSize >= 0, STR("Connection: Cannot receive data. %1"), ErrorWin32(WSAGetLastError()));
 
-    actualDataSize = size_t(actualSize);
+    receivedSize = size_t(actualSize);
     returnTrue;
 }
 
