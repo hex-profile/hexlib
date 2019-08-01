@@ -3,6 +3,7 @@
 #include "profilerShell/profiler/profilerStruct.h"
 #include "interfaces/fileTools.h"
 #include "kits/moduleHeader.h"
+#include "userOutput/diagnosticKit.h"
 
 namespace profilerReport {
 
@@ -12,7 +13,7 @@ namespace profilerReport {
 //
 //================================================================
 
-KIT_COMBINE2(ReportKit, ErrorLogKit, MsgLogKit);
+KIT_COMBINE1(ReportKit, DiagnosticKit);
 KIT_COMBINE2(ReportFileKit, ReportKit, FileToolsKit);
 
 //================================================================

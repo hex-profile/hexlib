@@ -12,7 +12,7 @@
 #include "userOutput/printMsg.h"
 #include "compileTools/classContext.h"
 #include "formatting/formatModifiers.h"
-#include "formattedOutput/requireMsg.h"
+#include "userOutput/errorLogEx.h"
 #include "numbers/int/intType.h"
 #include "win32/errorWin32.h"
 
@@ -68,7 +68,7 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
         NULL
     );
 
-    REQUIRE_MSG2(newHandle != INVALID_HANDLE_VALUE, STR("Cannot open file %0: %1"), filename, getLastError());
+    REQUIRE_TRACE2(newHandle != INVALID_HANDLE_VALUE, STR("Cannot open file %0: %1"), filename, getLastError());
 
     ////
 
@@ -99,7 +99,7 @@ stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
     REQUIRE(handle);
 
     BOOL result = SetEndOfFile(handle);
-    REQUIRE_MSG3(result != 0, STR("Cannot truncate file %0 at offset %1: %2"), currentFilename, currentPosition, getLastError());
+    REQUIRE_TRACE3(result != 0, STR("Cannot truncate file %0 at offset %1: %2"), currentFilename, currentPosition, getLastError());
 
     currentSize = currentPosition;
 
@@ -123,7 +123,7 @@ stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
     largePos.QuadPart = pos;
 
     BOOL result = SetFilePointerEx(handle, largePos, 0, FILE_BEGIN);
-    REQUIRE_MSG3(result != 0, STR("Cannot seek to offset %0 in file %1: %2"), pos, currentFilename, getLastError());
+    REQUIRE_TRACE3(result != 0, STR("Cannot seek to offset %0 in file %1: %2"), pos, currentFilename, getLastError());
 
     ////
 
@@ -169,8 +169,8 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
     BOOL result = ReadFile(handle, dataPtr, dataSizeOS, &actualBytes, NULL);
 
     CharArray errorMsg = STR("Cannot read %0 bytes at offset %1 from file %2: %3");
-    REQUIRE_MSG4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
-    REQUIRE_MSG4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorWin32(ERROR_HANDLE_EOF));
+    REQUIRE_TRACE4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
+    REQUIRE_TRACE4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorWin32(ERROR_HANDLE_EOF));
 
     ////
 
@@ -217,8 +217,8 @@ stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(F
     BOOL result = WriteFile(handle, dataPtr, dataSizeOS, &actualBytes, NULL);
 
     CharArray errorMsg = STR("Cannot write %0 bytes at offset %1 to file %2: %3");
-    REQUIRE_MSG4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
-    REQUIRE_MSG4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorWin32(ERROR_HANDLE_EOF));
+    REQUIRE_TRACE4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
+    REQUIRE_TRACE4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorWin32(ERROR_HANDLE_EOF));
 
     ////
 

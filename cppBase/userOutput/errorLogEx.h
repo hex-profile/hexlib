@@ -6,6 +6,7 @@
 #include "stdFunc/stdFunc.h"
 #include "userOutput/msgLog.h"
 #include "formatting/paramMsgOutput.h"
+#include "errorLog/errorLog.h"
 
 //================================================================
 //
@@ -100,6 +101,9 @@ PREP_FOR1(PRINTTRACE__MAX_COUNT, PRINTTRACE__FUNC_THUNK, _)
 // outputs a formatted message and returns false.
 //
 //================================================================
+
+#define REQUIRE_TRACE(condition, format) \
+    require(CHECK_TRACE0(condition, format))
 
 #define REQUIRE_TRACE0(condition, format) \
     require(CHECK_TRACE0(condition, format))

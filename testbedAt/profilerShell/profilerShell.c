@@ -209,7 +209,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
         TimeMoment reportBegin = kit.timer.moment();
     
-        profilerReport::ReportKit kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
+        auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
         errorBlock(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx)));
 
@@ -239,7 +239,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
         TimeMoment reportBegin = kit.timer.moment();
     
-        ReportFileKit kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
+        auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
         require(htmlReport.makeReport(MakeReportParams(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
             cycleCount, processingThroughput, htmlOutputDir().cstr()), stdPassKit(kitEx)));

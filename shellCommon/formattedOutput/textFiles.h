@@ -3,13 +3,21 @@
 #include <fstream>
 #include <sstream>
 
-#include "errorLog/errorLog.h"
-#include "stdFunc/stdFunc.h"
-#include "userOutput/msgLog.h"
 #include "formattedOutput/formatStreamStl.h"
+#include "stdFunc/stdFunc.h"
 #include "stlString/stlString.h"
+#include "userOutput/errorLogEx.h"
+#include "userOutput/msgLog.h"
 #include "userOutput/printMsg.h"
-#include "formattedOutput/requireMsg.h"
+#include "userOutput/diagnosticKit.h"
+
+//================================================================
+//
+// TextFileKit
+//
+//================================================================
+
+using TextFileKit = DiagnosticKit;
 
 //================================================================
 //
@@ -23,34 +31,34 @@ class InputTextFile
 
 public:
 
-    stdbool open(StlString filename, stdPars(MsgLogKit))
+    stdbool open(StlString filename, stdPars(TextFileKit))
     {
         stream.close();
         stream.clear();
 
         stream.open(filename.c_str());
-        REQUIRE_MSG1(!!stream, STR("Cannot open file %0"), filename);
+        REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
 
         openedFilename = filename;
 
         returnTrue;
     }
 
-    bool getLine(std::basic_string<Type>& s, stdPars(MsgLogKit))
+    bool getLine(std::basic_string<Type>& s, stdPars(TextFileKit))
     {
         getline(stream, s);
 
         bool ok = !!stream;
 
         if_not (ok)
-            CHECK_EX(stream.eof(), printMsg(kit.msgLog, STR("Cannot read file %0"), openedFilename));
+            CHECK_TRACE1(stream.eof(), STR("Cannot read file %0"), openedFilename);
 
         return ok;
     }
 
     bool eof() const {return stream.eof();}
 
-    stdbool readEntireFileToString(StlString& result, stdPars(MsgLogKit))
+    stdbool readEntireFileToString(StlString& result, stdPars(TextFileKit))
     {
         std::basic_stringstream<CharType> strStream;
         strStream << stream.rdbuf();
@@ -60,7 +68,7 @@ public:
 
         if_not (ok)
         {
-            CHECK_EX(stream.eof(), printMsg(kit.msgLog, STR("Cannot read file %0"), openedFilename));
+            CHECK_TRACE1(stream.eof(), STR("Cannot read file %0"), openedFilename);
             returnFalse;
         }
 
@@ -89,7 +97,7 @@ class InputTextFileUnicodeToAscii
 
 public:
 
-    stdbool open(StlString filename, stdPars(MsgLogKit))
+    stdbool open(StlString filename, stdPars(TextFileKit))
     {
         using namespace std;
 
@@ -99,14 +107,14 @@ public:
         ////
 
         stream.open(filename.c_str());
-        REQUIRE_MSG1(!!stream, STR("Cannot open file %0"), filename);
+        REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
 
         openedFilename = filename;
 
         returnTrue;
     }
 
-    stdbool getLine(StlString& result, stdPars(MsgLogKit))
+    stdbool getLine(StlString& result, stdPars(TextFileKit))
     {
         std::basic_string<char> wstr;
 
@@ -115,7 +123,7 @@ public:
         bool ok = !!stream;
 
         if_not (ok)
-            CHECK_EX(stream.eof(), printMsg(kit.msgLog, STR("Cannot read file %0"), openedFilename));
+            CHECK_TRACE1(stream.eof(), STR("Cannot read file %0"), openedFilename);
 
         ////
 
@@ -210,33 +218,33 @@ public:
 
 public:
 
-    stdbool open(StlString filename, stdPars(MsgLogKit))
+    stdbool open(StlString filename, stdPars(TextFileKit))
     {
         stream.close();
         stream.clear();
 
         stream.open(filename.c_str());
-        REQUIRE_MSG1(!!stream, STR("Cannot open file %0"), filename);
+        REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
 
         openedFilename = filename;
 
         returnTrue;
     }
 
-    stdbool flush(stdPars(MsgLogKit))
+    stdbool flush(stdPars(TextFileKit))
     {
         stream.flush();
-        REQUIRE_MSG1(!!stream, STR("Cannot write to file %0"), openedFilename);
+        REQUIRE_TRACE1(!!stream, STR("Cannot write to file %0"), openedFilename);
         returnTrue;
     }
 
-    stdbool flushClose(stdPars(MsgLogKit))
+    stdbool flushClose(stdPars(TextFileKit))
     {
         stream.flush();
         bool ok = !!stream;
         stream.close();
         stream.clear();
-        REQUIRE_MSG1(ok, STR("Cannot write to file %0"), openedFilename);
+        REQUIRE_TRACE1(ok, STR("Cannot write to file %0"), openedFilename);
         returnTrue;
     }
 
