@@ -8,6 +8,14 @@ namespace connection {
 
 //================================================================
 //
+// Kit
+//
+//================================================================
+
+KIT_COMBINE2(Kit, DiagnosticKit, ProfilerKit);
+
+//================================================================
+//
 // Host
 //
 //================================================================
@@ -42,7 +50,7 @@ struct Address
 
 struct Sending
 {
-    virtual stdbool send(const void* dataPtr, size_t dataSize, stdPars(DiagnosticKit)) =0;
+    virtual stdbool send(const void* dataPtr, size_t dataSize, stdPars(Kit)) =0;
 };
 
 //================================================================
@@ -53,7 +61,7 @@ struct Sending
 
 struct Receiving
 {
-    virtual stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(DiagnosticKit)) =0;
+    virtual stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit)) =0;
 };
 
 //================================================================
@@ -65,7 +73,8 @@ struct Receiving
 struct Opening
 {
     virtual bool opened() const =0;
-    virtual stdbool open(const Address& address, stdPars(DiagnosticKit)) =0;
+    virtual stdbool open(const Address& address, stdPars(Kit)) =0;
+    virtual stdbool reopen(stdPars(Kit)) =0;
     virtual void close() =0;
 };
 

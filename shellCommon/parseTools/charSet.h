@@ -8,7 +8,8 @@
 //
 //================================================================
 
-inline bool isAnySpace(CharType c)
+template <typename Char>
+inline bool isAnySpace(Char c)
 {
     return
         c == ' ' ||
@@ -25,7 +26,8 @@ inline bool isAnySpace(CharType c)
 //
 //================================================================
 
-inline bool isSpaceTab(CharType c)
+template <typename Char>
+inline bool isSpaceTab(Char c)
 {
     return
         c == ' ' ||
@@ -38,7 +40,8 @@ inline bool isSpaceTab(CharType c)
 //
 //================================================================
 
-inline bool isNewLine(CharType c)
+template <typename Char>
+inline bool isNewLine(Char c)
 {
     return
         c == '\r' ||
@@ -51,7 +54,8 @@ inline bool isNewLine(CharType c)
 //
 //================================================================
 
-inline bool isDigit(CharType c)
+template <typename Char>
+inline bool isDigit(Char c)
 {
     return c >= '0' && c <= '9';
 }
@@ -62,7 +66,8 @@ inline bool isDigit(CharType c)
 //
 //================================================================
 
-inline bool isBigHexDigit(CharType c)
+template <typename Char>
+inline bool isBigHexDigit(Char c)
 {
     return
         (c >= '0' && c <= '9') ||
@@ -76,11 +81,38 @@ inline bool isBigHexDigit(CharType c)
 //
 //================================================================
 
-inline bool isLowerLetter(CharType c)
+template <typename Char>
+inline bool isLowerLetter(Char c)
     {return (c >= 'a' && c <= 'z');}
 
-inline bool isUpperLetter(CharType c)
+template <typename Char>
+inline bool isUpperLetter(Char c)
     {return (c >= 'A' && c <= 'Z');}
+
+//================================================================
+//
+// toLowerLetter
+// toUpperLetter
+//
+//================================================================
+
+template <typename Char>
+inline Char toLowerLetter(Char c)
+{
+    if (c >= 'A' && c <= 'Z')
+        c += 'a' - 'A';
+
+    return c;
+}
+
+template <typename Char>
+inline Char toUpperLetter(Char c)
+{
+    if (c >= 'a' && c <= 'z')
+        c += 'A' - 'a';
+
+    return c;
+}
 
 //================================================================
 //
@@ -88,7 +120,8 @@ inline bool isUpperLetter(CharType c)
 //
 //================================================================
 
-inline bool isLatinLetter(CharType c)
+template <typename Char>
+inline bool isLatinLetter(Char c)
 {
     return
         (c >= 'A' && c <= 'Z') ||
@@ -101,7 +134,8 @@ inline bool isLatinLetter(CharType c)
 //
 //================================================================
 
-inline bool isDirSeparator(CharType c)
+template <typename Char>
+inline bool isDirSeparator(Char c)
 {
     return c == '\\' || c == '/';
 }
@@ -113,14 +147,16 @@ inline bool isDirSeparator(CharType c)
 //
 //================================================================
 
-inline bool isIdent1st(CharType c)
+template <typename Char>
+inline bool isIdent1st(Char c)
 {
     return c == '_' || isLatinLetter(c);
 }
 
 //----------------------------------------------------------------
 
-inline bool isIdentNext(CharType c)
+template <typename Char>
+inline bool isIdentNext(Char c)
 {
     return
         isIdent1st(c) ||

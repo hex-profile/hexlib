@@ -5,18 +5,18 @@
 #include <map>
 #include <time.h>
 
+#include "cfgTools/numericVar.h"
+#include "formattedOutput/sprintMsg.h"
 #include "formattedOutput/textFiles.h"
-#include "errorLog/errorLog.h"
-#include "numbers/float/floatType.h"
 #include "formatting/prettyNumber.h"
+#include "numbers/float/floatType.h"
 #include "numbers/mathIntrinsics.h"
-#include "userOutput/paramMsg.h"
 #include "profilerShell/profiler/profilerTimer.h"
 #include "simpleString/simpleString.h"
-#include "formattedOutput/sprintMsg.h"
-#include "storage/rememberCleanup.h"
 #include "storage/classThunks.h"
-#include "cfgTools/numericVar.h"
+#include "storage/rememberCleanup.h"
+#include "userOutput/errorLogEx.h"
+#include "userOutput/paramMsg.h"
 
 namespace profilerReport {
 
@@ -1559,7 +1559,7 @@ class SourceCacheImpl
 
 public:
 
-    KIT_COMBINE2(Kit, ErrorLogKit, MsgLogKit);
+    using Kit = DiagnosticKit;
 
 public:
 
@@ -1615,7 +1615,7 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
 
     ////
 
-    REQUIRE_MSG1(!!stream, STR("Cannot find file %0"), filename);
+    REQUIRE_TRACE1(!!stream, STR("Cannot find file %0"), filename);
 
     ////
 
@@ -1632,7 +1632,7 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
 
     ////
 
-    REQUIRE_MSG1(stream.eof(), STR("Cannot read file %0"), filename);
+    REQUIRE_TRACE1(stream.eof(), STR("Cannot read file %0"), filename);
 
     ////
 
@@ -1655,7 +1655,7 @@ public:
 
 public:
 
-    KIT_COMBINE2(Kit, ErrorLogKit, MsgLogKit);
+    KIT_COMBINE1(Kit, DiagnosticKit);
 
     SourceCacheThunk(SourceCacheImpl& impl, const StringArray& searchPath, const Kit& kit)
         : impl(impl), searchPath(searchPath), kit(kit) {}

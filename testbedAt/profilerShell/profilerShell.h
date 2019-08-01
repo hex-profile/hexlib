@@ -28,7 +28,7 @@ public:
 
     KIT_COMBINE2(InitKit, ProfilerImpl::AllocKit, MsgLogKit);
     KIT_COMBINE2(DeinitKit, ErrorLogKit, MsgLogKit);
-    KIT_COMBINE4(ProcessKit, ErrorLogKit, MsgLogsKit, TimerKit, FileToolsKit);
+    KIT_COMBINE5(ProcessKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit, FileToolsKit);
 
 public:
 

@@ -3,7 +3,7 @@
 #include "cpuFuncKit.h"
 #include "errorLog/errorLog.h"
 #include "formattedOutput/requireMsg.h"
-#include "userOutput/printMsg.h"
+#include "userOutput/errorLogEx.h"
 
 namespace yuvFile {
 
@@ -16,7 +16,7 @@ namespace yuvFile {
 template <typename RawPixel>
 stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit))
 {
-    REQUIRE_MSG(yuv420SizeValid(frameSize), STR("YUV video frame size is not valid"));
+    REQUIRE_TRACE(yuv420SizeValid(frameSize), STR("YUV video frame size is not valid"));
     Space frameBytes = sizeof(RawPixel) * yuv420TotalArea(frameSize);
     REQUIRE(frameBytes >= 1);
     Space frameBytesU = frameBytes;
@@ -31,9 +31,9 @@ stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStr
         uint64 fileSize = filePositioning->getSize();
 
         uint64 frameCount64 = fileSize / frameBytesU;
-        REQUIRE_MSG(frameCount64 * frameBytesU == fileSize, STR("YUV video file size is not a multiple of the frame size"));
+        REQUIRE_TRACE(frameCount64 * frameBytesU == fileSize, STR("YUV video file size is not a multiple of the frame size"));
 
-        REQUIRE_MSG(frameCount64 <= 0x7FFFFFFF, STR("YUV video file is too big"));
+        REQUIRE_TRACE(frameCount64 <= 0x7FFFFFFF, STR("YUV video file is too big"));
         frameCount = int32(frameCount64);
 
         ////
@@ -42,7 +42,7 @@ stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStr
         REQUIRE(filePos <= fileSize);
 
         uint64 framePos64 = filePos / frameBytesU;
-        REQUIRE_MSG(framePos64 * frameBytesU == filePos, STR("YUV video file position is not a multiple of the frame size"));
+        REQUIRE_TRACE(framePos64 * frameBytesU == filePos, STR("YUV video file position is not a multiple of the frame size"));
         frameIndex = int32(framePos64);
     }
 

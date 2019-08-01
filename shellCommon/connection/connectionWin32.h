@@ -10,7 +10,7 @@ namespace connection {
 //
 //================================================================
 
-using Socket = unsigned int;
+using Socket = size_t;
 constexpr Socket invalidSocket = Socket(-1);
 
 //================================================================
@@ -24,30 +24,28 @@ class ConnectionWin32 : public Connection
 
 public:
 
-    ~ConnectionWin32() {close();}
+    ~ConnectionWin32();
 
 public:
 
-    virtual bool opened() const {return theOpened;}
-    virtual stdbool open(const Address& address, stdPars(DiagnosticKit));
+    virtual bool opened() const {return theStatus == Status::Opened;}
+    virtual stdbool open(const Address& address, stdPars(Kit));
+    virtual stdbool reopen(stdPars(Kit));
     virtual void close();
 
 public:
 
-    stdbool send(const void* dataPtr, size_t dataSize, stdPars(DiagnosticKit));
-    stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(DiagnosticKit));
+    stdbool send(const void* dataPtr, size_t dataSize, stdPars(Kit));
+    stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit));
 
 private:
 
-    bool theOpened = false;
+    enum class Status {None, LibUsed, Opened};
+    Status theStatus = Status::None;
+    
     Socket theSocket = invalidSocket;
-
+    void* addrInfo = nullptr;
 };
-
-inline void test111()
-{
-    ConnectionWin32 test;// ```
-}
 
 //----------------------------------------------------------------
 

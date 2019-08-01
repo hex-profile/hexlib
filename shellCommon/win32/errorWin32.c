@@ -36,12 +36,13 @@ void formatOutput(const ErrorWin32& value, FormatOutputStream& outputStream)
 
     ////
 
+    outputStream.write(STR("Error "));
+    outputStream.write(value);
+
     if (formatResult && formatStr)
-        outputStream.write(CharArray(formatStr, formatLen));
-    else
     {
-        outputStream.write(STR("Error 0x"));
-        outputStream.write(hex(uint32(value), 8));
+        outputStream.write(STR(". "));
+        outputStream.write(CharArray(formatStr, formatLen));
     }
 }
 

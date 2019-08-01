@@ -10,9 +10,10 @@
 //
 //================================================================
 
-inline bool skipSpaceTab(const CharType*& ptr, const CharType* end)
+template <typename Char>
+inline bool skipSpaceTab(const Char*& ptr, const Char* end)
 {
-    const CharType* s = ptr;
+    const Char* s = ptr;
 
     while (s != end && isSpaceTab(*s))
         ++s;
@@ -29,9 +30,10 @@ inline bool skipSpaceTab(const CharType*& ptr, const CharType* end)
 //
 //================================================================
 
-inline bool skipNonSpaceCharacters(const CharType*& ptr, const CharType* end)
+template <typename Char>
+inline bool skipNonSpaceCharacters(const Char*& ptr, const Char* end)
 {
-    const CharType* s = ptr;
+    const Char* s = ptr;
 
     while (s != end && !isSpaceTab(*s))
         ++s;
@@ -52,9 +54,10 @@ inline bool skipNonSpaceCharacters(const CharType*& ptr, const CharType* end)
 //
 //================================================================
 
-inline bool skipIdent(const CharType*& ptr, const CharType* end)
+template <typename Char>
+inline bool skipIdent(const Char*& ptr, const Char* end)
 {
-    const CharType* s = ptr;
+    const Char* s = ptr;
 
     ensure(s != end && isIdent1st(*s));
 
@@ -78,9 +81,10 @@ inline bool skipIdent(const CharType*& ptr, const CharType* end)
 //
 //================================================================
 
-inline bool skipCppComment(const CharType*& ptr, const CharType* end)
+template <typename Char>
+inline bool skipCppComment(const Char*& ptr, const Char* end)
 {
-    const CharType* s = ptr;
+    const Char* s = ptr;
 
     ensure(s != end && *s == '/');
     ++s;
@@ -105,14 +109,15 @@ inline bool skipCppComment(const CharType*& ptr, const CharType* end)
 //
 //================================================================
 
-inline bool skipCstr(const CharType*& ptr, const CharType* end)
+template <typename Char>
+inline bool skipCstr(const Char*& ptr, const Char* end)
 {
-    const CharType* s = ptr;
+    const Char* s = ptr;
 
     ////
 
     ensure(s != end && (*s == '"' || *s == '\''));
-    CharType quote = *s;
+    Char quote = *s;
     ++s;
 
     ////
@@ -138,20 +143,21 @@ inline bool skipCstr(const CharType*& ptr, const CharType* end)
 //
 // Parses and skips specified text literally.
 //
-// Returns an indication of successful parsing
-// If parsing is not successful, does not move pointer.
+// Returns an indication of successful parsing.
+// If parsing is not successful, it does not move the pointer.
 //
 //================================================================
 
+template <typename Char, typename TextChar>
 inline bool skipText
 (
-    const CharType*& strPtr,
-    const CharType* strEnd,
-    const CharType* textPtr,
-    const CharType* textEnd
+    const Char*& strPtr,
+    const Char* strEnd,
+    const TextChar* textPtr,
+    const TextChar* textEnd
 )
 {
-    const CharType* ptr = strPtr;
+    const Char* ptr = strPtr;
 
     while (ptr != strEnd && textPtr != textEnd && *ptr == *textPtr)
         {++ptr; ++textPtr;}
@@ -165,7 +171,8 @@ inline bool skipText
 
 //----------------------------------------------------------------
 
-inline bool skipText(const CharType*& strPtr, const CharType* strEnd, const CharArray& text)
+template <typename Char, typename TextChar>
+inline bool skipText(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
     {return skipText(strPtr, strEnd, text.ptr, text.ptr + text.size);}
 
 //================================================================
@@ -174,7 +181,8 @@ inline bool skipText(const CharType*& strPtr, const CharType* strEnd, const Char
 //
 //================================================================
 
-inline bool skipTextThenSpace(const CharType*& strPtr, const CharType* strEnd, const CharArray& text)
+template <typename Char, typename TextChar>
+inline bool skipTextThenSpace(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
 {
     ensure(skipText(strPtr, strEnd, text));
     skipSpaceTab(strPtr, strEnd);
@@ -190,9 +198,10 @@ inline bool skipTextThenSpace(const CharType*& strPtr, const CharType* strEnd, c
 //
 //================================================================
 
-inline bool getNextLine(const CharType*& ptr, const CharType* end, const CharType*& resultBeg, const CharType*& resultEnd)
+template <typename Char>
+inline bool getNextLine(const Char*& ptr, const Char* end, const Char*& resultBeg, const Char*& resultEnd)
 {
-    const CharType* originalPtr = ptr;
+    const Char* originalPtr = ptr;
 
     resultBeg = ptr;
 
@@ -205,4 +214,27 @@ inline bool getNextLine(const CharType*& ptr, const CharType* end, const CharTyp
         ++ptr;
 
     return ptr != originalPtr;
+}
+
+//================================================================
+//
+// readUint
+//
+//================================================================
+
+template <typename Char, typename Uint>
+inline bool readUint(const Char*& ptr, const Char* end, Uint& result)
+{
+    const Char* s = ptr;
+
+    Uint value = 0;
+
+    for (; s != end && isDigit(*s); ++s)
+        value = value * 10 + Uint(*s - '0');
+
+    ensure(s != ptr);
+
+    ptr = s;
+    result = value;
+    return true;
 }
