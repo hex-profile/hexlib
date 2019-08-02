@@ -132,8 +132,33 @@ WinSockLib winSockLib;
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool ConnectionWin32::open(const Address& address, stdPars(Kit))
+State ConnectionWin32::state() const
 {
+    State result = State::None;
+
+    if (theStatus == Status::Resolved)
+        result = State::Resolved;
+
+    if (theStatus == Status::Connected)
+        result = State::Connected;
+
+    return result;
+}
+
+//================================================================
+//
+// ConnectionWin32::reopen
+//
+//================================================================
+
+stdbool ConnectionWin32::reopen(const Address& address, stdPars(Kit))
+{
+    //----------------------------------------------------------------
+    //
+    // Close everything.
+    //
+    //----------------------------------------------------------------
+
     close();
 
     //----------------------------------------------------------------
@@ -147,6 +172,18 @@ stdbool ConnectionWin32::open(const Address& address, stdPars(Kit))
         require(winSockLib.open(stdPass));
         theStatus = Status::LibUsed;
     }
+
+    //----------------------------------------------------------------
+    //
+    // Remember host/port.
+    //
+    //----------------------------------------------------------------
+
+    theHost = address.host;
+    REQUIRE(def(theHost));
+    thePort = address.port;
+
+    REMEMBER_CLEANUP_EX(cleanInfo, {theHost.clear(); thePort = 0;});
 
     //----------------------------------------------------------------
     //
@@ -174,39 +211,16 @@ stdbool ConnectionWin32::open(const Address& address, stdPars(Kit))
     REQUIRE_TRACE3(getaddrinfo(address.host, portStr, &hints, &ai) == 0,
         STR("Connection: Get address info failed for %0:%1. %2"), address.host, address.port, ErrorWin32(WSAGetLastError()));
 
-    addrInfo = ai;
-
-    REMEMBER_CLEANUP_EX(addrInfoCleanup, {freeaddrinfo((addrinfo*) addrInfo); addrInfo = nullptr;});
-
-    //----------------------------------------------------------------
-    //
-    // Create a socket.
-    //
-    //----------------------------------------------------------------
-
-    theSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    REQUIRE_TRACE1(theSocket != invalidSocket, STR("Connection: Cannot create socket: %0"), ErrorWin32(WSAGetLastError()));
-    REMEMBER_CLEANUP_EX(closeSocketCleanup, {DEBUG_BREAK_CHECK(closesocket(theSocket) == 0); theSocket = invalidSocket;});
-
-    //----------------------------------------------------------------
-    //
-    // Connect the socket.
-    //
-    //----------------------------------------------------------------
-
-    REQUIRE_TRACE3(connect(theSocket, ai->ai_addr, int(ai->ai_addrlen)) == 0, 
-        STR("Connection: Cannot connect to %0:%1. %2"), address.host, address.port, ErrorWin32(WSAGetLastError()));
-
     //----------------------------------------------------------------
     //
     // Success.
     //
     //----------------------------------------------------------------
 
-    theStatus = Status::Opened;
+    theAddrInfo = ai;
+    theStatus = Status::Resolved;
 
-    closeSocketCleanup.cancel();
-    addrInfoCleanup.cancel();
+    cleanInfo.cancel();
 
     returnTrue;
 }
@@ -219,53 +233,40 @@ stdbool ConnectionWin32::open(const Address& address, stdPars(Kit))
 
 void ConnectionWin32::close()
 {
-    if (theStatus == Status::Opened)
+    disconnect();
+
+    ////
+
+    if (theStatus == Status::Resolved)
     {
-        // Close the socket.
-        DEBUG_BREAK_CHECK(closesocket(theSocket) == 0);
-        theSocket = invalidSocket;
+        freeaddrinfo((addrinfo*) theAddrInfo);
+        theAddrInfo = nullptr;
 
-        // Free address info.
-        freeaddrinfo((addrinfo*) addrInfo);
-        addrInfo = nullptr;
+        theHost.clear();
+        thePort = 0;
 
-        // But keep the library.
         theStatus = Status::LibUsed; 
+    }
+
+    ////
+
+    if (theStatus == Status::LibUsed)
+    {
+        // Keep the library. Free it only in destructor.
     }
 }
 
 //================================================================
 //
-// ConnectionWin32::reopen
+// ConnectionWin32::reconnect
 //
 //================================================================
 
-stdbool ConnectionWin32::reopen(stdPars(Kit))
+stdbool ConnectionWin32::reconnect(stdPars(Kit))
 {
-    REQUIRE(theStatus == Status::Opened);
+    REQUIRE(theStatus >= Status::Resolved);
 
-    //----------------------------------------------------------------
-    //
-    // Close the socket.
-    //
-    //----------------------------------------------------------------
-
-    DEBUG_BREAK_CHECK(closesocket(theSocket) == 0);
-    theSocket = invalidSocket;
-
-    ////
-
-    REMEMBER_CLEANUP_EX
-    (
-        closeCleanup, 
-
-        {
-            freeaddrinfo((addrinfo*) addrInfo);
-            addrInfo = nullptr;
-
-            theStatus = Status::LibUsed; 
-        }
-    );
+    disconnect();
 
     //----------------------------------------------------------------
     //
@@ -283,10 +284,10 @@ stdbool ConnectionWin32::reopen(stdPars(Kit))
     //
     //----------------------------------------------------------------
 
-    auto ai = (addrinfo*) addrInfo;
+    auto ai = (addrinfo*) theAddrInfo;
 
-    REQUIRE_TRACE1(connect(theSocket, ai->ai_addr, int(ai->ai_addrlen)) == 0, 
-        STR("Connection: Cannot reconnect. %0"), ErrorWin32(WSAGetLastError()));
+    REQUIRE_TRACE3(connect(theSocket, ai->ai_addr, int(ai->ai_addrlen)) == 0, 
+        STR("Connection: Cannot connect to %0:%1. %2"), theHost.cstr(), thePort, ErrorWin32(WSAGetLastError()));
 
     //----------------------------------------------------------------
     //
@@ -294,10 +295,27 @@ stdbool ConnectionWin32::reopen(stdPars(Kit))
     //
     //----------------------------------------------------------------
 
-    closeCleanup.cancel();
     closeSocketCleanup.cancel();
+    theStatus = Status::Connected;
 
     returnTrue;
+}
+
+//================================================================
+//
+// ConnectionWin32::disconnect
+//
+//================================================================
+
+void ConnectionWin32::disconnect()
+{
+    if (theStatus == Status::Connected)
+    {
+        DEBUG_BREAK_CHECK(closesocket(theSocket) == 0);
+        theSocket = invalidSocket;
+
+        theStatus = Status::Resolved;
+    }
 }
 
 //================================================================
@@ -308,7 +326,7 @@ stdbool ConnectionWin32::reopen(stdPars(Kit))
 
 ConnectionWin32::~ConnectionWin32()
 {
-    // Close the socket.
+    // Close everything.
     close();
 
     // Free the library reference.
@@ -327,7 +345,7 @@ ConnectionWin32::~ConnectionWin32()
 
 stdbool ConnectionWin32::send(const void* dataPtr, size_t dataSize, stdPars(Kit))
 {
-    REQUIRE(theStatus == Status::Opened);
+    REQUIRE(theStatus == Status::Connected);
 
     ////
 
@@ -364,7 +382,7 @@ stdbool ConnectionWin32::send(const void* dataPtr, size_t dataSize, stdPars(Kit)
 
 stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit))
 {
-    REQUIRE(theStatus == Status::Opened);
+    REQUIRE(theStatus == Status::Connected);
 
     REQUIRE(dataSize <= size_t(INT_MAX));
     int actualSize = ::recv(theSocket, (char*) dataPtr, int(dataSize), 0);

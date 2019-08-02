@@ -1,6 +1,7 @@
 #pragma once
 
 #include "connectionInterface.h"
+#include "simpleString/simpleString.h"
 
 namespace connection {
 
@@ -28,10 +29,13 @@ public:
 
 public:
 
-    virtual bool opened() const {return theStatus == Status::Opened;}
-    virtual stdbool open(const Address& address, stdPars(Kit));
-    virtual stdbool reopen(stdPars(Kit));
+    virtual State state() const;
+
+    virtual stdbool reopen(const Address& address, stdPars(Kit));
     virtual void close();
+
+    virtual stdbool reconnect(stdPars(Kit));
+    virtual void disconnect();
 
 public:
 
@@ -40,11 +44,14 @@ public:
 
 private:
 
-    enum class Status {None, LibUsed, Opened};
+    enum class Status {None, LibUsed, Resolved, Connected};
     Status theStatus = Status::None;
-    
+
+    SimpleString theHost;
+    Port thePort = 0;
+
     Socket theSocket = invalidSocket;
-    void* addrInfo = nullptr;
+    void* theAddrInfo = nullptr;
 };
 
 //----------------------------------------------------------------
