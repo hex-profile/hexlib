@@ -66,16 +66,32 @@ struct Receiving
 
 //================================================================
 //
+// State
+//
+//================================================================
+
+enum class State {None, Resolved, Connected};
+
+//================================================================
+//
 // Opening
 //
 //================================================================
 
 struct Opening
 {
-    virtual bool opened() const =0;
-    virtual stdbool open(const Address& address, stdPars(Kit)) =0;
-    virtual stdbool reopen(stdPars(Kit)) =0;
+    // Get the current state.
+    virtual State state() const =0;
+
+    // Resolve address and remember it. On failure, the state drops to State::None.
+    // Close everything.
+    virtual stdbool reopen(const Address& address, stdPars(Kit)) =0;
     virtual void close() =0;
+
+    // Connect to the resolved address. On failure, the state drops to State::Resolved.
+    // Disconnect.
+    virtual stdbool reconnect(stdPars(Kit)) =0;
+    virtual void disconnect() =0;
 };
 
 //================================================================
