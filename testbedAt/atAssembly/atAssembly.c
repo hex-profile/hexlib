@@ -1386,11 +1386,11 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     ////
 
     {
-        auto saveKit = kit;
+        auto oldKit = kit;
 
         auto kit = kitCombine
         (
-            saveKit,
+            oldKit,
             TimerKit(timer),
             OverlayTakeoverKit(overlayTakeover),
             PipeControlKit(pipeControl),
