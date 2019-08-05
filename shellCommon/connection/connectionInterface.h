@@ -83,14 +83,24 @@ struct Opening
     // Get the current state.
     virtual State state() const =0;
 
-    // Resolve address and remember it. On failure, the state drops to State::None.
-    // Close everything.
+    inline bool isResolved() const
+        {return state() >= State::Resolved;}
+
+    inline bool isConnected() const
+        {return state() >= State::Connected;}
+
+    // Resolve address and remember it. 
+    // On success, the state becomes RESOLVED.
+    // On failure, the state drops to NONE.
     virtual stdbool reopen(const Address& address, stdPars(Kit)) =0;
+    // Close everything. The state becomes NONE.
     virtual void close() =0;
 
-    // Connect to the resolved address. On failure, the state drops to State::Resolved.
-    // Disconnect.
+    // Re-connects to the resolved address. Requires RESOLVED+ state.
+    // On success, the state becomes CONNECTED.
+    // On failure, the state drops to RESOLVED.
     virtual stdbool reconnect(stdPars(Kit)) =0;
+    // Disconnect. The state drops to RESOLVED (unless it was NONE).
     virtual void disconnect() =0;
 };
 

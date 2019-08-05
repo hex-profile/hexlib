@@ -1,50 +1,56 @@
 #pragma once
 
 #include "formatting/formatOutputAtom.h"
-#include "userOutput/msgLogKit.h"
 #include "userOutput/msgKind.h"
-
+          
 //================================================================
 //
-// MsgLogLocking
+// MsgLogThreading
 //
 // An interface to make continuous message blocks
 // in a multithreaded environment.
 //
-// Allows nested locking.
+// Should allow nested locking.
 //
 //================================================================
 
-struct MsgLogLocking
+struct MsgLogThreading
 {
+    //
+    // Can the instance be shared among multiple threads?
+    //
+
     virtual bool isThreadProtected() const =0;
 
-    virtual void lock() =0;
+    //
+    // An interface to output contiguous message blocks in a multithreaded environment.
+    // Used only for pretty printing, so the implementation may be omitted.
+    //
+    // If implemented, should allow nested thread locking (for example, use std::recursive_mutex).
+    //
 
+    virtual void lock() =0;
     virtual void unlock() =0;
 };
 
 //================================================================
 //
-// MsgLogGuard
+// MsgLogOutput
+//
+// Message log interface.
 //
 //================================================================
 
-class MsgLogGuard
+struct MsgLogOutput
 {
+    // Add message to the log.
+    virtual bool addMsg(const FormatOutputAtom& v, MsgKind msgKind) =0;
 
-public:
+    // Clear log (if supported).
+    virtual bool clear() =0;
 
-    MsgLogGuard(MsgLogLocking& locking)
-        : locking(locking) {locking.lock();}
-
-    ~MsgLogGuard()
-        {locking.unlock();}
-
-private:
-
-    MsgLogLocking& locking;
-
+    // Update log view (if supported).
+    virtual bool update() =0;
 };
 
 //================================================================
@@ -57,16 +63,8 @@ private:
 //
 //================================================================
 
-struct MsgLog : public MsgLogLocking
+struct MsgLog : public MsgLogThreading, public MsgLogOutput
 {
-    // Add message to the log.
-    virtual bool addMsg(const FormatOutputAtom& v, MsgKind msgKind) =0;
-
-    // Clear log (if supported).
-    virtual bool clear() =0;
-
-    // Update log view (if supported).
-    virtual bool update() =0;
 };
 
 //================================================================

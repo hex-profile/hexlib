@@ -8,16 +8,16 @@
 
 //================================================================
 //
-// DiagLogMsgLog
+// MsgLogByDiagLogStlFormatting
 //
 //================================================================
 
-class DiagLogMsgLog : public MsgLog
+class MsgLogByDiagLogStlFormatting : public MsgLog
 {
 
 public:
 
-    inline DiagLogMsgLog(DiagLog* output = nullptr)
+    inline MsgLogByDiagLogStlFormatting(DiagLog* output = nullptr)
         : output(output) {}
 
     inline void setup(DiagLog* output)
@@ -62,25 +62,14 @@ class DiagLogTool
 
 public:
 
-    DiagLogTool() = default;
-
-    DiagLogTool(DiagLog* diagLog)
-    {
-        create(diagLog);
-    }
+    DiagLogTool(DiagLog* diagLog = nullptr)
+        {create(diagLog);}
 
     void create(DiagLog* diagLog) // may be nullptr
     {
         msgLog.create(diagLog);
         errorLog.create(*msgLog);
         errorLogEx.create(*msgLog);
-    }
-
-    void destroy()
-    {
-        msgLog.destroy();
-        errorLog.destroy();
-        errorLogEx.destroy();
     }
 
     DiagnosticKit kit()
@@ -90,8 +79,8 @@ public:
 
 private:
 
-    DisposableObject<DiagLogMsgLog> msgLog;
-    DisposableObject<ErrorLogThunk> errorLog;
-    DisposableObject<ErrorLogExThunk> errorLogEx;
+    DisposableObject<MsgLogByDiagLogStlFormatting> msgLog;
+    DisposableObject<ErrorLogByMsgLog> errorLog;
+    DisposableObject<ErrorLogExByMsgLog> errorLogEx;
 
 };

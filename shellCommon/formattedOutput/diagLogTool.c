@@ -8,11 +8,11 @@
 
 //================================================================
 //
-// DiagLogMsgLog::addMsg
+// MsgLogByDiagLogStlFormatting::addMsg
 //
 //================================================================
 
-bool DiagLogMsgLog::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
+bool MsgLogByDiagLogStlFormatting::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 {
     using namespace std;
 
@@ -29,7 +29,7 @@ bool DiagLogMsgLog::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         ensure(!!stringStream);
 
         const auto& str = stringStream.rdbuf()->str();
-        output->add(str.c_str(), msgKind);
+        output->addMsg(str.c_str(), msgKind);
     }
     catch (const exception&)
     {

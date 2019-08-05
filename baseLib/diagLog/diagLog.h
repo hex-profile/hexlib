@@ -7,20 +7,12 @@
 
 //================================================================
 //
-// DiagLog
-//
-// The simplest diagnostic logging interface.
+// DiagLogThreading
 //
 //================================================================
 
-struct DiagLog
+struct DiagLogThreading
 {
-    //
-    // Add a message to a log.
-    //
-
-    virtual void add(const CharType* msgPtr, MsgKind msgKind) =0;
-
     //
     // Can the instance be shared among multiple threads?
     //
@@ -36,20 +28,12 @@ struct DiagLog
 
     virtual void lock() =0;
     virtual void unlock() =0;
-
 };
 
-//================================================================
-//
-// DiagLogNull
-//
-//================================================================
+//----------------------------------------------------------------
 
-struct DiagLogNull : public DiagLog
+struct DiagLogThreadingNull : public DiagLogThreading
 {
-    void add(const CharType* msgPtr, MsgKind msgKind) override
-        {}
-
     bool isThreadProtected() const override
         {return true;}
 
@@ -58,4 +42,54 @@ struct DiagLogNull : public DiagLog
 
     void unlock() override
         {}
+};
+
+//================================================================
+//
+// DiagLogOutput
+//
+// The simplest diagnostic logging interface.
+//
+//================================================================
+
+struct DiagLogOutput
+{
+    // Add message to the log.
+    virtual bool addMsg(const CharType* msgStr, MsgKind msgKind) =0;
+
+    // Clear log (if supported).
+    virtual bool clear() =0;
+
+    // Update log view (if supported).
+    virtual bool update() =0;
+};
+
+//----------------------------------------------------------------
+
+struct DiagLogOutputNull : public DiagLogOutput
+{
+    bool addMsg(const CharType* msgStr, MsgKind msgKind) override
+        {return true;}
+
+    bool clear() override
+        {return true;}
+
+    virtual bool update() override
+        {return true;}
+};
+
+//================================================================
+//
+// DiagLog
+//
+//================================================================
+
+struct DiagLog : public DiagLogThreading, public DiagLogOutput
+{
+};
+
+//----------------------------------------------------------------
+
+struct DiagLogNull : public DiagLogThreadingNull, DiagLogOutputNull
+{
 };

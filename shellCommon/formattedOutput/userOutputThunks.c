@@ -5,6 +5,29 @@
 
 //================================================================
 //
+// MessageBlockGuard
+//
+//================================================================
+
+class MessageBlockGuard
+{
+
+public:
+
+    MessageBlockGuard(MsgLogThreading& locking)
+        : locking(locking) {locking.lock();}
+
+    ~MessageBlockGuard()
+        {locking.unlock();}
+
+private:
+
+    MsgLogThreading& locking;
+
+};
+
+//================================================================
+//
 // MAX_TRACE_DEPTH
 //
 //================================================================
@@ -14,22 +37,22 @@ static const MsgKind errorMsgKind = msgErr;
 
 //================================================================
 //
-// ErrorLogThunk::isThreadProtected
+// ErrorLogByMsgLog::isThreadProtected
 //
 //================================================================
 
-bool ErrorLogThunk::isThreadProtected() const 
+bool ErrorLogByMsgLog::isThreadProtected() const 
 {
     return msgLog ? msgLog->isThreadProtected() : true;
 }
 
 //================================================================
 //
-// ErrorLogThunk::addErrorSimple
+// ErrorLogByMsgLog::addErrorSimple
 //
 //================================================================
 
-void ErrorLogThunk::addErrorSimple(const CharType* message)
+void ErrorLogByMsgLog::addErrorSimple(const CharType* message)
 {
     if (msgLog)
         printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
@@ -37,17 +60,17 @@ void ErrorLogThunk::addErrorSimple(const CharType* message)
 
 //================================================================
 //
-// ErrorLogThunk::addErrorTrace
+// ErrorLogByMsgLog::addErrorTrace
 //
 //================================================================
 
-void ErrorLogThunk::addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
+void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
 {
     TRACE_REASSEMBLE(trace);
 
     if (msgLog)
     {
-        MsgLogGuard guard(*msgLog);
+        MessageBlockGuard guard(*msgLog);
 
         printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
 
@@ -68,28 +91,28 @@ void ErrorLogThunk::addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
 
 //================================================================
 //
-// ErrorLogExThunk::isThreadProtected
+// ErrorLogExByMsgLog::isThreadProtected
 //
 //================================================================
 
-bool ErrorLogExThunk::isThreadProtected() const
+bool ErrorLogExByMsgLog::isThreadProtected() const
 {
     return msgLog ? msgLog->isThreadProtected() : true;
 }
 
 //================================================================
 //
-// ErrorLogExThunk::addMsgTrace
+// ErrorLogExByMsgLog::addMsgTrace
 //
 //================================================================
 
-bool ErrorLogExThunk::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+bool ErrorLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
 {
     const TraceScope* p = &TRACE_SCOPE(stdTraceName);
 
     if (msgLog)
     {
-        MsgLogGuard guard(*msgLog);
+        MessageBlockGuard guard(*msgLog);
 
         ensure(printMsg(*msgLog, STR("%0"), v, msgKind));
         ensure(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
