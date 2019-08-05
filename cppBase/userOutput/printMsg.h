@@ -26,12 +26,12 @@ inline bool printMsg(MsgLog& msgLog, const CharArray& format, MsgKind msgKind = 
 //----------------------------------------------------------------
 
 template <typename Type>
-inline int8 getMsgKind(const Type& value)
-    {return -1;}
+inline void getMsgKind(const Type& value, bool& valid, MsgKind& result)
+    {}
 
 template <>
-inline int8 getMsgKind(const MsgKind& value)
-    {return value;}
+inline void getMsgKind(const MsgKind& value, bool& valid, MsgKind& result)
+    {valid = true; result = value;}
 
 //----------------------------------------------------------------
 
@@ -41,10 +41,10 @@ inline bool printMsg(MsgLog& msgLog, const CharArray& format, const Types&... va
     constexpr size_t n = sizeof...(values);
     const FormatOutputAtom params[] = {values...};
 
-    int8 msgKindArray[] = {getMsgKind(values)...};
-    int msgKind = msgKindArray[n-1];
-    bool msgKindValid = (msgKind != -1);
-   
+    MsgKind msgKind = msgInfo;
+    bool msgKindValid = false;
+    char tmp[] = {(getMsgKind(values, msgKindValid, msgKind), 0)...};
+
     ParamMsg paramMsg(format, params, msgKindValid ? n-1 : n);
     return msgLog.addMsg(paramMsg, msgKindValid ? MsgKind(msgKind) : msgInfo);
 }
