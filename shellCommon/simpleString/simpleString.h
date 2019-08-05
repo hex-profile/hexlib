@@ -6,6 +6,7 @@
 #include "charType/charType.h"
 #include "compileTools/compileTools.h"
 #include "numbers/int/intType.h"
+#include "charType/strUtils.h"
 
 //================================================================
 //
@@ -161,13 +162,13 @@ public:
 public:
 
     template <typename AnyType>
-    friend bool stringsEqual(const SimpleStringEx<AnyType>& A, const SimpleStringEx<AnyType>& B);
+    friend bool simpleStrEqual(const SimpleStringEx<AnyType>& A, const SimpleStringEx<AnyType>& B);
 
     sysinline friend bool operator ==(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
-        {return stringsEqual(A, B);}
+        {return simpleStrEqual(A, B);}
 
-    sysinline friend bool operator !=(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
-        {return !stringsEqual(A, B);}
+    sysinline friend bool operator ==(const SimpleStringEx<Type>& A, const Type* B)
+        {return A.isOk() && strEqual(A.cstr(), B);}
 
 public:
 

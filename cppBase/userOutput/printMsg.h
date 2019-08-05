@@ -4,6 +4,7 @@
 #include "formatting/paramMsgOutput.h"
 #include "prepTools/prepEnum.h"
 #include "userOutput/msgLog.h"
+#include "compileTools/compileTools.h"
 
 //================================================================
 //
@@ -17,10 +18,6 @@
 //
 //================================================================
 
-#define PRINTMSG__MAX_COUNT 10
-
-//----------------------------------------------------------------
-
 inline bool printMsg(MsgLog& msgLog, const CharArray& format, MsgKind msgKind = msgInfo)
 {
     return msgLog.addMsg(format, msgKind);
@@ -28,27 +25,26 @@ inline bool printMsg(MsgLog& msgLog, const CharArray& format, MsgKind msgKind = 
 
 //----------------------------------------------------------------
 
-#define PRINTMSG__STORE_PARAM(n, _) \
-    v##n,
+template <typename Type>
+inline int8 getMsgKind(const Type& value)
+    {return -1;}
 
-#define PRINTMSG__PRINT_MSG(n, _) \
-    \
-    template <PREP_ENUM_INDEXED(n, typename T)> \
-    inline bool printMsg \
-    ( \
-        MsgLog& msgLog, \
-        const CharArray& format, \
-        PREP_ENUM_INDEXED_PAIR(n, const T, &v), \
-        MsgKind msgKind = msgInfo \
-    ) \
-    { \
-        const FormatOutputAtom params[] = {PREP_FOR(n, PRINTMSG__STORE_PARAM, _)}; \
-        \
-        ParamMsg paramMsg(format, params, n); \
-        return msgLog.addMsg(paramMsg, msgKind); \
-    }
+template <>
+inline int8 getMsgKind(const MsgKind& value)
+    {return value;}
 
-#define PRINTMSG__PRINT_MSG_THUNK(n, _) \
-    PRINTMSG__PRINT_MSG(PREP_INC(n), _)
+//----------------------------------------------------------------
 
-PREP_FOR1(PRINTMSG__MAX_COUNT, PRINTMSG__PRINT_MSG_THUNK, _)
+template <typename... Types>
+inline bool printMsg(MsgLog& msgLog, const CharArray& format, const Types&... values)
+{
+    constexpr size_t n = sizeof...(values);
+    const FormatOutputAtom params[] = {values...};
+
+    int8 msgKindArray[] = {getMsgKind(values)...};
+    int msgKind = msgKindArray[n-1];
+    bool msgKindValid = (msgKind != -1);
+   
+    ParamMsg paramMsg(format, params, msgKindValid ? n-1 : n);
+    return msgLog.addMsg(paramMsg, msgKindValid ? MsgKind(msgKind) : msgInfo);
+}

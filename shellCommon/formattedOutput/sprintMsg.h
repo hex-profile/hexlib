@@ -21,10 +21,6 @@
 //
 //================================================================
 
-#define SPRINTMSG__MAX_COUNT 4
-
-//----------------------------------------------------------------
-
 inline StlString printMsg(const CharArray& format)
 {
     return StlString(format.ptr, format.size);
@@ -32,26 +28,16 @@ inline StlString printMsg(const CharArray& format)
 
 //----------------------------------------------------------------
 
-#define SPRINTMSG__STORE_PARAM(n, _) \
-    v##n,
-
-#define SPRINTMSG__PRINT_MSG(n, _) \
-    \
-    template <PREP_ENUM_INDEXED(n, typename T)> \
-    inline StlString sprintMsg(const CharArray& format, PREP_ENUM_INDEXED_PAIR(n, const T, &v)) \
-    { \
-        const FormatOutputAtom params[] = {PREP_FOR(n, SPRINTMSG__STORE_PARAM, _)}; \
-        ParamMsg paramMsg(format, params, n); \
-        \
-        std::basic_stringstream<CharType> stringStream; \
-        FormatStreamStlThunk formatToStream(stringStream); \
-        \
-        formatOutput(paramMsg, formatToStream); \
-        \
-        return stringStream.rdbuf()->str(); \
-    }
-
-#define SPRINTMSG__PRINT_MSG_THUNK(n, _) \
-    SPRINTMSG__PRINT_MSG(PREP_INC(n), _)
-
-PREP_FOR1(SPRINTMSG__MAX_COUNT, SPRINTMSG__PRINT_MSG_THUNK, _)
+template <typename... Types>
+inline StlString sprintMsg(const CharArray& format, const Types&... values)
+{
+    const FormatOutputAtom params[] = {values...};
+    ParamMsg paramMsg(format, params, sizeof...(values));
+   
+    std::basic_stringstream<CharType> stringStream;
+    FormatStreamStlThunk formatToStream(stringStream);
+   
+    formatOutput(paramMsg, formatToStream);
+   
+    return stringStream.rdbuf()->str();
+}

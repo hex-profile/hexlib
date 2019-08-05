@@ -428,3 +428,24 @@ sysinline void compileUseVariableByValue(Type) {}
 
 #define COMPILE_IS_POWER2(X) \
     (((X) & ((X) - 1)) == 0)
+
+//================================================================
+//
+// GetNthType
+//
+//================================================================
+
+template <size_t N, typename... Types>
+struct GetNthType;
+
+template <typename T0, typename... Types>
+struct GetNthType<0, T0, Types...> 
+{
+    using T = T0;
+};
+
+template <size_t N, typename T0, typename... Types>
+struct GetNthType<N, T0, Types...>
+{
+    using T = typename GetNthType<N-1, Types...>::T;
+};
