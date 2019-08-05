@@ -93,10 +93,23 @@ KIT_CREATE2(AtContinousModeKit, bool, atRunning, bool, atPlaying);
 
 //================================================================
 //
+// AtSetBusyStatusKit
+//
+//================================================================
+
+struct AtSetBusyStatus;
+
+KIT_CREATE1(AtSetBusyStatusKit, AtSetBusyStatus&, atSetBusyStatus);
+
+//================================================================
+//
 // AtCommonKit
 // AtProcessKit
 //
 //================================================================
 
 KIT_COMBINE2(AtCommonKit, AtImgConsoleKit, AtSignalSetKit);
-KIT_COMBINE8(AtProcessKit, AtCommonKit, AtVideoFrameKit, AtVideoOverlayKit, AtAsyncOverlayKit, AtSignalTestKit, AtVideoInfoKit, AtUserPointKit, AtContinousModeKit);
+
+KIT_COMBINE8(AtProcessKit, AtCommonKit, AtVideoFrameKit, AtVideoOverlayKit, AtAsyncOverlayKit, AtSignalTestKit, 
+    AtVideoInfoKit, AtUserPointKit, AtContinousModeKit);
+

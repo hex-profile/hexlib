@@ -3,7 +3,6 @@
 #include <sstream>
 
 #include "formatting/paramMsgOutput.h"
-#include "prepTools/prepEnum.h"
 #include "charType/charArray.h"
 
 #include "stlString/stlString.h"

@@ -21,6 +21,8 @@
 #include "storage/rememberCleanup.h"
 #include "userOutput/printMsg.h"
 #include "allocation/mallocFlatAllocator/mallocFlatAllocator.h"
+#include "compileTools/classContext.h"
+#include "kits/setBusyStatus.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -80,7 +82,7 @@ void reportError(const PrintApi* api, const CharType* message, bool finalExit = 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
-// OutputLogToAt
+// OutputLogByAt
 //
 //----------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -88,12 +90,12 @@ void reportError(const PrintApi* api, const CharType* message, bool finalExit = 
 
 //================================================================
 //
-// OutputLogToAt
+// OutputLogByAt
 //
 //================================================================
 
 template <typename AtApi>
-class OutputLogToAt : public MsgLog
+class OutputLogByAt : public MsgLog
 {
 
 public:
@@ -104,7 +106,7 @@ public:
 
 public:
 
-    OutputLogToAt
+    OutputLogByAt
     (
         PrintFunc* printFunc, ClearFunc* clearFunc, UpdateFunc* updateFunc,
         const AtApi* api,
@@ -151,12 +153,12 @@ private:
 
 //================================================================
 //
-// OutputLogToAt::addMsg
+// OutputLogByAt::addMsg
 //
 //================================================================
 
 template <typename AtApi>
-bool OutputLogToAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
+bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 {
     try
     {
@@ -178,6 +180,65 @@ bool OutputLogToAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
             OutputDebugString(stringStream.rdbuf()->str().c_str());
     #endif
 
+    }
+    catch (const std::exception&) {return false;}
+
+    return true;
+}
+
+//================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
+//
+// SetBusyStatusByAt
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+template <typename AtApi>
+class SetBusyStatusByAt : public SetBusyStatus
+{
+
+public:
+
+    SetBusyStatusByAt(const AtApi* api)
+        : api(api) {}
+
+    bool set(const FormatOutputAtom& message);
+
+    bool reset()
+    {
+        return api->set_busy_status(api, CT("Processing in client module")) != 0;
+    }
+
+private:
+
+    const AtApi* const api;
+
+};
+
+//================================================================
+//
+// SetBusyStatusByAt<AtApi>::operator () 
+//
+//================================================================
+
+template <typename AtApi>
+bool SetBusyStatusByAt<AtApi>::set(const FormatOutputAtom& message)
+{
+    try
+    {
+        using namespace std;
+
+        std::basic_stringstream<CharType> stringStream;
+        FormatStreamStlThunk formatToStream(stringStream);
+
+        message.func(message.value, formatToStream);
+        ensure(formatToStream.isOk());
+        ensure(!!stringStream);
+
+        ensure(api->set_busy_status(api, stringStream.rdbuf()->str().c_str()) != 0);
     }
     catch (const std::exception&) {return false;}
 
@@ -495,8 +556,8 @@ private:
 
 #define COMMON_KIT_IMPL(AtApi, baseKit) \
     \
-    OutputLogToAt<AtApi> msgLog(api->gcon_print_ex, api->gcon_clear, api->gcon_update, api, true); \
-    OutputLogToAt<AtApi> localLog(api->lcon_print_ex, api->lcon_clear, api->lcon_update, api, false); \
+    OutputLogByAt<AtApi> msgLog(api->gcon_print_ex, api->gcon_clear, api->gcon_update, api, true); \
+    OutputLogByAt<AtApi> localLog(api->lcon_print_ex, api->lcon_clear, api->lcon_update, api, false); \
     \
     ErrorLogByMsgLog errorLog(msgLog); \
     ErrorLogKit errorLogKit(errorLog); \
@@ -509,7 +570,9 @@ private:
     AtSignalSetThunk<AtApi> signalSet(api); \
     ThreadManagerImpl threadManager; \
     \
-    atStartup::InitKit baseKit = kitCombine \
+    SetBusyStatusByAt<AtApi> setBusyStatus(api); \
+    \
+    auto baseKit = kitCombine \
     ( \
         ErrorLogKit(errorLog), \
         ErrorLogExKit(errorLogEx), \
@@ -519,7 +582,8 @@ private:
         AtImgConsoleKit(imgConsole), \
         AtSignalSetKit(signalSet), \
         MallocKit(mallocAllocator), \
-        ThreadManagerKit(threadManager) \
+        ThreadManagerKit(threadManager), \
+        SetBusyStatusKit(setBusyStatus) \
     );
 
 //================================================================
@@ -748,7 +812,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     MallocMonitorThunk<CpuAddrU> mallocMonitor(baseKit.malloc.func);
     AllocatorObject<CpuAddrU> mallocMonitorObject(baseKit.malloc.state, mallocMonitor);
 
-    atStartup::InitKit kit = kitReplace(baseKit, MallocKit(mallocMonitorObject));
+    auto kit = kitReplace(baseKit, MallocKit(mallocMonitorObject));
 
     REMEMBER_CLEANUP
     (
@@ -843,7 +907,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     AtVideoOverlayThunk atVideoOverlay(api, kit);
     AtSignalTestThunk atSignalTest(api);
 
-    atStartup::ProcessKit processKit = kitCombine
+    auto processKit = kitCombine
     (
         kit,
         AtVideoFrameKit(atVideoFrame),

@@ -2,9 +2,7 @@
 
 #include "formatting/formatModifiers.h"
 #include "formatting/paramMsgOutput.h"
-#include "prepTools/prepEnum.h"
 #include "userOutput/msgLog.h"
-#include "compileTools/compileTools.h"
 
 //================================================================
 //

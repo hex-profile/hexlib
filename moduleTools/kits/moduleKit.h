@@ -4,9 +4,10 @@
 #include "cfgTools/overlayTakeover.h"
 #include "cpuFuncKit.h"
 #include "dataAlloc/memoryAllocatorKit.h"
-#include "kits/displayParamsKit.h"
 #include "kits/alternativeVersionKit.h"
+#include "kits/displayParamsKit.h"
 #include "kits/msgLogsKit.h"
+#include "kits/setBusyStatusKit.h"
 #include "kits/userPoint.h"
 #include "timer/timerKit.h"
 #include "userOutput/errorLogExKit.h"
@@ -57,7 +58,10 @@ KIT_CREATE1(OutputLevelKit, OutputLevel, outputLevel);
 //================================================================
 
 KIT_COMBINE3(ModuleReallocKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit);
-KIT_COMBINE10(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, OutputLevelKit, UserPointKit, AlternativeVersionKit, DisplayParamsKit);
+
+KIT_COMBINE11(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, 
+    PipeControlKit, TimerKit, OutputLevelKit, UserPointKit, SetBusyStatusKit,
+    AlternativeVersionKit, DisplayParamsKit);
 
 //================================================================
 //
