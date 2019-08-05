@@ -85,7 +85,8 @@ COMPILE_ASSERT(COMPILE_ARRAY_SIZE(CT("1234")) == 5);
 //
 //================================================================
 
-CharArray charArrayFromPtr(const CharType* cstring);
+template <typename Type>
+CharArrayEx<Type> charArrayFromPtr(const Type* cstring);
 
 //================================================================
 //
@@ -93,9 +94,10 @@ CharArray charArrayFromPtr(const CharType* cstring);
 //
 //================================================================
 
-sysinline bool strEqual(const CharArray& a, const CharArray& b)
+template <typename Type>
+sysinline bool strEqual(const CharArrayEx<Type>& a, const CharArrayEx<Type>& b)
 {
     return
         a.size == b.size &&
-        memcmp(a.ptr, b.ptr, a.size * sizeof(CharType)) == 0;
+        memcmp(a.ptr, b.ptr, a.size * sizeof(Type)) == 0;
 }

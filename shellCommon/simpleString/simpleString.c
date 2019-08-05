@@ -287,7 +287,7 @@ SimpleStringEx<Type>& SimpleStringEx<Type>::operator +=(const SimpleStringEx<Typ
 //================================================================
 
 template <typename Type>
-bool stringsEqual(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
+bool simpleStrEqual(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
 {
     if_not (def(A) && def(B))
         return false;
@@ -313,5 +313,5 @@ bool stringsEqual(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
 template class SimpleStringEx<char>;
 template class SimpleStringEx<wchar_t>;
 
-INSTANTIATE_FUNC(stringsEqual<char>)
-INSTANTIATE_FUNC(stringsEqual<wchar_t>)
+INSTANTIATE_FUNC(simpleStrEqual<char>)
+INSTANTIATE_FUNC(simpleStrEqual<wchar_t>)
