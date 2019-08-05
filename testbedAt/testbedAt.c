@@ -498,9 +498,9 @@ private:
     OutputLogToAt<AtApi> msgLog(api->gcon_print_ex, api->gcon_clear, api->gcon_update, api, true); \
     OutputLogToAt<AtApi> localLog(api->lcon_print_ex, api->lcon_clear, api->lcon_update, api, false); \
     \
-    ErrorLogThunk errorLog(msgLog); \
+    ErrorLogByMsgLog errorLog(msgLog); \
     ErrorLogKit errorLogKit(errorLog); \
-    ErrorLogExThunk errorLogEx(msgLog); \
+    ErrorLogExByMsgLog errorLogEx(msgLog); \
     \
     MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit); \
     \

@@ -24,6 +24,7 @@
 #include "formattedOutput/logToStlConsole.h"
 #include "fileToolsImpl/fileToolsImpl.h"
 #include "errorLog/foreignErrorBlock.h"
+#include "formattedOutput/requireMsg.h"
 
 using namespace std;
 
@@ -1506,8 +1507,8 @@ int main(int argCount, const CharType* argStr[])
     LogToStlConsole msgLog(false);
 #endif
 
-    ErrorLogThunk errorLog(msgLog);
-    ErrorLogExThunk errorLogEx(msgLog);
+    ErrorLogByMsgLog errorLog(msgLog);
+    ErrorLogExByMsgLog errorLogEx(msgLog);
     FileToolsImpl fileTools;
 
     CompilerKit kit = kitCombine

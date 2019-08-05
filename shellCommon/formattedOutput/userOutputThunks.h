@@ -6,16 +6,16 @@
 
 //================================================================
 //
-// ErrorLogThunk
+// ErrorLogByMsgLog
 //
 //================================================================
 
-class ErrorLogThunk : public ErrorLog
+class ErrorLogByMsgLog : public ErrorLog
 {
 
 public:
 
-    inline ErrorLogThunk(MsgLog& msgLog)
+    inline ErrorLogByMsgLog(MsgLog& msgLog)
         : msgLog(&msgLog) {}
 
     bool isThreadProtected() const override;
@@ -38,11 +38,11 @@ private:
 
 //================================================================
 //
-// ErrorLogExThunk
+// ErrorLogExByMsgLog
 //
 //================================================================
 
-class ErrorLogExThunk : public ErrorLogEx
+class ErrorLogExByMsgLog : public ErrorLogEx
 {
 
 public:
@@ -53,10 +53,10 @@ public:
 
 public:
 
-    inline ErrorLogExThunk()
+    inline ErrorLogExByMsgLog()
         {}
 
-    inline ErrorLogExThunk(MsgLog& msgLog)
+    inline ErrorLogExByMsgLog(MsgLog& msgLog)
         : msgLog(&msgLog) {}
 
     inline void setup(MsgLog& msgLog)

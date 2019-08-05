@@ -211,15 +211,10 @@ stdbool ConnectionWin32::reopen(const Address& address, stdPars(Kit))
     REQUIRE_TRACE3(getaddrinfo(address.host, portStr, &hints, &ai) == 0,
         STR("Connection: Get address info failed for %0:%1. %2"), address.host, address.port, ErrorWin32(WSAGetLastError()));
 
-    //----------------------------------------------------------------
-    //
-    // Success.
-    //
-    //----------------------------------------------------------------
+    ////
 
     theAddrInfo = ai;
     theStatus = Status::Resolved;
-
     cleanInfo.cancel();
 
     returnTrue;
@@ -252,7 +247,7 @@ void ConnectionWin32::close()
 
     if (theStatus == Status::LibUsed)
     {
-        // Keep the library. Free it only in destructor.
+        // Keep the library. Free it only in the destructor.
     }
 }
 
