@@ -46,8 +46,6 @@ static const Space conservativeFilterSrcShift = -13;
 
 #define HORIZONTAL_FIRST 1
 
-# include "rationalResample/rationalResampleMultiple.inl"
-
 //----------------------------------------------------------------
 
 #undef TASK_COUNT

@@ -21,6 +21,10 @@
 namespace FUNCSPACE {
 #endif
 
+#ifndef FUNCNAME
+    #error
+#endif
+
 namespace PREP_PASTE(FUNCNAME, Space) {
 
 //================================================================
