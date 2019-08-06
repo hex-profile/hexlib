@@ -45,4 +45,7 @@ sysinline bool foreignErrorBlockHelper(const Action& action, stdPars(Kit))
 //----------------------------------------------------------------
 
 #define foreignErrorBlock(action) \
-    foreignErrorBlockHelper([&] () -> stdbool {return (action);}, stdPass)
+    foreignErrorBlockHelper([&] () -> stdbool {return action;}, stdPass)
+
+#define foreignErrorBlockVoid(action) \
+    foreignErrorBlockHelper([&] () -> stdbool {action; returnTrue;}, stdPass)

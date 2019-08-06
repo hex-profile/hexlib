@@ -20,13 +20,6 @@
 //
 //================================================================
 
-inline StlString printMsg(const CharArray& format)
-{
-    return StlString(format.ptr, format.size);
-}
-
-//----------------------------------------------------------------
-
 template <typename... Types>
 inline StlString sprintMsg(const CharArray& format, const Types&... values)
 {

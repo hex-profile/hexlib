@@ -1,5 +1,7 @@
 #include "paramMsgOutput.h"
 
+#include "numbers/int/intType.h"
+
 //================================================================
 //
 // paramMsgSpecChar
@@ -29,6 +31,12 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
 
     ////
 
+    size_t oneDigitParamSize = clampMax<size_t>(paramSize, 10);
+
+    size_t currentIndex = 0;
+
+    ////
+
     for (;;)
     {
 
@@ -40,7 +48,8 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
         if (formatPtr != searchStart)
             outputStream.write(searchStart, formatPtr - searchStart);
 
-        if (formatPtr == formatEnd) break;
+        if (formatPtr == formatEnd)
+            break;
 
         ++formatPtr;
 
@@ -48,11 +57,17 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
         // here: received %, what's next?
         //
 
+        if (formatPtr == formatEnd)
+        {
+            outputStream.write(&paramMsgSpecChar, 1);
+            break;
+        }
+
         //
         // received %%, output %
         //
 
-        if (formatPtr != formatEnd && *formatPtr == paramMsgSpecChar)
+        if (*formatPtr == paramMsgSpecChar)
         {
             outputStream.write(&paramMsgSpecChar, 1);
             ++formatPtr;
@@ -63,27 +78,32 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
         // received %n
         //
 
-        if (formatPtr != formatEnd)
         {
             int32 n = *formatPtr - '0';
 
-            if (n >= 0 && n <= 9)
+            if (uint32(n) < oneDigitParamSize)
             {
-                if (uint32(n) < paramSize)
-                {
-                    const FormatOutputAtom& p = paramPtr[n];
-                    p.func(p.value, outputStream);
-                    ++formatPtr;
-                    continue;
-                }
+                const FormatOutputAtom& p = paramPtr[n];
+                p.func(p.value, outputStream);
+                ++formatPtr;
+                continue;
             }
         }
 
         //
-        // received %dontKnowWhat
+        // received %dontKnowWhat, consider it as "next parameter"
         //
 
-        outputStream.write(&paramMsgSpecChar, 1);
+        if (currentIndex < paramSize)
+        {
+            const FormatOutputAtom& p = paramPtr[currentIndex];
+            p.func(p.value, outputStream);
+            ++currentIndex;
+        }
+        else
+        {
+            outputStream.write(&paramMsgSpecChar, 1);
+        }
 
     }
 }
