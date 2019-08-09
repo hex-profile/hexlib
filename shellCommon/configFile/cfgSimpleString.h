@@ -60,13 +60,24 @@ public:
 
     inline void operator =(const SimpleStringEx<Type>& X)
     {
-        if (value != X)
+        if_not (value == X)
         {
             value = X;
 
             if_not (def(value))
                 value.clear();
 
+            changed = true;
+        }
+    }
+
+public:
+
+    inline void clear()
+    {
+        if_not (value.isOk() && value.size() == 0)
+        {
+            value.clear();
             changed = true;
         }
     }
@@ -86,17 +97,9 @@ public:
     const SimpleStringEx<Type>& operator()() const
         {return value;}
 
-    operator SimpleStringEx<Type>& ()
-        {return value;}
-
-    SimpleStringEx<Type>& operator()()
-        {return value;}
-
-    SimpleStringEx<Type>* operator ->()
-        {return &value;}
-
     const SimpleStringEx<Type>* operator ->() const
         {return &value;}
+
 public:
 
     //

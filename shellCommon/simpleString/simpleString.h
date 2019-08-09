@@ -155,7 +155,10 @@ public:
 
     //----------------------------------------------------------------
     //
+    // Comparisons.
     //
+    // Only valid strings are considered equal.
+    // NAN string is not equal to any string, even to another NAN string.
     //
     //----------------------------------------------------------------
 
@@ -170,6 +173,12 @@ public:
     sysinline friend bool operator ==(const SimpleStringEx<Type>& A, const Type* B)
         {return A.isOk() && strEqual(A.cstr(), B);}
 
+    //----------------------------------------------------------------
+    //
+    //
+    //
+    //----------------------------------------------------------------
+
 public:
 
     friend sysinline void exchange(SimpleStringEx<Type>& A, SimpleStringEx<Type>& B)
@@ -177,6 +186,12 @@ public:
         exchange(A.theOk, B.theOk);
         exchange(A.theData, B.theData);
     }
+
+    //----------------------------------------------------------------
+    //
+    //
+    //
+    //----------------------------------------------------------------
 
 private:
 
