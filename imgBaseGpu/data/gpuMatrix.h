@@ -94,7 +94,7 @@ sysinline const GpuMatrix<const Type>& makeConst(const GpuMatrix<Type>& matrix)
 //================================================================
 
 template <typename Dst, typename Src>
-sysinline const GpuMatrix<Dst>& recastElement(const GpuMatrix<const Src>& matrix)
+sysinline const GpuMatrix<Dst>& recastElement(const GpuMatrix<Src>& matrix)
 {
     COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
     return recastEqualLayout<const GpuMatrix<Dst>>(matrix);

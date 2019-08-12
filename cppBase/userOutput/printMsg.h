@@ -41,7 +41,7 @@ inline bool printMsg(MsgLog& msgLog, const CharArray& format, const Types&... va
 
     MsgKind msgKind = msgInfo;
     bool msgKindValid = false;
-    char tmp[] = {(getMsgKind(values, msgKindValid, msgKind), 0)...};
+    char tmp[] = {(getMsgKind(values, msgKindValid, msgKind), 'x')...};
 
     ParamMsg paramMsg(format, params, msgKindValid ? n-1 : n);
     return msgLog.addMsg(paramMsg, msgKindValid ? MsgKind(msgKind) : msgInfo);
