@@ -817,7 +817,9 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     REMEMBER_CLEANUP
     (
         if (mallocMonitor.counter)
-            printMsg(kit.localLog, STR("In-Process Malloc Count: %0"), mallocMonitor.counter, msgWarn);
+        {
+            // printMsg(kit.localLog, STR("In-Process Malloc Count: %0"), mallocMonitor.counter, msgWarn);
+        }
     );
 
     //----------------------------------------------------------------
