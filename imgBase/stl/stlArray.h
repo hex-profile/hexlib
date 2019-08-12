@@ -41,6 +41,20 @@ public:
 
 public:
 
+    Space maxSize() const 
+        {return data.size();}
+
+public:
+
+    inline bool resize(Space size)
+    {
+        ensure(SpaceU(size) <= SpaceU(maxSize()));
+        BaseArray::assign(size ? &data[0] : nullptr, size);
+        return true;
+    }
+
+public:
+
     sysinline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
     {
         dealloc();
@@ -66,7 +80,6 @@ public:
     sysinline void dealloc()
     {
         data.clear();
-
         BaseArray::assignNull();
     }
 
