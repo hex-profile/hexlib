@@ -3,6 +3,7 @@
 #include "parseTools/charSet.h"
 #include "compileTools/compileTools.h"
 #include "charType/charArray.h"
+#include "numbers/int/intBase.h"
 
 //================================================================
 //

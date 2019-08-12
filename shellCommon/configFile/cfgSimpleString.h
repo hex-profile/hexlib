@@ -50,7 +50,7 @@ class SimpleStringVarEx
 public:
 
     template <typename DefaultValue>
-    SimpleStringVarEx(const DefaultValue& defaultValue)
+    explicit SimpleStringVarEx(const DefaultValue& defaultValue)
     {
         this->value = defaultValue;
         this->defaultValue = defaultValue;
@@ -58,7 +58,8 @@ public:
 
 public:
 
-    inline void operator =(const SimpleStringEx<Type>& X)
+    template <typename AnyString>
+    inline void operator =(const AnyString& X)
     {
         if_not (value == X)
         {
