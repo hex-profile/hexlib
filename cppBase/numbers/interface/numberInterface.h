@@ -346,7 +346,7 @@ template <typename T0, typename... Types>
 sysinline auto def(const T0& v0, const Types&... values)
 {
     auto result = def(v0);
-    char tmp[] = {(result = result && def(values), 0)...};
+    char tmp[] = {(result = result && def(values), 'x')...};
     return result;
 }
 

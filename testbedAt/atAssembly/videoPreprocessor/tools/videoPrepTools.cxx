@@ -7,7 +7,6 @@
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "vectorTypes/vectorOperations.h"
 #include "gpuSupport/gpuTexTools.h"
-#include "recastMatrix.h"
 #include "flipMatrix.h"
 #include "numbers/divRound.h"
 #include "rndgen/rndgenFloat.h"
@@ -90,13 +89,13 @@ stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& 
 
     ////
 
-    require(kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastMatrix<const uint32>(tmpSrc), BORDER_ZERO, false, false, false, stdPass));
+    require(kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastElement<const uint32>(tmpSrc), BORDER_ZERO, false, false, false, stdPass));
 
     ////
 
     CopyRectKernel params;
     params.ofsPlusHalf = convertFloat32(tmpOfs) + 0.5f;
-    params.dst = recastMatrix<uint32>(tmpDst);
+    params.dst = recastElement<uint32>(tmpDst);
 
     require
     (

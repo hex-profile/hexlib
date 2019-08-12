@@ -507,26 +507,26 @@ void extractKernelNames(const CharType* ptr, const CharType* end, vector<StlStri
 
         breakBlock_
         {
-            breakRequire(skipTextThenSpace(ptr, end, STR("_declspec")));
-            breakRequire(skipTextThenSpace(ptr, end, STR("(")));
-            breakRequire(skipTextThenSpace(ptr, end, STR("__global__")));
-            breakRequire(skipTextThenSpace(ptr, end, STR(")")));
-            breakRequire(skipTextThenSpace(ptr, end, STR("void")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("_declspec")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("(")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("__global__")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR(")")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("void")));
 
             ////
 
             const CharType* launchBoundsPlace = ptr;
 
             bool launchBoundsDetected =
-                skipTextThenSpace(ptr, end, STR("__declspec")) &&
-                skipTextThenSpace(ptr, end, STR("(")) &&
-                skipTextThenSpace(ptr, end, STR("launch_bounds"));
+                skipTextThenSpaceTab(ptr, end, STR("__declspec")) &&
+                skipTextThenSpaceTab(ptr, end, STR("(")) &&
+                skipTextThenSpaceTab(ptr, end, STR("launch_bounds"));
 
             if_not (launchBoundsDetected)
                 ptr = launchBoundsPlace;
             else
             {
-                breakRequire(skipTextThenSpace(ptr, end, STR("(")));
+                breakRequire(skipTextThenSpaceTab(ptr, end, STR("(")));
 
                 int32 scopeLevel = 2;
 
@@ -594,11 +594,11 @@ inline bool tryParseTextureDef(const CharType*& ptr, const CharType* end, vector
 {
     const CharType* p = ptr;
 
-    ensure(skipTextThenSpace(p, end, STR("extern")));
-    ensure(skipTextThenSpace(p, end, STR("\"C\"")));
-    ensure(skipTextThenSpace(p, end, STR("{")));
-    ensure(skipTextThenSpace(p, end, STR("texture")));
-    ensure(skipTextThenSpace(p, end, STR("<")));
+    ensure(skipTextThenSpaceTab(p, end, STR("extern")));
+    ensure(skipTextThenSpaceTab(p, end, STR("\"C\"")));
+    ensure(skipTextThenSpaceTab(p, end, STR("{")));
+    ensure(skipTextThenSpaceTab(p, end, STR("texture")));
+    ensure(skipTextThenSpaceTab(p, end, STR("<")));
 
     //
     // Scan until all matching '>' are encountered
@@ -614,7 +614,7 @@ inline bool tryParseTextureDef(const CharType*& ptr, const CharType* end, vector
     }
 
     ensure(p != end && braceLevel == 0);
-    ensure(skipTextThenSpace(p, end, STR(">")));
+    ensure(skipTextThenSpaceTab(p, end, STR(">")));
 
     ////
 

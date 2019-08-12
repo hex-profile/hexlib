@@ -26,6 +26,26 @@ inline bool skipSpaceTab(const Char*& ptr, const Char* end)
 
 //================================================================
 //
+// skipAnySpace
+//
+//================================================================
+
+template <typename Char>
+inline bool skipAnySpace(const Char*& ptr, const Char* end)
+{
+    const Char* s = ptr;
+
+    while (s != end && isAnySpace(*s))
+        ++s;
+
+    bool advance = (s != ptr);
+    ptr = s;
+
+    return advance;
+}
+
+//================================================================
+//
 // skipNonSpaceCharacters
 //
 //================================================================
@@ -177,15 +197,29 @@ inline bool skipText(const Char*& strPtr, const Char* strEnd, const CharArrayEx<
 
 //================================================================
 //
-// skipTextThenSpace
+// skipTextThenSpaceTab
 //
 //================================================================
 
 template <typename Char, typename TextChar>
-inline bool skipTextThenSpace(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
+inline bool skipTextThenSpaceTab(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
 {
     ensure(skipText(strPtr, strEnd, text));
     skipSpaceTab(strPtr, strEnd);
+    return true;
+}
+
+//================================================================
+//
+// skipTextThenAnySpace
+//
+//================================================================
+
+template <typename Char, typename TextChar>
+inline bool skipTextThenAnySpace(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
+{
+    ensure(skipText(strPtr, strEnd, text));
+    skipAnySpace(strPtr, strEnd);
     return true;
 }
 
@@ -236,5 +270,51 @@ inline bool readUint(const Char*& ptr, const Char* end, Uint& result)
 
     ptr = s;
     result = value;
+    return true;
+}
+
+//================================================================
+//
+// readHexDigit
+//
+//================================================================
+
+template <typename Char>
+inline int readHexDigit(Char c)
+{
+    int result = -1;
+
+    if (c >= '0' && c <= '9')
+        result = c - '0';
+
+    if (c >= 'A' && c <= 'F')
+        result = c - 'A' + 10;
+
+    if (c >= 'a' && c <= 'f')
+        result = c - 'a' + 10;
+
+    return result;
+}
+
+//================================================================
+//
+// readHexByte
+//
+//================================================================
+
+template <typename Char>
+inline bool readHexByte(const Char*& ptr, const Char* end, uint8& result)
+{
+    ensure(ptr+0 != end);
+    ensure(ptr+1 != end);
+
+    auto v0 = readHexDigit(ptr[0]);
+    auto v1 = readHexDigit(ptr[1]);
+
+    ensure(v0 >= 0 && v1 >= 0);
+
+    result = 16 * v0 + v1;
+    ptr += 2;
+
     return true;
 }
