@@ -88,3 +88,12 @@ private:
     Space currentSize = 0;
 
 };
+
+//================================================================
+//
+// GetSize
+//
+//================================================================
+
+template <typename Type, Space maxSize>
+GET_SIZE_DEFINE(PREP_PASS2(ArrayObjMemStatic<Type, maxSize>), value.size())

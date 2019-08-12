@@ -19,6 +19,18 @@ sysinline Movement3D<Float> movement3D()
 
 //================================================================
 //
+// operator ==
+//
+//================================================================
+ 
+template <typename Float>
+sysinline bool operator ==(const Movement3D<Float>& a, const Movement3D<Float>& b)
+{
+    return allv(a.rotation == b.rotation) && allv(a.translation == b.translation);
+}
+
+//================================================================
+//
 // apply
 //
 //================================================================
