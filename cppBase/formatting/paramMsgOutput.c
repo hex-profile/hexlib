@@ -54,20 +54,10 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
         ++formatPtr;
 
         //
-        // here: received %, what's next?
-        //
-
-        if (formatPtr == formatEnd)
-        {
-            outputStream.write(&paramMsgSpecChar, 1);
-            break;
-        }
-
-        //
         // received %%, output %
         //
 
-        if (*formatPtr == paramMsgSpecChar)
+        if (formatPtr != formatEnd && *formatPtr == paramMsgSpecChar)
         {
             outputStream.write(&paramMsgSpecChar, 1);
             ++formatPtr;
@@ -78,6 +68,7 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
         // received %n
         //
 
+        if (formatPtr != formatEnd)
         {
             int32 n = *formatPtr - '0';
 
