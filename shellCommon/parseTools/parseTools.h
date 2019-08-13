@@ -253,6 +253,26 @@ inline bool getNextLine(const Char*& ptr, const Char* end, const Char*& resultBe
 
 //================================================================
 //
+// skipUint
+//
+//================================================================
+
+template <typename Char>
+inline bool skipUint(const Char*& ptr, const Char* end)
+{
+    const Char* s = ptr;
+
+    while (s != end && isDigit(*s))
+        ++s;
+
+    ensure(s != ptr);
+
+    ptr = s;
+    return true;
+}
+
+//================================================================
+//
 // readUint
 //
 //================================================================
