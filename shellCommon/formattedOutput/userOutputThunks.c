@@ -28,12 +28,11 @@ private:
 
 //================================================================
 //
-// MAX_TRACE_DEPTH
+// maxTraceDepth
 //
 //================================================================
 
-static const int32 MAX_TRACE_DEPTH = 6;
-static const MsgKind errorMsgKind = msgErr;
+static const int32 maxTraceDepth = 4;
 
 //================================================================
 //
@@ -55,7 +54,7 @@ bool ErrorLogByMsgLog::isThreadProtected() const
 void ErrorLogByMsgLog::addErrorSimple(const CharType* message)
 {
     if (msgLog)
-        printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
+        printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), msgErr);
 }
 
 //================================================================
@@ -72,19 +71,21 @@ void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace
     {
         MessageBlockGuard guard(*msgLog);
 
-        printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), errorMsgKind);
+        printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), msgErr);
 
         int32 depth = 0;
 
-        for (const TraceScope* p = &TRACE_SCOPE(trace); p != 0; p = p->prev)
+        for (const TraceScope* p = &TRACE_SCOPE(trace); p != 0; p = p->prev, ++depth)
         {
-            if_not (depth < MAX_TRACE_DEPTH)
+            if (depth < maxTraceDepth)
             {
-                printMsg(*msgLog, STR("    ... and so on"), errorMsgKind);
+                printMsg(*msgLog, STR("    %0: called from"), charArrayFromPtr(p->location), msgErr);
+            }
+            else
+            {
+                printMsg(*msgLog, STR("    ... and so on"), msgErr);
                 break;
             }
-
-            printMsg(*msgLog, STR("    %0: called from"), charArrayFromPtr(p->location), errorMsgKind);
         }
     }
 }
@@ -121,13 +122,15 @@ bool ErrorLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind,
 
         for (p = p->prev; p != 0; p = p->prev, ++depth)
         {
-            if_not (depth < MAX_TRACE_DEPTH)
+            if (depth < maxTraceDepth)
+            {
+                ensure(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
+            }
+            else
             {
                 ensure(printMsg(*msgLog, STR("    ... and so on"), msgKind));
                 break;
             }
-
-            ensure(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
         }
     }
 
