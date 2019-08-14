@@ -2,8 +2,6 @@
 
 #include "parseTools/charSet.h"
 #include "compileTools/compileTools.h"
-#include "charType/charArray.h"
-#include "numbers/int/intBase.h"
 
 //================================================================
 //
@@ -11,10 +9,10 @@
 //
 //================================================================
 
-template <typename Char>
-inline bool skipSpaceTab(const Char*& ptr, const Char* end)
+template <typename Iterator>
+inline bool skipSpaceTab(Iterator& ptr, Iterator end)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     while (s != end && isSpaceTab(*s))
         ++s;
@@ -31,10 +29,10 @@ inline bool skipSpaceTab(const Char*& ptr, const Char* end)
 //
 //================================================================
 
-template <typename Char>
-inline bool skipAnySpace(const Char*& ptr, const Char* end)
+template <typename Iterator>
+inline bool skipAnySpace(Iterator& ptr, Iterator end)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     while (s != end && isAnySpace(*s))
         ++s;
@@ -51,10 +49,10 @@ inline bool skipAnySpace(const Char*& ptr, const Char* end)
 //
 //================================================================
 
-template <typename Char>
-inline bool skipNonSpaceCharacters(const Char*& ptr, const Char* end)
+template <typename Iterator>
+inline bool skipNonSpaceCharacters(Iterator& ptr, Iterator end)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     while (s != end && !isSpaceTab(*s))
         ++s;
@@ -75,10 +73,10 @@ inline bool skipNonSpaceCharacters(const Char*& ptr, const Char* end)
 //
 //================================================================
 
-template <typename Char>
-inline bool skipIdent(const Char*& ptr, const Char* end)
+template <typename Iterator>
+inline bool skipIdent(Iterator& ptr, Iterator end)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     ensure(s != end && isIdent1st(*s));
 
@@ -102,10 +100,10 @@ inline bool skipIdent(const Char*& ptr, const Char* end)
 //
 //================================================================
 
-template <typename Char>
-inline bool skipCppComment(const Char*& ptr, const Char* end)
+template <typename Iterator>
+inline bool skipCppComment(Iterator& ptr, Iterator end)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     ensure(s != end && *s == '/');
     ++s;
@@ -130,15 +128,15 @@ inline bool skipCppComment(const Char*& ptr, const Char* end)
 //
 //================================================================
 
-template <typename Char>
-inline bool skipCstr(const Char*& ptr, const Char* end)
+template <typename Iterator>
+inline bool skipCstr(Iterator& ptr, Iterator end)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     ////
 
     ensure(s != end && (*s == '"' || *s == '\''));
-    Char quote = *s;
+    auto quote = *s;
     ++s;
 
     ////
@@ -169,16 +167,16 @@ inline bool skipCstr(const Char*& ptr, const Char* end)
 //
 //================================================================
 
-template <typename Char, typename TextChar>
+template <typename Iterator, typename TextIterator>
 inline bool skipText
 (
-    const Char*& strPtr,
-    const Char* strEnd,
-    const TextChar* textPtr,
-    const TextChar* textEnd
+    Iterator& strPtr,
+    Iterator strEnd,
+    TextIterator textPtr,
+    TextIterator textEnd
 )
 {
-    const Char* ptr = strPtr;
+    Iterator ptr = strPtr;
 
     while (ptr != strEnd && textPtr != textEnd && *ptr == *textPtr)
         {++ptr; ++textPtr;}
@@ -192,8 +190,8 @@ inline bool skipText
 
 //----------------------------------------------------------------
 
-template <typename Char, typename TextChar>
-inline bool skipText(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
+template <typename Iterator, typename Text>
+inline bool skipText(Iterator& strPtr, Iterator strEnd, const Text& text)
     {return skipText(strPtr, strEnd, text.ptr, text.ptr + text.size);}
 
 //================================================================
@@ -202,8 +200,8 @@ inline bool skipText(const Char*& strPtr, const Char* strEnd, const CharArrayEx<
 //
 //================================================================
 
-template <typename Char, typename TextChar>
-inline bool skipTextThenSpaceTab(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
+template <typename Iterator, typename Text>
+inline bool skipTextThenSpaceTab(Iterator& strPtr, Iterator strEnd, const Text& text)
 {
     ensure(skipText(strPtr, strEnd, text));
     skipSpaceTab(strPtr, strEnd);
@@ -216,8 +214,8 @@ inline bool skipTextThenSpaceTab(const Char*& strPtr, const Char* strEnd, const 
 //
 //================================================================
 
-template <typename Char, typename TextChar>
-inline bool skipTextThenAnySpace(const Char*& strPtr, const Char* strEnd, const CharArrayEx<TextChar>& text)
+template <typename Iterator, typename Text>
+inline bool skipTextThenAnySpace(Iterator& strPtr, Iterator strEnd, const Text& text)
 {
     ensure(skipText(strPtr, strEnd, text));
     skipAnySpace(strPtr, strEnd);
@@ -228,27 +226,36 @@ inline bool skipTextThenAnySpace(const Char*& strPtr, const Char* strEnd, const 
 //
 // getNextLine
 //
-// Gets next line of a char array.
+// Gets next line of a character array.
 // Returns false if the pointer cannot be advanced.
 //
 //================================================================
 
-template <typename Char>
-inline bool getNextLine(const Char*& ptr, const Char* end, const Char*& resultBeg, const Char*& resultEnd)
+template <typename Iterator>
+inline bool getNextLine(Iterator& ptr, Iterator end, Iterator& resultBeg, Iterator& resultEnd)
 {
-    const Char* originalPtr = ptr;
+    Iterator s = ptr;
 
-    resultBeg = ptr;
+    resultBeg = s;
 
-    while (ptr != end && !isNewLine(*ptr))
-        ++ptr;
+    while (s != end && *s != '\r' && *s != '\n')
+        ++s;
 
-    resultEnd = ptr;
+    resultEnd = s;
 
-    while (ptr != end && isNewLine(*ptr))
-        ++ptr;
+    ////
 
-    return ptr != originalPtr;
+    if (s != end && *s == '\r')
+        ++s;
+
+    if (s != end && *s == '\n')
+        ++s;
+
+    ////
+
+    bool changed = (s != ptr);
+    ptr = s;
+    return changed;
 }
 
 //================================================================
@@ -257,10 +264,10 @@ inline bool getNextLine(const Char*& ptr, const Char* end, const Char*& resultBe
 //
 //================================================================
 
-template <typename Char>
-inline bool skipUint(const Char*& ptr, const Char* end)
+template <typename Iterator>
+inline bool skipUint(Iterator& ptr, Iterator end)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     while (s != end && isDigit(*s))
         ++s;
@@ -277,10 +284,10 @@ inline bool skipUint(const Char*& ptr, const Char* end)
 //
 //================================================================
 
-template <typename Char, typename Uint>
-inline bool readUint(const Char*& ptr, const Char* end, Uint& result)
+template <typename Iterator, typename Uint>
+inline bool readUint(Iterator& ptr, Iterator end, Uint& result)
 {
-    const Char* s = ptr;
+    Iterator s = ptr;
 
     Uint value = 0;
 
@@ -300,8 +307,8 @@ inline bool readUint(const Char*& ptr, const Char* end, Uint& result)
 //
 //================================================================
 
-template <typename Char>
-inline int readHexDigit(Char c)
+template <typename Value>
+inline int readHexDigit(Value c)
 {
     int result = -1;
 
@@ -323,19 +330,21 @@ inline int readHexDigit(Char c)
 //
 //================================================================
 
-template <typename Char>
-inline bool readHexByte(const Char*& ptr, const Char* end, uint8& result)
+template <typename Iterator, typename Result>
+inline bool readHexByte(Iterator& ptr, Iterator end, Result& result)
 {
-    ensure(ptr+0 != end);
-    ensure(ptr+1 != end);
+    Iterator s = ptr;
 
-    auto v0 = readHexDigit(ptr[0]);
-    auto v1 = readHexDigit(ptr[1]);
+    ensure(s != end);
+    auto v0 = readHexDigit(*s++);
+
+    ensure(s != end);
+    auto v1 = readHexDigit(*s++);
 
     ensure(v0 >= 0 && v1 >= 0);
 
     result = 16 * v0 + v1;
-    ptr += 2;
 
+    ptr = s;
     return true;
 }
