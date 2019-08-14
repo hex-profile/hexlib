@@ -238,12 +238,12 @@ template <typename Type>
 sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const SimpleStringEx<Type>& Y)
     {SimpleStringEx<Type> result(X); result += Y; return result;}
 
-template <typename Type>
-sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const Type* Y)
-    {SimpleStringEx<Type> result(X); result += SimpleStringEx<Type>(Y); return result;}
+template <typename Type, typename Other>
+sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const Other& Y)
+    {SimpleStringEx<Type> result(X); result += Y; return result;}
 
-template <typename Type>
-sysinline SimpleStringEx<Type> operator +(const Type* X, const SimpleStringEx<Type>& Y)
+template <typename Type, typename Other>
+sysinline SimpleStringEx<Type> operator +(const Other& X, const SimpleStringEx<Type>& Y)
     {SimpleStringEx<Type> result(X); result += Y; return result;}
 
 //================================================================

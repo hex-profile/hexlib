@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+#include "prepTools/prepBase.h"
+
 //================================================================
 //
 // Basic compile-time tools:

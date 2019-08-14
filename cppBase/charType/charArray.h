@@ -40,6 +40,12 @@ public:
 
 //----------------------------------------------------------------
 
+template <typename Type>
+sysinline auto charArray(const Type* ptr, size_t size)
+    {return CharArrayEx<Type>(ptr, size);}
+
+//----------------------------------------------------------------
+
 using CharArray = CharArrayEx<CharType>;
 
 //================================================================
