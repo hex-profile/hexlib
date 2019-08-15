@@ -280,70 +280,58 @@ inline bool skipUint(Iterator& ptr, Iterator end)
 
 //================================================================
 //
-// readUint
+// skipInt
 //
 //================================================================
 
-template <typename Iterator, typename Uint>
-inline bool readUint(Iterator& ptr, Iterator end, Uint& result)
+template <typename Iterator>
+inline bool skipInt(Iterator& ptr, Iterator end)
 {
     Iterator s = ptr;
 
-    Uint value = 0;
+    if (s != end && (*s == '-' || *s == '+'))
+        ++s;
 
-    for (; s != end && isDigit(*s); ++s)
-        value = value * 10 + Uint(*s - '0');
-
-    ensure(s != ptr);
+    ensure(skipUint(s, end));
 
     ptr = s;
-    result = value;
     return true;
 }
 
 //================================================================
 //
-// readHexDigit
+// skipFloat
 //
 //================================================================
 
-template <typename Value>
-inline int readHexDigit(Value c)
+template <typename Iterator>
+bool skipFloat(Iterator& ptr, Iterator end)
 {
-    int result = -1;
+    auto s = ptr;
 
-    if (c >= '0' && c <= '9')
-        result = c - '0';
+    ////
 
-    if (c >= 'A' && c <= 'F')
-        result = c - 'A' + 10;
+    ensure(skipInt(s, end));
 
-    if (c >= 'a' && c <= 'f')
-        result = c - 'a' + 10;
+    ////
 
-    return result;
-}
+    if (s != end && *s == '.')
+    {
+        ++s;
 
-//================================================================
-//
-// readHexByte
-//
-//================================================================
+        ensure(skipUint(s, end));
+    }
 
-template <typename Iterator, typename Result>
-inline bool readHexByte(Iterator& ptr, Iterator end, Result& result)
-{
-    Iterator s = ptr;
+    ////
 
-    ensure(s != end);
-    auto v0 = readHexDigit(*s++);
+    if (s != end && (*s == 'E' || *s == 'e'))
+    {
+        ++s;
 
-    ensure(s != end);
-    auto v1 = readHexDigit(*s++);
+        ensure(skipInt(s, end));
+    }
 
-    ensure(v0 >= 0 && v1 >= 0);
-
-    result = 16 * v0 + v1;
+    ////
 
     ptr = s;
     return true;
