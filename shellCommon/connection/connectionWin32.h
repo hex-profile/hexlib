@@ -2,6 +2,7 @@
 
 #include "connectionInterface.h"
 #include "simpleString/simpleString.h"
+#include "storage/noncopyable.h"
 
 namespace connection {
 
@@ -20,7 +21,7 @@ constexpr Socket invalidSocket = Socket(-1);
 //
 //================================================================
 
-class ConnectionWin32 : public Connection
+class ConnectionWin32 : public Connection, private NonCopyable
 {
 
 public:
