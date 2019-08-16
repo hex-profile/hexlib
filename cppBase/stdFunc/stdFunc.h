@@ -100,6 +100,9 @@
 #define stdEnterLocation(newLocation) \
     stdEnterEx(newLocation, 0, 0)
 
+#define stdEnterMsg(msg) \
+    stdEnterEx(TRACE_AUTO_LOCATION_MSG(msg), 0, 0)
+
 #define stdEnterElemCount(elemCount) \
     stdEnterEx(TRACE_AUTO_LOCATION, elemCount, 0)
 
