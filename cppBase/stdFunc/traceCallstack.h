@@ -43,11 +43,11 @@ using TraceLocation = const CharType*;
 //
 //================================================================
 
-#define TRACE_AUTO_LOCATION_MSG(msg) \
-    CT(__FILE__) CT("(") CT(TRACE_STRINGIZE(__LINE__)) CT("): ") CT(msg)
-
 #define TRACE_AUTO_LOCATION \
     CT(__FILE__) CT("(") CT(TRACE_STRINGIZE(__LINE__)) CT(")")
+
+#define TRACE_AUTO_LOCATION_MSG(msg) \
+    TRACE_AUTO_LOCATION CT(": ") CT(msg)
 
 #define TRACE_STRINGIZE_AUX(X) \
     #X
