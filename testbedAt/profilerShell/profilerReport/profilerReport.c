@@ -1691,8 +1691,8 @@ private:
     static const int32 smartMaxScanRows = 64;
     NumericVarStatic<int32, 1, 256, 6> smartMaxRows;
 
-    NumericVarStaticEx<float32, int32, 0, 100, 0> timeThresholdFractionPercents;
-    NumericVarStaticEx<float32, int32, 0, 0xFFFF, 0> timeMinSignificantTimeInMs;
+    NumericVarStaticEx<float32, int32, 0, 100, 0> timeThresholdParentFractionInPercents;
+    NumericVarStaticEx<float32, int32, 0, 0xFFFF, 0> timeThresholdSignificantTimeInMs;
     NumericVarStatic<int32, 0, 8, 3> timeMsDigits;
 
     NumericVarStatic<int32, 0, 8, 2> factorDigits;
@@ -1717,8 +1717,8 @@ CLASSTHUNK_BOOL_STD1(HtmlReport, makeReport, const MakeReportParams&, ReportFile
 
 HtmlReportImpl::HtmlReportImpl()
 {
-    timeThresholdFractionPercents = 0.5f;
-    timeMinSignificantTimeInMs = 0.1f;
+    timeThresholdParentFractionInPercents = 0.5f;
+    timeThresholdSignificantTimeInMs = 0.1f;
 }
 
 //================================================================
@@ -1733,9 +1733,10 @@ void HtmlReportImpl::serialize(const ModuleSerializeKit& kit)
     smartMaxRows.serialize(kit, STR("Smart Cut: Max Rows"));
 
     {
-        CFG_NAMESPACE("Time");
-        timeThresholdFractionPercents.serialize(kit, STR("Fraction Of Parent To Be Displayed (In Percents)"));
-        timeMinSignificantTimeInMs.serialize(kit, STR("Min Significant Time (In Milliseconds)"), STR(""));
+        CFG_NAMESPACE("Displayed Time Thresholds");
+
+        timeThresholdParentFractionInPercents.serialize(kit, STR("Fraction Of Parent To Be Hidden (In Percents)"));
+        timeThresholdSignificantTimeInMs.serialize(kit, STR("Max Hidden Time In Milliseconds"), STR(""));
         timeMsDigits.serialize(kit, STR("Fractional Digits Of Millisecond"));
     }
 
@@ -1831,11 +1832,16 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
 
         CodeBlockParams codeBlockParams((simpleMaxRows | 1) / 2, smartMaxScanRows, smartMaxRows);
 
+        float32 timeThresholdFraction = timeThresholdParentFractionInPercents * 0.01f;
+        float32 timeThresholdMin = powf(10.f, -float32(timeMsDigits + 3)) / 2; // Minimal visible time with given precision.
+        float32 timeThresholdMax = clampMin(timeThresholdSignificantTimeInMs * 0.001f, timeThresholdMin);
+
+        if (deviceTimingMode)
+            timeThresholdMin = timeThresholdMax = 0;
+
         DisplayParams displayParams
         (
-            timeThresholdFractionPercents * 0.01f,
-            powf(10.f, -float32(timeMsDigits + 3)) / 2,
-            deviceTimingMode ? 0.f : timeMinSignificantTimeInMs * 0.001f,
+            timeThresholdFraction, timeThresholdMin, timeThresholdMax,
             timeMsDigits,
             powf(10.f, -float32(factorDigits)) / 2,
             factorDigits,
