@@ -34,6 +34,7 @@
 #include "userOutput/printMsgEx.h"
 #include "imageRead/positionTools.h"
 #include "diagTools/readGpuElement.h"
+#include "formatting/prettyNumber.h"
 #endif
 
 namespace gpuImageConsoleImpl {
@@ -656,9 +657,12 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
         ScalarVisualizationProvider<Type> outputProvider(ScalarVisualizationParams<Type>{img, channel, coordBack, valueTransform, upsampleType, borderMode, hint.overlayCentering}, kit);
 
-        require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, paramMsg(STR("%0 [%1, %2] ~%3 bits"), hint.desc, 
-            fltf(minVal, 3), fltf(maxVal, 3), fltf(-nativeLog2(maxVal - minVal), 1)), stdPass));
+        auto bits = -nativeLog2(maxVal - minVal);
 
+        auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
+            hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
+
+        require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, msg, stdPass));
     }
     else
     {
@@ -1170,8 +1174,12 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
             colorMode, kit
         );
 
-        require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, paramMsg(STR("%0 [%1, %2] ~%3 bits"), hint.desc, 
-            fltf(minVal, 3), fltf(maxVal, 3), fltf(-nativeLog2(maxVal - minVal), 1)), stdPass));
+        auto bits = -nativeLog2(maxVal - minVal);
+        
+        auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
+            hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
+
+        require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, msg, stdPass));
     }
 
     //----------------------------------------------------------------

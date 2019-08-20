@@ -46,3 +46,17 @@ inline bool printMsg(MsgLog& msgLog, const CharArray& format, const Types&... va
     ParamMsg paramMsg(format, params, msgKindValid ? n-1 : n);
     return msgLog.addMsg(paramMsg, msgKindValid ? MsgKind(msgKind) : msgInfo);
 }
+
+//================================================================
+//
+// printMsgUpd
+//
+//================================================================
+
+template <typename... Types>
+inline bool printMsgUpd(MsgLog& msgLog, const CharArray& format, const Types&... values)
+{
+    ensure(printMsg(msgLog, format, values...));
+    ensure(msgLog.update());
+    return true;
+}
