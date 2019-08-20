@@ -967,12 +967,13 @@ struct CoverageEvent
 
 //================================================================
 //
-// Because of bad NVIDIA event interface, a context switch can happen between two events,
-// resulting in totally wrong kernel time.
-// Such events are not random, but hit regular place inside the frame loop, which can be caused
-// by repainting or something else.
+// Because of bad NVIDIA event interface, a context switch can happen between two events
+// resulting in totally wrong measured kernel time.
 //
-// So, several methods of fighting with it are implemented:
+// Such events are not random, they may hit a regular place inside the frame loop, 
+// caused by repainting or something else.
+//
+// So several methods of fighting it are implemented:
 //
 // * Coverage multiplier can repeat each kernel call N times, taking the smallest time.
 //   But this can result in lowering L2 cache influence (all data is fetched in cache after 1st call).
@@ -1169,7 +1170,7 @@ private:
 
 public:
 
-    static const size_t cacheFlushMemSize = 1572864; // 1.5 Mb
+    static const size_t cacheFlushMemSize = 2 * 1024 * 1024; // 2 Mb
     CudaMemoryBlock cacheFlushMemBlock;
 
 };
