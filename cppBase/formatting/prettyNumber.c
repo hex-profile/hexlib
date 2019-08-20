@@ -22,6 +22,11 @@ inline void reduceValue(const Type& value, Type& resultValue, CharArray& resultU
 
     ////
 
+    if (absValue == 0)
+        return;
+
+    ////
+
     if (absValue * Type(1e-15) >= Type(1))
         {resultValue = value * Type(1e-15); resultUnit = STR("P"); return;}
 
