@@ -63,7 +63,7 @@ class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
     PREP_ENUM(n, GPU_LAYERED_MATRIX_PASS_FUNC, name)
 
 #define GPU_LAYERED_MATRIX_PASS_FUNC(r, name) \
-    name.getLayer(r)
+    (name).getLayer(r)
 
 //================================================================
 //
