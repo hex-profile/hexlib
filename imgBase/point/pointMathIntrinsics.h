@@ -1,3 +1,5 @@
+#pragma once
+
 #include "point/point.h"
 #include "numbers/mathIntrinsics.h"
 

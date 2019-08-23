@@ -1,6 +1,5 @@
 #pragma once
 
-#include "numbers/int/intBase.h"
 #include "kit/kit.h"
 
 //================================================================
@@ -13,8 +12,8 @@
 
 struct OverlayTakeover
 {
-    virtual void setActiveID(uint32 id) =0;
-    virtual uint32 getActiveID() =0;
+    virtual void setActiveID(size_t id) =0;
+    virtual size_t getActiveID() =0;
 };
 
 //================================================================
@@ -25,10 +24,10 @@ struct OverlayTakeover
 
 class OverlayTakeoverNull : public OverlayTakeover
 {
-    void setActiveID(uint32 id)
+    void setActiveID(size_t id)
         {}
 
-    uint32 getActiveID()
+    size_t getActiveID()
         {return 0;}
 };
 

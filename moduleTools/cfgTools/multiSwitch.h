@@ -113,7 +113,7 @@ struct NameKeyPair
     ) \
     { \
         const NameKeyCommentStruct descArray[] = {PREP_FOR0(n, SWSER_PASS_PARAM, _)}; \
-        COMPILE_ASSERT(positionCount == n); \
+        COMPILE_ASSERT(size_t(positionCount) == n); \
         return serialize(kit, name, descArray, cfgPrefix, signalPrefix); \
     }
 
@@ -127,12 +127,12 @@ template <typename EnumType, EnumType positionCount, EnumType defaultPos>
 class MultiSwitch
 {
 
-    COMPILE_ASSERT(positionCount >= 1 && 0 <= defaultPos && defaultPos <= positionCount - 1);
+    COMPILE_ASSERT(0 <= defaultPos && defaultPos < positionCount);
 
 public:
 
-    inline operator EnumType() const {return (EnumType) value();}
-    inline EnumType operator()() const {return (EnumType) value();}
+    inline operator EnumType() const {return EnumType(value());}
+    inline EnumType operator()() const {return EnumType(value());}
 
     void operator =(EnumType v)
         {value = v;}
@@ -159,13 +159,13 @@ private:
 //
 //================================================================
 
-template <typename EnumType, EnumType positionCount, uint32 baseID>
+template <typename EnumType, EnumType positionCount, size_t baseID>
 class ExclusiveMultiSwitch
 {
+    
+    COMPILE_ASSERT(positionCount >= EnumType(1));
 
-    COMPILE_ASSERT(positionCount >= 1);
-
-    using Base = MultiSwitch<EnumType, positionCount, EnumType(0)>;
+    using Base = MultiSwitch<size_t, size_t(positionCount), 0>;
 
     //
     // serialize
@@ -187,16 +187,16 @@ public:
         // Check if somebody has taken over the control
         //
 
-        uint32 id = kit.overlayTakeover.getActiveID() - baseID;
+        size_t id = kit.overlayTakeover.getActiveID() - baseID;
 
-        if_not (id >= 0 && id < positionCount)
-            base = EnumType(0);
+        if_not (id < size_t(positionCount))
+            base = 0;
 
         //
         // Apply changes
         //
 
-        EnumType prevValue = base;
+        auto prevValue = base();
         base.serialize(kit, name, descArray, cfgPrefix, signalPrefix);
 
         //
@@ -209,14 +209,18 @@ public:
         return (base == prevValue);
     }
 
-    SWSER_DEFINE
-
     //
     // operator()
     //
 
-    inline operator EnumType() const {return base;}
-    inline EnumType operator()() const {return base;}
+    inline operator EnumType() const {return EnumType(base());}
+    inline EnumType operator()() const {return EnumType(base());}
+
+    //
+    // serialize functions
+    //
+
+    SWSER_DEFINE
 
 private:
 

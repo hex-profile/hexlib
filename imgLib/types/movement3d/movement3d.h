@@ -56,6 +56,14 @@ sysinline Movement3D<Float> combine(const Movement3D<Float>& A, const Movement3D
     return result;
 }
 
+//----------------------------------------------------------------
+
+template <typename Float>
+sysinline Movement3D<Float> combine(const Movement3D<Float>& A, const Movement3D<Float>& B, const Movement3D<Float>& C)
+{
+    return combine(combine(A, B), C);
+}
+
 //================================================================
 //
 // inverse

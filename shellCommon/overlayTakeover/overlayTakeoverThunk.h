@@ -13,10 +13,10 @@ class OverlayTakeoverThunk : public OverlayTakeover
 
 public:
 
-    void setActiveID(uint32 id)
+    void setActiveID(size_t id)
         {targetValue = id;}
 
-    uint32 getActiveID()
+    size_t getActiveID()
         {return targetValue;}
 
 public:
