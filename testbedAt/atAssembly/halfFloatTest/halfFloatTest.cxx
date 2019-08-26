@@ -3,7 +3,7 @@
 #endif
 
 #include "gpuSupport/gpuTool.h"
-#include "vectorTypes/half/halfType.h"
+#include "numbers/float16/float16Type.h"
 #include "rndgen/rndgenBase.h"
 
 #if HOSTCODE

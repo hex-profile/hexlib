@@ -1,8 +1,8 @@
 #pragma once
 
 #include "numbers/float/floatType.h"
-#include "vectorTypes/half/halfBase.h"
-#include "vectorTypes/half/halfConvert.h"
+#include "numbers/float16/float16Base.h"
+#include "numbers/float16/halfConvert.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

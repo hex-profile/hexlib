@@ -24,8 +24,8 @@
 // ITERATION(2, extra)
 // ITERATION(3, extra)
 //
-// There are two macros: PREP_FOR0 and PREP_FOR1, implemented identically.
-// The purpose is usage in nested loops: for example, outer loop can be
+// There are three macros: PREP_FOR0, PREP_FOR1, PREP_FOR2, implemented identically.
+// The purpose is implementing nested loops: for example, outer loop can be
 // implemented using PREP_FOR1 and inner loop using PREP_FOR0.
 //
 // PREP_FOR is synonym of PREP_FOR0.

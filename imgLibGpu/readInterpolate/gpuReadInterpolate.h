@@ -2,7 +2,7 @@
 
 #include "imageRead/interpType.h"
 #include "imageRead/loadMode.h"
-#include "vectorTypes/half/halfType.h"
+#include "numbers/float16/float16Type.h"
 #include "data/gpuMatrix.h"
 #include "imageRead/borderMode.h"
 #include "readInterpolate/cubicCoeffs.h"
