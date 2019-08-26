@@ -6,7 +6,7 @@
 #include "compileTools/compileTools.h"
 #include "numbers/float/floatBase.h"
 #include "numbers/int/intBase.h"
-#include "vectorTypes/half/halfBase.h"
+#include "numbers/float16/float16Base.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

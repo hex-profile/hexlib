@@ -2,7 +2,7 @@
 
 #include "compileTools/compileTools.h"
 #include "numbers/float/floatType.h"
-#include "vectorTypes/half/halfType.h"
+#include "numbers/float16/float16Type.h"
 #include "vectorTypes/vectorBase.h"
 #include "dbgptr/dbgptrGate.h"
 #include "data/pointerInterface.h"

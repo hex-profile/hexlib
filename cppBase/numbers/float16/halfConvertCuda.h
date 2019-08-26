@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vectorTypes/half/halfBase.h"
+#include "numbers/float16/float16Base.h"
 #include "numbers/float/floatBase.h"
 
 #if defined(__CUDA_ARCH__)

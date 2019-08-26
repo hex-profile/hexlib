@@ -1,6 +1,6 @@
 #include "resamplingTest.h"
 
-#include "vectorTypes/half/halfType.h"
+#include "numbers/float16/float16Type.h"
 #include "gpuSupport/gpuTool.h"
 #include "gpuDevice/loadstore/storeNorm.h"
 

@@ -24,7 +24,7 @@
 #include "dataAlloc/gpuMatrixMemory.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "gpuSupport/gpuTexTools.h"
-#include "vectorTypes/half/halfType.h"
+#include "numbers/float16/float16Type.h"
 #include "convertYuv420/convertYuv420ToBgr.h"
 #include "copyMatrixAsArray.h"
 #include "numbers/mathIntrinsics.h"
