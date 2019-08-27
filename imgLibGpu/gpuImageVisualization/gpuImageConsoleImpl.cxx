@@ -142,15 +142,15 @@ VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalar4_3, devTex2D(visualizeScalarSampler4
 
 //----------------------------------------------------------------
 
-VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic1, texCubic2D(visualizeScalarSampler1, point(srcXs, srcYs), o.srcTexstep))
+VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic1, tex2DCubic(visualizeScalarSampler1, point(srcXs, srcYs), o.srcTexstep))
 
-VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic2_0, texCubic2D(visualizeScalarSampler2, point(srcXs, srcYs), o.srcTexstep).x)
-VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic2_1, texCubic2D(visualizeScalarSampler2, point(srcXs, srcYs), o.srcTexstep).y)
+VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic2_0, tex2DCubic(visualizeScalarSampler2, point(srcXs, srcYs), o.srcTexstep).x)
+VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic2_1, tex2DCubic(visualizeScalarSampler2, point(srcXs, srcYs), o.srcTexstep).y)
 
-VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_0, texCubic2D(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).x)
-VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_1, texCubic2D(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).y)
-VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_2, texCubic2D(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).z)
-VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_3, texCubic2D(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).w)
+VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_0, tex2DCubic(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).x)
+VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_1, tex2DCubic(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).y)
+VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_2, tex2DCubic(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).z)
+VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_3, tex2DCubic(visualizeScalarSampler4, point(srcXs, srcYs), o.srcTexstep).w)
 
 //================================================================
 //
@@ -371,7 +371,7 @@ UPCONVERT_VALUE_KERNEL_ALL(upconvertValue, UPCONVERT_VALUE_READ_NORMAL)
 ////
 
 #define UPCONVERT_VALUE_READ_CUBIC(sampler) \
-    texCubic2D(sampler, point(srcXs, srcYs), o.srcTexstep)
+    tex2DCubic(sampler, point(srcXs, srcYs), o.srcTexstep)
 
 UPCONVERT_VALUE_KERNEL_ALL(upconvertValueCubic, UPCONVERT_VALUE_READ_CUBIC)
 

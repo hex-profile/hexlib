@@ -32,5 +32,5 @@
 TMP_MACRO(rotateImageLinearZero, INTERP_LINEAR, BORDER_ZERO, tex2D(srcSampler, srcPos * srcTexstep))
 TMP_MACRO(rotateImageLinearMirror, INTERP_LINEAR, BORDER_MIRROR, tex2D(srcSampler, srcPos * srcTexstep))
 
-TMP_MACRO(rotateImageCubicZero, INTERP_NONE, BORDER_ZERO, texCubic2D(srcSampler, srcPos, srcTexstep))
-TMP_MACRO(rotateImageCubicMirror, INTERP_NONE, BORDER_MIRROR, texCubic2D(srcSampler, srcPos, srcTexstep))
+TMP_MACRO(rotateImageCubicZero, INTERP_NONE, BORDER_ZERO, tex2DCubic(srcSampler, srcPos, srcTexstep))
+TMP_MACRO(rotateImageCubicMirror, INTERP_NONE, BORDER_MIRROR, tex2DCubic(srcSampler, srcPos, srcTexstep))

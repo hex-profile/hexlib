@@ -13,6 +13,7 @@
 #include "mathFuncs/gaussApprox.h"
 #include "gpuDevice/loadstore/loadNorm.h"
 #include "numbers/mathIntrinsics.h"
+#include "imageRead/positionTools.h"
 
 //================================================================
 //
@@ -229,7 +230,7 @@ sysinline uint8_x4 computeVectorVisualization(const float32_x2& value, bool gray
         { \
             Point<float32> srcPos = coordBackTransform(point(Xs, Ys)); \
             auto value = vectorFactor * devTex2D(srcSampler, srcPos.X * srcTexstep.X, srcPos.Y * srcTexstep.Y); \
-            if (interpType == INTERP_CUBIC) value = vectorFactor * texCubic2D(srcSampler, srcPos, srcTexstep); \
+            if (interpType == INTERP_CUBIC) value = vectorFactor * tex2DCubic(srcSampler, srcPos, srcTexstep); \
             *dst = computeVectorVisualization(make_float32_x2(value.x, value.y), grayMode); \
         } \
     )
