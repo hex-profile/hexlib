@@ -32,11 +32,10 @@ devDefineSampler(image, DevSampler2D, DevSamplerFloat, 1)
 
 ////
 
-//``` good
-//__global__ void testKernel1(Point<float32> pos, Point<float32> texstep, float32* result)
-//{
-//    *result = tex2DCubicGeneric(image, pos, texstep, cubicCoeffs<float32>);
-//}
+__global__ void testKernel1(Point<float32> pos, Point<float32> texstep, float32* result)
+{
+    *result = tex2DCubicGeneric(image, pos, texstep, cubicCoeffs<float32>);
+}
 
 ////
 
