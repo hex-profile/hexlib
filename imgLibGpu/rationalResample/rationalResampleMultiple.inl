@@ -16,6 +16,7 @@
 #include "rndgen/rndgenFloat.h"
 #include "vectorTypes/vectorOperations.h"
 #include "vectorTypes/vectorType.h"
+#include "imageRead/positionTools.h"
 
 #ifdef FUNCSPACE
 namespace FUNCSPACE {

@@ -14,6 +14,7 @@
 #include "kit/kit.h"
 #include "types/lt/ltType.h"
 #include "readBordered.h"
+#include "imageRead/positionTools.h"
 
 //================================================================
 //

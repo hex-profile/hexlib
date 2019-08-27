@@ -41,8 +41,8 @@
 
 #define TMP_MACRO2(borderMode) \
     TMP_MACRO(INTERP_LINEAR, borderMode, PIXEL, INTERP_LINEAR, tex2D(srcSampler, srcPos * srcTexstep)) \
-    TMP_MACRO(INTERP_CUBIC, borderMode, PIXEL, INTERP_NONE, texCubic2D(srcSampler, srcPos, srcTexstep)) \
-    TMP_MACRO(INTERP_CUBIC_BSPLINE, borderMode, typename BsplineExtendedType<PIXEL>::T, INTERP_NONE, texCubicBspline2D(srcSampler, srcPos, srcTexstep)) \
+    TMP_MACRO(INTERP_CUBIC, borderMode, PIXEL, INTERP_NONE, tex2DCubic(srcSampler, srcPos, srcTexstep)) \
+    TMP_MACRO(INTERP_CUBIC_BSPLINE, borderMode, typename BsplineExtendedType<PIXEL>::T, INTERP_NONE, tex2DCubicBspline(srcSampler, srcPos, srcTexstep)) \
 
 TMP_MACRO2(BORDER_ZERO)
 TMP_MACRO2(BORDER_MIRROR)

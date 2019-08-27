@@ -11,7 +11,7 @@
 //================================================================
 
 template <bool horizontal, Space compressOctaves, typename SamplerType, typename FilterCoeffs>
-sysinline typename DevSamplerResult<SamplerType>::T simpleConvolutionSeparable
+sysinline auto simpleConvolutionSeparable
 (
     SamplerType srcSampler, 
     const Point<float32>& srcTexstep, 
@@ -66,7 +66,7 @@ sysinline typename DevSamplerResult<SamplerType>::T simpleConvolutionSeparable
 //----------------------------------------------------------------
 
 template <Space compressOctaves, typename SamplerType, typename FilterCoeffs>
-sysinline typename DevSamplerResult<SamplerType>::T simpleConvolutionSeparableDynaAxis
+sysinline auto simpleConvolutionSeparableDynaAxis
 (
     SamplerType srcSampler, 
     const Point<float32>& srcTexstep, 

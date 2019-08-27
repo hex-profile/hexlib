@@ -3,6 +3,7 @@
 #endif
 
 #include "gaussSincResampling/gaussSincResamplingSettings.h"
+#include "imageRead/positionTools.h"
 
 //================================================================
 //
