@@ -9,7 +9,7 @@
 //
 //================================================================
 
-#define PREP_ITER_DEPTH NONE
+#define PREP_ITER_DEPTH 0
 
 //================================================================
 //
@@ -18,37 +18,36 @@
 //================================================================
 
 #define PREP_ITER_INDEX \
-    PREP_PASTE(PREP_ITER_INDEX_, PREP_ITER_DEPTH)
+    PREP_PASTE(PREP_ITER_INDEX_, PREP_DEC(PREP_ITER_DEPTH))
+
+////
 
 #define PREP_ITER_MIN \
-    PREP_PASTE(PREP_ITER_MIN_, PREP_ITER_DEPTH)
+    PREP_ARG3_0 PREP_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
 
 #define PREP_ITER_MAX \
-    PREP_PASTE(PREP_ITER_MAX_, PREP_ITER_DEPTH)
+    PREP_ARG3_1 PREP_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
 
 #define PREP_ITER_FILE \
-    PREP_PASTE(PREP_ITER_FILE_, PREP_ITER_DEPTH)
-
-#define PREP_ITER_PARAM \
-    PREP_PASTE(PREP_ITER_PARAM_, PREP_ITER_DEPTH)
+    PREP_ARG3_2 PREP_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
 
 //================================================================
 //
-// PREP_ITERATE()
+// PREP_ITERATE
 //
 //================================================================
 
-#define PREP_ITERATE() PREP_PASTE(PREP_ITERATE_FROM_DEPTH_, PREP_ITER_DEPTH)
+#define PREP_ITERATE PREP_PASTE(PREP_ITERATE_FROM_DEPTH_, PREP_ITER_DEPTH)
 
 //----------------------------------------------------------------
 
-#define PREP_ITERATE_FROM_DEPTH_NONE \
+#define PREP_ITERATE_FROM_DEPTH_0 \
     "prepTools/prepIterate/prepIterate0.h"
 
-#define PREP_ITERATE_FROM_DEPTH_0 \
+#define PREP_ITERATE_FROM_DEPTH_1 \
     "prepTools/prepIterate/prepIterate1.h"
 
-#define PREP_ITERATE_FROM_DEPTH_1 \
+#define PREP_ITERATE_FROM_DEPTH_2 \
     "prepTools/prepIterate/prepIterate2.h"
 
 //================================================================
@@ -71,3 +70,11 @@ for i in range(0, 256 + 1):
 
     print(s.format(i=i, l=l))
 */
+
+//================================================================
+//
+// PREP_ITERATE_ND
+//
+//================================================================
+
+#define PREP_ITERATE_ND "prepTools/prepIterate/prepIterateND.h"
