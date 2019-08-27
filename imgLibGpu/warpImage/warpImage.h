@@ -14,16 +14,16 @@
 //
 //================================================================
 
-template <typename Pixel>
+template <typename SrcPixel, typename DstPixel>
 stdbool warpImage
 (
-    const GpuMatrix<const Pixel>& src,
+    const GpuMatrix<const SrcPixel>& src,
     const LinearTransform<Point<float32>>& srcTransform,
     const GpuMatrix<const float32_x2>& map,
     const Point<float32>& mapScaleFactor,
     const Point<float32>& mapValueFactor,
     BorderMode borderMode,
     InterpType interpType,
-    const GpuMatrix<Pixel> dst,
+    const GpuMatrix<DstPixel> dst,
     stdPars(GpuProcessKit)
 );

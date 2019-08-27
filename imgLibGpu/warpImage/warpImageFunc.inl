@@ -15,18 +15,28 @@
 
 //================================================================
 //
+// SRC_PIXEL
+// DST_PIXEL
+//
+//================================================================
+
+#define SRC_PIXEL PREP_ARG2_0 PIXELS
+#define DST_PIXEL PREP_ARG2_1 PIXELS
+
+//================================================================
+//
 // warpImageFunc
 //
 //================================================================
 
-#define TMP_MACRO(interpMode, borderMode, SrcPixel, texInterpolation, texStatement) \
+#define TMP_MACRO(interpMode, borderMode, texInterpolation, texStatement) \
     \
     GPUTOOL_2D \
     ( \
-        PREP_PASTE_UNDER4(warpImageFunc, PIXEL, interpMode, borderMode), \
-        ((const SrcPixel, src, texInterpolation, borderMode)) \
+        PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, interpMode, borderMode), \
+        ((const SRC_PIXEL, src, texInterpolation, borderMode)) \
         ((const float32_x2, map, INTERP_LINEAR, BORDER_CLAMP)), \
-        ((PIXEL, dst)), \
+        ((DST_PIXEL, dst)), \
         ((LinearTransform<Point<float32>>, srcTransform)) \
         ((Point<float32>, mapScaleFactor)) \
         ((Point<float32>, mapValueFactor)), \
@@ -40,9 +50,9 @@
     )
 
 #define TMP_MACRO2(borderMode) \
-    TMP_MACRO(INTERP_LINEAR, borderMode, PIXEL, INTERP_LINEAR, tex2D(srcSampler, srcPos * srcTexstep)) \
-    TMP_MACRO(INTERP_CUBIC, borderMode, PIXEL, INTERP_NONE, tex2DCubic(srcSampler, srcPos, srcTexstep)) \
-    TMP_MACRO(INTERP_CUBIC_BSPLINE, borderMode, typename BsplineExtendedType<PIXEL>::T, INTERP_NONE, tex2DCubicBspline(srcSampler, srcPos, srcTexstep)) \
+    TMP_MACRO(INTERP_LINEAR, borderMode, INTERP_LINEAR, tex2D(srcSampler, srcPos * srcTexstep)) \
+    TMP_MACRO(INTERP_CUBIC, borderMode, INTERP_NONE, tex2DCubic(srcSampler, srcPos, srcTexstep)) \
+    TMP_MACRO(INTERP_CUBIC_BSPLINE, borderMode, INTERP_LINEAR, tex2DCubicBsplineFast(srcSampler, srcPos, srcTexstep)) \
 
 TMP_MACRO2(BORDER_ZERO)
 TMP_MACRO2(BORDER_MIRROR)
@@ -61,31 +71,25 @@ TMP_MACRO2(BORDER_MIRROR)
 template <>
 stdbool warpImage
 (
-    const GpuMatrix<const PIXEL>& src,
+    const GpuMatrix<const SRC_PIXEL>& src,
     const LinearTransform<Point<float32>>& srcTransform,
     const GpuMatrix<const float32_x2>& map,
     const Point<float32>& mapScaleFactor,
     const Point<float32>& mapValueFactor,
     BorderMode borderMode,
     InterpType interpType,
-    const GpuMatrix<PIXEL> dst,
+    const GpuMatrix<DST_PIXEL> dst,
     stdPars(GpuProcessKit)
 )
 {
-    //----------------------------------------------------------------
-    //
-    // Direct interpolation modes.
-    //
-    //----------------------------------------------------------------
-
     #define TMP_MACRO(borderMode) \
         { \
             if (interpType == INTERP_LINEAR) \
-                require(PREP_PASTE_UNDER4(warpImageFunc, PIXEL, INTERP_LINEAR, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
+                require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_LINEAR, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
             else if (interpType == INTERP_CUBIC) \
-                require(PREP_PASTE_UNDER4(warpImageFunc, PIXEL, INTERP_CUBIC, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
+                require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
             else if (interpType == INTERP_CUBIC_BSPLINE) \
-                ; \
+                require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC_BSPLINE, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
             else \
                 REQUIRE(false); \
         }
@@ -98,36 +102,6 @@ stdbool warpImage
         REQUIRE(false);
 
     #undef TMP_MACRO
-
-    //----------------------------------------------------------------
-    //
-    // Special mode with prefiltering.
-    //
-    //----------------------------------------------------------------
-
-    if (interpType == INTERP_CUBIC_BSPLINE)
-    {
-        using IntermType = typename BsplineExtendedType<PIXEL>::T;
-
-        GPU_MATRIX_ALLOC(prefilteredImage, IntermType, src.size());
-        require((bsplineCubicPrefilter<PIXEL, IntermType, IntermType>(src, prefilteredImage, point(1.f), BORDER_MIRROR, stdPass)));
-
-        ////
-
-        #define TMP_MACRO(borderMode) \
-            require(PREP_PASTE_UNDER4(warpImageFunc, PIXEL, INTERP_CUBIC_BSPLINE, borderMode)(prefilteredImage, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
-
-        if (borderMode == BORDER_ZERO)
-            TMP_MACRO(BORDER_ZERO)
-        else if (borderMode == BORDER_MIRROR)
-            TMP_MACRO(BORDER_MIRROR)
-        else
-            REQUIRE(false);
-
-        #undef TMP_MACRO
-    }
-
-    ////
 
     returnTrue;
 }

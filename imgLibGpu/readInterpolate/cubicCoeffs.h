@@ -4,41 +4,47 @@
 
 //================================================================
 //
-// cubicCoeffs
+// CubicCoeffs
 //
 //================================================================
 
-template <typename DstFloat>
-sysinline void cubicCoeffs(float32 s, DstFloat& c0, DstFloat& c1, DstFloat& c2, DstFloat& c3)
+struct CubicCoeffs
 {
-    float32 s2 = s * s;
-    float32 s3 = s2 * s;
+    template <typename Float, typename DstFloat>
+    static sysinline void func(Float s, DstFloat& c0, DstFloat& c1, DstFloat& c2, DstFloat& c3)
+    {
+        Float s2 = s * s;
+        Float s3 = s2 * s;
 
-    c0 = s2 + (-0.5f) * s3 + (-0.5f) * s;
-    c1 = 1 + 1.5f * s3 + (-2.5f) * s2;
-    c2 = (-1.5f) * s3 + 2 * s2 + 0.5f * s;
-    c3 = 0.5f * s3 + (-0.5f) * s2;
-}
+        c0 = DstFloat(s2 + (-0.5f) * s3 + (-0.5f) * s);
+        c1 = DstFloat(1 + 1.5f * s3 + (-2.5f) * s2);
+        c2 = DstFloat((-1.5f) * s3 + 2 * s2 + 0.5f * s);
+        c3 = DstFloat(0.5f * s3 + (-0.5f) * s2);
+    }
+};
 
 //================================================================
 //
-// cubicBsplineCoeffs
+// CubicBsplineCoeffs
 //
 // 11 instructions (mads)
 //
 //================================================================
 
-template <typename DstFloat>
-sysinline void cubicBsplineCoeffs(float32 s, DstFloat& c0, DstFloat& c1, DstFloat& c2, DstFloat& c3)
+struct CubicBsplineCoeffs
 {
-    float32 s2 = s * s;
-    float32 s3 = s2 * s;
+    template <typename Float, typename DstFloat>
+    static sysinline void func(Float s, DstFloat& c0, DstFloat& c1, DstFloat& c2, DstFloat& c3)
+    {
+        Float s2 = s * s;
+        Float s3 = s2 * s;
 
-    float32 tmp = 0.1666666667f * s3;
-    float32 aux = s2 - 0.5f * s3;
+        Float tmp = 0.1666666667f * s3;
+        Float aux = s2 - 0.5f * s3;
 
-    c0 = 0.1666666667f - tmp + 0.5f * s2 - 0.5f * s;
-    c1 = 0.6666666667f - aux;
-    c2 = aux - 0.5f * s2 + 0.5f * s + 0.1666666667f;
-    c3 = tmp;
-}
+        c0 = DstFloat(0.1666666667f - tmp + 0.5f * s2 - 0.5f * s);
+        c1 = DstFloat(0.6666666667f - aux);
+        c2 = DstFloat(aux - 0.5f * s2 + 0.5f * s + 0.1666666667f);
+        c3 = DstFloat(tmp);
+    }
+};
