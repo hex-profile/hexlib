@@ -30,12 +30,12 @@ struct Tex2DCubicPreparation
 //================================================================
 
 template <typename CoeffsFunc>
-sysinline Tex2DCubicPreparation tex2DCubicPrepare(const Point<float32>& srcPos, const Point<float32>& srcTexstep, CoeffsFunc coeffsFunc)
+sysinline Tex2DCubicPreparation tex2DCubicPrepare(const Point<float32>& pos, const Point<float32>& texstep)
 {
     Tex2DCubicPreparation prep;
 
-    float32 X = srcPos.X - 0.5f;
-    float32 Y = srcPos.Y - 0.5f;
+    float32 X = pos.X - 0.5f;
+    float32 Y = pos.Y - 0.5f;
 
     float32 bX = floorf(X);
     float32 bY = floorf(Y);
@@ -45,8 +45,8 @@ sysinline Tex2DCubicPreparation tex2DCubicPrepare(const Point<float32>& srcPos, 
 
     ////
 
-    Point<float32> mul = srcTexstep;
-    Point<float32> add = 0.5f * srcTexstep;
+    Point<float32> mul = texstep;
+    Point<float32> add = 0.5f * texstep;
 
     float32 BX = bX * mul.X + add.X;
     float32 BY = bY * mul.Y + add.Y;
@@ -63,8 +63,8 @@ sysinline Tex2DCubicPreparation tex2DCubicPrepare(const Point<float32>& srcPos, 
 
     ////
 
-    coeffsFunc(dX, prep.CX0, prep.CX1, prep.CX2, prep.CX3);
-    coeffsFunc(dY, prep.CY0, prep.CY1, prep.CY2, prep.CY3);
+    CoeffsFunc::func(dX, prep.CX0, prep.CX1, prep.CX2, prep.CX3);
+    CoeffsFunc::func(dY, prep.CY0, prep.CY1, prep.CY2, prep.CY3);
 
     ////
 
@@ -78,31 +78,31 @@ sysinline Tex2DCubicPreparation tex2DCubicPrepare(const Point<float32>& srcPos, 
 //================================================================
 
 template <typename SamplerType>
-sysinline auto tex2DCubicApply(SamplerType srcSampler, const Tex2DCubicPreparation& prep)
+sysinline auto tex2DCubicApply(SamplerType sampler, const Tex2DCubicPreparation& prep)
 {
     auto V0 =
-        prep.CX0 * devTex2D(srcSampler, prep.X0, prep.Y0) +
-        prep.CX1 * devTex2D(srcSampler, prep.X1, prep.Y0) +
-        prep.CX2 * devTex2D(srcSampler, prep.X2, prep.Y0) +
-        prep.CX3 * devTex2D(srcSampler, prep.X3, prep.Y0);
+        prep.CX0 * devTex2D(sampler, prep.X0, prep.Y0) +
+        prep.CX1 * devTex2D(sampler, prep.X1, prep.Y0) +
+        prep.CX2 * devTex2D(sampler, prep.X2, prep.Y0) +
+        prep.CX3 * devTex2D(sampler, prep.X3, prep.Y0);
 
     auto V1 =
-        prep.CX0 * devTex2D(srcSampler, prep.X0, prep.Y1) +
-        prep.CX1 * devTex2D(srcSampler, prep.X1, prep.Y1) +
-        prep.CX2 * devTex2D(srcSampler, prep.X2, prep.Y1) +
-        prep.CX3 * devTex2D(srcSampler, prep.X3, prep.Y1);
+        prep.CX0 * devTex2D(sampler, prep.X0, prep.Y1) +
+        prep.CX1 * devTex2D(sampler, prep.X1, prep.Y1) +
+        prep.CX2 * devTex2D(sampler, prep.X2, prep.Y1) +
+        prep.CX3 * devTex2D(sampler, prep.X3, prep.Y1);
 
     auto V2 =
-        prep.CX0 * devTex2D(srcSampler, prep.X0, prep.Y2) +
-        prep.CX1 * devTex2D(srcSampler, prep.X1, prep.Y2) +
-        prep.CX2 * devTex2D(srcSampler, prep.X2, prep.Y2) +
-        prep.CX3 * devTex2D(srcSampler, prep.X3, prep.Y2);
+        prep.CX0 * devTex2D(sampler, prep.X0, prep.Y2) +
+        prep.CX1 * devTex2D(sampler, prep.X1, prep.Y2) +
+        prep.CX2 * devTex2D(sampler, prep.X2, prep.Y2) +
+        prep.CX3 * devTex2D(sampler, prep.X3, prep.Y2);
 
     auto V3 =
-        prep.CX0 * devTex2D(srcSampler, prep.X0, prep.Y3) +
-        prep.CX1 * devTex2D(srcSampler, prep.X1, prep.Y3) +
-        prep.CX2 * devTex2D(srcSampler, prep.X2, prep.Y3) +
-        prep.CX3 * devTex2D(srcSampler, prep.X3, prep.Y3);
+        prep.CX0 * devTex2D(sampler, prep.X0, prep.Y3) +
+        prep.CX1 * devTex2D(sampler, prep.X1, prep.Y3) +
+        prep.CX2 * devTex2D(sampler, prep.X2, prep.Y3) +
+        prep.CX3 * devTex2D(sampler, prep.X3, prep.Y3);
 
     ////
 
@@ -115,17 +115,11 @@ sysinline auto tex2DCubicApply(SamplerType srcSampler, const Tex2DCubicPreparati
 //
 //================================================================
 
-template <typename SamplerType, typename CoeffsFunc>
-sysinline auto tex2DCubicGeneric
-(
-    SamplerType srcSampler,
-    const Point<float32>& srcPos,
-    const Point<float32>& srcTexstep,
-    CoeffsFunc coeffsFunc
-)
+template <typename CoeffsFunc, typename SamplerType>
+sysinline auto tex2DCubicGeneric(SamplerType sampler, const Point<float32>& pos, const Point<float32>& texstep)
 {
-    float32 X = srcPos.X - 0.5f;
-    float32 Y = srcPos.Y - 0.5f;
+    float32 X = pos.X - 0.5f;
+    float32 Y = pos.Y - 0.5f;
 
     float32 bX = floorf(X);
     float32 bY = floorf(Y);
@@ -135,8 +129,8 @@ sysinline auto tex2DCubicGeneric
 
     ////
 
-    Point<float32> mul = srcTexstep;
-    Point<float32> add = 0.5f * srcTexstep;
+    Point<float32> mul = texstep;
+    Point<float32> add = 0.5f * texstep;
 
     float32 BX = bX * mul.X + add.X;
     float32 BY = bY * mul.Y + add.Y;
@@ -154,36 +148,36 @@ sysinline auto tex2DCubicGeneric
     ////
 
     float32 CX0, CX1, CX2, CX3;
-    coeffsFunc(dX, CX0, CX1, CX2, CX3);
+    CoeffsFunc::func(dX, CX0, CX1, CX2, CX3);
 
     auto V0 =
-        CX0 * devTex2D(srcSampler, X0, Y0) +
-        CX1 * devTex2D(srcSampler, X1, Y0) +
-        CX2 * devTex2D(srcSampler, X2, Y0) +
-        CX3 * devTex2D(srcSampler, X3, Y0);
+        CX0 * devTex2D(sampler, X0, Y0) +
+        CX1 * devTex2D(sampler, X1, Y0) +
+        CX2 * devTex2D(sampler, X2, Y0) +
+        CX3 * devTex2D(sampler, X3, Y0);
 
     auto V1 =
-        CX0 * devTex2D(srcSampler, X0, Y1) +
-        CX1 * devTex2D(srcSampler, X1, Y1) +
-        CX2 * devTex2D(srcSampler, X2, Y1) +
-        CX3 * devTex2D(srcSampler, X3, Y1);
+        CX0 * devTex2D(sampler, X0, Y1) +
+        CX1 * devTex2D(sampler, X1, Y1) +
+        CX2 * devTex2D(sampler, X2, Y1) +
+        CX3 * devTex2D(sampler, X3, Y1);
 
     auto V2 =
-        CX0 * devTex2D(srcSampler, X0, Y2) +
-        CX1 * devTex2D(srcSampler, X1, Y2) +
-        CX2 * devTex2D(srcSampler, X2, Y2) +
-        CX3 * devTex2D(srcSampler, X3, Y2);
+        CX0 * devTex2D(sampler, X0, Y2) +
+        CX1 * devTex2D(sampler, X1, Y2) +
+        CX2 * devTex2D(sampler, X2, Y2) +
+        CX3 * devTex2D(sampler, X3, Y2);
 
     auto V3 =
-        CX0 * devTex2D(srcSampler, X0, Y3) +
-        CX1 * devTex2D(srcSampler, X1, Y3) +
-        CX2 * devTex2D(srcSampler, X2, Y3) +
-        CX3 * devTex2D(srcSampler, X3, Y3);
+        CX0 * devTex2D(sampler, X0, Y3) +
+        CX1 * devTex2D(sampler, X1, Y3) +
+        CX2 * devTex2D(sampler, X2, Y3) +
+        CX3 * devTex2D(sampler, X3, Y3);
 
     ////
 
     float32 CY0, CY1, CY2, CY3;
-    coeffsFunc(dY, CY0, CY1, CY2, CY3);
+    CoeffsFunc::func(dY, CY0, CY1, CY2, CY3);
 
     return CY0*V0 + CY1*V1 + CY2*V2 + CY3*V3;
 }
@@ -195,9 +189,9 @@ sysinline auto tex2DCubicGeneric
 //================================================================
 
 template <typename SamplerType>
-sysinline auto tex2DCubic(SamplerType srcSampler, const Point<float32>& pos, const Point<float32>& srcTexstep)
+sysinline auto tex2DCubic(SamplerType sampler, const Point<float32>& pos, const Point<float32>& texstep)
 {
-    return tex2DCubicGeneric(srcSampler, pos, srcTexstep, cubicCoeffs<float32>);
+    return tex2DCubicGeneric<CubicCoeffs>(sampler, pos, texstep);
 }
 
 //================================================================
@@ -209,12 +203,14 @@ sysinline auto tex2DCubic(SamplerType srcSampler, const Point<float32>& pos, con
 //================================================================
 
 template <typename SamplerType>
-sysinline auto tex2DCubicBspline(SamplerType srcSampler, const Point<float32>& pos, const Point<float32>& srcTexstep)
+sysinline auto tex2DCubicBspline(SamplerType sampler, const Point<float32>& pos, const Point<float32>& texstep)
 {
-    return tex2DCubicGeneric(srcSampler, pos, srcTexstep, cubicBsplineCoeffs<float32>);
+    return tex2DCubicGeneric<CubicBsplineCoeffs>(sampler, pos, texstep);
 }
 
 //================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
 //
 // tex2DCubicBsplineFast
 //
@@ -223,11 +219,27 @@ sysinline auto tex2DCubicBspline(SamplerType srcSampler, const Point<float32>& p
 // (!) The image should be prefiltered.
 // (!) The image interpolation mode should be set to BILINEAR.
 //
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-template <typename SamplerType>
-sysinline auto tex2DCubicBsplineFast(SamplerType srcSampler, const Point<float32>& pos, const Point<float32>& srcTexstep)
+struct Tex2DCubicBsplineFastPreparation
 {
+    Point<float32> posA;
+    Point<float32> posB;
+    Point<float32> sumB;
+};
+
+//================================================================
+//
+// tex2DCubicBsplineFastPrepare
+//
+//================================================================
+
+sysinline auto tex2DCubicBsplineFastPrepare(const Point<float32>& pos, const Point<float32>& texstep)
+{
+    Tex2DCubicBsplineFastPreparation prep;
+
     Point<float32> posGrid = pos - 0.5f;
 
     Point<float32> base = floorf(posGrid);
@@ -236,8 +248,8 @@ sysinline auto tex2DCubicBsplineFast(SamplerType srcSampler, const Point<float32
     ////
 
     Point<float32> C0, C1, C2, C3;
-    cubicBsplineCoeffs(frac.X, C0.X, C1.X, C2.X, C3.X);
-    cubicBsplineCoeffs(frac.Y, C0.Y, C1.Y, C2.Y, C3.Y);
+    CubicBsplineCoeffs::func(frac.X, C0.X, C1.X, C2.X, C3.X);
+    CubicBsplineCoeffs::func(frac.Y, C0.Y, C1.Y, C2.Y, C3.Y);
 
     Point<float32> sumA = C0 + C1;
     Point<float32> sumB = C2 + C3;
@@ -245,15 +257,40 @@ sysinline auto tex2DCubicBsplineFast(SamplerType srcSampler, const Point<float32
     Point<float32> divSumA = point(nativeRecip(sumA.X), nativeRecip(sumA.Y));
     Point<float32> divSumB = point(nativeRecip(sumB.X), nativeRecip(sumB.Y));
 
-    Point<float32> posA = (base + (0.5f - 1) + C1 * divSumA) * srcTexstep;
-    Point<float32> posB = (base + (0.5f + 1) + C3 * divSumB) * srcTexstep;
+    prep.posA = (base + (0.5f - 1) + C1 * divSumA) * texstep;
+    prep.posB = (base + (0.5f + 1) + C3 * divSumB) * texstep;
 
-    ////
+    prep.sumB = sumB;
 
-    auto vAA = devTex2D(srcSampler, posA.X, posA.Y);
-    auto vAB = devTex2D(srcSampler, posA.X, posB.Y);
-    auto vBA = devTex2D(srcSampler, posB.X, posA.Y);
-    auto vBB = devTex2D(srcSampler, posB.X, posB.Y);
+    return prep;
+}
 
-    return linerp2D(sumB, vAA, vAB, vBA, vBB);
+//================================================================
+//
+// tex2DCubicBsplineFastApply
+//
+//================================================================
+
+template <typename SamplerType>
+sysinline auto tex2DCubicBsplineFastApply(SamplerType sampler, const Tex2DCubicBsplineFastPreparation& prep)
+{
+    auto vAA = devTex2D(sampler, prep.posA.X, prep.posA.Y);
+    auto vAB = devTex2D(sampler, prep.posA.X, prep.posB.Y);
+    auto vBA = devTex2D(sampler, prep.posB.X, prep.posA.Y);
+    auto vBB = devTex2D(sampler, prep.posB.X, prep.posB.Y);
+
+    return linerp2D(prep.sumB, vAA, vAB, vBA, vBB);
+}
+
+//================================================================
+//
+// tex2DCubicBsplineFast
+//
+//================================================================
+
+template <typename SamplerType>
+sysinline auto tex2DCubicBsplineFast(SamplerType sampler, const Point<float32>& pos, const Point<float32>& texstep)
+{
+    auto prep = tex2DCubicBsplineFastPrepare(pos, texstep);
+    return tex2DCubicBsplineFastApply(sampler, prep);
 }

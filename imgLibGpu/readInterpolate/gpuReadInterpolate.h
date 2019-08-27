@@ -227,7 +227,7 @@ struct InterpolateSpace<INTERP_CUBIC, BORDER_CLAMP>
         ////
 
         float32 CX0, CX1, CX2, CX3;
-        cubicCoeffs(dX, CX0, CX1, CX2, CX3);
+        CubicCoeffs::func(dX, CX0, CX1, CX2, CX3);
 
         #define READ(X, pY) \
             (convertNearest<VectorFloat>(LoadElement::func(unsafePtr((pY) + (X), 1))))
@@ -263,7 +263,7 @@ struct InterpolateSpace<INTERP_CUBIC, BORDER_CLAMP>
         ////
 
         float32 CY0, CY1, CY2, CY3;
-        cubicCoeffs(dY, CY0, CY1, CY2, CY3);
+        CubicCoeffs::func(dY, CY0, CY1, CY2, CY3);
 
         return CY0*V0 + CY1*V1 + CY2*V2 + CY3*V3;
     }
