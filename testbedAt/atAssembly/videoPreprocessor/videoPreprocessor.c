@@ -380,7 +380,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         (
             kit, STR("Display"),
             {STR("<Nothing>"), STR("")},
-            {STR("Frame History"), STR("Alt+F")}
+            {STR("Frame History"), STR("Shift+F")}
         );
 
         frameHistoryCapacity.serialize(kit, STR("Frame History Size"));
