@@ -65,8 +65,10 @@ void main()
 #define PREP_FOR0(count, macro, extra) \
     PREP_PASTE(PREP_FOR0_, count)(macro, extra)
 
-#define PREP_FOR0_0(macro, extra)
+//----------------------------------------------------------------
 
+#define PREP_FOR0_MINUS1(macro, extra)
+#define PREP_FOR0_0(macro, extra)
 #define PREP_FOR0_1(macro, extra) PREP_FOR0_0(macro, extra) macro(0, extra)
 #define PREP_FOR0_2(macro, extra) PREP_FOR0_1(macro, extra) macro(1, extra)
 #define PREP_FOR0_3(macro, extra) PREP_FOR0_2(macro, extra) macro(2, extra)
@@ -333,8 +335,10 @@ void main()
 #define PREP_FOR1(count, macro, extra) \
     PREP_PASTE(PREP_FOR1_, count)(macro, extra)
 
-#define PREP_FOR1_0(macro, extra)
+//----------------------------------------------------------------
 
+#define PREP_FOR1_MINUS1(macro, extra)
+#define PREP_FOR1_0(macro, extra)
 #define PREP_FOR1_1(macro, extra) PREP_FOR1_0(macro, extra) macro(0, extra)
 #define PREP_FOR1_2(macro, extra) PREP_FOR1_1(macro, extra) macro(1, extra)
 #define PREP_FOR1_3(macro, extra) PREP_FOR1_2(macro, extra) macro(2, extra)
@@ -601,8 +605,10 @@ void main()
 #define PREP_FOR2(count, macro, extra) \
     PREP_PASTE(PREP_FOR2_, count)(macro, extra)
 
-#define PREP_FOR2_0(macro, extra)
+//----------------------------------------------------------------
 
+#define PREP_FOR2_MINUS1(macro, extra)
+#define PREP_FOR2_0(macro, extra)
 #define PREP_FOR2_1(macro, extra) PREP_FOR2_0(macro, extra) macro(0, extra)
 #define PREP_FOR2_2(macro, extra) PREP_FOR2_1(macro, extra) macro(1, extra)
 #define PREP_FOR2_3(macro, extra) PREP_FOR2_2(macro, extra) macro(2, extra)

@@ -35,39 +35,28 @@ struct ErrorLogEx
 
 //----------------------------------------------------------------
 
-template <typename Kit>
-inline bool printMsgTrace(ErrorLogEx& errorLogEx, const CharArray& format, MsgKind msgKind, stdPars(Kit))
-{
-    return errorLogEx.addMsgTrace(format, msgKind, stdPassThru);
-}
-
-//----------------------------------------------------------------
-
 #define PRINTTRACE__STORE_PARAM(n, _) \
     v##n,
 
 #define PRINTTRACE__FUNC(n, _) \
     \
-    template <PREP_ENUM_INDEXED(n, typename T), typename Kit> \
+    template <PREP_ENUMERATE_INDEXED(n, typename T) typename Kit> \
     inline bool printMsgTrace \
     ( \
         ErrorLogEx& errorLogEx, \
         const CharArray& format, \
-        PREP_ENUM_INDEXED_PAIR(n, const T, &v), \
+        PREP_ENUMERATE_INDEXED_PAIR(n, const T, &v) \
         MsgKind msgKind, \
         stdPars(Kit) \
     ) \
     { \
-        const FormatOutputAtom params[] = {PREP_FOR(n, PRINTTRACE__STORE_PARAM, _)}; \
+        const FormatOutputAtom params[COMPILE_CLAMP_MIN(n, 1)] = {PREP_FOR(n, PRINTTRACE__STORE_PARAM, _)}; \
         \
         ParamMsg paramMsg(format, params, n); \
         return errorLogEx.addMsgTrace(paramMsg, msgKind, stdPassThru); \
     }
 
-#define PRINTTRACE__FUNC_THUNK(n, _) \
-    PRINTTRACE__FUNC(PREP_INC(n), _)
-
-PREP_FOR1(PRINTTRACE__MAX_COUNT, PRINTTRACE__FUNC_THUNK, _)
+PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
 
 //================================================================
 //

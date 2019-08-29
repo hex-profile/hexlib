@@ -3,26 +3,41 @@
 #include "prepTools/prepArg.h"
 #include "prepTools/prepFor.h"
 #include "prepTools/prepIncDec.h"
+#include "prepTools/prepIf.h"
 
 //================================================================
 //
 // PREP_ENUM
 //
-// Generates a comma-separated list of tokens
+// Generates a comma-separated list of tokens: a, b, c
 //
-// a, b, c
+// PREP_ENUMERATE
+//
+// Generates a comma-separated list of tokens: a, b, c,
+// Can be used for zero arguments.
 //
 //================================================================
 
 #define PREP_ENUM(n, macro, args) \
-    PREP_FOR(PREP_DEC(n), PREP_ENUM_ITER_CALLER, (macro, args)) \
-    PREP_ENUM_ITER(PREP_DEC(n), macro, args)
+    PREP_FOR(n, PREP_ENUM__ITER_CALLER, (macro, args))
 
-#define PREP_ENUM_ITER_CALLER(n, params) \
-    PREP_ENUM_ITER(n, PREP_ARG2_0 params, PREP_ARG2_1 params),
+#define PREP_ENUM__ITER_CALLER(i, params) \
+    PREP_ENUM__ITER(i, PREP_ARG2_0 params, PREP_ARG2_1 params)
 
-#define PREP_ENUM_ITER(n, macro, args) \
-    macro(n, args)
+#define PREP_ENUM__ITER(i, macro, args) \
+    PREP_SELECT(i, PREP_COMMA, PREP_EMPTY) \
+    macro(i, args)
+
+//----------------------------------------------------------------
+
+#define PREP_ENUMERATE(n, macro, args) \
+    PREP_FOR(n, PREP_ENUMERATE__ITER_CALLER, (macro, args))
+
+#define PREP_ENUMERATE__ITER_CALLER(i, params) \
+    PREP_ENUMERATE__ITER(i, PREP_ARG2_0 params, PREP_ARG2_1 params)
+
+#define PREP_ENUMERATE__ITER(i, macro, args) \
+    macro(i, args),
 
 //================================================================
 //
@@ -35,10 +50,18 @@
 //================================================================
 
 #define PREP_ENUM_INDEXED(n, prefix) \
-    PREP_ENUM(n, PREP__ENUM_INDEXED_ITER, prefix)
+    PREP_ENUM(n, PREP_ENUM_INDEXED__ITER, prefix)
 
-#define PREP__ENUM_INDEXED_ITER(n, prefix) \
-    PREP_PASTE(prefix, n)
+#define PREP_ENUM_INDEXED__ITER(i, prefix) \
+    PREP_PASTE(prefix, i)
+
+//----------------------------------------------------------------
+
+#define PREP_ENUMERATE_INDEXED(n, prefix) \
+    PREP_ENUMERATE(n, PREP_ENUMERATE_INDEXED__ITER, prefix)
+
+#define PREP_ENUMERATE_INDEXED__ITER(i, prefix) \
+    PREP_PASTE(prefix, i)
 
 //================================================================
 //
@@ -51,14 +74,25 @@
 //================================================================
 
 #define PREP_ENUM_LR(n, prefix, postfix) \
-    PREP_FOR(PREP_DEC(n), PREP__ENUM_LR_ITER, (prefix, postfix)) \
-    PREP__ENUM_LR_TEXT(PREP_DEC(n), prefix, postfix)
+    PREP_FOR(n, PREP_ENUM_LR__ITER, (prefix, postfix)) \
 
-#define PREP__ENUM_LR_ITER(n, args) \
-    PREP__ENUM_LR_TEXT(n, PREP_ARG2_0 args, PREP_ARG2_1 args),
+#define PREP_ENUM_LR__ITER(i, args) \
+    PREP_SELECT(i, PREP_COMMA, PREP_EMPTY) \
+    PREP_ENUM_LR__TEXT(i, PREP_ARG2_0 args, PREP_ARG2_1 args)
 
-#define PREP__ENUM_LR_TEXT(n, prefix, postfix) \
-    PREP_PASTE3(prefix, n, postfix)
+#define PREP_ENUM_LR__TEXT(i, prefix, postfix) \
+    PREP_PASTE3(prefix, i, postfix)
+
+//----------------------------------------------------------------
+
+#define PREP_ENUMERATE_LR(n, prefix, postfix) \
+    PREP_FOR(n, PREP_ENUMERATE_LR__ITER, (prefix, postfix)) \
+
+#define PREP_ENUMERATE_LR__ITER(i, args) \
+    PREP_ENUMERATE_LR__TEXT(i, PREP_ARG2_0 args, PREP_ARG2_1 args)
+
+#define PREP_ENUMERATE_LR__TEXT(i, prefix, postfix) \
+    PREP_PASTE3(prefix, i, postfix),
 
 //================================================================
 //
@@ -70,12 +104,17 @@
 //
 //================================================================
 
-#define PREP__ENUM_INDEXED_PAIR_TEXT(n, args) \
-    PREP_PASTE(PREP_ARG2_0 args, n) PREP_PASTE(PREP_ARG2_1 args, n)
-
-#define PREP__ENUM_INDEXED_PAIR_ITER(n, args) \
-    PREP__ENUM_INDEXED_PAIR_TEXT(n, args),
-
 #define PREP_ENUM_INDEXED_PAIR(n, prefix1, prefix2) \
-    PREP_FOR(PREP_DEC(n), PREP__ENUM_INDEXED_PAIR_ITER, (prefix1, prefix2)) \
-    PREP__ENUM_INDEXED_PAIR_TEXT(PREP_DEC(n), (prefix1, prefix2))
+    PREP_FOR(n, PREP_ENUM_INDEXED_PAIR__ITER, (prefix1, prefix2)) \
+
+#define PREP_ENUM_INDEXED_PAIR__ITER(i, args) \
+    PREP_SELECT(i, PREP_COMMA, PREP_EMPTY) \
+    PREP_PASTE(PREP_ARG2_0 args, i) PREP_PASTE(PREP_ARG2_1 args, i)
+
+//----------------------------------------------------------------
+
+#define PREP_ENUMERATE_INDEXED_PAIR(n, prefix1, prefix2) \
+    PREP_FOR(n, PREP_ENUMERATE_INDEXED_PAIR__ITER, (prefix1, prefix2))
+
+#define PREP_ENUMERATE_INDEXED_PAIR__ITER(i, args) \
+    PREP_PASTE(PREP_ARG2_0 args, i) PREP_PASTE(PREP_ARG2_1 args, i),
