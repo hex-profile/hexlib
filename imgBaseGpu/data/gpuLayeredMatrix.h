@@ -60,9 +60,12 @@ class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
 //================================================================
 
 #define GPU_LAYERED_MATRIX_PASS(n, name) \
-    PREP_ENUM(n, GPU_LAYERED_MATRIX_PASS_FUNC, name)
+    PREP_ENUM(n, GPU_LAYERED_MATRIX_PASS_ITEM, name)
 
-#define GPU_LAYERED_MATRIX_PASS_FUNC(r, name) \
+#define GPU_LAYERED_MATRIX_PASS_COMMA(n, name) \
+    PREP_ENUMERATE(n, GPU_LAYERED_MATRIX_PASS_ITEM, name)
+
+#define GPU_LAYERED_MATRIX_PASS_ITEM(r, name) \
     (name).getLayer(r)
 
 //================================================================
