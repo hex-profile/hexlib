@@ -14,7 +14,7 @@ class ReportModerator
 
 public:
 
-    ReportModerator() = default;
+    ReportModerator() =default;
 
     ReportModerator(float32 period)
     {

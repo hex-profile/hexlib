@@ -31,7 +31,7 @@ private:
 
 public:
 
-    sysinline LimitedArray() = default;
+    sysinline LimitedArray() =default;
 
     sysinline SelfType& operator =(const SelfType& that)
     {

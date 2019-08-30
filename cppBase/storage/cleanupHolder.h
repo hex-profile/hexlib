@@ -13,13 +13,13 @@ class CleanupHolder {
 
 public:
 
-    CleanupHolder() = default;
+    CleanupHolder() =default;
 
     ~CleanupHolder() {execAndClear();}
 
-    CleanupHolder(const CleanupHolder& that) = delete;
+    CleanupHolder(const CleanupHolder& that) =delete;
 
-    CleanupHolder& operator =(const CleanupHolder& that) = delete;
+    CleanupHolder& operator =(const CleanupHolder& that) =delete;
 
     CleanupHolder(CleanupHolder&& that)
     {

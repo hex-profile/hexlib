@@ -76,7 +76,7 @@ class ActionHolder
 
 public:
 
-    ActionHolder() = default;
+    ActionHolder() =default;
 
     ActionHolder(const Self& that)
     {
