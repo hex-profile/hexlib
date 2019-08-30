@@ -61,10 +61,10 @@ public:
 
 public:
 
-    PyramidScaleArray() = default;
+    PyramidScaleArray() =default;
     PyramidScaleArray(float32 levelFactor) {configure(levelFactor);}
     void configure(float32 levelFactor);
-    PyramidScaleArray& operator =(const PyramidScaleArray& that) = default;
+    PyramidScaleArray& operator =(const PyramidScaleArray& that) =default;
     PyramidScaleArray& operator =(const PyramidScale& that);
 
 private:

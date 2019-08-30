@@ -24,7 +24,7 @@ private:
 
 public:
 
-    DbgptrReference() = delete;
+    DbgptrReference() =delete;
 
 public:
 

@@ -70,7 +70,7 @@ public:
         initialize(convertNearest<Type>(0));
     }
 
-    TemporalFilter& operator =(const TemporalFilter& that) = default;
+    TemporalFilter& operator =(const TemporalFilter& that) =default;
 
     void initialize(const Type& value);
 
@@ -119,7 +119,7 @@ public:
         reset();
     }
 
-    TemporalWeightedFilter& operator =(const TemporalWeightedFilter& that) = default;
+    TemporalWeightedFilter& operator =(const TemporalWeightedFilter& that) =default;
 
     void reset()
     {
@@ -172,7 +172,7 @@ public:
 
     using Scalar = VECTOR_BASE(Type);
 
-    TemporalFilterNorm& operator =(const TemporalFilterNorm& that) = default;
+    TemporalFilterNorm& operator =(const TemporalFilterNorm& that) =default;
 
     void reset()
         {base.reset();}

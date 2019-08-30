@@ -20,7 +20,9 @@ using namespace gaussSincResampling;
     action(int8_x2, int8_x2, int8_x2, 2) \
     action(uint8_x2, uint8_x2, uint8_x2, 2) \
     action(float16_x2, float16_x2, float16_x2, 2) \
-    action(float32_x2, float32_x2, float32_x2, 2)
+    action(float32_x2, float32_x2, float32_x2, 2) \
+    \
+    action(uint8_x4, uint8_x4, uint8_x4, 4)
 
 //================================================================
 //

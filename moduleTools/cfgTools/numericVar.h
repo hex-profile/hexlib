@@ -333,7 +333,7 @@ public:
 
     inline operator bool () const {return Base::operator()() != 0;}
 
-    inline BoolVarStatic() = default;
+    inline BoolVarStatic() =default;
 
     inline BoolVarStatic(bool value)
     {
