@@ -85,7 +85,7 @@ struct NameKeyPair
 //----------------------------------------------------------------
 
 #define SWSER_DEFINE \
-    PREP_FOR1(16, SWSER_AUX0, _)
+    PREP_FOR1(32, SWSER_AUX0, _)
 
 #define SWSER_AUX0(n, _) \
     SWSER_AUX1(PREP_INC(n))

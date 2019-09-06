@@ -417,10 +417,10 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         vectorDisplayMode.serialize
         (
             kit, STR("Vector Gray Mode"),
-            {STR("Vector Display: Color"), STR("Z")},
-            {STR("Vector Display: Magnitude"), STR("X")},
-            {STR("Vector Display: X"), STR("C")},
-            {STR("Vector Display: Y"), STR("V")}
+            {STR("Vector Display: Color"), STR("Alt+Z")},
+            {STR("Vector Display: Magnitude"), STR("Alt+X")},
+            {STR("Vector Display: X"), STR("Alt+C")},
+            {STR("Vector Display: Y"), STR("Alt+V")}
         );
 
     }
