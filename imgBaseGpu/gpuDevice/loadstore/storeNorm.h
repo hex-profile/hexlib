@@ -96,7 +96,7 @@ sysinline Dst convertRoundSaturate(const Src& src);
         auto result = convertNearest<int32>(src);
 
         if (src <= -2147483648.f)
-            result = -2147483648;
+            result = -2147483647-1;
 
         if (src >= +2147483648.f)
             result = 2147483647;
