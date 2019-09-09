@@ -235,8 +235,6 @@ class HalfFloatTestImpl
 public:
 
     void serialize(const ModuleSerializeKit& kit) {}
-    bool reallocValid() const {return true;}
-    stdbool realloc(stdPars(ReallocKit));
     stdbool process(const Process& o, stdPars(ProcessKit));
 
 private:
@@ -254,17 +252,6 @@ private:
     bool packTestFinished = false;
 
 };
-
-//================================================================
-//
-// HalfFloatTestImpl::realloc
-//
-//================================================================
-
-stdbool HalfFloatTestImpl::realloc(stdPars(ReallocKit))
-{
-    returnTrue;
-}
 
 //================================================================
 //
@@ -476,7 +463,6 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 
 stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
 {
-    REQUIRE(reallocValid());
 
     //----------------------------------------------------------------
     //
@@ -525,8 +511,6 @@ stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
 
 CLASSTHUNK_CONSTRUCT_DESTRUCT(HalfFloatTest)
 CLASSTHUNK_VOID1(HalfFloatTest, serialize, const ModuleSerializeKit&)
-CLASSTHUNK_BOOL_CONST0(HalfFloatTest, reallocValid)
-CLASSTHUNK_BOOL_STD0(HalfFloatTest, realloc, ReallocKit)
 CLASSTHUNK_BOOL_STD1(HalfFloatTest, process, const Process&, ProcessKit)
 
 //----------------------------------------------------------------

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "gpuModuleHeader.h"
+#include "userOutput/diagnosticKit.h"
 
-namespace halfFloatTest {
+namespace floatRangesTest {
 
 //================================================================
 //
@@ -11,32 +12,30 @@ namespace halfFloatTest {
 //
 //================================================================
 
-KIT_CREATE0(Process);
-KIT_COMBINE2(ProcessKit, ModuleProcessKit, GpuAppExecKit);
-KIT_COMBINE2(ReallocKit, ModuleReallocKit, GpuAppExecKit);
+KIT_COMBINE1(ProcessKit, DiagnosticKit);
 
 //================================================================
 //
-// HalfFloatTest
+// FloatRangesTest
 //
 //================================================================
 
-class HalfFloatTest
+class FloatRangesTest
 {
 
 public:
 
-    HalfFloatTest();
-    ~HalfFloatTest();
+    FloatRangesTest();
+    ~FloatRangesTest();
 
 public:
 
     void serialize(const ModuleSerializeKit& kit);
-    stdbool process(const Process& o, stdPars(ProcessKit));
+    stdbool process(stdPars(ProcessKit));
 
 private:
 
-    DynamicClass<class HalfFloatTestImpl> instance;
+    DynamicClass<class FloatRangesTestImpl> instance;
 
 };
 

@@ -16,6 +16,7 @@
 #include "copyMatrixAsArray.h"
 #include "storage/rememberCleanup.h"
 #include "atAssembly/halfFloatTest/halfFloatTest.h"
+#include "atAssembly/floatRangesTest/floatRangesTest.h"
 #include "atAssembly/videoPreprocessor/tools/rotateImage.h"
 #include "atAssembly/videoPreprocessor/tools/videoPrepTools.h"
 #include "atAssembly/videoPreprocessor/displayWaitController.h"
@@ -288,6 +289,7 @@ private:
 private:
 
     halfFloatTest::HalfFloatTest halfFloatTest;
+    floatRangesTest::FloatRangesTest floatRangesTest;
 
 private:
 
@@ -439,6 +441,12 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         CFG_NAMESPACE("Saving AVI Files");
         aviConfig.serialize(kit);
     }
+
+    {
+        CFG_NAMESPACE("Tests");
+        halfFloatTest.serialize(kit);
+        floatRangesTest.serialize(kit);
+    }
 }
 
 //================================================================
@@ -462,8 +470,7 @@ bool VideoPreprocessorImpl::reallocValid() const
 {
     return
         allv(allocFrameSize == desiredFrameSize) &&
-        frameHistoryCapacity == frameHistory.allocSize() &&
-        halfFloatTest.reallocValid();
+        frameHistoryCapacity == frameHistory.allocSize();
 }
 
 //================================================================
@@ -491,10 +498,6 @@ stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
 
     frameHistory.clear();
     movingFrameIndex = 0;
-
-    ////
-
-    require(halfFloatTest.realloc(stdPass));
 
     ////
 
@@ -1009,6 +1012,17 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     if (alternativeVersion)
         printMsgL(kit, STR("Alternative Version!"), msgWarn);
+
+    //----------------------------------------------------------------
+    //
+    // Tests.
+    //
+    //----------------------------------------------------------------
+
+    if (kit.dataProcessing)
+    {
+        require(floatRangesTest.process(stdPass));
+    }
 
     //----------------------------------------------------------------
     //
