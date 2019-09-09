@@ -87,8 +87,36 @@ sysinline Dst convertRoundSaturate(const Src& src);
 
     //
     // 32-bit numbers need special approach:
-    // Compare only to exactly-representable floats.
+    // Compare only to exactly-representable floats (!)
     //
+
+    template <>
+    sysinline int32 convertRoundSaturate(const float32& src)
+    {
+        auto result = convertNearest<int32>(src);
+
+        if (src <= -2147483648.f)
+            result = -2147483648;
+
+        if (src >= +2147483648.f)
+            result = 2147483647;
+
+        return result;
+    }
+
+    template <>
+    sysinline uint32 convertRoundSaturate(const float32& src)
+    {
+        auto result = convertNearest<uint32>(src);
+
+        if (src < 0)
+            result = 0;
+
+        if (src >= 4294967296)
+            result = 4294967295;
+
+        return result;
+    }
 
 #endif
 
@@ -112,11 +140,11 @@ sysinline Dst convertRoundSaturate(const Src& src);
 
 TMP_MACRO(float32_x2, uint8_x2, uint8)
 TMP_MACRO(float32_x2, uint16_x2, uint16)
-// TMP_MACRO(float32_x2, uint32_x2, uint32)
+TMP_MACRO(float32_x2, uint32_x2, uint32)
 
 TMP_MACRO(float32_x2, int8_x2, int8)
 TMP_MACRO(float32_x2, int16_x2, int16)
-// TMP_MACRO(float32_x2, int32_x2, int32)
+TMP_MACRO(float32_x2, int32_x2, int32)
 
 #undef TMP_MACRO
 
@@ -140,11 +168,11 @@ TMP_MACRO(float32_x2, int16_x2, int16)
 
 TMP_MACRO(float32_x4, uint8_x4, uint8)
 TMP_MACRO(float32_x4, uint16_x4, uint16)
-// TMP_MACRO(float32_x4, uint32_x4, uint32)
+TMP_MACRO(float32_x4, uint32_x4, uint32)
 
 TMP_MACRO(float32_x4, int8_x4, int8)
 TMP_MACRO(float32_x4, int16_x4, int16)
-// TMP_MACRO(float32_x4, int32_x4, int32)
+TMP_MACRO(float32_x4, int32_x4, int32)
 
 #undef TMP_MACRO
 
@@ -202,19 +230,17 @@ sysinline float16 convertNormClamp(const float32& src) \
 
     TMP_MACRO(float32, int8,  float_s8_rndsat(src * 0x7F))
     TMP_MACRO(float32, int16, float_s16_rndsat(src * 0x7FFF))
-    // TMP_MACRO(float32, int32, float_s32_rndsat(src * 0x7FFFFFFF))
 
     TMP_MACRO(float32, uint8,  float_u8_rndsat(src * 0xFF))
     TMP_MACRO(float32, uint16, float_u16_rndsat(src * 0xFFFF))
-    // TMP_MACRO(float32, uint32, float_u32_rndsat(src * 0xFFFFFFFF))
 
 #else
 
-    TMP_MACRO(float32, int8,  convertNearest<int32>(clampRange(src, -1.f, +1.f) * 0x7F))
-    TMP_MACRO(float32, int16, convertNearest<int32>(clampRange(src, -1.f, +1.f) * 0x7FFF))
+    TMP_MACRO(float32, int8,  convertRoundSaturate<int8>(src * 0x7F))
+    TMP_MACRO(float32, int16, convertRoundSaturate<int8>(src * 0x7FFF))
 
-    TMP_MACRO(float32, uint8,  convertNearest<int32>(clampRange(src, 0.f, 1.f) * 0xFF))
-    TMP_MACRO(float32, uint16, convertNearest<int32>(clampRange(src, 0.f, 1.f) * 0xFFFF))
+    TMP_MACRO(float32, uint8,  convertRoundSaturate<uint8>(src * 0xFF))
+    TMP_MACRO(float32, uint16, convertRoundSaturate<uint8>(src * 0xFFFF))
 
 #endif
 
