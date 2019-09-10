@@ -13,23 +13,33 @@
 
 //================================================================
 //
+// PREP_ITER_PASTE
+//
+//================================================================
+
+#define PREP_ITER_PASTE(X, Y) \
+    PREP_ITER_PASTE2(X, Y)
+
+#define PREP_ITER_PASTE2(X, Y) \
+    X##Y
+
+//================================================================
+//
 // PREP_ITER_* variables
 //
 //================================================================
 
 #define PREP_ITER_INDEX \
-    PREP_PASTE(PREP_ITER_INDEX_, PREP_DEC(PREP_ITER_DEPTH))
-
-////
+    PREP_ITER_PASTE(PREP_ITER_INDEX_, PREP_DEC(PREP_ITER_DEPTH))
 
 #define PREP_ITER_MIN \
-    PREP_ARG3_0 PREP_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
+    PREP_ARG3_0 PREP_ITER_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
 
 #define PREP_ITER_MAX \
-    PREP_ARG3_1 PREP_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
+    PREP_ARG3_1 PREP_ITER_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
 
 #define PREP_ITER_FILE \
-    PREP_ARG3_2 PREP_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
+    PREP_ARG3_2 PREP_ITER_PASTE(PREP_ITER_ARGS_, PREP_DEC(PREP_ITER_DEPTH))
 
 //================================================================
 //
@@ -37,7 +47,8 @@
 //
 //================================================================
 
-#define PREP_ITERATE PREP_PASTE(PREP_ITERATE_FROM_DEPTH_, PREP_ITER_DEPTH)
+#define PREP_ITERATE \
+    PREP_ITER_PASTE(PREP_ITERATE_FROM_DEPTH_, PREP_ITER_DEPTH)
 
 //----------------------------------------------------------------
 

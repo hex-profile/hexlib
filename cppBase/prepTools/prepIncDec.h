@@ -11,8 +11,19 @@
 //
 //================================================================
 
-#define PREP_INC(n) PREP_PASTE(PREP_INC_, n)
-#define PREP_DEC(n) PREP_PASTE(PREP_DEC_, n)
+#define PREP_INC(n) \
+    PREP_INC_EX(n)
+
+#define PREP_INC_EX(n) \
+    PREP_INC_##n
+    
+//----------------------------------------------------------------
+
+#define PREP_DEC(n) \
+    PREP_DEC_EX(n)
+
+#define PREP_DEC_EX(n) \
+    PREP_DEC_##n
 
 //================================================================
 //
