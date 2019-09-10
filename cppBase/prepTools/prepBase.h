@@ -6,11 +6,11 @@
 //
 //================================================================
 
-#define PREP_PASTE_HELPER(X, Y) \
-    X##Y
-
 #define PREP_PASTE(X, Y) \
     PREP_PASTE_HELPER(X, Y)
+
+#define PREP_PASTE_HELPER(X, Y) \
+    X##Y
 
 //================================================================
 //
@@ -56,11 +56,11 @@
 //
 //================================================================
 
-#define PREP_STRINGIZE_AUX(X) \
-    #X
-
 #define PREP_STRINGIZE(X) \
     PREP_STRINGIZE_AUX(X)
+
+#define PREP_STRINGIZE_AUX(X) \
+    #X
 
 //================================================================
 //
