@@ -22,6 +22,14 @@
 #include "prepTools/prepIncDec.h"
 #include "vectorTypes/vectorOperations.h"
 
+#ifdef FUNCSPACE
+namespace FUNCSPACE {
+#endif
+
+#ifndef FUNCNAME
+    #error
+#endif
+
 namespace PREP_PASTE(FUNCNAME, Space) {
 
 //================================================================
@@ -406,3 +414,9 @@ INSTANTIATE_FUNC_EX((FUNCNAME<float16_x2, float16_x2>), FUNCNAME)
 #undef DIR
 #undef LINEAR_ONLY
 #undef LINEAR_ONLY_COMMA
+
+//----------------------------------------------------------------
+
+#ifdef FUNCSPACE
+}
+#endif
