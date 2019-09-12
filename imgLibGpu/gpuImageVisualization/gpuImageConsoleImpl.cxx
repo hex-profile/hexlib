@@ -206,7 +206,9 @@ stdbool visualizeScalarMatrix
 
         LinearTransform<float32> usedValueTransform = valueTransform;
 
-        if (TYPE_IS_BUILTIN_INT(VECTOR_BASE(Type)))
+        using BaseType = VECTOR_BASE(Type);
+
+        if (TYPE_IS_BUILTIN_INT(BaseType) && sizeof(BaseType) <= sizeof(uint16))
             usedValueTransform.C1 *= convertFloat32(typeMax<VECTOR_BASE(Type)>());
 
         ////
@@ -428,7 +430,9 @@ stdbool upconvertValueMatrix
 
         LinearTransform<float32> usedValueTransform = valueTransform;
 
-        if (TYPE_IS_BUILTIN_INT(VECTOR_BASE(Type)))
+        using BaseType = VECTOR_BASE(Type);
+
+        if (TYPE_IS_BUILTIN_INT(BaseType) && sizeof(BaseType) <= sizeof(uint16))
             usedValueTransform.C1 *= convertFloat32(typeMax<VECTOR_BASE(Type)>());
 
         ////

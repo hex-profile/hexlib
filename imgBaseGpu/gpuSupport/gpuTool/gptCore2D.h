@@ -121,11 +121,11 @@
 
 //================================================================
 //
-// GPT_CALLER_PROTO_2D
+// GPT_CALLER_2D_PROTO
 //
 //================================================================
 
-#define GPT_CALLER_PROTO_2D(prefix, samplerList, matrixList, paramList) \
+#define GPT_CALLER_2D_PROTO(prefix, samplerList, matrixList, paramList) \
     \
     stdbool prefix \
     ( \
@@ -153,12 +153,12 @@
 
 //================================================================
 //
-// GPUTOOL_PROTO_2D
+// GPUTOOL_2D_PROTO
 //
 //================================================================
 
-#define GPUTOOL_PROTO_2D(prefix, samplerSeq, matrixSeq, paramSeq) \
-    GPT_CALLER_PROTO_2D(prefix, samplerSeq (o), matrixSeq (o), paramSeq (o))
+#define GPUTOOL_2D_PROTO(prefix, samplerSeq, matrixSeq, paramSeq) \
+    GPT_CALLER_2D_PROTO(prefix, samplerSeq (o), matrixSeq (o), paramSeq (o))
 
 //================================================================
 //
