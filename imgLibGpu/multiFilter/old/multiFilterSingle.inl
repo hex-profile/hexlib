@@ -34,16 +34,6 @@ namespace PREP_PASTE(FUNCNAME, Space) {
 
 //================================================================
 //
-// TASK_COUNT
-//
-//================================================================
-
-#ifndef TASK_COUNT
-    #define TASK_COUNT 1
-#endif
-
-//================================================================
-//
 // threadCountX
 // threadCountY
 //
@@ -63,23 +53,16 @@ sysinline Point<Space> verThreadCount() {return point(verThreadCountX, verThread
 //
 //================================================================
 
-#define TMP_MACRO(t, _) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler1##t), DevSampler2D, DevSamplerFloat, 1) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler2##t), DevSampler2D, DevSamplerFloat, 2) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler4##t), DevSampler2D, DevSamplerFloat, 4)
-
-PREP_FOR(TASK_COUNT, TMP_MACRO, _)
-
-#undef TMP_MACRO
+devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler_x1), DevSampler2D, DevSamplerFloat, 1)
+devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler_x2), DevSampler2D, DevSamplerFloat, 2)
 
 ////
 
-#define TMP_MACRO(t, k, _) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##1##t), DevSampler2D, DevSamplerFloat, 1) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##2##t), DevSampler2D, DevSamplerFloat, 2) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##4##t), DevSampler2D, DevSamplerFloat, 4)
+#define TMP_MACRO(k, _) \
+    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##_x1), DevSampler2D, DevSamplerFloat, 1) \
+    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##_x2), DevSampler2D, DevSamplerFloat, 2)
 
-PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
+PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
 #undef TMP_MACRO
 
@@ -112,8 +95,7 @@ struct IntermParams
 {
     Point<float32> srcTexstep;
     Point<Space> dstSize; 
-
-    GpuMatrix<Dst> dst[TASK_COUNT][FILTER_COUNT];
+    GpuMatrix<Dst> dst[FILTER_COUNT];
 };
 
 //================================================================
@@ -125,21 +107,21 @@ struct IntermParams
 template <typename Dst>
 struct FinalParams
 {
-
     Point<float32> srcTexstep;
     Point<Space> dstSize; 
 
 #ifndef LINEAR_COMBINATION
 
-    GpuMatrix<Dst> dst[TASK_COUNT][FILTER_COUNT];
+    GpuMatrix<Dst> dst[FILTER_COUNT];
 
 #else
 
     float32 filterMixCoeffs[FILTER_COUNT];
 
-    GpuMatrix<const Dst> dstMixImage[TASK_COUNT];
-    float32 dstMixCoeff[TASK_COUNT];
-    GpuMatrix<Dst> dst[TASK_COUNT];
+    GpuMatrix<const Dst> dstMixImage;
+    float32 dstMixCoeff;
+
+    GpuMatrix<Dst> dst;
 
 #endif
 
@@ -154,11 +136,11 @@ struct FinalParams
 #define RANK 1
 
 #define HORIZONTAL 1
-# include "multiFilterKernel.inl"
+# include "multiFilterSingleKernel.inl"
 #undef HORIZONTAL
 
 #define HORIZONTAL 0
-# include "multiFilterKernel.inl"
+# include "multiFilterSingleKernel.inl"
 #undef HORIZONTAL
 
 #undef RANK
@@ -168,25 +150,11 @@ struct FinalParams
 #define RANK 2
 
 #define HORIZONTAL 1
-# include "multiFilterKernel.inl"
+# include "multiFilterSingleKernel.inl"
 #undef HORIZONTAL
 
 #define HORIZONTAL 0
-# include "multiFilterKernel.inl"
-#undef HORIZONTAL
-
-#undef RANK
-
-//----------------------------------------------------------------
-
-#define RANK 4
-
-#define HORIZONTAL 1
-# include "multiFilterKernel.inl"
-#undef HORIZONTAL
-
-#define HORIZONTAL 0
-# include "multiFilterKernel.inl"
+# include "multiFilterSingleKernel.inl"
 #undef HORIZONTAL
 
 #undef RANK
@@ -199,6 +167,9 @@ struct FinalParams
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermHor1), IntermParams, PREP_PASTE(FUNCNAME, IntermHorLink), PREP_PASTE(FUNCNAME, IntermHor8u), (uint8));
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer1), IntermParams, PREP_PASTE(FUNCNAME, IntermVerLink), PREP_PASTE(FUNCNAME, IntermVer8u), (uint8));
+
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermHor1), IntermParams, PREP_PASTE(FUNCNAME, IntermHorLink), PREP_PASTE(FUNCNAME, IntermHor8s), (int8));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer1), IntermParams, PREP_PASTE(FUNCNAME, IntermVerLink), PREP_PASTE(FUNCNAME, IntermVer8s), (int8));
 
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermHor2), IntermParams, PREP_PASTE(FUNCNAME, IntermHorLink), PREP_PASTE(FUNCNAME, IntermHor8s_x2), (int8_x2));
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer2), IntermParams, PREP_PASTE(FUNCNAME, IntermVerLink), PREP_PASTE(FUNCNAME, IntermVer8s_x2), (int8_x2));
@@ -218,6 +189,9 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer2), In
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalHor1), FinalParams, PREP_PASTE(FUNCNAME, FinalHorLink), PREP_PASTE(FUNCNAME, FinalHor8u), (uint8));
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer1), FinalParams, PREP_PASTE(FUNCNAME, FinalVerLink), PREP_PASTE(FUNCNAME, FinalVer8u), (uint8));
 
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalHor1), FinalParams, PREP_PASTE(FUNCNAME, FinalHorLink), PREP_PASTE(FUNCNAME, FinalHor8s), (int8));
+GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer1), FinalParams, PREP_PASTE(FUNCNAME, FinalVerLink), PREP_PASTE(FUNCNAME, FinalVer8s), (int8));
+
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalHor2), FinalParams, PREP_PASTE(FUNCNAME, FinalHorLink), PREP_PASTE(FUNCNAME, FinalHor8s_x2), (int8_x2));
 GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), FinalParams, PREP_PASTE(FUNCNAME, FinalVerLink), PREP_PASTE(FUNCNAME, FinalVer8s_x2), (int8_x2));
 
@@ -233,8 +207,6 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), Fin
 //
 //================================================================
 
-#undef DIR
-
 #ifndef HORIZONTAL_FIRST
     #error
 #elif HORIZONTAL_FIRST
@@ -249,30 +221,6 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), Fin
 
 //================================================================
 //
-// FUNC_PARAMETERS
-//
-//================================================================
-
-#undef FUNC_PARAMETERS
-
-#ifndef LINEAR_COMBINATION
-
-    #define FUNC_PARAMETERS(t, _) \
-        const GpuMatrix<const Src>& src##t, \
-        PREP_ENUM_LR(FILTER_COUNT, const GpuMatrix<Dst>& dst, t), 
-
-#else
-
-    #define FUNC_PARAMETERS(t, _) \
-        const GpuMatrix<const Src>& src##t, \
-        const GpuMatrix<const Dst>& dstMixImage##t, \
-        float32 dstMixCoeff##t, \
-        const GpuMatrix<Dst>& dst##t,
-
-#endif
-
-//================================================================
-//
 // Main func
 //
 //================================================================
@@ -282,8 +230,17 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), Fin
 template <typename Src, typename Dst>
 stdbool FUNCNAME
 (
-    PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, _)
-    LINEAR_ONLY_COMMA(const float32* filterMixCoeffs)
+    const GpuMatrix<const Src>& src, 
+
+#ifndef LINEAR_COMBINATION
+    PREP_ENUM_INDEXED(FILTER_COUNT, const GpuMatrix<Dst>& dst), 
+#else
+    const GpuMatrix<const Dst>& dstMixImage,
+    float32 dstMixCoeff,
+    const GpuMatrix<Dst>& dst, 
+    const float32* filterMixCoeffs,
+#endif
+
     BorderMode borderMode, 
     stdPars(GpuProcessKit)
 )
@@ -292,29 +249,19 @@ stdbool FUNCNAME
 
     ////
 
-    Point<Space> srcSize = src0.size();
-    #define TMP_MACRO(t, _) REQUIRE(equalSize(src##t, srcSize));
-    #undef TMP_MACRO
-
-    ////
+    Point<Space> srcSize = src.size();
 
 #ifndef LINEAR_COMBINATION
-    Point<Space> dstSize = dst00.size();
-    #define TMP_MACRO(t, k, _) REQUIRE(equalSize(dst##k##t, dstSize));
-    PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
-    #undef TMP_MACRO
-#else
     Point<Space> dstSize = dst0.size();
-    #define TMP_MACRO(t, _) REQUIRE(equalSize(dst##t, dstMixImage##t, dstSize));
-    #undef TMP_MACRO
+    REQUIRE(equalSize(PREP_ENUM_INDEXED(FILTER_COUNT, dst)));
+#else
+    Point<Space> dstSize = dst.size();
+    REQUIRE(equalSize(dst, dstMixImage));
 #endif
-
-    ////
 
     Point<Space> intermSize = srcSize;
     intermSize.DIR(X, Y) = dstSize.DIR(X, Y);
-
-    GPU_LAYERED_MATRIX_ALLOC(interm, Dst, TASK_COUNT * FILTER_COUNT, intermSize);
+    GPU_LAYERED_MATRIX_ALLOC(interm, Dst, FILTER_COUNT, intermSize);
 
     ////
 
@@ -331,31 +278,8 @@ stdbool FUNCNAME
     //
     //----------------------------------------------------------------
 
-    #define TMP_MACRO(t, _) \
-        { \
-            const GpuSamplerLink* srcSampler = nullptr; \
-            if (srcRank == 1) srcSampler = &PREP_PASTE(FUNCNAME, srcSampler1##t); \
-            if (srcRank == 2) srcSampler = &PREP_PASTE(FUNCNAME, srcSampler2##t); \
-            if (srcRank == 4) srcSampler = &PREP_PASTE(FUNCNAME, srcSampler4##t); \
-            REQUIRE(srcSampler != 0); \
-            require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src##t, borderMode, false, true, true, stdPass)); \
-        }
-
-    PREP_FOR(TASK_COUNT, TMP_MACRO, _)
-
-    #undef TMP_MACRO
-
-    ////
-
-    IntermParams<Dst> intermParams;
-    intermParams.srcTexstep = computeTexstep(srcSize);
-    intermParams.dstSize = intermSize;
-
-    for (Space t = 0; t < TASK_COUNT; ++t)
-    {
-        for (Space k = 0; k < FILTER_COUNT; ++k)
-            intermParams.dst[t][k] = interm.getLayer(k + t * FILTER_COUNT);
-    }
+    const GpuSamplerLink* srcSampler = (srcRank == 1) ? soft_cast<const GpuSamplerLink*>(&PREP_PASTE(FUNCNAME, srcSampler_x1)) : &PREP_PASTE(FUNCNAME, srcSampler_x2);
+    require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, borderMode, false, true, true, stdPass));
 
     ////
 
@@ -363,13 +287,23 @@ stdbool FUNCNAME
     intermLaunchSize.DIR(X, Y) = dstSize.DIR(X, Y);
 
     Point<Space> intermThreadCount = DIR(horThreadCount(), verThreadCount());
-    Point<Space> intermGroupCount = divUpNonneg(intermLaunchSize, intermThreadCount);
+
+    ////
+
+    IntermParams<Dst> intermParams;
+    intermParams.srcTexstep = computeTexstep(srcSize);
+    intermParams.dstSize = intermSize;
+
+    for (Space k = 0; k < FILTER_COUNT; ++k)
+        intermParams.dst[k] = interm.getLayer(k);
+
+    ////
 
     require
     (
         kit.gpuKernelCalling.callKernel
         (
-            point3D(intermGroupCount.X, intermGroupCount.Y, TASK_COUNT),
+            divUpNonneg(intermLaunchSize, intermThreadCount),
             intermThreadCount,
             areaOf(intermSize),
             PREP_PASTE3(FUNCNAME, Interm, DIR(HorLink, VerLink))<Dst>(),
@@ -385,19 +319,25 @@ stdbool FUNCNAME
     //
     //----------------------------------------------------------------
 
-    #define TMP_MACRO(t, k, _) \
+    #define TMP_MACRO(k, _) \
         { \
             const GpuSamplerLink* sampler = 0; \
-            if (srcRank == 1) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##1##t); \
-            if (srcRank == 2) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##2##t); \
-            if (srcRank == 4) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##4##t); \
+            if (srcRank == 1) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##_x1); \
+            if (srcRank == 2) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##_x2); \
             REQUIRE(sampler != 0); \
-            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k + t * FILTER_COUNT)), borderMode, false, true, true, stdPass)); \
+            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k)), borderMode, false, true, true, stdPass)); \
         }
 
-    PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
+    PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
+
+    ////
+
+    Point<Space> finalLaunchSize = dstSize;
+    finalLaunchSize.DIR(Y, X) = dstSize.DIR(Y, X);
+
+    Point<Space> finalThreadCount = DIR(verThreadCount(), horThreadCount());
 
     ////
 
@@ -407,10 +347,10 @@ stdbool FUNCNAME
 
 #ifndef LINEAR_COMBINATION
 
-    #define TMP_MACRO(t, k, _) \
-        finalParams.dst[t][k] = dst##k##t;
+    #define TMP_MACRO(k, _) \
+        finalParams.dst[k] = dst##k;
 
-    PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
+    PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
 
@@ -419,25 +359,12 @@ stdbool FUNCNAME
     for (Space k = 0; k < FILTER_COUNT; ++k)
         finalParams.filterMixCoeffs[k] = filterMixCoeffs[k];
 
-    #define TMP_MACRO(t, _) \
-        finalParams.dstMixImage[t] = dstMixImage##t; \
-        finalParams.dstMixCoeff[t] = dstMixCoeff##t; \
-        finalParams.dst[t] = dst##t;
+    finalParams.dstMixImage = dstMixImage;
+    finalParams.dstMixCoeff = dstMixCoeff;
 
-    PREP_FOR(TASK_COUNT, TMP_MACRO, _)
-
-    #undef TMP_MACRO
+    finalParams.dst = dst;
 
 #endif
-
-    ////
-
-    Point<Space> finalThreadCount = DIR(verThreadCount(), horThreadCount());
-
-    Point<Space> finalLaunchSize = dstSize;
-    finalLaunchSize.DIR(Y, X) = dstSize.DIR(Y, X);
-
-    Point<Space> finalGroupCount = divUpNonneg(finalLaunchSize, finalThreadCount);
 
     ////
 
@@ -445,7 +372,7 @@ stdbool FUNCNAME
     (
         kit.gpuKernelCalling.callKernel
         (
-            point3D(finalGroupCount.X, finalGroupCount.Y, TASK_COUNT),
+            divUpNonneg(finalLaunchSize, finalThreadCount),
             finalThreadCount,
             areaOf(dstSize),
             PREP_PASTE3(FUNCNAME, Final, DIR(VerLink, HorLink))<Dst>(),
@@ -467,6 +394,7 @@ stdbool FUNCNAME
 #if HOSTCODE 
 
 INSTANTIATE_FUNC_EX((FUNCNAME<uint8, uint8>), FUNCNAME)
+INSTANTIATE_FUNC_EX((FUNCNAME<int8, int8>), FUNCNAME)
 INSTANTIATE_FUNC_EX((FUNCNAME<uint8, float16>), FUNCNAME)
 
 INSTANTIATE_FUNC_EX((FUNCNAME<int8_x2, int8_x2>), FUNCNAME)

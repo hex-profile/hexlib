@@ -1,3 +1,5 @@
+#undef DIR
+
 //================================================================
 //
 // DIR
@@ -16,6 +18,8 @@
 //
 //================================================================
 
+#undef FILTER
+
 #define FILTER(k) \
     DIR(FILTER_HOR, FILTER_VER)(k)
 
@@ -30,7 +34,7 @@
 #if DEVCODE
 
 template <typename Dst>
-devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermParams<Dst>& o, devPars)
+devDecl void PREP_PASTE4(FUNCNAME, IntermFlex, DIR(Hor, Ver), RANK)(const IntermParams<Dst>& o, Space taskIdx, devPars)
 {
     typedef VECTOR_REBASE(Dst, float32) FloatType;
 
@@ -92,13 +96,27 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 
     ////
 
-    PARALLEL_LOOP_2D_UNBASED
-    (
-        iX, iY, cacheSizeX, cacheSizeY, devThreadIdx.X, devThreadIdx.Y, threadCountX, threadCountY,
-        *(cacheLoadPtr + iX + iY * cacheMemPitch) = tex2D(PREP_PASTE3(FUNCNAME, srcSampler_x, RANK), srcReadTexPos + point(float32(iX), float32(iY)) * o.srcTexstep);
-    )
+    #define LOAD_SRC_BLOCK_NOSYNC(sampler) \
+        \
+        PARALLEL_LOOP_2D_UNBASED \
+        ( \
+            iX, iY, cacheSizeX, cacheSizeY, devThreadIdx.X, devThreadIdx.Y, threadCountX, threadCountY, \
+            *(cacheLoadPtr + iX + iY * cacheMemPitch) = tex2D(sampler, srcReadTexPos + point(float32(iX), float32(iY)) * o.srcTexstep); \
+        )
+
+    //
+    // This switch should be compile-time.
+    //
+
+    #define TMP_MACRO(t, _) \
+        if (t == taskIdx) {LOAD_SRC_BLOCK_NOSYNC(PREP_PASTE4(FUNCNAME, srcSampler, RANK, t));}
+
+    PREP_FOR(TASK_COUNT, TMP_MACRO, _) 
 
     devSyncThreads();
+
+    #undef TMP_MACRO
+    #undef LOAD_SRC_BLOCK_NOSYNC
 
     //----------------------------------------------------------------
     //
@@ -157,7 +175,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
     devDebugCheck(allv(o.dstSize >= 0));
 
     #define TMP_MACRO(k, _) \
-        devDebugCheck(equalSize(o.dst[k], o.dstSize));
+        devDebugCheck(equalSize(o.dst[taskIdx][k], o.dstSize));
 
     PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
@@ -167,7 +185,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 
     #define TMP_MACRO(k, _) \
         \
-        MATRIX_EXPOSE_EX(o.dst[k], dst##k); \
+        MATRIX_EXPOSE_EX(o.dst[taskIdx][k], dst##k); \
         MatrixPtr(Dst) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
         storeNorm(dstPtr##k, result##k);
 
@@ -175,6 +193,27 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 
     #undef TMP_MACRO
 
+}
+
+#endif
+
+//================================================================
+//
+// Interm
+//
+//================================================================
+
+#if DEVCODE
+
+template <typename Dst>
+devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermParams<Dst>& o, devPars)
+{
+    #define TMP_MACRO(t, _) \
+        if (t == devGroupZ) {PREP_PASTE4(FUNCNAME, IntermFlex, DIR(Hor, Ver), RANK)(o, t, devPass); return;} \
+
+    PREP_FOR(TASK_COUNT, TMP_MACRO, _)
+
+    #undef TMP_MACRO
 }
 
 #endif
@@ -190,7 +229,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 #if DEVCODE
 
 template <typename Dst>
-devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams<Dst>& o, devPars)
+devDecl inline void PREP_PASTE4(FUNCNAME, FinalFlex, DIR(Hor, Ver), RANK)(const FinalParams<Dst>& o, Space taskIdx, devPars)
 {
     typedef VECTOR_REBASE(Dst, float32) FloatType;
 
@@ -252,15 +291,21 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
 
     ////
 
-    #define LOAD_SRC_BLOCK(sampler) \
+    #define LOAD_SRC_BLOCK_FLEX_NOSYNC(t, k) \
         \
         PARALLEL_LOOP_2D_UNBASED \
         ( \
             iX, iY, cacheSizeX, cacheSizeY, devThreadIdx.X, devThreadIdx.Y, threadCountX, threadCountY, \
-            *(cacheLoadPtr + iX + iY * cacheMemPitch) = tex2D(sampler, srcLoadTexPos + point(float32(iX), float32(iY)) * o.srcTexstep); \
+            *(cacheLoadPtr + iX + iY * cacheMemPitch) = tex2D(PREP_PASTE5(FUNCNAME, intermSampler, k, RANK, t), srcLoadTexPos + point(float32(iX), float32(iY)) * o.srcTexstep); \
         ) \
-        \
-        devSyncThreads(); \
+
+    ////
+
+    #define LOAD_SRC_BLOCK_ITER(t, k) \
+        if (taskIdx == t) LOAD_SRC_BLOCK_FLEX_NOSYNC(t, k);
+
+    #define LOAD_SRC_BLOCK_NOSYNC(k) \
+        PREP_FOR(TASK_COUNT, LOAD_SRC_BLOCK_ITER, k) /* should reduce to one branch at compile-time */
 
     //----------------------------------------------------------------
     //
@@ -283,7 +328,8 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
         if (k != 0) devSyncThreads(); \
         \
         /* Load block */ \
-        LOAD_SRC_BLOCK(PREP_PASTE5(FUNCNAME, intermSampler, k, _x, RANK)) \
+        LOAD_SRC_BLOCK_NOSYNC(k); \
+        devSyncThreads(); \
         \
         devUnrollLoop \
         for (Space i = 0; i < filterSize; ++i) \
@@ -292,11 +338,14 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
             result##k += FILTER(k)[i] * value; \
         }
 
-    PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
+    PREP_FOR1(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
+    
 
-    #undef LOAD_SRC_BLOCK
+    #undef LOAD_SRC_BLOCK_NOSYNC
+    #undef LOAD_SRC_BLOCK_ITER
+    #undef LOAD_SRC_BLOCK_FLEX_NOSYNC
 
     //----------------------------------------------------------------
     //
@@ -318,7 +367,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
 #ifndef LINEAR_COMBINATION
 
     #define TMP_MACRO(k, _) \
-        MATRIX_EXPOSE_EX(o.dst[k], dst##k); \
+        MATRIX_EXPOSE_EX(o.dst[taskIdx][k], dst##k); \
         MatrixPtr(Dst) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
         storeNorm(dstPtr##k, result##k);
 
@@ -341,18 +390,20 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
 
     ////
 
-    if (o.dstMixCoeff != 0)
+    float32 dstMixCoeff = o.dstMixCoeff[taskIdx];
+
+    if (dstMixCoeff)
     {
-        MATRIX_EXPOSE_EX(o.dstMixImage, dstMixImage);
-        result += o.dstMixCoeff * loadNorm(MATRIX_POINTER_(dstMixImage, dstIdx));
+        MATRIX_EXPOSE_EX(o.dstMixImage[taskIdx], dstMixImage);
+        result += dstMixCoeff * loadNorm(MATRIX_POINTER_(dstMixImage, dstIdx));
     }
 
     ////
 
     devDebugCheck(allv(o.dstSize >= 0));
-    devDebugCheck(equalSize(o.dst, o.dstSize));
+    devDebugCheck(equalSize(o.dst[taskIdx], o.dstSize));
 
-    MATRIX_EXPOSE_EX(o.dst, dst);
+    MATRIX_EXPOSE_EX(o.dst[taskIdx], dst);
     storeNorm(MATRIX_POINTER_(dst, dstIdx), result);
 
 #endif
@@ -363,9 +414,22 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
 
 //================================================================
 //
-// Undefs
+// Final
 //
 //================================================================
 
-#undef DIR
-#undef FILTER
+#if DEVCODE
+
+template <typename Dst>
+devDecl inline void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams<Dst>& o, devPars)
+{
+    #define TMP_MACRO(t, _) \
+        if (t == devGroupZ) {PREP_PASTE4(FUNCNAME, FinalFlex, DIR(Hor, Ver), RANK)(o, t, devPass); return;}
+        
+    PREP_FOR(TASK_COUNT, TMP_MACRO, _)
+
+    #undef TMP_MACRO
+}
+
+#endif
+
