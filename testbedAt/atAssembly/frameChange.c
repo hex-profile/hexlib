@@ -37,7 +37,7 @@ stdbool updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(Frame
     if_not (desc.name.resize(nameSize))
         require(desc.name.realloc(nameSize, cpuBaseByteAlignment, kit.malloc, stdPass));
 
-    ARRAY_EXPOSE_UNSAFE(desc.name, descName);
+    ARRAY_EXPOSE_UNSAFE_PREFIX(desc.name, descName);
     memcpy(descNamePtr, info.videofileName.ptr, nameSize * sizeof(CharType));
 
     ////

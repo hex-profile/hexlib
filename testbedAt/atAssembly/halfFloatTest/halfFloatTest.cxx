@@ -122,7 +122,7 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
 
     for (Space i = 0; i < size; ++i)
     {
-        dstPtr[i] = packFloat16(helpRead(srcPtr[i]));
+        dstPtr[i] = packFloat16(srcPtr[i]);
     }
 
     ////
@@ -153,7 +153,7 @@ stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& ds
 
     for (Space i = 0; i < size; ++i)
     {
-        (float32&) helpModify(dstPtr[i]) = unpackFloat16(helpRead(srcPtr[i]));
+        (float32&) dstPtr[i] = unpackFloat16(srcPtr[i]);
     }
 
     ////
@@ -209,7 +209,7 @@ stdbool checkEqualResults(const Array<const Type>& ref, const Array<const Type>&
 
     for (Space i = 0; i < size; ++i)
     {
-        if_not (helpRead(refPtr[i]) == helpRead(tstPtr[i]))
+        if_not (refPtr[i] == tstPtr[i])
         {
             #pragma omp critical
             {
@@ -335,8 +335,8 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
         printMsgG(kit, STR("Incorrect value: src value %0 (%1), correct packed %2, but received %3, at pass=%4 idx=%5"), 
             hex((uint32&) badValue, 8),
             fltg(badValue, 8),
-            hex((uint16&) helpRead(gpuResultCopyPtr[badIdx]), 4),
-            hex((uint16&) helpRead(cpuResultPtr[badIdx]), 4),
+            hex((uint16&) gpuResultCopyPtr[badIdx], 4),
+            hex((uint16&) cpuResultPtr[badIdx], 4),
             packTestPass, badIdx,
             msgErr);
 
@@ -444,8 +444,8 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 
         printMsgG(kit, STR("Incorrect value: src value %0, correct unpacked %1, but received %2, at idx=%3"), 
             hex(badValue.data, 4),
-            hex(helpRead(gpuResultCopyPtr[badIdx]), 8),
-            hex(helpRead(cpuResultPtr[badIdx]), 8),
+            hex(gpuResultCopyPtr[badIdx], 8),
+            hex(cpuResultPtr[badIdx], 8),
             badIdx,
             msgErr);
 

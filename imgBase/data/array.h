@@ -378,23 +378,27 @@ sysinline Space getLayerCount(const ArrayEx<Pointer>& arr)
 //
 //================================================================
 
-#define ARRAY_EXPOSE_GENERIC(array, prefix) \
-    auto prefix##Ptr = (array).ptr(); \
-    auto prefix##Size = (array).size();
+#define ARRAY_EXPOSE_EX(array, arrayPtr, arraySize) \
+    auto arrayPtr = (array).ptr(); \
+    auto arraySize = (array).size();
 
-//----------------------------------------------------------------
+#define ARRAY_EXPOSE_PREFIX(array, prefix) \
+    ARRAY_EXPOSE_EX(array, prefix##Ptr, prefix##Size)
 
 #define ARRAY_EXPOSE(array) \
-    ARRAY_EXPOSE_GENERIC(array, array)
-
-#define ARRAY_EXPOSE_EX(array, prefix) \
-    ARRAY_EXPOSE_GENERIC(array, prefix)
+    ARRAY_EXPOSE_PREFIX(array, array)
 
 //----------------------------------------------------------------
 
-#define ARRAY_EXPOSE_UNSAFE(array, prefix) \
-    auto prefix##Ptr = (array).ptrUnsafeForInternalUseOnly(); \
-    auto prefix##Size = (array).size();
+#define ARRAY_EXPOSE_UNSAFE_EX(array, arrayPtr, arraySize) \
+    auto arrayPtr = (array).ptrUnsafeForInternalUseOnly(); \
+    auto arraySize = (array).size()
+
+#define ARRAY_EXPOSE_UNSAFE_PREFIX(array, prefix) \
+    ARRAY_EXPOSE_UNSAFE_EX(array, prefix##Ptr, prefix##Size)
+
+#define ARRAY_EXPOSE_UNSAFE(array) \
+    ARRAY_EXPOSE_UNSAFE_PREFIX(array, array)
 
 //================================================================
 //

@@ -173,13 +173,13 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
                 ////
 
                 require(kit.gpuKernelLoading.createKernelFromModule(modInfo, modDesc.kernelNames[k],
-                    helpModify(kernelInfoPtr[kernelIdx]).owner, stdPass));
+                    kernelInfoPtr[kernelIdx].owner, stdPass));
 
-                helpModify(kernelInfoPtr[kernelIdx]).name = modDesc.kernelNames[k];
+                kernelInfoPtr[kernelIdx].name = modDesc.kernelNames[k];
 
                 ////
 
-                kernelHandlePtr[kernelIdx] = helpModify(kernelInfoPtr[kernelIdx]).owner;
+                kernelHandlePtr[kernelIdx] = kernelInfoPtr[kernelIdx].owner;
 
                 ////
 
@@ -197,11 +197,11 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
                 ////
 
                 require(kit.gpuSamplerLoading.getSamplerFromModule(modInfo, modDesc.samplerNames[k],
-                    helpModify(samplerInfoPtr[samplerIdx]).owner, stdPass));
+                    samplerInfoPtr[samplerIdx].owner, stdPass));
 
-                helpModify(samplerInfoPtr[samplerIdx]).name = modDesc.samplerNames[k];
+                samplerInfoPtr[samplerIdx].name = modDesc.samplerNames[k];
 
-                samplerHandlePtr[samplerIdx] = helpModify(samplerInfoPtr[samplerIdx]).owner;
+                samplerHandlePtr[samplerIdx] = samplerInfoPtr[samplerIdx].owner;
 
                 ////
 

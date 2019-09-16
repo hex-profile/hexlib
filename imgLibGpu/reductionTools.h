@@ -58,7 +58,7 @@
 
 #define REDUCTION_SETUPFLAT_ITER4(Type, name, prefix, flatSize, flatMember) \
     devSramArray(PREP_PASTE3(prefix, name, ReductArray), Type, flatSize); \
-    ArrayPtr(Type) PREP_PASTE3(prefix, name, ReductPtr) = &PREP_PASTE3(prefix, name, ReductArray)[flatMember];
+    ArrayPtr(Type) PREP_PASTE3(prefix, name, ReductPtr) = PREP_PASTE3(prefix, name, ReductArray) + flatMember;
 
 //================================================================
 //

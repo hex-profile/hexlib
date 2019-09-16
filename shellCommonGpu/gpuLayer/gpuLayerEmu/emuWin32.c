@@ -158,7 +158,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     ARRAY_EXPOSE(fibers);
 
     for (Space i = 0; i < fibersSize; ++i) // can be interrupted in the middle by error
-        REQUIRE(helpModify(fibersPtr[i]).create(fiberFunc, &helpModify(fiberTasksPtr[i])));
+        REQUIRE(fibersPtr[i].create(fiberFunc, &fiberTasksPtr[i]));
 
     //
     // Create shared memory holder.
@@ -252,7 +252,7 @@ EmuError EmuWin32::launchKernel
 
     ////
 
-    ARRAY_EXPOSE_UNSAFE(sramHolder, sramHolder);
+    ARRAY_EXPOSE_UNSAFE(sramHolder);
     CHECK_RETURN_DBG(sramHolderSize == EMU_MAX_SRAM_SIZE);
 
     //
@@ -329,7 +329,7 @@ EmuError EmuWin32::launchKernel
         }
 
         resetState(threadCountArea);
-        SwitchToFiber(helpRead(fibersPtr[0]));
+        SwitchToFiber(fibersPtr[0]);
 
         CHECK_RETURN_DBG(fiberExitCount == fiberCount);
         CHECK_RETURN_EX(fiberException == 0, fiberException);
@@ -354,7 +354,7 @@ inline void EmuWin32::switchToNextFiber(Space fiberIdx)
         k = 0;
 
     ARRAY_EXPOSE(fibers);
-    SwitchToFiber(helpRead(fibersPtr[k]));
+    SwitchToFiber(fibersPtr[k]);
 }
 
 //================================================================

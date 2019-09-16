@@ -565,7 +565,7 @@ void emuSamplerRead1Dfetch(const EmuSamplerData& data, Space offset, void* resul
 {
     const EmuSamplerInfo1D<MemType>& info = (const EmuSamplerInfo1D<MemType>&) data;
 
-    ARRAY_EXPOSE_EX(info.array, array);
+    ARRAY_EXPOSE_PREFIX(info.array, array);
 
     // Read element
     ensurev(DEBUG_BREAK_CHECK(SpaceU(offset) < SpaceU(arraySize)));

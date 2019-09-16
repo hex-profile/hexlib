@@ -350,7 +350,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
     ARRAY_EXPOSE(serverArray);
 
     for (Space i = 0; i < streamCount; ++i)
-        require(helpModify(serverArrayPtr[i]).create(stdPass));
+        require(serverArrayPtr[i].create(stdPass));
 
     //
     // Record success.

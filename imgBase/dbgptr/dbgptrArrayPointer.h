@@ -320,11 +320,11 @@ public:
 
 public:
 
-    inline DbgptrReference<Self> operator [](Space index) const
+    inline auto& operator [](Space index) const
     {
         DbgptrReference<Self> result = (const DbgptrReference<Self>&) *this;
         result.asPointer() += index;
-        return result;
+        return result.modify();
     }
 
     //
