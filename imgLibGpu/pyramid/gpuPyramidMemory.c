@@ -77,7 +77,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
     for (Space i = 0; i < newLevels; ++i)
     {
         Point<Space> size = scaleFunc(newBaseSize, baseScaleFactor * scale(-i + baseScaleLevels)) + extraEdge; // @@@
-        require(helpModify(pyramidArrayPtr[i]).reallocEx(newLayers, size, baseByteAlignment, rowByteAlignment, allocator, stdPass));
+        require(pyramidArrayPtr[i].reallocEx(newLayers, size, baseByteAlignment, rowByteAlignment, allocator, stdPass));
     }
 
     ////
@@ -102,7 +102,7 @@ Point<Space> GpuPyramidMemory<Type>::levelSize(Space level) const
     Point<Space> result = point(0);
 
     if (SpaceU(level) < SpaceU(pyramidArraySize))
-        result = helpRead(pyramidArrayPtr[level]).getLayerInline(0).size();
+        result = pyramidArrayPtr[level].getLayerInline(0).size();
 
     return result;
 }
@@ -121,7 +121,7 @@ GpuMatrix<Type> GpuPyramidMemory<Type>::operator[] (Space level) const
     GpuMatrix<Type> result;
 
     if (SpaceU(level) < SpaceU(pyramidArraySize))
-        result = helpRead(pyramidArrayPtr[level]).getLayerInline(0);
+        result = pyramidArrayPtr[level].getLayerInline(0);
 
     return result;
 }
@@ -140,7 +140,7 @@ GpuMatrix<Type> GpuPyramidMemory<Type>::getLayer(Space level, Space layer) const
     ARRAY_EXPOSE(pyramidArray);
 
     if (SpaceU(level) < SpaceU(pyramidArraySize))
-        result = helpRead(pyramidArrayPtr[level]).getLayerInline(layer);
+        result = pyramidArrayPtr[level].getLayerInline(layer);
 
     return result;
 }
@@ -159,7 +159,7 @@ const GpuLayeredMatrix<Type>& GpuPyramidMemory<Type>::getLevel(Space level) cons
     ARRAY_EXPOSE(pyramidArray);
 
     if (SpaceU(level) < SpaceU(pyramidArraySize))
-        result = &helpModify(pyramidArrayPtr[level]);
+        result = &pyramidArrayPtr[level];
 
     return *result;
 }
@@ -187,7 +187,7 @@ bool GpuPyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidL
 
     ////
 
-    basePointer = helpRead(pyramidArrayPtr[0]).getBaseImagePtr();
+    basePointer = pyramidArrayPtr[0].getBaseImagePtr();
     GpuAddrU baseAddr = GpuAddrU(basePointer);
 
     ////

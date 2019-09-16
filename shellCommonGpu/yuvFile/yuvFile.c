@@ -95,7 +95,7 @@ stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(Diagn
 
     ////
 
-    ARRAY_EXPOSE_UNSAFE(frame, frame);
+    ARRAY_EXPOSE_UNSAFE(frame);
 
     REQUIRE(theInputStream);
     require(theInputStream->read(framePtr, sizeof(RawPixel) * frameSize, stdPass));
@@ -117,7 +117,7 @@ stdbool YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPar
 
     ////
 
-    ARRAY_EXPOSE_UNSAFE(frame, frame);
+    ARRAY_EXPOSE_UNSAFE(frame);
 
     REQUIRE(theOutputStream);
     require(theOutputStream->write(framePtr, sizeof(RawPixel) * frameSize, stdPass));

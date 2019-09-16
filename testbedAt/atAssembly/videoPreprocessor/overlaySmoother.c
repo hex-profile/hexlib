@@ -123,8 +123,8 @@ stdbool AtProviderFromCpuImage::saveImage(const Matrix<ColorPixel>& dest, stdNul
 
     ////
 
-    ARRAY_EXPOSE_UNSAFE(srcArray, src);
-    ARRAY_EXPOSE_UNSAFE(dstArray, dst);
+    ARRAY_EXPOSE_UNSAFE_PREFIX(srcArray, src);
+    ARRAY_EXPOSE_UNSAFE_PREFIX(dstArray, dst);
 
     REQUIRE(srcSize == dstSize);
     memcpy(dstPtr, srcPtr, dstSize * sizeof(ColorPixel));
@@ -183,7 +183,7 @@ stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider<uint8_x4>& pr
 
     ////
 
-    ARRAY_EXPOSE_UNSAFE(dst.memory, dstMemory);
+    ARRAY_EXPOSE_UNSAFE_PREFIX(dst.memory, dstMemory);
 
     Matrix<ColorPixel> dstMatrix(dstMemoryPtr, memPitch, size.X, size.Y);
 

@@ -145,7 +145,7 @@ public:
         ARRAY_EXPOSE(buffer);
 
         if (storedEnd >= 0 && storedEnd < bufferSize)
-            result = &helpModify(bufferPtr[storedEnd]);
+            result = &bufferPtr[storedEnd];
 
         return result;
     }
@@ -219,7 +219,7 @@ public:
         if (relativeIndex < 0) relativeIndex += bufferSize; // [0, bufferSize - 1]
 
         ensure_ex(relativeIndex >= 0 && relativeIndex < bufferSize, nullptr);
-        result = &helpModify(bufferPtr[relativeIndex]);
+        result = &bufferPtr[relativeIndex];
 
         return result;
     }
@@ -296,8 +296,8 @@ private:
 template <typename Type, typename Action>
 sysinline void historyForEach(const HistoryRanges<Type>& historyRanges, const Action& action)
 {
-    ARRAY_EXPOSE_EX(historyRanges.a, a);
-    ARRAY_EXPOSE_EX(historyRanges.b, b);
+    ARRAY_EXPOSE_PREFIX(historyRanges.a, a);
+    ARRAY_EXPOSE_PREFIX(historyRanges.b, b);
 
     for (Space i = 0; i < aSize; ++i)
         action(aPtr[i]);
