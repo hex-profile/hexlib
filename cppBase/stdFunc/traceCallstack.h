@@ -161,7 +161,7 @@ public:
 //
 
 #define TRACE_PARAMS(trace) \
-    const TraceScope TRACE_SCOPE(trace)
+    TraceScope TRACE_SCOPE(trace)
 
 #define TRACE_REASSEMBLE(trace)
 
