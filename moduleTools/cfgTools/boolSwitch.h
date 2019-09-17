@@ -72,12 +72,12 @@ template <typename EnumType, EnumType positionCount, EnumType defaultPos = EnumT
 class RingSwitch : public RingSwitchBase
 {
 
-    COMPILE_ASSERT(positionCount >= 1 && 0 <= defaultPos && defaultPos <= positionCount - 1);
+    COMPILE_ASSERT(int32(positionCount) >= 1 && 0 <= int32(defaultPos) && int32(defaultPos) <= int32(positionCount) - 1);
 
 public:
 
     inline RingSwitch()
-        : RingSwitchBase(positionCount, defaultPos) {}
+        : RingSwitchBase(int32(positionCount), int32(defaultPos)) {}
 
 public:
 
