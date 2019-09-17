@@ -33,10 +33,9 @@
 
 #if DEVCODE
 
-template <typename Dst>
-devDecl void PREP_PASTE4(FUNCNAME, IntermFlex, DIR(Hor, Ver), RANK)(const IntermParams<Dst>& o, Space taskIdx, devPars)
+devDecl void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParams& o, Space taskIdx, devPars)
 {
-    typedef VECTOR_REBASE(Dst, float32) FloatType;
+    typedef VECTOR_REBASE(DST_TYPE, float32) FloatType;
 
     ////
 
@@ -109,7 +108,7 @@ devDecl void PREP_PASTE4(FUNCNAME, IntermFlex, DIR(Hor, Ver), RANK)(const Interm
     //
 
     #define TMP_MACRO(t, _) \
-        if (t == taskIdx) {LOAD_SRC_BLOCK_NOSYNC(PREP_PASTE4(FUNCNAME, srcSampler, RANK, t));}
+        if (t == taskIdx) {LOAD_SRC_BLOCK_NOSYNC(PREP_PASTE3(SIGNATURE, srcSampler, t));}
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _) 
 
@@ -186,7 +185,7 @@ devDecl void PREP_PASTE4(FUNCNAME, IntermFlex, DIR(Hor, Ver), RANK)(const Interm
     #define TMP_MACRO(k, _) \
         \
         MATRIX_EXPOSE_EX(o.dst[taskIdx][k], dst##k); \
-        MatrixPtr(Dst) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
+        MatrixPtr(DST_TYPE) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
         storeNorm(dstPtr##k, result##k);
 
     PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
@@ -205,11 +204,10 @@ devDecl void PREP_PASTE4(FUNCNAME, IntermFlex, DIR(Hor, Ver), RANK)(const Interm
 
 #if DEVCODE
 
-template <typename Dst>
-devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermParams<Dst>& o, devPars)
+devDefineKernel(PREP_PASTE3(SIGNATURE, Interm, DIR(Hor, Ver)), IntermParams, o)
 {
     #define TMP_MACRO(t, _) \
-        if (t == devGroupZ) {PREP_PASTE4(FUNCNAME, IntermFlex, DIR(Hor, Ver), RANK)(o, t, devPass); return;} \
+        if (t == devGroupZ) {PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(o, t, devPass); return;} \
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 
@@ -228,10 +226,9 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 
 #if DEVCODE
 
-template <typename Dst>
-devDecl inline void PREP_PASTE4(FUNCNAME, FinalFlex, DIR(Hor, Ver), RANK)(const FinalParams<Dst>& o, Space taskIdx, devPars)
+devDecl inline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const FinalParams& o, Space taskIdx, devPars)
 {
-    typedef VECTOR_REBASE(Dst, float32) FloatType;
+    typedef VECTOR_REBASE(DST_TYPE, float32) FloatType;
 
     ////
 
@@ -296,7 +293,7 @@ devDecl inline void PREP_PASTE4(FUNCNAME, FinalFlex, DIR(Hor, Ver), RANK)(const 
         PARALLEL_LOOP_2D_UNBASED \
         ( \
             iX, iY, cacheSizeX, cacheSizeY, devThreadIdx.X, devThreadIdx.Y, threadCountX, threadCountY, \
-            *(cacheLoadPtr + iX + iY * cacheMemPitch) = tex2D(PREP_PASTE5(FUNCNAME, intermSampler, k, RANK, t), srcLoadTexPos + point(float32(iX), float32(iY)) * o.srcTexstep); \
+            *(cacheLoadPtr + iX + iY * cacheMemPitch) = tex2D(PREP_PASTE4(SIGNATURE, intermSampler, k, t), srcLoadTexPos + point(float32(iX), float32(iY)) * o.srcTexstep); \
         ) \
 
     ////
@@ -368,7 +365,7 @@ devDecl inline void PREP_PASTE4(FUNCNAME, FinalFlex, DIR(Hor, Ver), RANK)(const 
 
     #define TMP_MACRO(k, _) \
         MATRIX_EXPOSE_EX(o.dst[taskIdx][k], dst##k); \
-        MatrixPtr(Dst) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
+        MatrixPtr(DST_TYPE) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
         storeNorm(dstPtr##k, result##k);
 
     PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
@@ -420,11 +417,10 @@ devDecl inline void PREP_PASTE4(FUNCNAME, FinalFlex, DIR(Hor, Ver), RANK)(const 
 
 #if DEVCODE
 
-template <typename Dst>
-devDecl inline void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams<Dst>& o, devPars)
+devDefineKernel(PREP_PASTE3(SIGNATURE, Final, DIR(Hor, Ver)), FinalParams, o)
 {
     #define TMP_MACRO(t, _) \
-        if (t == devGroupZ) {PREP_PASTE4(FUNCNAME, FinalFlex, DIR(Hor, Ver), RANK)(o, t, devPass); return;}
+        if (t == devGroupZ) {PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(o, t, devPass); return;}
         
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 

@@ -26,12 +26,20 @@
 namespace FUNCSPACE {
 #endif
 
-#ifndef FUNCNAME
-    #error
+#define SIGNATURE PREP_PASTE_UNDER5(FUNCNAME, RANK, SRC_TYPE, INTERM_TYPE, DST_TYPE)
+
+namespace SIGNATURE {
+
+//================================================================
+//
+// Check parameters.
+//
+//================================================================
+
+#if !(defined(SIGNATURE) && defined(FUNCNAME) && defined(RANK) && defined(SRC_TYPE) && defined(INTERM_TYPE) && defined(DST_TYPE))
+    #error Parameters need to be defined.
 #endif
-
-namespace PREP_PASTE(FUNCNAME, Space) {
-
+                                         
 //================================================================
 //
 // TASK_COUNT
@@ -64,9 +72,7 @@ sysinline Point<Space> verThreadCount() {return point(verThreadCountX, verThread
 //================================================================
 
 #define TMP_MACRO(t, _) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler1##t), DevSampler2D, DevSamplerFloat, 1) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler2##t), DevSampler2D, DevSamplerFloat, 2) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler4##t), DevSampler2D, DevSamplerFloat, 4)
+    devDefineSampler(PREP_PASTE3(SIGNATURE, srcSampler, t), DevSampler2D, DevSamplerFloat, RANK) \
 
 PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 
@@ -75,9 +81,7 @@ PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 ////
 
 #define TMP_MACRO(t, k, _) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##1##t), DevSampler2D, DevSamplerFloat, 1) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##2##t), DevSampler2D, DevSamplerFloat, 2) \
-    devDefineSampler(PREP_PASTE(FUNCNAME, intermSampler##k##4##t), DevSampler2D, DevSamplerFloat, 4)
+    devDefineSampler(PREP_PASTE4(SIGNATURE, intermSampler, k, t), DevSampler2D, DevSamplerFloat, RANK)
 
 PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
 
@@ -107,13 +111,12 @@ PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
 //
 //================================================================
 
-template <typename Dst>
 struct IntermParams
 {
     Point<float32> srcTexstep;
     Point<Space> dstSize; 
 
-    GpuMatrix<Dst> dst[TASK_COUNT][FILTER_COUNT];
+    GpuMatrix<INTERM_TYPE> dst[TASK_COUNT][FILTER_COUNT];
 };
 
 //================================================================
@@ -122,7 +125,6 @@ struct IntermParams
 //
 //================================================================
 
-template <typename Dst>
 struct FinalParams
 {
 
@@ -131,15 +133,15 @@ struct FinalParams
 
 #ifndef LINEAR_COMBINATION
 
-    GpuMatrix<Dst> dst[TASK_COUNT][FILTER_COUNT];
+    GpuMatrix<DST_TYPE> dst[TASK_COUNT][FILTER_COUNT];
 
 #else
 
     float32 filterMixCoeffs[FILTER_COUNT];
 
-    GpuMatrix<const Dst> dstMixImage[TASK_COUNT];
+    GpuMatrix<const DST_TYPE> dstMixImage[TASK_COUNT];
     float32 dstMixCoeff[TASK_COUNT];
-    GpuMatrix<Dst> dst[TASK_COUNT];
+    GpuMatrix<DST_TYPE> dst[TASK_COUNT];
 
 #endif
 
@@ -151,8 +153,6 @@ struct FinalParams
 //
 //================================================================
 
-#define RANK 1
-
 #define HORIZONTAL 1
 # include "multiFilterKernel.inl"
 #undef HORIZONTAL
@@ -160,72 +160,6 @@ struct FinalParams
 #define HORIZONTAL 0
 # include "multiFilterKernel.inl"
 #undef HORIZONTAL
-
-#undef RANK
-
-//----------------------------------------------------------------
-
-#define RANK 2
-
-#define HORIZONTAL 1
-# include "multiFilterKernel.inl"
-#undef HORIZONTAL
-
-#define HORIZONTAL 0
-# include "multiFilterKernel.inl"
-#undef HORIZONTAL
-
-#undef RANK
-
-//----------------------------------------------------------------
-
-#define RANK 4
-
-#define HORIZONTAL 1
-# include "multiFilterKernel.inl"
-#undef HORIZONTAL
-
-#define HORIZONTAL 0
-# include "multiFilterKernel.inl"
-#undef HORIZONTAL
-
-#undef RANK
-
-//================================================================
-//
-// Kernel instantiations (Interm)
-//
-//================================================================
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermHor1), IntermParams, PREP_PASTE(FUNCNAME, IntermHorLink), PREP_PASTE(FUNCNAME, IntermHor8u), (uint8));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer1), IntermParams, PREP_PASTE(FUNCNAME, IntermVerLink), PREP_PASTE(FUNCNAME, IntermVer8u), (uint8));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermHor2), IntermParams, PREP_PASTE(FUNCNAME, IntermHorLink), PREP_PASTE(FUNCNAME, IntermHor8s_x2), (int8_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer2), IntermParams, PREP_PASTE(FUNCNAME, IntermVerLink), PREP_PASTE(FUNCNAME, IntermVer8s_x2), (int8_x2));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermHor1), IntermParams, PREP_PASTE(FUNCNAME, IntermHorLink), PREP_PASTE(FUNCNAME, IntermHor16f), (float16));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer1), IntermParams, PREP_PASTE(FUNCNAME, IntermVerLink), PREP_PASTE(FUNCNAME, IntermVer16f), (float16));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermHor2), IntermParams, PREP_PASTE(FUNCNAME, IntermHorLink), PREP_PASTE(FUNCNAME, IntermHor16f_x2), (float16_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, IntermVer2), IntermParams, PREP_PASTE(FUNCNAME, IntermVerLink), PREP_PASTE(FUNCNAME, IntermVer16f_x2), (float16_x2));
-
-//================================================================
-//
-// Kernel instantiations (Final)
-//
-//================================================================
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalHor1), FinalParams, PREP_PASTE(FUNCNAME, FinalHorLink), PREP_PASTE(FUNCNAME, FinalHor8u), (uint8));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer1), FinalParams, PREP_PASTE(FUNCNAME, FinalVerLink), PREP_PASTE(FUNCNAME, FinalVer8u), (uint8));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalHor2), FinalParams, PREP_PASTE(FUNCNAME, FinalHorLink), PREP_PASTE(FUNCNAME, FinalHor8s_x2), (int8_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), FinalParams, PREP_PASTE(FUNCNAME, FinalVerLink), PREP_PASTE(FUNCNAME, FinalVer8s_x2), (int8_x2));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalHor1), FinalParams, PREP_PASTE(FUNCNAME, FinalHorLink), PREP_PASTE(FUNCNAME, FinalHor16f), (float16));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer1), FinalParams, PREP_PASTE(FUNCNAME, FinalVerLink), PREP_PASTE(FUNCNAME, FinalVer16f), (float16));
-
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalHor2), FinalParams, PREP_PASTE(FUNCNAME, FinalHorLink), PREP_PASTE(FUNCNAME, FinalHor16f_x2), (float16_x2));
-GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), FinalParams, PREP_PASTE(FUNCNAME, FinalVerLink), PREP_PASTE(FUNCNAME, FinalVer16f_x2), (float16_x2));
 
 //================================================================
 //
@@ -253,17 +187,20 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), Fin
 //
 //================================================================
 
-#undef FUNC_PARAMETERS
+#define FUNC_PARAMETERS(t, types) \
+    FUNC_PARAMETERS_EX(t, PREP_ARG3_0 types, PREP_ARG3_1 types, PREP_ARG3_2 types)
+
+//----------------------------------------------------------------
 
 #ifndef LINEAR_COMBINATION
 
-    #define FUNC_PARAMETERS(t, _) \
+    #define FUNC_PARAMETERS_EX(t, Src, Interm, Dst) \
         const GpuMatrix<const Src>& src##t, \
         PREP_ENUM_LR(FILTER_COUNT, const GpuMatrix<Dst>& dst, t), 
 
 #else
 
-    #define FUNC_PARAMETERS(t, _) \
+    #define FUNC_PARAMETERS_EX(t, Src, Interm, Dst) \
         const GpuMatrix<const Src>& src##t, \
         const GpuMatrix<const Dst>& dstMixImage##t, \
         float32 dstMixCoeff##t, \
@@ -279,16 +216,29 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), Fin
 
 #if HOSTCODE
 
-template <typename Src, typename Dst>
+//----------------------------------------------------------------
+
+template <typename Src, typename Interm, typename Dst>
 stdbool FUNCNAME
 (
-    PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, _)
+    PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, (Src, Interm, Dst))
+    LINEAR_ONLY_COMMA(const float32* filterMixCoeffs)
+    BorderMode borderMode, 
+    stdPars(GpuProcessKit)
+);
+
+//----------------------------------------------------------------
+
+template <>
+stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
+(
+    PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, (SRC_TYPE, INTERM_TYPE, DST_TYPE))
     LINEAR_ONLY_COMMA(const float32* filterMixCoeffs)
     BorderMode borderMode, 
     stdPars(GpuProcessKit)
 )
 {
-    using namespace PREP_PASTE(FUNCNAME, Space);
+    using namespace SIGNATURE;
 
     ////
 
@@ -314,7 +264,7 @@ stdbool FUNCNAME
     Point<Space> intermSize = srcSize;
     intermSize.DIR(X, Y) = dstSize.DIR(X, Y);
 
-    GPU_LAYERED_MATRIX_ALLOC(interm, Dst, TASK_COUNT * FILTER_COUNT, intermSize);
+    GPU_LAYERED_MATRIX_ALLOC(interm, INTERM_TYPE, TASK_COUNT * FILTER_COUNT, intermSize);
 
     ////
 
@@ -323,7 +273,9 @@ stdbool FUNCNAME
 
     ////
 
-    const int srcRank = VectorTypeRank<Src>::val;
+    REQUIRE(VectorTypeRank<SRC_TYPE>::val == RANK);
+    REQUIRE(VectorTypeRank<INTERM_TYPE>::val == RANK);
+    REQUIRE(VectorTypeRank<DST_TYPE>::val == RANK);
 
     //----------------------------------------------------------------
     //
@@ -333,11 +285,7 @@ stdbool FUNCNAME
 
     #define TMP_MACRO(t, _) \
         { \
-            const GpuSamplerLink* srcSampler = nullptr; \
-            if (srcRank == 1) srcSampler = &PREP_PASTE(FUNCNAME, srcSampler1##t); \
-            if (srcRank == 2) srcSampler = &PREP_PASTE(FUNCNAME, srcSampler2##t); \
-            if (srcRank == 4) srcSampler = &PREP_PASTE(FUNCNAME, srcSampler4##t); \
-            REQUIRE(srcSampler != 0); \
+            const GpuSamplerLink* srcSampler = &PREP_PASTE3(SIGNATURE, srcSampler, t); \
             require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src##t, borderMode, false, true, true, stdPass)); \
         }
 
@@ -347,7 +295,7 @@ stdbool FUNCNAME
 
     ////
 
-    IntermParams<Dst> intermParams;
+    IntermParams intermParams;
     intermParams.srcTexstep = computeTexstep(srcSize);
     intermParams.dstSize = intermSize;
 
@@ -372,7 +320,7 @@ stdbool FUNCNAME
             point3D(intermGroupCount.X, intermGroupCount.Y, TASK_COUNT),
             intermThreadCount,
             areaOf(intermSize),
-            PREP_PASTE3(FUNCNAME, Interm, DIR(HorLink, VerLink))<Dst>(),
+            PREP_PASTE3(SIGNATURE, Interm, DIR(Hor, Ver)),
             intermParams,
             kit.gpuCurrentStream,
             stdPass
@@ -387,11 +335,7 @@ stdbool FUNCNAME
 
     #define TMP_MACRO(t, k, _) \
         { \
-            const GpuSamplerLink* sampler = 0; \
-            if (srcRank == 1) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##1##t); \
-            if (srcRank == 2) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##2##t); \
-            if (srcRank == 4) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##4##t); \
-            REQUIRE(sampler != 0); \
+            const GpuSamplerLink* sampler = &PREP_PASTE4(SIGNATURE, intermSampler, k, t); \
             require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k + t * FILTER_COUNT)), borderMode, false, true, true, stdPass)); \
         }
 
@@ -401,7 +345,7 @@ stdbool FUNCNAME
 
     ////
 
-    FinalParams<Dst> finalParams;
+    FinalParams finalParams;
     finalParams.srcTexstep = computeTexstep(intermSize);
     finalParams.dstSize = dstSize;
 
@@ -448,7 +392,7 @@ stdbool FUNCNAME
             point3D(finalGroupCount.X, finalGroupCount.Y, TASK_COUNT),
             finalThreadCount,
             areaOf(dstSize),
-            PREP_PASTE3(FUNCNAME, Final, DIR(VerLink, HorLink))<Dst>(),
+            PREP_PASTE3(SIGNATURE, Final, DIR(Ver, Hor)),
             finalParams,
             kit.gpuCurrentStream,                                          
             stdPass
@@ -460,20 +404,11 @@ stdbool FUNCNAME
     returnTrue;
 }
 
-#endif
-
 //----------------------------------------------------------------
 
-#if HOSTCODE 
+INSTANTIATE_FUNC_EX((FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>), SIGNATURE)
 
-INSTANTIATE_FUNC_EX((FUNCNAME<uint8, uint8>), FUNCNAME)
-INSTANTIATE_FUNC_EX((FUNCNAME<uint8, float16>), FUNCNAME)
-
-INSTANTIATE_FUNC_EX((FUNCNAME<int8_x2, int8_x2>), FUNCNAME)
-INSTANTIATE_FUNC_EX((FUNCNAME<int8_x2, float16_x2>), FUNCNAME)
-
-INSTANTIATE_FUNC_EX((FUNCNAME<float16, float16>), FUNCNAME)
-INSTANTIATE_FUNC_EX((FUNCNAME<float16_x2, float16_x2>), FUNCNAME)
+//----------------------------------------------------------------
 
 #endif
 
@@ -483,6 +418,8 @@ INSTANTIATE_FUNC_EX((FUNCNAME<float16_x2, float16_x2>), FUNCNAME)
 //
 //================================================================
 
+#undef FUNC_PARAMETERS
+#undef FUNC_PARAMETERS_EX
 #undef DIR
 #undef LINEAR_ONLY
 #undef LINEAR_ONLY_COMMA

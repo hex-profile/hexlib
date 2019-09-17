@@ -36,8 +36,11 @@
 //
 //================================================================
 
-#define PREP_PASTE_UNDER2(v0, v1) \
-    PREP_PASTE3(v0, _, v1)
+#define PREP_PASTE_UNDER2_HELPER(X, Y) \
+    X##_##Y
+
+#define PREP_PASTE_UNDER2(X, Y) \
+    PREP_PASTE_UNDER2_HELPER(X, Y)
 
 #define PREP_PASTE_UNDER3(v0, v1, v2) \
     PREP_PASTE_UNDER2(v0, PREP_PASTE_UNDER2(v1, v2))
