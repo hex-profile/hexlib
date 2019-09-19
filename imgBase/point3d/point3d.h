@@ -440,3 +440,13 @@ sysinline void vectorDecompose(const Point3D<Float>& vec, Float& vectorLengthSq,
         vectorDir.Z = 0;
     }
 }
+
+//================================================================
+//
+// scalarProd
+//
+//================================================================
+
+template <typename Float>
+sysinline Float scalarProd(const Point3D<Float>& A, const Point3D<Float>& B)
+    {return A.X * B.X + A.Y * B.Y + A.Z * B.Z;}
