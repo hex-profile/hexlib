@@ -62,7 +62,7 @@ sysinline Point<Float> complexConjugate(const Point<Float>& P)
 
 template <typename Float>
 sysinline Float scalarProd(const Point<Float>& A, const Point<Float>& B)
-    {return A.X*B.X + A.Y*B.Y;}
+    {return A.X * B.X + A.Y * B.Y;}
 
 //================================================================
 //
