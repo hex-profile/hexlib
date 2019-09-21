@@ -983,7 +983,7 @@ struct CoverageEvent
 //
 //================================================================
 
-static const Space coverageMultiplier = 2;
+static const Space coverageMultiplier = 1;
 static const Space coverageTotalTrapCount = 0;
 static const bool coverageTryToFlushCache = true;
 
