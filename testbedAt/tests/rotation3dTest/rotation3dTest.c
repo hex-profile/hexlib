@@ -174,11 +174,11 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
             auto B = generateUnitQuat();
 
             // Rotate forward and backward.
-            require(vectorLength(quatRotateVec(quatConjugate(A), quatRotateVec(A, vec)) - vec) <= eps);
+            require(vectorLength(~A % (A % vec) - vec) <= eps);
 
             // Combine two rotations.
-            auto v1 = quatRotateVec(B, quatRotateVec(A, vec));
-            auto v2 = quatRotateVec(quatMul(B, A), vec);
+            auto v1 = B % (A % vec);
+            auto v2 = (B % A) % vec;
             require(vectorLength(v1 - v2) <= eps);
         }
 
@@ -203,11 +203,11 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
             require(vectorLength(quatBoxMinus(+Q, P) - quatBoxMinus(-Q, P)) <= eps);
 
             // Rotate vec
-            require(vectorLength(quatRotateVec(+Q, vec) - quatRotateVec(-Q, vec)) <= eps);
+            require(vectorLength((+Q % vec) - (-Q % vec)) <= eps);
 
             // Quat mul
-            require(quatL2Diff(quatMul(+Q, P), quatMul(-Q, P)) <= eps);
-            require(quatL2Diff(quatMul(Q, -P), quatMul(Q, +P)) <= eps);
+            require(quatL2Diff(+Q % P, -Q % P) <= eps);
+            require(quatL2Diff(Q % -P, Q % +P) <= eps);
         }
 
     }

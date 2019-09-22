@@ -17,6 +17,14 @@ sysinline Point4D<Float> quatConjugate(const Point4D<Float>& Q)
     return {-Q.X, -Q.Y, -Q.Z, Q.W};
 }
 
+//----------------------------------------------------------------
+
+template <typename Float>
+sysinline auto operator ~(const Point4D<Float>& Q)
+{
+    return quatConjugate(Q);
+}
+
 //================================================================
 //
 // quatMul
@@ -35,6 +43,14 @@ sysinline Point4D<Float> quatMul(const Point4D<Float>& A, const Point4D<Float>& 
 	    A.W * B.Z + A.Z * B.W + A.X * B.Y - A.Y * B.X,
 	    A.W * B.W - A.X * B.X - A.Y * B.Y - A.Z * B.Z
     };
+}
+
+//----------------------------------------------------------------
+
+template <typename Float>
+sysinline auto operator %(const Point4D<Float>& A, const Point4D<Float>& B)
+{
+    return quatMul(A, B);
 }
 
 //================================================================
@@ -58,7 +74,7 @@ sysinline Point3D<Float> crossProduct(const Point3D<Float>& A, const Point3D<Flo
 
 //================================================================
 //
-// quatRotateVec
+// quatApply
 //
 // The quaternion should have unit length.
 //
@@ -67,10 +83,18 @@ sysinline Point3D<Float> crossProduct(const Point3D<Float>& A, const Point3D<Flo
 //================================================================
 
 template <typename Float>
-sysinline Point3D<Float> quatRotateVec(const Point4D<Float>& Q, const Point3D<Float>& V)
+sysinline Point3D<Float> quatApply(const Point4D<Float>& Q, const Point3D<Float>& V)
 {
     auto R = quatImaginary(Q);
 	return V + 2 * crossProduct(R, crossProduct(R, V) + quatReal(Q) * V);
+}
+
+//----------------------------------------------------------------
+
+template <typename Float>
+sysinline Point3D<Float> operator %(const Point4D<Float>& Q, const Point3D<Float>& V)
+{
+    return quatApply(Q, V);
 }
 
 //================================================================
@@ -147,7 +171,7 @@ sysinline Point3D<Float> quatUnitLogSpecial(const Point4D<Float>& Q)
 template <typename Float>
 sysinline Point4D<Float> quatBoxPlus(const Point4D<Float>& Q, const Point3D<Float>& D)
 {
-    return quatMul(Q, quatImaginaryExp(0.5f * D));
+    return Q % quatImaginaryExp(0.5f * D);
 }
 
 //================================================================
@@ -161,7 +185,7 @@ sysinline Point4D<Float> quatBoxPlus(const Point4D<Float>& Q, const Point3D<Floa
 template <typename Float>
 sysinline Point3D<Float> quatBoxMinus(const Point4D<Float>& Q, const Point4D<Float>& P)
 {
-    return 2 * quatUnitLogSpecial(quatMul(quatConjugate(P), Q));
+    return 2 * quatUnitLogSpecial(~P % Q);
 }
 
 //================================================================
