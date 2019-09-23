@@ -688,7 +688,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
         require(getElementAtUserPoint(img, coordBack, userIdx, userValue, stdPass));
 
         if (getTextEnabled())
-            require(printMsgL(kit, STR("Value[%0] = %1"), userIdx, fltg(convertFloat32(userValue), 5)));
+            require(printMsgL(kit, STR("Value[%0] = %1"), userIdx, fltg(convertFloat32(userValue), 6)));
 
         returnTrue;
     };
@@ -1204,7 +1204,7 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
             int hexDigits = divUp<int>(sizeof(Base) * CHAR_BIT, 4);
 
             require(printMsgL(kit, TYPE_IS_BUILTIN_INT(Base) ? STR("Value[%0] = %1 (hex %2)") : STR("Value[%0] = %1"), 
-                userIdx, fltg(convertFloat32(userValue), 5), hex(userValue, hexDigits)));
+                userIdx, fltg(convertFloat32(userValue), 6), hex(userValue, hexDigits)));
         }
 
         returnTrue;
