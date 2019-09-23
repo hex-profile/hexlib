@@ -54,17 +54,9 @@ sysinline bool operator ==(const Movement3D<Float>& a, const Movement3D<Float>& 
 //================================================================
 
 template <typename Float>
-sysinline Point3D<Float> apply(const Movement3D<Float>& movement, const Point3D<Float>& vec)
-{
-    return movement.rotation % vec + movement.translation;
-}
-
-//----------------------------------------------------------------
-
-template <typename Float>
 sysinline Point3D<Float> operator %(const Movement3D<Float>& movement, const Point3D<Float>& vec)
 {
-    return apply(movement, vec);
+    return movement.rotation % vec + movement.translation;
 }
 
 //================================================================
@@ -74,20 +66,12 @@ sysinline Point3D<Float> operator %(const Movement3D<Float>& movement, const Poi
 //================================================================
 
 template <typename Float>
-sysinline Movement3D<Float> combine(const Movement3D<Float>& A, const Movement3D<Float>& B)
-{
-    Movement3D<Float> result;
-    result.rotation = B.rotation % A.rotation;
-    result.translation = B.rotation % A.translation + B.translation;
-    return result;
-}
-
-//----------------------------------------------------------------
-
-template <typename Float>
 sysinline Movement3D<Float> operator %(const Movement3D<Float>& A, const Movement3D<Float>& B)
 {
-    return combine(B, A);
+    Movement3D<Float> result;
+    result.rotation = A.rotation % B.rotation;
+    result.translation = A.rotation % B.translation + A.translation;
+    return result;
 }
 
 //================================================================
@@ -97,7 +81,7 @@ sysinline Movement3D<Float> operator %(const Movement3D<Float>& A, const Movemen
 //================================================================
 
 template <typename Float>
-sysinline Movement3D<Float> inverse(const Movement3D<Float>& movement)
+sysinline Movement3D<Float> operator ~(const Movement3D<Float>& movement)
 {
     Movement3D<Float> result;
     auto iR = ~movement.rotation;
@@ -109,15 +93,45 @@ sysinline Movement3D<Float> inverse(const Movement3D<Float>& movement)
 //----------------------------------------------------------------
 
 template <typename Float>
-sysinline Movement3D<Float> operator ~(const Movement3D<Float>& movement)
-{
-    return inverse(movement);
-}
-
-//----------------------------------------------------------------
-
-template <typename Float>
 sysinline Point3D<Float> applyInverse(const Movement3D<Float>& movement, const Point3D<Float>& vec)
 {
     return ~movement.rotation % (vec - movement.translation);
+}
+
+//================================================================
+//
+// MovementUnpacked3D
+//
+//================================================================
+
+template <typename Float>
+struct MovementUnpacked3D
+{
+
+public:
+
+    Mat3D<Float> rotation{};
+    Point3D<Float> translation{};
+
+public:
+
+    sysinline MovementUnpacked3D() =default;
+
+    sysinline MovementUnpacked3D(const Movement3D<Float>& base)
+    {
+        rotation = quatMat(base.rotation);
+        translation = base.translation;
+    }
+};
+
+//================================================================
+//
+// apply
+//
+//================================================================
+
+template <typename Float>
+sysinline Point3D<Float> operator %(const MovementUnpacked3D<Float>& movement, const Point3D<Float>& vec)
+{
+    return movement.rotation % vec + movement.translation;
 }
