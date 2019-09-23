@@ -1,8 +1,5 @@
+#include "mathFuncs/rotationMath3d.h"
 #include "numbers/float/floatType.h"
-#include "numbers/float16/float16Base.h"
-#include "point/point.h"
-#include "gpuSupport/gpuTexTools.h"
-#include "readInterpolate/gpuTexCubic.h"
 
 //================================================================
 //
@@ -14,21 +11,16 @@
 
 #if __CUDA_ARCH__
 
-devDefineSampler(image, DevSampler2D, DevSamplerFloat, 1)
-
-////
-
-__global__ void testKernel1(Point<float32> pos, Point<float32> texstep, float32* result)
+__global__ void testKernelQuat(Point3D<float32>* vec, Point4D<float32> R)
 {
-    *result = tex2DCubicGeneric<CubicCoeffs>(image, pos, texstep);
+    *vec = ~R % (*vec);
 }
 
 ////
 
-__global__ void testKernel2(Point<float32> pos, Point<float32> texstep, float32* result)
+__global__ void testKernelMat(Point3D<float32>* vec, Mat3D<float32> R)
 {
-    auto prep = tex2DCubicPrepare<CubicCoeffs>(pos, texstep);
-    *result = tex2DCubicApply(image, prep);
+    *vec = ~R % (*vec);
 }
 
 ////

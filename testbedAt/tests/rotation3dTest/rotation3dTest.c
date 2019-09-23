@@ -53,7 +53,7 @@ void Rotation3DTestImpl::serialize(const ModuleSerializeKit& kit)
     (
         kit, STR("Display"), 
         {STR("<Nothing>"), STR("")},
-        {STR("Rotation 3D Test"), STR("Alt+Shift+R")}
+        {STR("Rotation 3D Test"), STR("Ctrl+Alt+Shift+R")}
     );
 }
 
@@ -179,6 +179,31 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
             // Combine two rotations.
             auto v1 = B % (A % vec);
             auto v2 = (B % A) % vec;
+            require(vectorLength(v1 - v2) <= eps);
+        }
+
+        //----------------------------------------------------------------
+        //
+        // Test rotation by matrix.
+        //
+        //----------------------------------------------------------------
+
+        {
+            auto Q = generateUnitQuat();
+            auto V = generateSomeVec();
+
+            auto M = quatMat(Q);
+
+            auto v1 = Q % V;
+            auto v2 = M % V;
+
+            require(vectorLength(v1 - v2) <= eps);
+
+            ////
+
+            v1 = ~Q % V;
+            v2 = ~M % V;
+
             require(vectorLength(v1 - v2) <= eps);
         }
 

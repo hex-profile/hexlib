@@ -12,17 +12,9 @@
 //================================================================
 
 template <typename Float>
-sysinline Point4D<Float> quatConjugate(const Point4D<Float>& Q)
+sysinline Point4D<Float> operator ~(const Point4D<Float>& Q)
 {
     return {-Q.X, -Q.Y, -Q.Z, Q.W};
-}
-
-//----------------------------------------------------------------
-
-template <typename Float>
-sysinline auto operator ~(const Point4D<Float>& Q)
-{
-    return quatConjugate(Q);
 }
 
 //================================================================
@@ -34,7 +26,7 @@ sysinline auto operator ~(const Point4D<Float>& Q)
 //================================================================
 
 template <typename Float>
-sysinline Point4D<Float> quatMul(const Point4D<Float>& A, const Point4D<Float>& B)
+sysinline Point4D<Float> operator %(const Point4D<Float>& A, const Point4D<Float>& B)
 {
     return
     {
@@ -43,14 +35,6 @@ sysinline Point4D<Float> quatMul(const Point4D<Float>& A, const Point4D<Float>& 
 	    A.W * B.Z + A.Z * B.W + A.X * B.Y - A.Y * B.X,
 	    A.W * B.W - A.X * B.X - A.Y * B.Y - A.Z * B.Z
     };
-}
-
-//----------------------------------------------------------------
-
-template <typename Float>
-sysinline auto operator %(const Point4D<Float>& A, const Point4D<Float>& B)
-{
-    return quatMul(A, B);
 }
 
 //================================================================
@@ -83,18 +67,86 @@ sysinline Point3D<Float> crossProduct(const Point3D<Float>& A, const Point3D<Flo
 //================================================================
 
 template <typename Float>
-sysinline Point3D<Float> quatApply(const Point4D<Float>& Q, const Point3D<Float>& V)
+sysinline Point3D<Float> operator %(const Point4D<Float>& Q, const Point3D<Float>& V)
 {
     auto R = quatImaginary(Q);
 	return V + 2 * crossProduct(R, crossProduct(R, V) + quatReal(Q) * V);
 }
 
-//----------------------------------------------------------------
+//================================================================
+//
+// Mat3D
+//
+// For efficient target application of a rotation.
+//
+//================================================================
 
 template <typename Float>
-sysinline Point3D<Float> operator %(const Point4D<Float>& Q, const Point3D<Float>& V)
+using Mat3D = Point3D<Point3D<Float>>;
+
+//================================================================
+//
+// quatMat
+//
+//================================================================
+
+template <typename Float>
+sysinline Mat3D<Float> quatMat(const Point4D<Float>& Q)
 {
-    return quatApply(Q, V);
+    auto XX = 2 * Q.X * Q.X;
+    auto XY = 2 * Q.X * Q.Y;
+    auto XZ = 2 * Q.X * Q.Z;
+    auto XW = 2 * Q.X * Q.W;
+
+    auto YY = 2 * Q.Y * Q.Y;
+    auto YZ = 2 * Q.Y * Q.Z;
+    auto YW = 2 * Q.Y * Q.W;
+
+    auto ZZ = 2 * Q.Z * Q.Z;
+    auto ZW = 2 * Q.Z * Q.W;
+
+    return point3D
+    (
+        point3D(1.f - YY - ZZ, XY - ZW, YW + XZ), 
+        point3D(ZW + XY, 1.f - ZZ - XX, YZ - XW), 
+        point3D(XZ - YW, XW + YZ, 1.f - XX - YY)
+    );
+}
+
+//================================================================
+//
+// Mat3D inverse.
+//
+//================================================================
+
+template <typename Float>
+sysinline Mat3D<Float> operator ~(const Mat3D<Float>& R)
+{
+    return point3D
+    (
+        point3D(R.X.X, R.Y.X, R.Z.X),
+        point3D(R.X.Y, R.Y.Y, R.Z.Y),
+        point3D(R.X.Z, R.Y.Z, R.Z.Z)
+    );
+}
+
+//================================================================
+//
+// Mat3D apply.
+//
+// 9 MADs.
+//
+//================================================================
+
+template <typename Float>
+sysinline Point3D<Float> operator %(const Mat3D<Float>& R, const Point3D<Float>& V)
+{
+    return point3D
+    (
+        scalarProd(R.X, V),
+        scalarProd(R.Y, V),
+        scalarProd(R.Z, V)
+    );
 }
 
 //================================================================
