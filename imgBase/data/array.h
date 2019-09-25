@@ -306,9 +306,11 @@ public:
 
     using Base = ArrayEx<Type*>;
 
+    //----------------------------------------------------------------
     //
     // Construct
     //
+    //----------------------------------------------------------------
 
     sysinline Array()
         {}
@@ -319,9 +321,22 @@ public:
     sysinline Array(const Base& base)
         : Base(base) {}
 
+    //----------------------------------------------------------------
+    //
+    // operator []
+    //
+    //----------------------------------------------------------------
+
+    sysinline auto& operator [](ptrdiff_t index) const
+    {
+        return ptr()[index];
+    }
+
+    //----------------------------------------------------------------
     //
     // Export cast (no code generated, reinterpret 'this')
     //
+    //----------------------------------------------------------------
 
     template <typename OtherType>
     sysinline operator const Array<OtherType>& () const
