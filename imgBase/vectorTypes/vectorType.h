@@ -3,6 +3,7 @@
 #include "numbers/interface/exchangeInterface.h"
 #include "numbers/interface/numberInterface.h"
 #include "point/point.h"
+#include "point4D/point4D.h"
 #include "numbers/float16/float16Type.h"
 #include "vectorTypes/vectorBase.h"
 
@@ -318,6 +319,27 @@ struct ConvertImpl<VectorX4, VectorX4, check, rounding, hint>
 
 //================================================================
 //
+// exchange
+//
+//================================================================
+
+VECTOR_INT_X2_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
+VECTOR_INT_X4_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
+VECTOR_FLOAT_X2_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
+VECTOR_FLOAT_X4_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
+
+//================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
+//
+// VectorX2 <-> Point
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
 // VectorX2 -> Point
 //
 //================================================================
@@ -373,12 +395,71 @@ struct ConvertImpl<PointFamily, VectorX2, check, rounding, hint>
 };
 
 //================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
 //
-// exchange
+// VectorX4 <-> Point4D
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
+// VectorX4 -> Point4D
 //
 //================================================================
 
-VECTOR_INT_X2_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
-VECTOR_INT_X4_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
-VECTOR_FLOAT_X2_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
-VECTOR_FLOAT_X4_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
+template <ConvertCheck check, Rounding rounding, ConvertHint hint>
+struct ConvertImpl<VectorX4, Point4DFamily, check, rounding, hint>
+{
+    template <typename Src, typename Dst>
+    struct Convert
+    {
+        using SrcBase = VECTOR_BASE(Src);
+        using DstBase = VECTOR_BASE(Dst);
+
+        using BaseConvert = typename ConvertScalar<SrcBase, DstBase, check, rounding, hint>::Code;
+
+        static sysinline Dst func(const Src& src)
+        {
+            return point4D<DstBase>
+            (
+                BaseConvert::func(src.x),
+                BaseConvert::func(src.y),
+                BaseConvert::func(src.z),
+                BaseConvert::func(src.w)
+            );
+        }
+    };
+};
+
+//================================================================
+//
+// Point4D -> VectorX4
+//
+//================================================================
+
+template <ConvertCheck check, Rounding rounding, ConvertHint hint>
+struct ConvertImpl<Point4DFamily, VectorX4, check, rounding, hint>
+{
+    template <typename Src, typename Dst>
+    struct Convert
+    {
+        using SrcBase = VECTOR_BASE(Src);
+        using DstBase = VECTOR_BASE(Dst);
+
+        using BaseConvert = typename ConvertScalar<SrcBase, DstBase, check, rounding, hint>::Code;
+
+        static sysinline Dst func(const Src& src)
+        {
+            return makeVec4<DstBase>
+            (
+                BaseConvert::func(src.X),
+                BaseConvert::func(src.Y),
+                BaseConvert::func(src.Z),
+                BaseConvert::func(src.W)
+            );
+        }
+    };
+};
