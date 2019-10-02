@@ -732,6 +732,16 @@ BUILTIN_FLOAT_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
 
 //================================================================
 //
+// convertFloat32
+//
+//================================================================
+
+template <typename Src>
+sysinline typename ConvertResult<Src, float32>::T convertFloat32(const Src& src)
+    {return convertNearest<float32>(src);}
+
+//================================================================
+//
 // absv
 //
 //================================================================
@@ -749,10 +759,12 @@ TMP_MACRO(double, fabs)
 
 //================================================================
 //
-// convertFloat32
+// vectorLengthSq
 //
 //================================================================
 
-template <typename Src>
-sysinline typename ConvertResult<Src, float32>::T convertFloat32(const Src& src)
-    {return convertNearest<float32>(src);}
+sysinline float32 vectorLengthSq(const float32& vec)
+    {return square(vec);}
+
+sysinline float64 vectorLengthSq(const float64& vec)
+    {return square(vec);}
