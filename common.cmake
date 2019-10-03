@@ -192,7 +192,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
             target_link_libraries(${projectName} PUBLIC cuda.lib)
 
-            set(CMAKE_CXX_COMPILER "${CMAKE_BINARY_DIR}/hexlibGpuCompiler" PARENT_SCOPE)
+            set(CMAKE_CXX_COMPILER "${CMAKE_BINARY_DIR}/gpuCompiler" PARENT_SCOPE)
 
         else()
 

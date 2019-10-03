@@ -27,6 +27,7 @@ add_subdirectory(gpuCompiler)
 add_subdirectory(imgBaseGpu)
 add_subdirectory(moduleToolsGpu)
 add_subdirectory(imgLibGpu)
+add_subdirectory(moduleLibGpu)
 add_subdirectory(shellCommonGpu)
 
 add_subdirectory(testbedAt)
