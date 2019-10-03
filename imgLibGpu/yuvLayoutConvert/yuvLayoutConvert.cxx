@@ -9,7 +9,7 @@
 #include "yuvLayoutConvert/yuvLayoutConvertCommon.h"
 
 #if HOSTCODE
-    #include "yuvLayoutConvert/yuv420Tools.h"
+    #include "yuv420/yuv420Tools.h"
 #endif
 
 namespace yuvLayoutConvert {

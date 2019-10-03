@@ -4,7 +4,7 @@
 #include "cpuFuncKit.h"
 #include "binaryFile/binaryFile.h"
 #include "point/point.h"
-#include "yuvLayoutConvert/yuv420Tools.h"
+#include "yuv420/yuv420Tools.h"
 #include "numbers/interface/exchangeInterface.h"
 #include "userOutput/diagnosticKit.h"
 

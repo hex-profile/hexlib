@@ -2,8 +2,8 @@ include(${HEXLIB_CMAKE_DIR}/common.cmake)
 
 #================================================================
 #
-# Library of signal/image processing functions on CPU.
+# Library of GPU processing modules.
 #
 #================================================================
 
-hexlibProjectTemplate(imgLib STATIC . "imgBase" FALSE hexlib)
+hexlibProjectTemplate(moduleLibGpu STATIC . "imgLibGpu;moduleToolsGpu" TRUE hexlib)

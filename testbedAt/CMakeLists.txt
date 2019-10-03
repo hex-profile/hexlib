@@ -6,7 +6,7 @@ include(${HEXLIB_CMAKE_DIR}/common.cmake)
 #
 #================================================================
 
-hexlibProjectTemplate(testbedAt STATIC . "hexlibShellCommon;hexlibShellCommonGpu" TRUE hexlib)
+hexlibProjectTemplate(testbedAt STATIC . "moduleLibGpu;shellCommon;shellCommonGpu" TRUE hexlib)
 
 ###
 
