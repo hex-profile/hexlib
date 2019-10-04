@@ -35,10 +35,10 @@ sysinline float32 convertIndexToPos(Space idx)
 //================================================================
 
 sysinline Point<float32> roundPosToNearestSample(const Point<float32>& pos)
-    {return convertFloat32(convertToNearestIndex(pos)) + 0.5f;}
+    {return convertIndexToPos(convertToNearestIndex(pos));}
 
 sysinline float32 roundPosToNearestSample(float32 pos)
-    {return convertFloat32(convertToNearestIndex(pos)) + 0.5f;}
+    {return convertIndexToPos(convertToNearestIndex(pos));}
 
 //================================================================
 //
