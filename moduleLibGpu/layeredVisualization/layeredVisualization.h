@@ -23,6 +23,7 @@ stdbool visualizeLayeredVector
     float32 maxVector,
     const Point<float32>& upsampleFactor,
     const Point<Space>& upsampleSize,
+    bool upsampleInterpolation,
     const ImgOutputHint& hint,
     stdPars(GpuModuleProcessKit)
 );
@@ -40,6 +41,7 @@ stdbool visualizeLayeredVector
     float32 maxVector,
     const Point<float32>& upsampleFactor,
     const Point<Space>& upsampleSize,
+    bool upsampleInterpolation,
     const ImgOutputHint& hint,
     stdPars(GpuModuleProcessKit)
 );

@@ -95,6 +95,7 @@ GPUTOOL_2D_BEG
     ((uint8_x4, dstColor)),
     ((Point<float32>, dstToSrcFactor))
     ((float32, divMaxVector))
+    ((bool, upsampleInterpolation))
 )
 #if DEVCODE
 {
@@ -116,11 +117,7 @@ GPUTOOL_2D_BEG
     Point<float32> srcTexstep = srcVector0Texstep;
 
     Point<float32> dstPos = point(Xs, Ys);
-
     Point<float32> srcPos = dstPos * dstToSrcFactor;
-
-    // Round up to the nearest grid point
-    Point<float32> srcRoundBegin = convertFloat32(convertUp<Space>(srcPos - filterCoverageRadius - 0.5f)) + 0.5f;
 
     //
     //
@@ -132,52 +129,76 @@ GPUTOOL_2D_BEG
 
     ////
 
-    devUnrollLoop
-    for (Space iY = 0; iY < filterCoverageDiameter; ++iY)
+    #define LOCAL_ACCUMULATION(r, _) \
+        { \
+            float32_x2 vec = tex2D(srcVector##r##Sampler, readTexPos); \
+            float32 localPresence##r = tex2D(srcPresence##r##Sampler, readTexPos); \
+            \
+            vec *= divMaxVector; \
+            \
+            float32_x4 color = computeVectorVisualization<false>(vec); \
+            float32 presence = clampMin(localPresence##r, PRESENCE_EPSILON); \
+            localPresenceSum += presence; \
+            localPresenceColorSum += presence * color; \
+        }
+
+    ////
+
+    if_not (upsampleInterpolation)
     {
-        float32 readY = srcRoundBegin.Y + iY;
-        float32 dY = readY - srcPos.Y;
+        auto srcNearestPos = roundPosToNearestSample(srcPos);
+        auto readTexPos = srcNearestPos * srcTexstep;
+
+        ////
+
+        float32 localPresenceSum = 0;
+        float32_x4 localPresenceColorSum = make_float32_x4(0, 0, 0, 0);
+
+        PREP_FOR(LAYERS, LOCAL_ACCUMULATION, _)
+
+        ////
+
+        sumWeight = 1;
+        sumWeightPresence = localPresenceSum;
+        sumWeightColor = localPresenceColorSum;
+    }
+    else
+    {
+        // Round up to the nearest grid point
+        Point<float32> srcRoundBegin = convertFloat32(convertUp<Space>(srcPos - filterCoverageRadius - 0.5f)) + 0.5f;
 
         devUnrollLoop
-        for (Space iX = 0; iX < filterCoverageDiameter; ++iX)
+        for (Space iY = 0; iY < filterCoverageDiameter; ++iY)
         {
-            float32 readX = srcRoundBegin.X + iX;
-            float32 dX = readX - srcPos.X;
+            float32 readY = srcRoundBegin.Y + iY;
+            float32 dY = readY - srcPos.Y;
 
-            float32 dist2 = square(dX) + square(dY);
-            float32 spatialWeight = gaussExpoApprox<4>(dist2 * divUpsampleSigma2);
+            devUnrollLoop
+            for (Space iX = 0; iX < filterCoverageDiameter; ++iX)
+            {
+                float32 readX = srcRoundBegin.X + iX;
+                float32 dX = readX - srcPos.X;
 
-            ////
+                float32 dist2 = square(dX) + square(dY);
+                float32 spatialWeight = gaussExpoApprox<4>(dist2 * divUpsampleSigma2);
 
-            Point<float32> readTexPos = point(readX, readY) * srcTexstep;
+                ////
 
-            ////
+                Point<float32> readTexPos = point(readX, readY) * srcTexstep;
 
-            float32 localPresenceSum = 0;
-            float32_x4 localPresenceColorSum = make_float32_x4(0, 0, 0, 0);
+                ////
 
-            #define TMP_MACRO(r, _) \
-                { \
-                    float32_x2 vec = tex2D(srcVector##r##Sampler, readTexPos); \
-                    float32 localPresence##r = tex2D(srcPresence##r##Sampler, readTexPos); \
-                    \
-                    vec *= divMaxVector; \
-                    \
-                    float32_x4 color = computeVectorVisualization<false>(vec); \
-                    float32 presence = clampMin(localPresence##r, PRESENCE_EPSILON); \
-                    localPresenceSum += presence; \
-                    localPresenceColorSum += presence * color; \
-                }
+                float32 localPresenceSum = 0;
+                float32_x4 localPresenceColorSum = make_float32_x4(0, 0, 0, 0);
 
-            PREP_FOR(LAYERS, TMP_MACRO, _)
+                PREP_FOR(LAYERS, LOCAL_ACCUMULATION, _)
 
-            #undef TMP_MACRO
+                ////
 
-            ////
-
-            sumWeight += spatialWeight;
-            sumWeightPresence += spatialWeight * localPresenceSum;
-            sumWeightColor += spatialWeight * localPresenceColorSum;
+                sumWeight += spatialWeight;
+                sumWeightPresence += spatialWeight * localPresenceSum;
+                sumWeightColor += spatialWeight * localPresenceColorSum;
+            }
         }
     }
 
@@ -195,6 +216,11 @@ GPUTOOL_2D_BEG
     ////
 
     storeNorm(dstColor, limitColorBrightness(resultColor));
+
+    ////
+
+    #undef LOCAL_ACCUMULATION
+
 }
 #endif
 GPUTOOL_2D_END

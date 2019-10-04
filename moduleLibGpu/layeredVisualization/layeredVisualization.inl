@@ -14,6 +14,7 @@
 #include "vectorTypes/vectorOperations.h"
 #include "vectorTypes/vectorType.h"
 #include "prepTools/prepIterate.h"
+#include "imageRead/positionTools.h"
 
 #if HOSTCODE
 #include "prepTools/prepEnum.h"
@@ -192,6 +193,7 @@ public:
         const GpuLayeredMatrix<const PresenceType>& vectorPresence,
         float32 maxVector,
         const Point<float32>& upsampleFactor,
+        bool upsampleInterpolation,
         const GpuModuleProcessKit& kit
     )
         : 
@@ -199,6 +201,7 @@ public:
         vectorPresence(vectorPresence), 
         maxVector(maxVector), 
         upsampleFactor(upsampleFactor), 
+        upsampleInterpolation(upsampleInterpolation),
         kit(kit)
     {
     }
@@ -207,9 +210,10 @@ private:
 
     const GpuLayeredMatrix<const VectorType>& vectorValue;
     const GpuLayeredMatrix<const PresenceType>& vectorPresence;
-    float32 maxVector;
-    Point<float32> upsampleFactor;
-    GpuModuleProcessKit kit;
+    const float32 maxVector;
+    const Point<float32> upsampleFactor;
+    const bool upsampleInterpolation;
+    const GpuModuleProcessKit kit;
 
 };
 
@@ -236,7 +240,7 @@ stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatr
         #define TMP_MACRO_EX(n) \
             case n: \
             require(PREP_PASTE_UNDER4(upsampleVectorVisualizationFunc, n, VectorType, PresenceType) \
-                (GPU_LAYERED_MATRIX_PASS(n, vectorValue), GPU_LAYERED_MATRIX_PASS(n, vectorPresence), dest, divUpsampleFactor, divMaxVector, stdPass)); \
+                (GPU_LAYERED_MATRIX_PASS(n, vectorValue), GPU_LAYERED_MATRIX_PASS(n, vectorPresence), dest, divUpsampleFactor, divMaxVector, upsampleInterpolation, stdPass)); \
             break;
 
         #define TMP_MACRO(idx, _) \
@@ -271,6 +275,7 @@ stdbool visualizeLayeredVector
     float32 maxVector,
     const Point<float32>& upsampleFactor,
     const Point<Space>& upsampleSize,
+    bool upsampleInterpolation,
     const ImgOutputHint& hint,
     stdPars(GpuModuleProcessKit)
 )
@@ -296,7 +301,7 @@ stdbool visualizeLayeredVector
 
     if_not (independentPresenceMode)
     {
-        LayeredVectorProvider<VectorType, PresenceType> provider(vectorValue, vectorPresence, maxVector, upsampleFactor, kit);
+        LayeredVectorProvider<VectorType, PresenceType> provider(vectorValue, vectorPresence, maxVector, upsampleFactor, upsampleInterpolation, kit);
         require(kit.gpuImageConsole.overlaySetImageBgr(upsampleSize, provider, hint, stdPass));
     }
     else
@@ -304,7 +309,7 @@ stdbool visualizeLayeredVector
         GPU_LAYERED_MATRIX_ALLOC(additivePresence, PresenceType, layerCount, size);
         require(convertIndependentPresenceToAdditive(vectorValue, vectorPresence, additivePresence, vectorProximity, stdPass));
 
-        LayeredVectorProvider<VectorType, PresenceType> provider(vectorValue, additivePresence, maxVector, upsampleFactor, kit);
+        LayeredVectorProvider<VectorType, PresenceType> provider(vectorValue, additivePresence, maxVector, upsampleFactor, upsampleInterpolation, kit);
         require(kit.gpuImageConsole.overlaySetImageBgr(upsampleSize, provider, hint, stdPass));
     }
 
@@ -371,6 +376,7 @@ stdbool visualizeLayeredVector
     float32 maxVector,
     const Point<float32>& upsampleFactor,
     const Point<Space>& upsampleSize,
+    bool upsampleInterpolation,
     const ImgOutputHint& hint,
     stdPars(GpuModuleProcessKit)
 )
@@ -384,7 +390,7 @@ stdbool visualizeLayeredVector
     for (Space r = 0; r < layerCount; ++r)
         require(gpuMatrixSet(vectorPresence.getLayer(r), convertNearest<float16>(1.f / layerCount), stdPass));
 
-    require((visualizeLayeredVector<VectorType, float16>(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, hint, stdPass)));
+    require((visualizeLayeredVector<VectorType, float16>(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, upsampleInterpolation, hint, stdPass)));
 
     returnTrue;
 }
