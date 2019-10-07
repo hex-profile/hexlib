@@ -13,36 +13,17 @@
 
 struct GaussWindowParams
 {
-    float32 normFactor;
     float32 divSigmaSq;
     Space taps;
 };
 
 //================================================================
 //
-// setupGaussWindowParams
+// makeGaussWindowParams
 //
 //================================================================
 
-sysinline void setupGaussWindowParams(float32 sigma, GaussWindowParams& params)
-{
-    float32 divSigma = nativeRecipZero(sigma);
-    params.divSigmaSq = square(divSigma);
-    params.normFactor = 0.3989422802f * divSigma;
-
-    float32 coverageFactor = 3.33f;
-    float32 filterRadius = coverageFactor * sigma;
-    params.taps = clampMin(convertUp<Space>(2 * filterRadius), 1);
-}
-
-//----------------------------------------------------------------
-
-sysinline GaussWindowParams makeGaussWindowParams(float32 sigma)
-{
-    GaussWindowParams params;
-    setupGaussWindowParams(sigma, params);
-    return params;
-}
+GaussWindowParams makeGaussWindowParams(float32 sigma);
 
 //================================================================
 //
@@ -50,21 +31,20 @@ sysinline GaussWindowParams makeGaussWindowParams(float32 sigma)
 //
 //================================================================
 
-template <bool normalized, Space gaussQuality = 4>
+template <Space gaussQuality = 4>
 class GaussWindowWeight
 {
 
 public:
 
-    sysinline GaussWindowWeight(const GaussWindowParams& params)
-        : params(params) {}
+    sysinline GaussWindowWeight(float32 sigma)
+        {divSigmaSq = nativeRecipZero(square(sigma));}
 
-    sysinline float32 weightDistSq(float32 dist2)
-    {
-        float32 result = gaussExpoApprox<gaussQuality>(dist2 * params.divSigmaSq);
-        if (normalized) result *= params.normFactor;
-        return result;
-    }
+    sysinline GaussWindowWeight(const GaussWindowParams& params)
+        {divSigmaSq = params.divSigmaSq;}
+
+    sysinline float32 weightDistSq(float32 distSq)
+        {return gaussExpoApprox<gaussQuality>(distSq * divSigmaSq);}
 
     sysinline float32 weightDist(float32 delta)
         {return weightDistSq(square(delta));}
@@ -77,6 +57,6 @@ public:
 
 private:
 
-    GaussWindowParams params;
+    float32 divSigmaSq = 0;
 
 };

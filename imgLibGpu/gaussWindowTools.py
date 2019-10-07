@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     desiredCoverage = 255.0/256 # 8-bit accuracy
 
-    for taps in range(1, 16):
+    for taps in range(1, 16 + 1):
 
         goodSigma = sigma
 
