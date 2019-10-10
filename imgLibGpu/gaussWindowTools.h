@@ -27,33 +27,49 @@ GaussWindowParams makeGaussWindowParams(float32 sigma);
 
 //================================================================
 //
+// GaussSigmaSquare
+//
+//================================================================
+
+struct GaussSigmaSquare
+{
+    float32 sigmaSq;
+};
+
+//================================================================
+//
 // GaussWindow
 //
 //================================================================
 
 template <Space gaussQuality = 4>
-class GaussWindowWeight
+class GaussWindow
 {
 
 public:
 
-    sysinline GaussWindowWeight(float32 sigma)
+    sysinline GaussWindow(float32 sigma) // ``` eradicate
         {divSigmaSq = nativeRecipZero(square(sigma));}
 
-    sysinline GaussWindowWeight(const GaussWindowParams& params)
+    sysinline GaussWindow(const GaussSigmaSquare& that)
+        {divSigmaSq = nativeRecipZero(that.sigmaSq);}
+
+    sysinline GaussWindow(const GaussWindowParams& params)
         {divSigmaSq = params.divSigmaSq;}
 
-    sysinline float32 weightDistSq(float32 distSq)
+public:
+
+    sysinline float32 byDistSq(float32 distSq) const
         {return gaussExpoApprox<gaussQuality>(distSq * divSigmaSq);}
 
-    sysinline float32 weightDist(float32 delta)
-        {return weightDistSq(square(delta));}
+public:
 
-    sysinline float32 weightDist(const Point<float32>& delta)
-        {return weightDistSq(square(delta.X) + square(delta.Y));}
+    template <typename Vector>
+    sysinline float32 byDist(const Vector& vec) const
+        {return byDistSq(vectorLengthSq(vec));}
 
-    sysinline float32 weightDist(float32 dX, float32 dY)
-        {return weightDistSq(square(dX) + square(dY));}
+    sysinline float32 byDist(float32 dX, float32 dY) const
+        {return byDistSq(square(dX) + square(dY));}
 
 private:
 
