@@ -38,6 +38,17 @@ struct GaussSigmaSquare
 
 //================================================================
 //
+// GaussSigmaDirect
+//
+//================================================================
+
+struct GaussSigmaDirect
+{
+    float32 sigma;
+};
+
+//================================================================
+//
 // GaussWindow
 //
 //================================================================
@@ -48,8 +59,8 @@ class GaussWindow
 
 public:
 
-    sysinline GaussWindow(float32 sigma) // ``` eradicate
-        {divSigmaSq = nativeRecipZero(square(sigma));}
+    sysinline GaussWindow(const GaussSigmaDirect& that)
+        {divSigmaSq = nativeRecipZero(square(that.sigma));}
 
     sysinline GaussWindow(const GaussSigmaSquare& that)
         {divSigmaSq = nativeRecipZero(that.sigmaSq);}
