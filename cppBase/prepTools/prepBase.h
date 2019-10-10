@@ -30,6 +30,9 @@
 #define PREP_PASTE5(v0, v1, v2, v3, v4) \
     PREP_PASTE(v0, PREP_PASTE4(v1, v2, v3, v4))
 
+#define PREP_PASTE6(v0, v1, v2, v3, v4, v5) \
+    PREP_PASTE(v0, PREP_PASTE5(v1, v2, v3, v4, v5))
+
 //================================================================
 //
 // PREP_PASTE_UNDER*
@@ -50,6 +53,9 @@
 
 #define PREP_PASTE_UNDER5(v0, v1, v2, v3, v4) \
     PREP_PASTE_UNDER2(v0, PREP_PASTE_UNDER4(v1, v2, v3, v4))
+
+#define PREP_PASTE_UNDER6(v0, v1, v2, v3, v4, v5) \
+    PREP_PASTE_UNDER2(v0, PREP_PASTE_UNDER5(v1, v2, v3, v4, v5))
 
 //================================================================
 //

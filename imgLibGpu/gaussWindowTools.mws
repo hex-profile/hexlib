@@ -1,0 +1,58 @@
+{VERSION 6 0 "IBM INTEL NT" "6.0" }
+{USTYLETAB {CSTYLE "Maple Input" -1 0 "Courier" 1 12 255 0 0 1 2 1 2 
+2 1 2 0 0 0 1 }{CSTYLE "2D Math" -1 2 "Times" 0 1 0 0 0 0 0 0 2 0 0 0 
+0 0 0 1 }{CSTYLE "2D Output" 2 20 "" 0 1 0 0 255 1 0 0 0 0 0 0 0 0 0 
+1 }{PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 
+2 2 2 2 1 1 1 1 }1 1 0 0 0 0 2 0 2 0 2 2 0 1 }{PSTYLE "Maple Output" 
+-1 11 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 
+3 0 0 0 0 2 0 2 0 2 2 0 1 }}
+{SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "restart;" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 67 "#----------------------------------------------------
+--------------" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 21 "# 1D and 2D Gaussian." }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 67 "#--------------------------------------------------
+----------------" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 14 "assume(s > 0);" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 55 "gauss1D := unapply(exp(-x^2/s^2/2)/
+sqrt(2*Pi)/s, x, s);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%(gauss1DGf*6
+$%\"xG%#s|irG6\"6$%)operatorG%&arrowGF),$*&#\"\"\"\"\"#F0**-%$expG6#,$
+*&#F0F1F0*&9$F19%!\"#F0!\"\"F0F1F/%#PiG#F=F1F;F=F0F0F)F)F)" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 45 "int(gauss1D(x, s), x = -infinity..+
+infinity);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"\"" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 21 "# test kernel scaling" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 48 "simplify(gauss1D(x / s, 1) / s - gauss1D(x,
+ s));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"!" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 59 "
+gauss2D := unapply(gauss1D(x, s) * gauss1D(y, s), x, y, s);" }}{PARA 
+11 "" 1 "" {XPPMATH 20 "6#>%(gauss2DGf*6%%\"xG%\"yG%#s|irG6\"6$%)opera
+torG%&arrowGF*,$*&#\"\"\"\"\"#F1**-%$expG6#,$*&#F1F2F1*&9$F29&!\"#F1!
+\"\"F1%#PiGF>F<F=-F56#,$*&#F1F2F1*&9%F2F<F=F1F>F1F1F1F*F*F*" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 79 "int(int(gauss2D(x, y, s), x \+
+= -infinity..+infinity), y = -infinity..+infinity);" }}{PARA 11 "" 1 "
+" {XPPMATH 20 "6#\"\"\"" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 52 "
+T1 := simplify(gauss2D(x, y, s) / gauss2D(0, 0, s));" }}{PARA 11 "" 1 
+"" {XPPMATH 20 "6#>%#T1G-%$expG6#,$*(\"\"#!\"\",&*$)%\"xGF*\"\"\"F0*$)
+%\"yGF*F0F0F0%#s|irG!\"#F+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+50 "T2 := gauss1D(sqrt(x^2 + y^2), s) / gauss1D(0, s);" }}{PARA 11 "" 
+1 "" {XPPMATH 20 "6#>%#T2G-%$expG6#,$*(\"\"#!\"\",&*$)%\"xGF*\"\"\"F0*
+$)%\"yGF*F0F0F0%#s|irG!\"#F+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 8 "T1 - T2;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"!" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "#----------------------------------
+--------------------------------" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 42 "# Inte
+rsection (product) of two Gaussians." }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "#-----
+-------------------------------------------------------------" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 31 "assume(s1 > 0); assume(s2 > 0);" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 133 "T := subs(dx=x, dy=y, int(int(gauss2D(x, y
+, s1) * gauss2D(x - dx, y - dy, s2), x = -infinity..+infinity), y = -i
+nfinity..+infinity));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"TG,$*&#\"
+\"\"\"\"#F(*(-%$expG6#,$*(F)!\"\",&*$)%\"xGF)F(F(*$)%\"yGF)F(F(F(,&*$)
+%$s2|irGF)F(F(*$)%$s1|irGF)F(F(F0F0F(F8F0%#PiGF0F(F(" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 47 "simplify(T - gauss2D(x, y, sqrt(s1^2 + s2
+^2)));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"!" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 0 "" }}}}{MARK "29" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 
+1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }

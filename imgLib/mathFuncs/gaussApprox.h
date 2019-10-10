@@ -6,7 +6,7 @@
 //
 // gaussExpoApprox
 //
-// The fades from exact 1 to exact 0.
+// The function fades from exact 1 to exact 0.
 // The function is smooth and monotonic.
 //
 //================================================================
