@@ -107,10 +107,10 @@ GPUTOOL_2D_BEG
     //----------------------------------------------------------------
 
     const float32 upsampleSigma = 0.6f;
-    const float32 divUpsampleSigma2 = 1.f / (upsampleSigma * upsampleSigma);
+    const float32 divUpsampleSigmaSq = 1.f / (upsampleSigma * upsampleSigma);
 
     const float32 filterCoverageRadius = 2.f;
-    const Space filterCoverageDiameter = 4; // ceil(2*filterCoverageRadius)
+    const Space taps = 4; // ceil(2*filterCoverageRadius)
 
     ////
 
@@ -165,22 +165,22 @@ GPUTOOL_2D_BEG
     else
     {
         // Round up to the nearest grid point
-        Point<float32> srcRoundBegin = convertFloat32(convertUp<Space>(srcPos - filterCoverageRadius - 0.5f)) + 0.5f;
+        Point<float32> srcFilterStartPos = computeFilterStartPos(srcPos, taps);
 
         devUnrollLoop
-        for (Space iY = 0; iY < filterCoverageDiameter; ++iY)
+        for (Space iY = 0; iY < taps; ++iY)
         {
-            float32 readY = srcRoundBegin.Y + iY;
+            float32 readY = srcFilterStartPos.Y + iY;
             float32 dY = readY - srcPos.Y;
 
             devUnrollLoop
-            for (Space iX = 0; iX < filterCoverageDiameter; ++iX)
+            for (Space iX = 0; iX < taps; ++iX)
             {
-                float32 readX = srcRoundBegin.X + iX;
+                float32 readX = srcFilterStartPos.X + iX;
                 float32 dX = readX - srcPos.X;
 
-                float32 dist2 = square(dX) + square(dY);
-                float32 spatialWeight = gaussExpoApprox<4>(dist2 * divUpsampleSigma2);
+                float32 distSq = square(dX) + square(dY);
+                float32 spatialWeight = gaussExpoApprox<4>(distSq * divUpsampleSigmaSq);
 
                 ////
 
