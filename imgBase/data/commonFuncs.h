@@ -56,9 +56,9 @@ sysinline bool equalLayers(const T0& v0)
 template <typename T0, typename... Types>
 sysinline bool equalLayers(const T0& v0, const Types&... values)
 {
-    auto layerCount = getLayerCount(v0);
+    auto layers = getLayers(v0);
 
     bool ok = true;
-    char tmp[] = {(ok &= (layerCount == getLayerCount(values)), 'x')...};
+    char tmp[] = {(ok &= (layers == getLayers(values)), 'x')...};
     return ok;
 }

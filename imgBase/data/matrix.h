@@ -729,7 +729,7 @@ template <typename Type>
 GET_SIZE_DEFINE(Matrix<Type>, value.size())
 
 template <typename Pointer>
-sysinline Space getLayerCount(const MatrixEx<Pointer>& matrix)
+sysinline Space getLayers(const MatrixEx<Pointer>& matrix)
     {return 1;}
 
 //================================================================

@@ -45,18 +45,18 @@ sysinline Point<Space> getGlobalIdx(const GuidingElement& guide, const Point<Spa
 struct PyramidGuide
 {
     GpuArray<GuidingElement> guideArray;
-    Space levelCount;
+    Space levels;
     Point<Space> tileSize;
     uint32 configHash;
 };
 
 //----------------------------------------------------------------
 
-sysinline PyramidGuide pyramidGuide(const GpuArray<GuidingElement>& guideArray, Space levelCount, const Point<Space>& tileSize, uint32 configHash)
+sysinline PyramidGuide pyramidGuide(const GpuArray<GuidingElement>& guideArray, Space levels, const Point<Space>& tileSize, uint32 configHash)
 {
     PyramidGuide result;
     result.guideArray = guideArray;
-    result.levelCount = levelCount;
+    result.levels = levels;
     result.tileSize = tileSize;
     result.configHash = configHash;
     return result;

@@ -12,8 +12,8 @@
 
 struct PyramidStructure
 {
-    virtual Space levelCount() const =0;
-    virtual Space layerCount() const =0;
+    virtual Space levels() const =0;
+    virtual Space layers() const =0;
     virtual Point<Space> levelSize(Space level) const =0;
 };
 
@@ -75,11 +75,11 @@ struct GpuPyramid : public PyramidStructure, GpuPyramidLayoutGetting<Type>
 template <typename T1, typename T2>
 inline bool equalSize(const GpuPyramid<T1>& p1, const GpuPyramid<T2>& p2)
 {
-    require(p1.levelCount() == p2.levelCount());
+    require(p1.levels() == p2.levels());
 
-    Space levelCount = p1.levelCount();
+    Space levels = p1.levels();
 
-    for (Space k = 0; k < levelCount; ++k)
+    for (Space k = 0; k < levels; ++k)
         require(equalSize(p1.levelSize(k), p2.levelSize(k)));
 
     return true;
@@ -87,12 +87,12 @@ inline bool equalSize(const GpuPyramid<T1>& p1, const GpuPyramid<T2>& p2)
 
 //================================================================
 //
-// getLayerCount
+// getLayers
 //
 //================================================================
 
 template <typename Type>
-sysinline Space getLayerCount(const GpuPyramid<Type>& pyramid)
+sysinline Space getLayers(const GpuPyramid<Type>& pyramid)
 {
-    return pyramid.layerCount();
+    return pyramid.layers();
 }

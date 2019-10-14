@@ -46,10 +46,10 @@ struct GpuPyramidLayout
 {
     static constexpr Space maxLevels = 24;
 
-    Space levelCount;
-    Space layerCount;
+    Space levels;
+    Space layers;
 
-    GpuPyramidLevelLayout levels[maxLevels];
+    GpuPyramidLevelLayout levelData[maxLevels];
 };
 
 //================================================================
@@ -60,8 +60,8 @@ struct GpuPyramidLayout
 
 sysinline void initEmpty(GpuPyramidLayout& layout)
 {
-    layout.levelCount = 0;
-    layout.layerCount = 0;
+    layout.levels = 0;
+    layout.layers = 0;
 }
 
 //================================================================
@@ -72,13 +72,13 @@ sysinline void initEmpty(GpuPyramidLayout& layout)
 
 sysinline bool isEqualLayout(const GpuPyramidLayout& a, const GpuPyramidLayout& b)
 {
-    ensure(a.levelCount == b.levelCount);
-    ensure(a.layerCount == b.layerCount);
+    ensure(a.levels == b.levels);
+    ensure(a.layers == b.layers);
 
-    Space levelCount = a.levelCount;
+    Space levels = a.levels;
 
-    for (Space i = 0; i < levelCount; ++i)
-        ensure(a.levels[i] == b.levels[i]);
+    for (Space i = 0; i < levels; ++i)
+        ensure(a.levelData[i] == b.levelData[i]);
 
     return true;
 }
@@ -97,8 +97,8 @@ struct GpuPyramidParam
     GpuPtr(Type) basePointer;
     GpuPtr(GpuPyramidLayout) gpuLayout;
     CpuPtr(GpuPyramidLayout) cpuLayout;
-    Space levelCount;
-    Space layerCount;
+    Space levels;
+    Space layers;
 };
 
 //----------------------------------------------------------------

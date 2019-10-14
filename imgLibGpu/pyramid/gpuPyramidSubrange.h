@@ -16,15 +16,15 @@ class GpuPyramidSubrange : public GpuPyramid<Type>
 
 public:
 
-    virtual Space levelCount() const
+    virtual Space levels() const
     {
-        Space reducedLevels = clampMin(basePyramid->levelCount() - startLevel, 0);
+        Space reducedLevels = clampMin(basePyramid->levels() - startLevel, 0);
         if (decimationFactor != 1) reducedLevels = divUpNonneg(reducedLevels, decimationFactor);
         return clampMax(reducedLevels, maxLevels);
     }
 
-    virtual Space layerCount() const
-        {return basePyramid->layerCount();}
+    virtual Space layers() const
+        {return basePyramid->layers();}
 
     virtual Point<Space> levelSize(Space level) const
         {return basePyramid->levelSize(startLevel + level * decimationFactor);}
@@ -47,19 +47,19 @@ public:
 
         ////
 
-        Space reducedLevels = clampMin(basePyramid->levelCount() - startLevel, 0);
+        Space reducedLevels = clampMin(basePyramid->levels() - startLevel, 0);
         if (decimationFactor != 1) reducedLevels = divUpNonneg(reducedLevels, decimationFactor);
-        Space levelCount = clampMax(reducedLevels, maxLevels);
+        Space levels = clampMax(reducedLevels, maxLevels);
 
         ////
 
-        layout.levelCount = levelCount;
-        layout.layerCount = baseLayout.layerCount;
+        layout.levels = levels;
+        layout.layers = baseLayout.layers;
 
-        for (Space level = 0; level < levelCount; ++level)
+        for (Space level = 0; level < levels; ++level)
         {
             Space baseLevel = startLevel + level * decimationFactor;
-            layout.levels[level] = baseLayout.levels[baseLevel];
+            layout.levelData[level] = baseLayout.levelData[baseLevel];
         }
 
         return true;

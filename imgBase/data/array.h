@@ -384,7 +384,7 @@ GET_SIZE_DEFINE(Array<Type>, value.size())
 ////
 
 template <typename Pointer>
-sysinline Space getLayerCount(const ArrayEx<Pointer>& arr)
+sysinline Space getLayers(const ArrayEx<Pointer>& arr)
     {return 1;}
 
 //================================================================

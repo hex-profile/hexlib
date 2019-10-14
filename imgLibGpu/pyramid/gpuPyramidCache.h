@@ -45,8 +45,8 @@ public:
         result.gpuLayout = unsafePtr(gpuHolderPtr, 1);
         result.cpuLayout = unsafePtr(cpuHolderPtr, 1);
 
-        result.levelCount = tmpLayout.levelCount;
-        result.layerCount = tmpLayout.layerCount;
+        result.levels = tmpLayout.levels;
+        result.layers = tmpLayout.layers;
 
         ////
 

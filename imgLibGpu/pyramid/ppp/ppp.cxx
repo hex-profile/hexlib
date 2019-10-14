@@ -35,10 +35,10 @@ stdbool getTotalPyramidTileCount
 
     ////
 
-    Space levelCount = pyramid.levelCount();
+    Space levels = pyramid.levels();
 
     RndgenState hash = 0;
-    rndgen16(hash); hash ^= levelCount;
+    rndgen16(hash); hash ^= levels;
     rndgen16(hash); hash ^= tileSize.X;
     rndgen16(hash); hash ^= tileSize.Y;
 
@@ -46,7 +46,7 @@ stdbool getTotalPyramidTileCount
 
     Space totalTileCount = 0;
 
-    for (Space l = 0; l < levelCount; ++l)
+    for (Space l = 0; l < levels; ++l)
     {
         Point<Space> size = pyramid.levelSize(l);
         REQUIRE(size >= 0);
@@ -93,17 +93,17 @@ stdbool getTotalPyramidTileCount
 
     ////
 
-    Space levelCount = layout.levelCount;
+    Space levels = layout.levels;
   
-    rndgen16(hash); hash ^= levelCount;
+    rndgen16(hash); hash ^= levels;
     rndgen16(hash); hash ^= tileSize.X;
     rndgen16(hash); hash ^= tileSize.Y;
 
     Space totalTileCount = 0;
 
-    for (Space l = 0; l < levelCount; ++l)
+    for (Space l = 0; l < levels; ++l)
     {
-        Point<Space> size = layout.levels[l].size;
+        Point<Space> size = layout.levelData[l].size;
         REQUIRE(size >= 0);
 
         rndgen16(hash); hash ^= size.X;
@@ -142,7 +142,7 @@ const Space maxSupportedLevels = 32;
 struct StaticPyramidStructure
 {
     Point<Space> tileCount[maxSupportedLevels];
-    Space levelCount;
+    Space levels;
 };
 
 //================================================================
@@ -180,7 +180,7 @@ GPUTOOL_PLAIN_BEG
 
     for (; level < maxSupportedLevels; ++level)
     {
-        if_not (level < pyramidStructure.levelCount)
+        if_not (level < pyramidStructure.levels)
             break;
 
         tileCount = pyramidStructure.tileCount[level];
@@ -208,7 +208,7 @@ GPUTOOL_PLAIN_BEG
 
     GuidingElement value; 
 
-    devAbortCheck(SpaceU(level) < SpaceU(pyramidStructure.levelCount));
+    devAbortCheck(SpaceU(level) < SpaceU(pyramidStructure.levels));
     value.data.level = level;
 
     devAbortCheck(convertExact<SpaceU>(tileIndex) <= SpaceU(0xFFFF));
@@ -238,18 +238,18 @@ stdbool prepareGuidingArray
     stdPars(GpuProcessKit)
 )
 {
-    Space levelCount = pyramid.levelCount();
-    REQUIRE(levelCount <= maxSupportedLevels);
+    Space levels = pyramid.levels();
+    REQUIRE(levels <= maxSupportedLevels);
     REQUIRE(tileSize >= 1);
 
     ////
 
     StaticPyramidStructure pyramidStructure;
-    pyramidStructure.levelCount = levelCount;
+    pyramidStructure.levels = levels;
 
     Space totalTileCount = 0;
 
-    for (Space l = 0; l < levelCount; ++l)
+    for (Space l = 0; l < levels; ++l)
     {
         Point<Space> size = pyramid.levelSize(l);
         Point<Space> tileCount = divUpNonneg(size, tileSize);
@@ -291,7 +291,7 @@ stdbool checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& gu
 
     REQUIRE(guide.configHash == configHash);
     REQUIRE(guide.guideArray.size() == totalTileCount);
-    REQUIRE(guide.levelCount == layout.levelCount);
+    REQUIRE(guide.levels == layout.levels);
 
     returnTrue;
 }
@@ -326,7 +326,7 @@ stdbool PyramidGuideMemory::realloc(const PyramidStructure& pyramid, const Point
 
     ////
 
-    theLevelCount = pyramid.levelCount();
+    theLevels = pyramid.levels();
     theTileSize = tileSize;
     theConfigHash = configHash;
 

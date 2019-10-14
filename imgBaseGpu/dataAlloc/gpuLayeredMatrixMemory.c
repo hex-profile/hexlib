@@ -28,9 +28,9 @@ inline bool computeAlignedSize(Space size, Space alignmentMask, Space& result)
 //================================================================
 
 template <typename Type>
-stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layers, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
 {
-    REQUIRE(layerCount >= 0);
+    REQUIRE(layers >= 0);
 
     Space sizeX = size.X;
     Space sizeY = size.Y;
@@ -87,7 +87,7 @@ stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Sp
     //
 
     Space allocTotalSize = 0;
-    REQUIRE(safeMul(layerCount, alignedImageArea, allocTotalSize));
+    REQUIRE(safeMul(layers, alignedImageArea, allocTotalSize));
 
     ////
 
@@ -110,14 +110,14 @@ stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layerCount, const Point<Sp
     allocPtr = newPtr;
     allocSize = point(sizeX, sizeY);
     allocAlignMask = rowAlignMask;
-    allocLayerCount = layerCount;
+    allocLayers = layers;
     allocLayerPitch = alignedImageArea;
 
     ////
 
     currentImageSize = point(sizeX, sizeY);
     currentImagePitch = alignedSizeX;
-    currentLayerCount = layerCount;
+    currentLayers = layers;
     currentLayerPitch = alignedImageArea;
 
     returnTrue;
@@ -139,7 +139,7 @@ void GpuLayeredMatrixMemory<Type>::dealloc()
     allocPtr = Pointer(0);
     allocSize = point(0);
     allocAlignMask = 0;
-    allocLayerCount = 0;
+    allocLayers = 0;
     allocLayerPitch = 0;
 
     ////
@@ -154,9 +154,9 @@ void GpuLayeredMatrixMemory<Type>::dealloc()
 //================================================================
 
 template <typename Type>
-bool GpuLayeredMatrixMemory<Type>::resize(Space layerCount, Space sizeX, Space sizeY)
+bool GpuLayeredMatrixMemory<Type>::resize(Space layers, Space sizeX, Space sizeY)
 {
-    ensure(SpaceU(layerCount) <= SpaceU(allocLayerCount));
+    ensure(SpaceU(layers) <= SpaceU(allocLayers));
     ensure(SpaceU(sizeX) <= SpaceU(allocSize.X));
     ensure(SpaceU(sizeY) <= SpaceU(allocSize.Y));
 
@@ -170,7 +170,7 @@ bool GpuLayeredMatrixMemory<Type>::resize(Space layerCount, Space sizeX, Space s
 
     currentImageSize = point(sizeX, sizeY);
     currentImagePitch = alignedSizeX;
-    currentLayerCount = layerCount;
+    currentLayers = layers;
     currentLayerPitch = alignedSizeX * sizeY;
 
     return true;

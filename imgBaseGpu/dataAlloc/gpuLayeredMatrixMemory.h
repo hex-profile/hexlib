@@ -33,11 +33,11 @@ private:
 
 public:
 
-    stdbool reallocEx(Space layerCount, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
+    stdbool reallocEx(Space layers, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
 
 public:
 
-    Space layerCount() const {return currentLayerCount;}
+    Space layers() const {return currentLayers;}
 
 public:
 
@@ -59,7 +59,7 @@ public:
     {
         GpuMatrix<Type> result;
 
-        if (SpaceU(r) < SpaceU(currentLayerCount))
+        if (SpaceU(r) < SpaceU(currentLayers))
         {
             Pointer resultPtr = allocPtr + r * currentLayerPitch;
 
@@ -89,7 +89,7 @@ public:
     inline Point<Space> size() const {return currentImageSize;}
 
     inline Point<Space> maxSize() const {return allocSize;}
-    inline Space maxLayerCount() const {return allocLayerCount;}
+    inline Space maxLayers() const {return allocLayers;}
 
     ////
 
@@ -97,14 +97,14 @@ public:
     {
         currentImageSize = point(0);
         currentImagePitch = 0;
-        currentLayerCount = 0;
+        currentLayers = 0;
         currentLayerPitch = 0;
     }
 
-    bool resize(Space layerCount, Space sizeX, Space sizeY); // rearrange without reallocation
+    bool resize(Space layers, Space sizeX, Space sizeY); // rearrange without reallocation
 
-    inline bool resize(Space layerCount, const Point<Space>& size)
-        {return resize(layerCount, size.X, size.Y);}
+    inline bool resize(Space layers, const Point<Space>& size)
+        {return resize(layers, size.X, size.Y);}
 
 private:
 
@@ -112,13 +112,13 @@ private:
     {
         currentImageSize = point(0);
         currentImagePitch = 0;
-        currentLayerCount = 0;
+        currentLayers = 0;
         currentLayerPitch = 0;
 
         allocPtr = Pointer(0);
         allocSize = point(0);
         allocAlignMask = 0;
-        allocLayerCount = 0;
+        allocLayers = 0;
         allocLayerPitch = 0;
     }
 
@@ -129,8 +129,8 @@ public:
     //
 
     template <typename Kit>
-    inline stdbool realloc(Space layerCount, const Point<Space>& size, stdPars(Kit))
-        {return reallocEx(layerCount, size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
+    inline stdbool realloc(Space layers, const Point<Space>& size, stdPars(Kit))
+        {return reallocEx(layers, size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:
 
@@ -146,7 +146,7 @@ private:
 
     Point<Space> currentImageSize;
     Space currentImagePitch;
-    Space currentLayerCount;
+    Space currentLayers;
     Space currentLayerPitch;
 
     //
@@ -157,7 +157,7 @@ private:
     Point<Space> allocSize;
     Space allocAlignMask;
 
-    Space allocLayerCount;
+    Space allocLayers;
     Space allocLayerPitch;
 
 };
@@ -168,6 +168,6 @@ private:
 //
 //================================================================
 
-#define GPU_LAYERED_MATRIX_ALLOC(name, Type, layerCount, size) \
+#define GPU_LAYERED_MATRIX_ALLOC(name, Type, layers, size) \
     GpuLayeredMatrixMemory<Type> name; \
-    require(name.realloc(layerCount, size, stdPass))
+    require(name.realloc(layers, size, stdPass))
