@@ -20,7 +20,7 @@ template <typename Type>
 void GpuPyramidMemory<Type>::dealloc()
 {
     pyramidArray.dealloc();
-    currentLayerCount = 0;
+    currentLayers = 0;
 }
 
 //================================================================
@@ -82,7 +82,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
 
     ////
 
-    currentLayerCount = newLayers;
+    currentLayers = newLayers;
     deallocCleanup.cancel();
 
     returnTrue;
@@ -175,15 +175,15 @@ bool GpuPyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidL
 {
     ARRAY_EXPOSE(pyramidArray);
 
-    Space levelCount = pyramidArraySize;
-    ensure(levelCount <= GpuPyramidLayout::maxLevels);
+    Space levels = pyramidArraySize;
+    ensure(levels <= GpuPyramidLayout::maxLevels);
 
-    Space layerCount = currentLayerCount;
+    Space layers = currentLayers;
 
     ////
 
-    layout.levelCount = levelCount;
-    layout.layerCount = layerCount;
+    layout.levels = levels;
+    layout.layers = layers;
 
     ////
 
@@ -192,13 +192,13 @@ bool GpuPyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidL
 
     ////
 
-    for (Space l = 0; l < levelCount; ++l)
+    for (Space l = 0; l < levels; ++l)
     {
         ImageStorage& storage = pyramidArrayPtr[l];
 
         Point<Space> imageSize = storage.getImageSize();
 
-        GpuPyramidLevelLayout& p = layout.levels[l];
+        GpuPyramidLevelLayout& p = layout.levelData[l];
 
         p.size = imageSize;
         p.pitch = storage.getImagePitch();

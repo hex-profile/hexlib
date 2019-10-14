@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     sigma = 0.001
 
-    desiredCoverage = 255.0/256 # 8-bit accuracy
+    desiredCoverage = 1 - 1/64.0 # 6-bit accuracy
 
     for taps in range(1, 16 + 1):
 

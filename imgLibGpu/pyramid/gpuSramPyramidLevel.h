@@ -56,8 +56,8 @@ class GpuSramPyramidLevel
 
 public:
 
-    sysinline Space layerCount() const 
-        {return theLayerCount;}
+    sysinline Space layers() const 
+        {return theLayers;}
 
     sysinline Point<Space> size() const 
         {return layout.size;}
@@ -84,7 +84,7 @@ private:
 
     GpuAddrU basePointer;
     GpuPyramidLevelLayout layout;
-    Space theLayerCount;
+    Space theLayers;
 
 };
 
@@ -107,11 +107,11 @@ sysinline void GpuSramPyramidLevel<Type>::loadNoSync(Space groupMember, const Gp
     bool mainMember = (groupMember == 0);
 
     if (mainMember) this->basePointer = GpuAddrU(srcParam.basePointer);
-    if (mainMember) this->theLayerCount = srcParam.layerCount;
+    if (mainMember) this->theLayers = srcParam.layers;
 
     ////
 
-    const GpuPyramidLevelLayout& srcLayout = src.levels[level];
+    const GpuPyramidLevelLayout& srcLayout = src.levelData[level];
     GpuPyramidLevelLayout& dstLayout = this->layout;
 
     parallelLoadStructureNoSync<groupSize, LoadMode, GpuPyramidLevelLayout>(groupMember, srcLayout, dstLayout);
@@ -130,7 +130,7 @@ sysinline void GpuSramPyramidLevel<Type>::loadNoSync(Space groupMember, const Gp
 template <typename Type>
 sysinline GpuMatrix<Type> GpuSramPyramidLevel<Type>::getImage(Space layer) const
 {
-    devDebugCheck(SpaceU(layer) < SpaceU(theLayerCount));
+    devDebugCheck(SpaceU(layer) < SpaceU(theLayers));
 
     return GpuMatrix<Type>
     (

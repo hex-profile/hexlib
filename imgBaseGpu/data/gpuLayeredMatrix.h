@@ -19,7 +19,7 @@ struct GpuLayeredMatrix
 
     virtual Point<Space> size() const =0;
 
-    virtual Space layerCount() const =0;
+    virtual Space layers() const =0;
 
     virtual GpuMatrix<Element> getLayer(Space r) const =0;
 
@@ -46,7 +46,7 @@ class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
     Point<Space> size() const
         {return point(0);}
 
-    Space layerCount() const
+    Space layers() const
         {return 0;}
 
     GpuMatrix<Element> getLayer(Space r) const
@@ -89,12 +89,12 @@ sysinline const GpuLayeredMatrix<const Type>& makeConst(const GpuLayeredMatrix<T
 template <typename Type>
 GET_SIZE_DEFINE(GpuLayeredMatrix<Type>, value.size())
 
-sysinline Space getLayerCount(Space layerCount)
-    {return layerCount;}
+sysinline Space getLayers(Space layers)
+    {return layers;}
 
 template <typename Type>
-sysinline Space getLayerCount(const GpuLayeredMatrix<Type>& matrix)
-    {return matrix.layerCount();}
+sysinline Space getLayers(const GpuLayeredMatrix<Type>& matrix)
+    {return matrix.layers();}
 
 //================================================================
 //
@@ -114,7 +114,7 @@ public:
     Point<Space> size() const
         {return base.size();}
 
-    Space layerCount() const
+    Space layers() const
         {return 1;}
 
     GpuMatrix<Element> getLayer(Space r) const

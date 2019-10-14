@@ -26,11 +26,11 @@ class GpuPyramidMemory : public GpuPyramid<Type>
 
 public:
 
-    Space levelCount() const
+    Space levels() const
         {return pyramidArray.size();}
 
-    Space layerCount() const
-        {return currentLayerCount;}
+    Space layers() const
+        {return currentLayers;}
 
     Point<Space> levelSize(Space level) const;
 
@@ -100,7 +100,7 @@ private:
 
     using ImageStorage = GpuLayeredMatrixMemory<Type>;
     ArrayObjMemStatic<ImageStorage, gpuPyramidMemoryMaxLevels> pyramidArray;
-    Space currentLayerCount = 0;
+    Space currentLayers = 0;
 
     GpuLayeredMatrixEmpty<Type> emptyLayeredMatrix;
 

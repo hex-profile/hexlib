@@ -94,7 +94,7 @@ stdbool displayVectorSet
 
     ////
 
-    switch (vectors.layerCount())
+    switch (vectors.layers())
     {
         #define TMP_MACRO(layersIdx, _) \
             TMP_MACRO_EX(PREP_INC(layersIdx))
@@ -136,7 +136,7 @@ stdbool convertIndependentPresenceToAdditive
 )
 {
     REQUIRE(equalLayers(srcVector, srcPresence, dstPresence));
-    Space layerCount = srcVector.layerCount();
+    Space layers = srcVector.layers();
 
     ////
 
@@ -155,7 +155,7 @@ stdbool convertIndependentPresenceToAdditive
         )
 
     #define TMP_MACRO2(n, _) \
-        if (layerCount == n) TMP_MACRO(n); else
+        if (layers == n) TMP_MACRO(n); else
 
     PREP_FOR1_FROM1_TO_COUNT(VISUALIZATION_MAX_LAYERS, TMP_MACRO2, _) 
     REQUIRE(false);
@@ -233,9 +233,9 @@ stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatr
 
     ////
 
-    REQUIRE(vectorValue.layerCount() == vectorPresence.layerCount());
+    REQUIRE(vectorValue.layers() == vectorPresence.layers());
 
-    switch (vectorValue.layerCount())
+    switch (vectorValue.layers())
     {
         #define TMP_MACRO_EX(n) \
             case n: \
@@ -281,13 +281,13 @@ stdbool visualizeLayeredVector
 )
 {
     REQUIRE(equalLayers(vectorValue, vectorPresence));
-    Space layerCount = vectorValue.layerCount();
-    REQUIRE(layerCount >= 1);
+    Space layers = vectorValue.layers();
+    REQUIRE(layers >= 1);
 
     REQUIRE(equalSize(vectorValue, vectorPresence));
     Point<Space> size = vectorValue.size();
   
-    Space displayedLayer = kit.displayedCircularIndex(layerCount);
+    Space displayedLayer = kit.displayedCircularIndex(layers);
 
     //----------------------------------------------------------------
     //
@@ -306,7 +306,7 @@ stdbool visualizeLayeredVector
     }
     else
     {
-        GPU_LAYERED_MATRIX_ALLOC(additivePresence, PresenceType, layerCount, size);
+        GPU_LAYERED_MATRIX_ALLOC(additivePresence, PresenceType, layers, size);
         require(convertIndependentPresenceToAdditive(vectorValue, vectorPresence, additivePresence, vectorProximity, stdPass));
 
         LayeredVectorProvider<VectorType, PresenceType> provider(vectorValue, additivePresence, maxVector, upsampleFactor, upsampleInterpolation, kit);
@@ -340,7 +340,7 @@ stdbool visualizeLayeredVector
 
         float32 totalPresence = 0;
 
-        for (Space r = 0; r < layerCount; ++r)
+        for (Space r = 0; r < layers; ++r)
         {
             PresenceType presence = zeroOf<PresenceType>();
 
@@ -381,14 +381,14 @@ stdbool visualizeLayeredVector
     stdPars(GpuModuleProcessKit)
 )
 {
-    Space layerCount = vectorValue.layerCount();
-    REQUIRE(layerCount >= 1);
+    Space layers = vectorValue.layers();
+    REQUIRE(layers >= 1);
 
     Point<Space> size = vectorValue.size();
-    GPU_LAYERED_MATRIX_ALLOC(vectorPresence, float16, layerCount, size);
+    GPU_LAYERED_MATRIX_ALLOC(vectorPresence, float16, layers, size);
 
-    for (Space r = 0; r < layerCount; ++r)
-        require(gpuMatrixSet(vectorPresence.getLayer(r), convertNearest<float16>(1.f / layerCount), stdPass));
+    for (Space r = 0; r < layers; ++r)
+        require(gpuMatrixSet(vectorPresence.getLayer(r), convertNearest<float16>(1.f / layers), stdPass));
 
     require((visualizeLayeredVector<VectorType, float16>(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, upsampleInterpolation, hint, stdPass)));
 

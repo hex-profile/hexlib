@@ -55,7 +55,7 @@ class PyramidGuideMemory
 public:
 
     sysinline operator PyramidGuide () const
-        {return pyramidGuide(theGuideArray, theLevelCount, theTileSize, theConfigHash);}
+        {return pyramidGuide(theGuideArray, theLevels, theTileSize, theConfigHash);}
 
     sysinline GpuArray<GuidingElement> guideArray() const
         {return theGuideArray;}
@@ -81,7 +81,7 @@ public:
 private:
 
     GpuArrayMemory<GuidingElement> theGuideArray;
-    Space theLevelCount = 0;
+    Space theLevels = 0;
     Point<Space> theTileSize = point(0);
     uint32 theConfigHash = 0;
 
