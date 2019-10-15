@@ -17,6 +17,15 @@ struct GaussWindowParams
     Space taps;
 };
 
+//----------------------------------------------------------------
+
+sysinline bool operator ==(const GaussWindowParams& a, const GaussWindowParams& b)
+{
+    return 
+        a.divSigmaSq == b.divSigmaSq &&
+        a.taps == b.taps;
+}
+
 //================================================================
 //
 // makeGaussWindowParams
