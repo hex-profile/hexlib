@@ -10,122 +10,279 @@
 0 1 }}
 {SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "restart;" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 252 "qMul := \n[\n\011    A[4] * B[1] + A[1] * B[4] + A[2
-] * B[3] - A[3] * B[2],\n\011    A[4] * B[2] + A[2] * B[4] + A[3] * B[
-1] - A[1] * B[3],\n\011    A[4] * B[3] + A[3] * B[4] + A[1] * B[2] - A
-[2] * B[1],\n\011    A[4] * B[4] - A[1] * B[1] - A[2] * B[2] - A[3] * \+
-B[3]\n]:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 13 "Vector(qMul);" }}{PARA 11 "" 1 "" 
-{XPPMATH 20 "6#-%'RTABLEG6%\"*3.\"zd-%'MATRIXG6#7&7#,**&&%\"AG6#\"\"%
-\"\"\"&%\"BG6#F2F2F2*&&F/F5F2&F4F0F2F2*&&F/6#\"\"#F2&F46#\"\"$F2F2*&&F
-/F>F2&F4F;F2!\"\"7#,**&F.F2FBF2F2*&F:F2F8F2F2*&FAF2F3F2F2*&F7F2F=F2FC7
-#,**&F.F2F=F2F2*&FAF2F8F2F2*&F7F2FBF2F2*&F:F2F3F2FC7#,**&F.F2F8F2F2*&F
-7F2F3F2FC*&F:F2FBF2FC*&FAF2F=F2FC&%'VectorG6#%'columnG" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 31 "quatMul := unapply(qMul, A, B);" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#>%(quatMulGf*6$%\"AG%\"BG6\"6$%)operat
-orG%&arrowGF)7&,**&&9$6#\"\"%\"\"\"&9%6#F4F4F4*&&F1F7F4&F6F2F4F4*&&F16
-#\"\"#F4&F66#\"\"$F4F4*&&F1F@F4&F6F=F4!\"\",**&F0F4FDF4F4*&F<F4F:F4F4*
-&FCF4F5F4F4*&F9F4F?F4FE,**&F0F4F?F4F4*&FCF4F:F4F4*&F9F4FDF4F4*&F<F4F5F
-4FE,**&F0F4F:F4F4*&F9F4F5F4FE*&F<F4FDF4FE*&FCF4F?F4FEF)F)F)" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 52 "quatConj := unapply([-Q[1], \+
--Q[2], -Q[3], Q[4]], Q);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%)quatCon
-jGf*6#%\"QG6\"6$%)operatorG%&arrowGF(7&,$&9$6#\"\"\"!\"\",$&F/6#\"\"#F
-2,$&F/6#\"\"$F2&F/6#\"\"%F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
-1 0 47 "vecToQuat := unapply([V[1], V[2], V[3], 0], V);" }}{PARA 11 "
-" 1 "" {XPPMATH 20 "6#>%*vecToQuatGf*6#%\"VG6\"6$%)operatorG%&arrowGF(
-7&&9$6#\"\"\"&F.6#\"\"#&F.6#\"\"$\"\"!F(F(F(" }}}{EXCHG {PARA 0 "> " 
-0 "" {MPLTEXT 1 0 44 "quatToVec := unapply([Q[1], Q[2], Q[3]], Q);" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*quatToVecGf*6#%\"QG6\"6$%)operatorG
-%&arrowGF(7%&9$6#\"\"\"&F.6#\"\"#&F.6#\"\"$F(F(F(" }}}{EXCHG {PARA 0 "
-> " 0 "" {MPLTEXT 1 0 87 "rotateVec1 := unapply(quatToVec(quatMul(quat
-Mul(Q, vecToQuat(V)), quatConj(Q))), Q, V);" }}{PARA 12 "" 1 "" 
-{XPPMATH 20 "6#>%+rotateVec1Gf*6$%\"QG%\"VG6\"6$%)operatorG%&arrowGF)7
-%,**&,(*&&9$6#\"\"\"F5&9%F4F5!\"\"*&&F36#\"\"#F5&F7F;F5F8*&&F36#\"\"$F
-5&F7F@F5F8F5F2F5F8*&,(*&&F36#\"\"%F5F6F5F5*&F:F5FBF5F5*&F?F5F=F5F8F5FF
-F5F5*&,(*&FFF5F=F5F5*&F?F5F6F5F5*&F2F5FBF5F8F5F?F5F8*&,(*&FFF5FBF5F5*&
-F2F5F=F5F5*&F:F5F6F5F8F5F:F5F5,**&F0F5F:F5F8*&FLF5FFF5F5*&FQF5F2F5F8*&
-FDF5F?F5F5,**&F0F5F?F5F8*&FQF5FFF5F5*&FDF5F:F5F8*&FLF5F2F5F5F)F)F)" }}
+{MPLTEXT 1 0 68 "#====================================================
+===============" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 23 "# Component convention:" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 10 "# V[1] = X" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 10 "# V[2] = Y" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 10 "# V[3] \+
+= Z" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 10 "# V[4] = W" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 68 "#==================================================
+=================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#===========================
+========================================" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 28 "# Quat
+ernion multiplication." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#======================
+=============================================" }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 252 "q
+Mul := \n[\n\011    A[4] * B[1] + A[1] * B[4] + A[2] * B[3] - A[3] * B
+[2],\n\011    A[4] * B[2] + A[2] * B[4] + A[3] * B[1] - A[1] * B[3],\n
+\011    A[4] * B[3] + A[3] * B[4] + A[1] * B[2] - A[2] * B[1],\n\011  \+
+  A[4] * B[4] - A[1] * B[1] - A[2] * B[2] - A[3] * B[3]\n]:" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 13 "Vector(qMul);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#-%
+'RTABLEG6%\"*CN([9-%'MATRIXG6#7&7#,**&&%\"AG6#\"\"%\"\"\"&%\"BG6#F2F2F
+2*&&F/F5F2&F4F0F2F2*&&F/6#\"\"#F2&F46#\"\"$F2F2*&&F/F>F2&F4F;F2!\"\"7#
+,**&F.F2FBF2F2*&F:F2F8F2F2*&FAF2F3F2F2*&F7F2F=F2FC7#,**&F.F2F=F2F2*&FA
+F2F8F2F2*&F7F2FBF2F2*&F:F2F3F2FC7#,**&F.F2F8F2F2*&F7F2F3F2FC*&F:F2FBF2
+FC*&FAF2F=F2FC&%'VectorG6#%'columnG" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 31 "quatMul := unapply(qMul, A, B);" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#>%(quatMulGf*6$%\"AG%\"BG6\"6$%)operatorG%&arrowGF)7&,*
+*&&9$6#\"\"%\"\"\"&9%6#F4F4F4*&&F1F7F4&F6F2F4F4*&&F16#\"\"#F4&F66#\"\"
+$F4F4*&&F1F@F4&F6F=F4!\"\",**&F0F4FDF4F4*&F<F4F:F4F4*&FCF4F5F4F4*&F9F4
+F?F4FE,**&F0F4F?F4F4*&FCF4F:F4F4*&F9F4FDF4F4*&F<F4F5F4FE,**&F0F4F:F4F4
+*&F9F4F5F4FE*&F<F4FDF4FE*&FCF4F?F4FEF)F)F)" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 52 "quatConj := unapply([-Q[1], -Q[2], -Q[3], Q[4]], Q)
+;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%)quatConjGf*6#%\"QG6\"6$%)opera
+torG%&arrowGF(7&,$&9$6#\"\"\"!\"\",$&F/6#\"\"#F2,$&F/6#\"\"$F2&F/6#\"
+\"%F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#=============
+======================================================" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 45 "# Rotate vector by quaternion: Direct method." }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 68 "#==================================================
+=================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 47 "vecToQuat := unapply([V[1], \+
+V[2], V[3], 0], V);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*vecToQuatGf*
+6#%\"VG6\"6$%)operatorG%&arrowGF(7&&9$6#\"\"\"&F.6#\"\"#&F.6#\"\"$\"\"
+!F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 44 "quatToVec := una
+pply([Q[1], Q[2], Q[3]], Q);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*qua
+tToVecGf*6#%\"QG6\"6$%)operatorG%&arrowGF(7%&9$6#\"\"\"&F.6#\"\"#&F.6#
+\"\"$F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 92 "rotateVecDir
+ect := unapply(quatToVec(quatMul(quatMul(Q, vecToQuat(V)), quatConj(Q)
+)), Q, V);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%0rotateVecDirectGf*6$%
+\"QG%\"VG6\"6$%)operatorG%&arrowGF)7%,**&,(*&&9$6#\"\"\"F5&9%F4F5!\"\"
+*&&F36#\"\"#F5&F7F;F5F8*&&F36#\"\"$F5&F7F@F5F8F5F2F5F8*&,(*&&F36#\"\"%
+F5F6F5F5*&F:F5FBF5F5*&F?F5F=F5F8F5FFF5F5*&,(*&FFF5F=F5F5*&F?F5F6F5F5*&
+F2F5FBF5F8F5F?F5F8*&,(*&FFF5FBF5F5*&F2F5F=F5F5*&F:F5F6F5F8F5F:F5F5,**&
+F0F5F:F5F8*&FLF5FFF5F5*&FQF5F2F5F8*&FDF5F?F5F5,**&F0F5F?F5F8*&FQF5FFF5
+F5*&FDF5F:F5F8*&FLF5F2F5F5F)F)F)" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#======
+=============================================================" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 48 "# Rotate vector by quaternion: Efficient method." }
+}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 68 "#===============================================
+====================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}
 }{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 101 "cpTerm := \n[\n\011\011A[2
 ] * B[3] - B[2] * A[3],\n\011\011A[3] * B[1] - B[3] * A[1],\n\011\011A
 [1] * B[2] - B[1] * A[2]\n]:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
-0 38 "crossProduct := unapply(cpTerm, A, B);" }}{PARA 11 "" 1 "" 
-{XPPMATH 20 "6#>%-crossProductGf*6$%\"AG%\"BG6\"6$%)operatorG%&arrowGF
-)7%,&*&&9$6#\"\"#\"\"\"&9%6#\"\"$F4F4*&&F1F7F4&F6F2F4!\"\",&*&F:F4&F66
-#F4F4F4*&&F1F@F4F5F4F<,&*&FBF4F;F4F4*&F0F4F?F4F<F)F)F)" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 66 "addVec := unapply([A[1] + B[1], A[2
-] + B[2], A[3] + B[3]], A, B);\n" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%
-'addVecGf*6$%\"AG%\"BG6\"6$%)operatorG%&arrowGF)7%,&&9$6#\"\"\"F2&9%F1
-F2,&&F06#\"\"#F2&F4F7F2,&&F06#\"\"$F2&F4F<F2F)F)F)" }}}{EXCHG {PARA 0 
-"> " 0 "" {MPLTEXT 1 0 59 "scaleVec := unapply([C * V[1], C * V[2], C \+
-* V[3]], C, V);\n" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%)scaleVecGf*6$%
-\"CG%\"VG6\"6$%)operatorG%&arrowGF)7%*&9$\"\"\"&9%6#F0F0*&F/F0&F26#\"
-\"#F0*&F/F0&F26#\"\"$F0F)F)F)" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
-0 154 "rotateEff := proc(Q, V)\n    local R, UV, UUV;\n    R := quatTo
-Vec(Q);\n    addVec(V, 2 * crossProduct(R, crossProduct(R, V) + scaleV
-ec(Q[4], V)));\nend proc;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*rotate
-EffGf*6$%\"QG%\"VG6%%\"RG%#UVG%$UUVG6\"F-C$>8$-%*quatToVecG6#9$-%'addV
-ecG6$9%,$*&\"\"#\"\"\"-%-crossProductG6$F0,&-F>6$F0F8F<-%)scaleVecG6$&
-F46#\"\"%F8F<F<F<F-F-F-" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 62 "
-Vector(factor(simplify(rotateEff(Q, V) - rotateVec1(Q, V)))); " }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#-%'RTABLEG6%\"*?kqT\"-%'MATRIXG6#7%7#,
-$*&&%\"VG6#\"\"\"F1,,*$)&%\"QGF0\"\"#F1F1*$)&F66#\"\"%F7F1F1*$)&F66#\"
-\"$F7F1F1*$)&F66#F7F7F1F1F1!\"\"F1FF7#,$*&&F/FEF1F2F1FF7#,$*&&F/F@F1F2
-F1FF&%'VectorG6#%'columnG" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
-64 "vecLength := unapply(sqrt(vec[1]^2 + vec[2]^2 + vec[3]^2), vec);" 
-}}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*vecLengthGf*6#%$vecG6\"6$%)operat
-orG%&arrowGF(*$,(*$)&9$6#\"\"\"\"\"#F3F3*$)&F16#F4F4F3F3*$)&F16#\"\"$F
-4F3F3#F3F4F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 220 "quatIm
-aginaryExp := proc(vec)\n   local vecLen, vecDir;\n   vecLen := vecLen
-gth(vec);\n   vecDir := scaleVec(1 / vecLen, vec);\n   [vecDir[1]*sin(
-vecLen), vecDir[2]*sin(vecLen), vecDir[3]*sin(vecLen), cos(vecLen)];\n
-end proc;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%1quatImaginaryExpGf*6#%
-$vecG6$%'vecLenG%'vecDirG6\"F+C%>8$-%*vecLengthG6#9$>8%-%)scaleVecG6$*
-&\"\"\"F9F.!\"\"F27&*&&F46#F9F9-%$sinG6#F.F9*&&F46#\"\"#F9F?F9*&&F46#
-\"\"$F9F?F9-%$cosGFAF+F+F+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
-0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 263 "quatUnitLogAtan2 :=
- proc(Q)\n   local rX, rY, vec, vecLen, vecDir, theta;\n   rX := Q[4];
-\n   vec := quatToVec(Q);\n   vecLen := vecLength(vec);\n   rY := vecL
-en;\n   vecDir := scaleVec(1 / vecLen, vec);\n   theta := arctan(rY, r
-X);\n   scaleVec(theta, vecDir);\nend proc;" }}{PARA 11 "" 1 "" 
+0 44 "vectorCrossProduct := unapply(cpTerm, A, B);" }}{PARA 11 "" 1 "
+" {XPPMATH 20 "6#>%3vectorCrossProductGf*6$%\"AG%\"BG6\"6$%)operatorG%
+&arrowGF)7%,&*&&9$6#\"\"#\"\"\"&9%6#\"\"$F4F4*&&F1F7F4&F6F2F4!\"\",&*&
+F:F4&F66#F4F4F4*&&F1F@F4F5F4F<,&*&FBF4F;F4F4*&F0F4F?F4F<F)F)F)" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 69 "vectorAdd := unapply([A[1] +
+ B[1], A[2] + B[2], A[3] + B[3]], A, B);\n" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#>%*vectorAddGf*6$%\"AG%\"BG6\"6$%)operatorG%&arrowGF)7%
+,&&9$6#\"\"\"F2&9%F1F2,&&F06#\"\"#F2&F4F7F2,&&F06#\"\"$F2&F4F<F2F)F)F)
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 62 "vectorScale := unapply(
+[C * V[1], C * V[2], C * V[3]], C, V);\n" }}{PARA 11 "" 1 "" {XPPMATH 
+20 "6#>%,vectorScaleGf*6$%\"CG%\"VG6\"6$%)operatorG%&arrowGF)7%*&9$\"
+\"\"&9%6#F0F0*&F/F0&F26#\"\"#F0*&F/F0&F26#\"\"$F0F)F)F)" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 175 "vectorRotate := proc(Q, V)\n    lo
+cal R, UV, UUV;\n    R := quatToVec(Q);\n    vectorAdd(V, 2 * vectorCr
+ossProduct(R, vectorCrossProduct(R, V) + vectorScale(Q[4], V)));\nend \+
+proc;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%-vectorRotateGf*6$%\"QG%\"V
+G6%%\"RG%#UVG%$UUVG6\"F-C$>8$-%*quatToVecG6#9$-%*vectorAddG6$9%,$*&\"
+\"#\"\"\"-%3vectorCrossProductG6$F0,&-F>6$F0F8F<-%,vectorScaleG6$&F46#
+\"\"%F8F<F<F<F-F-F-" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 70 "Vect
+or(factor(simplify(vectorRotate(Q, V) - rotateVecDirect(Q, V)))); " }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#-%'RTABLEG6%\"*#\\T!y&-%'MATRIXG6#7%7#
+,$*&&%\"VG6#\"\"\"F1,,*$)&%\"QGF0\"\"#F1F1*$)&F66#\"\"%F7F1F1*$)&F66#
+\"\"$F7F1F1*$)&F66#F7F7F1F1F1!\"\"F1FF7#,$*&&F/FEF1F2F1FF7#,$*&&F/F@F1
+F2F1FF&%'VectorG6#%'columnG" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#===================
+================================================" }}}{EXCHG {PARA 0 ">
+ " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+47 "# Quaterion exponent (pure imaginary argument)." }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 68 "#===============================================================
+====" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 64 "vecLength := unapply(sqrt(vec[1]^2 + vec[2]
+^2 + vec[3]^2), vec);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*vecLengthG
+f*6#%$vecG6\"6$%)operatorG%&arrowGF(*$,(*$)&9$6#\"\"\"\"\"#F3F3*$)&F16
+#F4F4F3F3*$)&F16#\"\"$F4F3F3#F3F4F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 318 "quatImaginaryExp := proc(vec)\n    local vecLen, vec
+Dir, f, result;\n    vecLen := vecLength(vec);\n    f := piecewise(vec
+Len = 0, 0, 1 / vecLen);\n    vecDir := vectorScale(f, vec);\n    [\n \+
+       vecDir[1]*sin(vecLen), \n        vecDir[2]*sin(vecLen), \n     \+
+   vecDir[3]*sin(vecLen), \n        cos(vecLen)\n    ]; \nend proc;" }
+}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%1quatImaginaryExpGf*6#%$vecG6&%'vec
+LenG%'vecDirG%\"fG%'resultG6\"F-C&>8$-%*vecLengthG6#9$>8&-%*piecewiseG
+6%/F0\"\"!F;*&\"\"\"F=F0!\"\">8%-%,vectorScaleG6$F6F47&*&&F@6#F=F=-%$s
+inG6#F0F=*&&F@6#\"\"#F=FHF=*&&F@6#\"\"$F=FHF=-%$cosGFJF-F-F-" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 68 "#==================================================
+=================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 51 "# Quaterion logarithm (pure \+
+rotational quaternion)." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#======================
+=============================================" }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" 
+}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "# Naive logarithm." }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 269 "quat
+UnitLogAtan2 := proc(Q)\n   local rX, rY, vec, vecLen, vecDir, theta;
+\n   rX := Q[4];\n   vec := quatToVec(Q);\n   vecLen := vecLength(vec)
+;\n   rY := vecLen;\n   vecDir := vectorScale(1 / vecLen, vec);\n   th
+eta := arctan(rY, rX);\n   vectorScale(theta, vecDir);\nend proc;" }}
+{PARA 12 "" 1 "" {XPPMATH 20 "6#>%1quatUnitLogAtan2Gf*6#%\"QG6(%#rXG%#
+rYG%$vecG%'vecLenG%'vecDirG%&thetaG6\"F/C)>8$&9$6#\"\"%>8&-%*quatToVec
+G6#F4>8'-%*vecLengthG6#F8>8%F=>8(-%,vectorScaleG6$*&\"\"\"FIF=!\"\"F8>
+8)-%'arctanG6$FBF2-FF6$FLFDF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 240 "quatUnitLogAtan2 := proc (Q) local rX, rY, vec, vecL
+en, vecDir, theta; rX := Q[4]; vec := quatToVec(Q); vecLen := vecLengt
+h(vec); rY := vecLen; vecDir := vectorScale(1/vecLen,vec); theta := ar
+ctan(rY,rX); vectorScale(theta,vecDir) end proc;" }}{PARA 12 "" 1 "" 
 {XPPMATH 20 "6#>%1quatUnitLogAtan2Gf*6#%\"QG6(%#rXG%#rYG%$vecG%'vecLen
 G%'vecDirG%&thetaG6\"F/C)>8$&9$6#\"\"%>8&-%*quatToVecG6#F4>8'-%*vecLen
-gthG6#F8>8%F=>8(-%)scaleVecG6$*&\"\"\"FIF=!\"\"F8>8)-%'arctanG6$FBF2-F
-F6$FLFDF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 321 "quatUnitLog := proc(Q)\n   \+
-local rX, rY, vec, vecLen, vecDir, theta;\n   rX := Q[4];\n   vec := q
-uatToVec(Q);\n   if rX < 0 then rX := -rX; vec := scaleVec(-1, vec); e
-nd if;\n   vecLen := vecLength(vec);\n   rY := vecLen;\n   vecDir := s
-caleVec(1 / vecLen, vec);\n   theta := arctan(rY, rX);\n   scaleVec(th
-eta, vecDir);\nend proc;" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,quatUni
-tLogGf*6#%\"QG6(%#rXG%#rYG%$vecG%'vecLenG%'vecDirG%&thetaG6\"F/C*>8$&9
-$6#\"\"%>8&-%*quatToVecG6#F4@$2F2\"\"!C$>F2,$F2!\"\">F8-%)scaleVecG6$F
-BF8>8'-%*vecLengthG6#F8>8%FH>8(-FE6$*&\"\"\"FSFHFBF8>8)-%'arctanG6$FMF
-2-FE6$FUFOF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 21 "rnd := rand(-10..10);" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#>%$rndGf*6\"F&F&F&,&-f*F&F&6#/%(builti
-nG%4RandNumberInterfaceGF&F&F&F&F&6%\"\"'\"#@\"\"&\"\"\"\"#5!\"\"F&F&F
-&" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 368 "Q := [rnd(), rnd(), r
-nd(), rnd()];\nQn := Q * evalf(1 / sqrt(Q[1]^2 + Q[2]^2 + Q[3]^2 + Q[4
-]^2)):\nvecLength(quatUnitLogAtan2(Qn)), quatUnitLogAtan2(Qn) / vecLen
-gth(quatUnitLogAtan2(Qn));\nvecLength(quatUnitLog(Qn)), quatUnitLog(Qn
-) / vecLength(quatUnitLog(Qn));\nmin(vecLength(quatUnitLog(Qn) - quatU
-nitLogAtan2(Qn)), vecLength(quatUnitLog(-Qn) - quatUnitLogAtan2(-Qn)))
-;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"QG7&!\"&\"\"*\"\"'!\"*" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+(Rdw@#!\"*7%$!+!z1f>%!#5$\"+CAj_vF
-)$\"+\\\")3N]F)" }}{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+mDNR#*!#57%$\"+
-!z1f>%F%$!+@Aj_vF%$!+[\")3N]F%" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"
-\"!F$" }}}}{MARK "24 0 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }
-{PAGENUMBERS 0 1 2 33 1 1 }{RTABLE_HANDLES 577910308 141706420 }
+gthG6#F8>8%F=>8(-%,vectorScaleG6$*&\"\"\"FIF=!\"\"F8>8)-%'arctanG6$FBF
+2-FF6$FLFDF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 26 "# Shortest path logarithm." }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" 
+}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 330 "quatUnitLog := proc(Q)\n
+   local rX, rY, vec, vecLen, vecDir, theta;\n   rX := Q[4];\n   vec :
+= quatToVec(Q);\n   if rX < 0 then rX := -rX; vec := vectorScale(-1, v
+ec); end if;\n   vecLen := vecLength(vec);\n   rY := vecLen;\n   vecDi
+r := vectorScale(1 / vecLen, vec);\n   theta := arctan(rY, rX);\n   ve
+ctorScale(theta, vecDir);\nend proc;" }}{PARA 12 "" 1 "" {XPPMATH 20 "
+6#>%,quatUnitLogGf*6#%\"QG6(%#rXG%#rYG%$vecG%'vecLenG%'vecDirG%&thetaG
+6\"F/C*>8$&9$6#\"\"%>8&-%*quatToVecG6#F4@$2F2\"\"!C$>F2,$F2!\"\">F8-%,
+vectorScaleG6$FBF8>8'-%*vecLengthG6#F8>8%FH>8(-FE6$*&\"\"\"FSFHFBF8>8)
+-%'arctanG6$FMF2-FE6$FUFOF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 24 "# Test for shorter path." }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 21 "rnd :
+= rand(-10..10);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%$rndGf*6\"F&F&F&
+,&-f*F&F&6#/%(builtinG%4RandNumberInterfaceGF&F&F&F&F&6%\"\"'\"#@\"\"&
+\"\"\"\"#5!\"\"F&F&F&" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 357 "R
+ := [rnd(), rnd(), rnd(), rnd()];\nR := R * evalf(1 / sqrt(R[1]^2 + R[
+2]^2 + R[3]^2 + R[4]^2)):\nvecLength(quatUnitLogAtan2(R)), quatUnitLog
+Atan2(R) / vecLength(quatUnitLogAtan2(R));\nvecLength(quatUnitLog(R)),
+ quatUnitLog(R) / vecLength(quatUnitLog(R));\nmin(vecLength(quatUnitLo
+g(R) - quatUnitLogAtan2(R)), vecLength(quatUnitLog(-R) - quatUnitLogAt
+an2(-R)));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"RG7&!\"(!\"&!\"'\"\"
+'" }}{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+<6;^5!\"*7%$!+A\"QUn'!#5$!+XH
+JnZF)$!+Mbx?dF)" }}{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+<6;^5!\"*7%$!+A
+\"QUn'!#5$!+XHJnZF)$!+Mbx?dF)" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#^#$\"
+\"!F%" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#=================
+==================================================" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+28 "# Movement SE(3) convention." }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#=====
+==============================================================" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 57 "movementRotation := unapply([V[1], V[2], V[3], V[4]
+], V);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%1movementRotationGf*6#%\"V
+G6\"6$%)operatorG%&arrowGF(7&&9$6#\"\"\"&F.6#\"\"#&F.6#\"\"$&F.6#\"\"%
+F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 54 "movementTranslati
+on := unapply([V[5], V[6], V[7]], V);" }}{PARA 11 "" 1 "" {XPPMATH 20 
+"6#>%4movementTranslationGf*6#%\"VG6\"6$%)operatorG%&arrowGF(7%&9$6#\"
+\"&&F.6#\"\"'&F.6#\"\"(F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 151 "movementCreate := unapply([rotation[1], rotation[2], rotation[3
+], rotation[4], translation[1], translation[2], translation[3]], rotat
+ion, translation);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%/movementCreat
+eGf*6$%)rotationG%,translationG6\"6$%)operatorG%&arrowGF)7)&9$6#\"\"\"
+&F/6#\"\"#&F/6#\"\"$&F/6#\"\"%&9%F0&F<F3&F<F6F)F)F)" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 68 "#========================================
+===========================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 10 "# Movement" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 68 "#==================================================
+=================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 104 "movementApply := unapply(ve
+ctorAdd(vectorRotate(movementRotation(M), V), movementTranslation(M)),
+ M, V);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%.movementApplyGf*6$%\"MG%
+\"VG6\"6$%)operatorG%&arrowGF)7%,*&9%6#\"\"\"F2*(\"\"#F2,(*&&9$6#\"\"%
+F2&F06#\"\"$F2F2*&&F8F1F2&F06#F4F2F2*&&F8FAF2F/F2!\"\"F2FCF2F2*(F4F2,(
+*&F7F2F@F2F2*&&F8F<F2F/F2F2*&F?F2F;F2FDF2FIF2FD&F86#\"\"&F2,*F@F2*(F4F
+2,(*&F7F2F/F2F2*&FCF2F;F2F2*&FIF2F@F2FDF2FIF2F2*(F4F2F5F2F?F2FD&F86#\"
+\"'F2,*F;F2*(F4F2FFF2F?F2F2*(F4F2FPF2FCF2FD&F86#\"\"(F2F)F)F)" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 2 "# " }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 55 "# m
+ovementCombine(A, B) means first apply B, then A (!)" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 233 "movementCombine :
+= unapply\n(\n    movementCreate\n    (\n        quatMul(movementRotat
+ion(A), movementRotation(B)), \n        vectorAdd(vectorRotate(movemen
+tRotation(A), movementTranslation(B)), movementTranslation(A))\n    ),
+\n    A, B\n);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%0movementCombineGf
+*6$%\"AG%\"BG6\"6$%)operatorG%&arrowGF)7),**&&9$6#\"\"%\"\"\"&9%6#F4F4
+F4*&&F1F7F4&F6F2F4F4*&&F16#\"\"#F4&F66#\"\"$F4F4*&&F1F@F4&F6F=F4!\"\",
+**&F0F4FDF4F4*&F<F4F:F4F4*&FCF4F5F4F4*&F9F4F?F4FE,**&F0F4F?F4F4*&FCF4F
+:F4F4*&F9F4FDF4F4*&F<F4F5F4FE,**&F0F4F:F4F4*&F9F4F5F4FE*&F<F4FDF4FE*&F
+CF4F?F4FE,*&F66#\"\"&F4*(F>F4F<F4,(*&F0F4&F66#\"\"(F4F4*&F9F4&F66#\"\"
+'F4F4*&F<F4FVF4FEF4F4*(F>F4FCF4,(*&F0F4FjnF4F4*&FCF4FVF4F4*&F9F4FfnF4F
+EF4FE&F1FWF4,*FjnF4*(F>F4FCF4,(*&F0F4FVF4F4*&F<F4FfnF4F4*&FCF4FjnF4FEF
+4F4*(F>F4F9F4FZF4FE&F1F[oF4,*FfnF4*(F>F4F9F4F_oF4F4*(F>F4F<F4FfoF4FE&F
+1FgnF4F)F)F)" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 173 "movementInverse := proc(M)\n    lo
+cal iR;\n    iR := quatConj(movementRotation(M));\n    movementCreate(
+iR, vectorScale(-1, vectorRotate(iR, movementTranslation(M))))\nend pr
+oc;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%0movementInverseGf*6#%\"MG6#%
+#iRG6\"F*C$>8$-%)quatConjG6#-%1movementRotationG6#9$-%/movementCreateG
+6$F--%,vectorScaleG6$!\"\"-%-vectorRotateG6$F--%4movementTranslationGF
+3F*F*F*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#==================================
+=================================" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 142 "# Der
+ivatives test.\n#\n# Movement of local coordinates:\n# * From camera t
+o global system.\n# * Apply movement M.\n# * From global back to camer
+a." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "
+> " 0 "" {MPLTEXT 1 0 68 "#===========================================
+========================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 90 "fromRodrigues := unappl
+y(convert(quatImaginaryExp(vectorScale(1/2, r)), piecewise, r), r);" }
+{TEXT -1 0 "" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%.fromRodriguesGf*6#%
+\"rG6\"6$%)operatorG%&arrowGF(7&,$*&#\"\"\"\"\"#F0*(-%*piecewiseG6%/*$
+,(*&#F0\"\"%F0*$)&9$6#F0F1F0F0F0*&F:F0*$)&F?6#F1F1F0F0F0*&F:F0*$)&F?6#
+\"\"$F1F0F0F0F/\"\"!FL*&F0F0*$F8#F0F1!\"\"F0F>F0-%$sinG6#F7F0F0F0,$*&F
+/F0*(F3F0FDF0FQF0F0F0,$*&F/F0*(F3F0FIF0FQF0F0F0-%$cosGFSF(F(F(" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 58 "M := movementCreate(fromRodr
+igues(p), [p[4], p[5], p[6]]):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 109 "localDisp := mo
+vementApply(M, v): # movementApply(movementInverse(c), movementApply(M
+, movementApply(c, v))):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 66 
+"func := unapply(localDisp[3], p[1], p[2], p[3], p[4], p[5], p[6]):" }
+}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 248 "simplify(limit((func(+e, \+
+0, 0, 0, 0, 0) - func(-e, 0, 0, 0, 0, 0))/(2*e), e = 0));\nsimplify(li
+mit((func(0, +e, 0, 0, 0, 0) - func(0, -e, 0, 0, 0, 0))/(2*e), e = 0))
+;\nsimplify(limit((func(0, 0, +e, 0, 0, 0) - func(0, 0, -e, 0, 0, 0))/
+(2*e), e = 0));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#&%\"vG6#\"\"#" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#,$&%\"vG6#\"\"\"!\"\"" }}{PARA 11 "" 
+1 "" {XPPMATH 20 "6#\"\"!" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+248 "simplify(limit((func(0, 0, 0, +e, 0, 0) - func(0, 0, 0, -e, 0, 0)
+)/(2*e), e = 0));\nsimplify(limit((func(0, 0, 0, 0, +e, 0) - func(0, 0
+, 0, 0, -e, 0))/(2*e), e = 0));\nsimplify(limit((func(0, 0, 0, 0, 0, +
+e) - func(0, 0, 0, 0, 0, -e))/(2*e), e = 0));" }}{PARA 11 "" 1 "" 
+{XPPMATH 20 "6#\"\"!" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"!" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#\"\"\"" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 0 "" }}}}{MARK "119 0 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 
+1 1 }{PAGENUMBERS 0 1 2 33 1 1 }{RTABLE_HANDLES 144873524 578041492 }
 {RTABLE 
 M7R0
-I6RTABLE_SAVE/577910308X*%)anythingG6"6"[gl!#%!!!"%"%,**&&%"AG6#""%"""&%"BG6#F-
+I6RTABLE_SAVE/144873524X*%)anythingG6"6"[gl!#%!!!"%"%,**&&%"AG6#""%"""&%"BG6#F-
 F-F-*&&F*F0F-&F/F+F-F-*&&F*6#""#F-&F/6#""$F-F-*&&F*F9F-&F/F6F-!"",**&F)F-F=F-F-
 *&F5F-F3F-F-*&F<F-F.F-F-*&F2F-F8F-F>,**&F)F-F8F-F-*&F<F-F3F-F-*&F2F-F=F-F-*&F5F
 -F.F-F>,**&F)F-F3F-F-*&F2F-F.F-F>*&F5F-F=F-F>*&F<F-F8F-F>F&
 }
 {RTABLE 
 M7R0
-I6RTABLE_SAVE/141706420X*%)anythingG6"6"[gl!#%!!!"$"$,$*&&%"VG6#"""F,,,*$&%"QGF
+I6RTABLE_SAVE/578041492X*%)anythingG6"6"[gl!#%!!!"$"$,$*&&%"VG6#"""F,,,*$&%"QGF
 +""#F,*$&F06#""%F1F,*$&F06#""$F1F,*$&F06#F1F1F,!""F,F,F=,$*&&F*F<F,F-F,F=,$*&&F
 *F8F,F-F,F=F&
 }
