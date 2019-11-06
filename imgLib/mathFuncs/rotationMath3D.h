@@ -214,6 +214,18 @@ sysinline Point3D<Float> quatUnitLogSpecial(const Point4D<Float>& Q)
 
 //================================================================
 //
+// quatFromRodrigues
+//
+//================================================================
+
+template <typename Float>
+sysinline Point4D<Float> quatFromRodrigues(const Point3D<Float>& R)
+{
+    return quatImaginaryExp(0.5f * R);
+}
+
+//================================================================
+//
 // quatBoxPlus
 //
 // The quaternion should have unit length.
@@ -223,7 +235,7 @@ sysinline Point3D<Float> quatUnitLogSpecial(const Point4D<Float>& Q)
 template <typename Float>
 sysinline Point4D<Float> quatBoxPlus(const Point4D<Float>& Q, const Point3D<Float>& D)
 {
-    return Q % quatImaginaryExp(0.5f * D);
+    return Q % quatFromRodrigues(D);
 }
 
 //================================================================
