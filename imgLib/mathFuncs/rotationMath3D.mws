@@ -3,11 +3,12 @@
 1 0 0 0 0 1 }{CSTYLE "2D Math" -1 2 "Times" 0 1 0 0 0 0 0 0 2 0 0 0 0 
 0 0 1 }{CSTYLE "2D Output" 2 20 "" 0 1 0 0 255 1 0 0 0 0 0 0 0 0 0 1 }
 {PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 
-2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Output" -1 
-11 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 3 0 
-0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Output" -1 12 1 {CSTYLE "" -1 
--1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }1 3 0 0 0 0 1 0 1 0 2 2 
-0 1 }}
+2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Text Output" -1 6 
+1 {CSTYLE "" -1 -1 "Courier" 1 10 0 0 255 1 2 2 2 2 2 1 2 1 3 1 }1 1 
+0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Output" -1 11 1 {CSTYLE "" -1 
+-1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 3 0 0 0 0 1 0 1 0 2 2 
+0 1 }{PSTYLE "Maple Output" -1 12 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 
+0 1 2 2 2 2 2 2 1 1 1 1 }1 3 0 0 0 0 1 0 1 0 2 2 0 1 }}
 {SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "restart;" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
 {MPLTEXT 1 0 68 "#====================================================
@@ -33,7 +34,7 @@ Mul := \n[\n\011    A[4] * B[1] + A[1] * B[4] + A[2] * B[3] - A[3] * B
   A[4] * B[4] - A[1] * B[1] - A[2] * B[2] - A[3] * B[3]\n]:" }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
 " {MPLTEXT 1 0 13 "Vector(qMul);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#-%
-'RTABLEG6%\"*+*z[a-%'MATRIXG6#7&7#,**&&%\"AG6#\"\"%\"\"\"&%\"BG6#F2F2F
+'RTABLEG6%\"*!=q0:-%'MATRIXG6#7&7#,**&&%\"AG6#\"\"%\"\"\"&%\"BG6#F2F2F
 2*&&F/F5F2&F4F0F2F2*&&F/6#\"\"#F2&F46#\"\"$F2F2*&&F/F>F2&F4F;F2!\"\"7#
 ,**&F.F2FBF2F2*&F:F2F8F2F2*&FAF2F3F2F2*&F7F2F=F2FC7#,**&F.F2F=F2F2*&FA
 F2F8F2F2*&F7F2FBF2F2*&F:F2F3F2FC7#,**&F.F2F8F2F2*&F7F2F3F2FC*&F:F2FBF2
@@ -91,93 +92,97 @@ F:F4&F66#F4F4F4*&&F1F@F4F5F4F<,&*&FBF4F;F4F4*&F0F4F?F4F<F)F)F)" }}}
 [C * V[1], C * V[2], C * V[3]], C, V);\n" }}{PARA 11 "" 1 "" {XPPMATH 
 20 "6#>%,vectorScaleGf*6$%\"CG%\"VG6\"6$%)operatorG%&arrowGF)7%*&9$\"
 \"\"&9%6#F0F0*&F/F0&F26#\"\"#F0*&F/F0&F26#\"\"$F0F)F)F)" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 175 "vectorRotate := proc(Q, V)\n    lo
-cal R, UV, UUV;\n    R := quatToVec(Q);\n    vectorAdd(V, 2 * vectorCr
-ossProduct(R, vectorCrossProduct(R, V) + vectorScale(Q[4], V)));\nend \+
-proc;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%-vectorRotateGf*6$%\"QG%\"V
-G6%%\"RG%#UVG%$UUVG6\"F-C$>8$-%*quatToVecG6#9$-%*vectorAddG6$9%,$*&\"
-\"#\"\"\"-%3vectorCrossProductG6$F0,&-F>6$F0F8F<-%,vectorScaleG6$&F46#
-\"\"%F8F<F<F<F-F-F-" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 70 "Vect
-or(factor(simplify(vectorRotate(Q, V) - rotateVecDirect(Q, V)))); " }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#-%'RTABLEG6%\"*w]27%-%'MATRIXG6#7%7#,$
-*&&%\"VG6#\"\"\"F1,,*$)&%\"QGF0\"\"#F1F1*$)&F66#\"\"%F7F1F1*$)&F66#\"
-\"$F7F1F1*$)&F66#F7F7F1F1F1!\"\"F1FF7#,$*&&F/FEF1F2F1FF7#,$*&&F/F@F1F2
-F1FF&%'VectorG6#%'columnG" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 
-"" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#=====================
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 75 "vectorScalarProd := unapply(a[1] * \+
+b[1] + a[2] * b[2] + a[3] * b[3], a, b);" }}{PARA 11 "" 1 "" {XPPMATH 
+20 "6#>%1vectorScalarProdGf*6$%\"aG%\"bG6\"6$%)operatorG%&arrowGF),(*&
+&9$6#\"\"\"F2&9%F1F2F2*&&F06#\"\"#F2&F4F7F2F2*&&F06#\"\"$F2&F4F<F2F2F)
+F)F)" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 175 "vectorRotate := pr
+oc(Q, V)\n    local R, UV, UUV;\n    R := quatToVec(Q);\n    vectorAdd
+(V, 2 * vectorCrossProduct(R, vectorCrossProduct(R, V) + vectorScale(Q
+[4], V)));\nend proc;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%-vectorRota
+teGf*6$%\"QG%\"VG6%%\"RG%#UVG%$UUVG6\"F-C$>8$-%*quatToVecG6#9$-%*vecto
+rAddG6$9%,$*&\"\"#\"\"\"-%3vectorCrossProductG6$F0,&-F>6$F0F8F<-%,vect
+orScaleG6$&F46#\"\"%F8F<F<F<F-F-F-" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 70 "Vector(factor(simplify(vectorRotate(Q, V) - rotateVec
+Direct(Q, V)))); " }}{PARA 11 "" 1 "" {XPPMATH 20 "6#-%'RTABLEG6%\"*)Q
+p0:-%'MATRIXG6#7%7#,$*&&%\"VG6#\"\"\"F1,,*$)&%\"QGF0\"\"#F1F1*$)&F66#
+\"\"%F7F1F1*$)&F66#\"\"$F7F1F1*$)&F66#F7F7F1F1F1!\"\"F1FF7#,$*&&F/FEF1
+F2F1FF7#,$*&&F/F@F1F2F1FF&%'VectorG6#%'columnG" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 68 "#=============================================
+======================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 47 "# Quaterion exponent (p
+ure imaginary argument)." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "
+#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#=====================
 ==============================================" }}}{EXCHG {PARA 0 "> \+
-" 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 47 
-"# Quaterion exponent (pure imaginary argument)." }}}{EXCHG {PARA 0 ">
- " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
-68 "#=================================================================
-==" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 ">
- " 0 "" {MPLTEXT 1 0 64 "vecLength := unapply(sqrt(vec[1]^2 + vec[2]^2
- + vec[3]^2), vec);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*vecLengthGf*
-6#%$vecG6\"6$%)operatorG%&arrowGF(*$,(*$)&9$6#\"\"\"\"\"#F3F3*$)&F16#F
-4F4F3F3*$)&F16#\"\"$F4F3F3#F3F4F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 318 "quatImaginaryExp := proc(vec)\n    local vecLen, vec
-Dir, f, result;\n    vecLen := vecLength(vec);\n    f := piecewise(vec
-Len = 0, 0, 1 / vecLen);\n    vecDir := vectorScale(f, vec);\n    [\n \+
-       vecDir[1]*sin(vecLen), \n        vecDir[2]*sin(vecLen), \n     \+
-   vecDir[3]*sin(vecLen), \n        cos(vecLen)\n    ]; \nend proc;" }
-}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%1quatImaginaryExpGf*6#%$vecG6&%'vec
-LenG%'vecDirG%\"fG%'resultG6\"F-C&>8$-%*vecLengthG6#9$>8&-%*piecewiseG
-6%/F0\"\"!F;*&\"\"\"F=F0!\"\">8%-%,vectorScaleG6$F6F47&*&&F@6#F=F=-%$s
-inG6#F0F=*&&F@6#\"\"#F=FHF=*&&F@6#\"\"$F=FHF=-%$cosGFJF-F-F-" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 68 "#==================================================
-=================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 51 "# Quaterion logarithm (pure \+
-rotational quaternion)." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#
-" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#======================
-=============================================" }}}{EXCHG {PARA 0 "> " 
-0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" 
-}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "# Naive logarithm." }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 269 "quat
-UnitLogAtan2 := proc(Q)\n   local rX, rY, vec, vecLen, vecDir, theta;
-\n   rX := Q[4];\n   vec := quatToVec(Q);\n   vecLen := vecLength(vec)
-;\n   rY := vecLen;\n   vecDir := vectorScale(1 / vecLen, vec);\n   th
-eta := arctan(rY, rX);\n   vectorScale(theta, vecDir);\nend proc;" }}
-{PARA 12 "" 1 "" {XPPMATH 20 "6#>%1quatUnitLogAtan2Gf*6#%\"QG6(%#rXG%#
-rYG%$vecG%'vecLenG%'vecDirG%&thetaG6\"F/C)>8$&9$6#\"\"%>8&-%*quatToVec
-G6#F4>8'-%*vecLengthG6#F8>8%F=>8(-%,vectorScaleG6$*&\"\"\"FIF=!\"\"F8>
-8)-%'arctanG6$FBF2-FF6$FLFDF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 240 "quatUnitLogAtan2 := proc (Q) local rX, rY, vec, vecL
-en, vecDir, theta; rX := Q[4]; vec := quatToVec(Q); vecLen := vecLengt
-h(vec); rY := vecLen; vecDir := vectorScale(1/vecLen,vec); theta := ar
-ctan(rY,rX); vectorScale(theta,vecDir) end proc;" }}{PARA 12 "" 1 "" 
+" 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "
+vectorLength := unapply(sqrt(vec[1]^2 + vec[2]^2 + vec[3]^2), vec);" }
+}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%-vectorLengthGf*6#%$vecG6\"6$%)oper
+atorG%&arrowGF(*$,(*$)&9$6#\"\"\"\"\"#F3F3*$)&F16#F4F4F3F3*$)&F16#\"\"
+$F4F3F3#F3F4F(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 321 "quat
+ImaginaryExp := proc(vec)\n    local vecLen, vecDir, f, result;\n    v
+ecLen := vectorLength(vec);\n    f := piecewise(vecLen = 0, 0, 1 / vec
+Len);\n    vecDir := vectorScale(f, vec);\n    [\n        vecDir[1]*si
+n(vecLen), \n        vecDir[2]*sin(vecLen), \n        vecDir[3]*sin(ve
+cLen), \n        cos(vecLen)\n    ]; \nend proc;" }}{PARA 12 "" 1 "" 
+{XPPMATH 20 "6#>%1quatImaginaryExpGf*6#%$vecG6&%'vecLenG%'vecDirG%\"fG
+%'resultG6\"F-C&>8$-%-vectorLengthG6#9$>8&-%*piecewiseG6%/F0\"\"!F;*&
+\"\"\"F=F0!\"\">8%-%,vectorScaleG6$F6F47&*&&F@6#F=F=-%$sinG6#F0F=*&&F@
+6#\"\"#F=FHF=*&&F@6#\"\"$F=FHF=-%$cosGFJF-F-F-" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "
+#===================================================================" 
+}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 
+0 "" {MPLTEXT 1 0 51 "# Quaterion logarithm (pure rotational quaternio
+n)." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 68 "#==========================================
+=========================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 
+"" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 ">
+ " 0 "" {MPLTEXT 1 0 18 "# Naive logarithm." }}}{EXCHG {PARA 0 "> " 0 
+"" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}
+}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 272 "quatUnitLogAtan2 := proc(Q
+)\n   local rX, rY, vec, vecLen, vecDir, theta;\n   rX := Q[4];\n   ve
+c := quatToVec(Q);\n   vecLen := vectorLength(vec);\n   rY := vecLen;
+\n   vecDir := vectorScale(1 / vecLen, vec);\n   theta := arctan(rY, r
+X);\n   vectorScale(theta, vecDir);\nend proc;" }}{PARA 12 "" 1 "" 
 {XPPMATH 20 "6#>%1quatUnitLogAtan2Gf*6#%\"QG6(%#rXG%#rYG%$vecG%'vecLen
-G%'vecDirG%&thetaG6\"F/C)>8$&9$6#\"\"%>8&-%*quatToVecG6#F4>8'-%*vecLen
-gthG6#F8>8%F=>8(-%,vectorScaleG6$*&\"\"\"FIF=!\"\"F8>8)-%'arctanG6$FBF
-2-FF6$FLFDF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
+G%'vecDirG%&thetaG6\"F/C)>8$&9$6#\"\"%>8&-%*quatToVecG6#F4>8'-%-vector
+LengthG6#F8>8%F=>8(-%,vectorScaleG6$*&\"\"\"FIF=!\"\"F8>8)-%'arctanG6$
+FBF2-FF6$FLFDF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 243 "qua
+tUnitLogAtan2 := proc (Q) local rX, rY, vec, vecLen, vecDir, theta; rX
+ := Q[4]; vec := quatToVec(Q); vecLen := vectorLength(vec); rY := vecL
+en; vecDir := vectorScale(1/vecLen,vec); theta := arctan(rY,rX); vecto
+rScale(theta,vecDir) end proc;" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%1q
+uatUnitLogAtan2Gf*6#%\"QG6(%#rXG%#rYG%$vecG%'vecLenG%'vecDirG%&thetaG6
+\"F/C)>8$&9$6#\"\"%>8&-%*quatToVecG6#F4>8'-%-vectorLengthG6#F8>8%F=>8(
+-%,vectorScaleG6$*&\"\"\"FIF=!\"\"F8>8)-%'arctanG6$FBF2-FF6$FLFDF/F/F/
+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 26 
+"# Shortest path logarithm." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 333 "quatUnitLog := proc(Q)\n   local rX, rY, v
+ec, vecLen, vecDir, theta;\n   rX := Q[4];\n   vec := quatToVec(Q);\n \+
+  if rX < 0 then rX := -rX; vec := vectorScale(-1, vec); end if;\n   v
+ecLen := vectorLength(vec);\n   rY := vecLen;\n   vecDir := vectorScal
+e(1 / vecLen, vec);\n   theta := arctan(rY, rX);\n   vectorScale(theta
+, vecDir);\nend proc;" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,quatUnitLo
+gGf*6#%\"QG6(%#rXG%#rYG%$vecG%'vecLenG%'vecDirG%&thetaG6\"F/C*>8$&9$6#
+\"\"%>8&-%*quatToVecG6#F4@$2F2\"\"!C$>F2,$F2!\"\">F8-%,vectorScaleG6$F
+BF8>8'-%-vectorLengthG6#F8>8%FH>8(-FE6$*&\"\"\"FSFHFBF8>8)-%'arctanG6$
+FMF2-FE6$FUFOF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 26 "# Shortest path logarithm." }}}{EXCHG {PARA 0 "> " 
-0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" 
-}}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 330 "quatUnitLog := proc(Q)\n
-   local rX, rY, vec, vecLen, vecDir, theta;\n   rX := Q[4];\n   vec :
-= quatToVec(Q);\n   if rX < 0 then rX := -rX; vec := vectorScale(-1, v
-ec); end if;\n   vecLen := vecLength(vec);\n   rY := vecLen;\n   vecDi
-r := vectorScale(1 / vecLen, vec);\n   theta := arctan(rY, rX);\n   ve
-ctorScale(theta, vecDir);\nend proc;" }}{PARA 12 "" 1 "" {XPPMATH 20 "
-6#>%,quatUnitLogGf*6#%\"QG6(%#rXG%#rYG%$vecG%'vecLenG%'vecDirG%&thetaG
-6\"F/C*>8$&9$6#\"\"%>8&-%*quatToVecG6#F4@$2F2\"\"!C$>F2,$F2!\"\">F8-%,
-vectorScaleG6$FBF8>8'-%*vecLengthG6#F8>8%FH>8(-FE6$*&\"\"\"FSFHFBF8>8)
--%'arctanG6$FMF2-FE6$FUFOF/F/F/" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
-1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 24 "# Test for shorter path." }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 21 "rnd :
-= rand(-10..10);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%$rndGf*6\"F&F&F&
-,&-f*F&F&6#/%(builtinG%4RandNumberInterfaceGF&F&F&F&F&6%\"\"'\"#@\"\"&
-\"\"\"\"#5!\"\"F&F&F&" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 357 "R
- := [rnd(), rnd(), rnd(), rnd()];\nR := R * evalf(1 / sqrt(R[1]^2 + R[
-2]^2 + R[3]^2 + R[4]^2)):\nvecLength(quatUnitLogAtan2(R)), quatUnitLog
-Atan2(R) / vecLength(quatUnitLogAtan2(R));\nvecLength(quatUnitLog(R)),
- quatUnitLog(R) / vecLength(quatUnitLog(R));\nmin(vecLength(quatUnitLo
-g(R) - quatUnitLogAtan2(R)), vecLength(quatUnitLog(-R) - quatUnitLogAt
-an2(-R)));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"RG7&!\"(!\"&!\"'\"\"
-'" }}{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+<6;^5!\"*7%$!+A\"QUn'!#5$!+XH
-JnZF)$!+Mbx?dF)" }}{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+<6;^5!\"*7%$!+A
+" {MPLTEXT 1 0 24 "# Test for shorter path." }}}{EXCHG {PARA 0 "> " 0 
+"" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}
+}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 21 "rnd := rand(-10..10);" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#>%$rndGf*6\"F&F&F&,&-f*F&F&6#/%(builti
+nG%4RandNumberInterfaceGF&F&F&F&F&6%\"\"'\"#@\"\"&\"\"\"\"#5!\"\"F&F&F
+&" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 375 "R := [rnd(), rnd(), r
+nd(), rnd()];\nR := R * evalf(1 / sqrt(R[1]^2 + R[2]^2 + R[3]^2 + R[4]
+^2)):\nvectorLength(quatUnitLogAtan2(R)), quatUnitLogAtan2(R) / vector
+Length(quatUnitLogAtan2(R));\nvectorLength(quatUnitLog(R)), quatUnitLo
+g(R) / vectorLength(quatUnitLog(R));\nmin(vectorLength(quatUnitLog(R) \+
+- quatUnitLogAtan2(R)), vectorLength(quatUnitLog(-R) - quatUnitLogAtan
+2(-R)));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"RG7&!\"(!\"&!\"'\"\"'
+" }}{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+<6;^5!\"*7%$!+A\"QUn'!#5$!+XHJ
+nZF)$!+Mbx?dF)" }}{PARA 11 "" 1 "" {XPPMATH 20 "6$$\"+<6;^5!\"*7%$!+A
 \"QUn'!#5$!+XHJnZF)$!+Mbx?dF)" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#^#$\"
 \"!F%" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#=================
 ==================================================" }}}{EXCHG {PARA 0 
@@ -236,62 +241,483 @@ iR, vectorScale(-1, vectorRotate(iR, movementTranslation(M))))\nend pr
 oc;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%0movementInverseGf*6#%\"MG6#%
 #iRG6\"F*C$>8$-%)quatConjG6#-%1movementRotationG6#9$-%/movementCreateG
 6$F--%,vectorScaleG6$!\"\"-%-vectorRotateG6$F--%4movementTranslationGF
-3F*F*F*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#==================================
-=================================" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 143 "# Der
-ivatives by 6D.\n#\n# Movement of local coordinates:\n# * From camera \+
-to global system.\n# * Apply movement M.\n# * From global back to came
-ra." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 
-"> " 0 "" {MPLTEXT 1 0 68 "#==========================================
-=========================" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 
-"" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 90 "fromRodrigues := unapp
-ly(convert(quatImaginaryExp(vectorScale(1/2, r)), piecewise, r), r);" 
-}{TEXT -1 0 "" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%.fromRodriguesGf*6#
-%\"rG6\"6$%)operatorG%&arrowGF(7&,$*&#\"\"\"\"\"#F0*(-%*piecewiseG6%/*
-$,(*&#F0\"\"%F0*$)&9$6#F0F1F0F0F0*&F:F0*$)&F?6#F1F1F0F0F0*&F:F0*$)&F?6
-#\"\"$F1F0F0F0F/\"\"!FL*&F0F0*$F8#F0F1!\"\"F0F>F0-%$sinG6#F7F0F0F0,$*&
-F/F0*(F3F0FDF0FQF0F0F0,$*&F/F0*(F3F0FIF0FQF0F0F0-%$cosGFSF(F(F(" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 58 "M := movementCreate(fromRodr
-igues(p), [p[4], p[5], p[6]]):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
-1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "localDisp := mov
-ementApply(movementInverse(c), movementApply(M, movementApply(c, v))):
-" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 33 "localDisp := movementAp
-ply(M, v):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 18 "R := Matrix(3
-, 6);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"RG-%'RTABLEG6%\"*7[q7%-%'
-MATRIXG6#7%7(\"\"!F.F.F.F.F.F-F-%'MatrixG" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 687 "for k from 1 to 3 do\n    func := unapply(localDis
-p[k], p[1], p[2], p[3], p[4], p[5], p[6]):\n    R[k, 1] := simplify(li
-mit((func(+e, 0, 0, 0, 0, 0) - func(-e, 0, 0, 0, 0, 0))/(2*e), e = 0))
-:\n    R[k, 2] := simplify(limit((func(0, +e, 0, 0, 0, 0) - func(0, -e
-, 0, 0, 0, 0))/(2*e), e = 0)):\n    R[k, 3] := simplify(limit((func(0,
- 0, +e, 0, 0, 0) - func(0, 0, -e, 0, 0, 0))/(2*e), e = 0)):\n    R[k, \+
-4] := simplify(limit((func(0, 0, 0, +e, 0, 0) - func(0, 0, 0, -e, 0, 0
-))/(2*e), e = 0)):\n    R[k, 5] := simplify(limit((func(0, 0, 0, 0, +e
-, 0) - func(0, 0, 0, 0, -e, 0))/(2*e), e = 0)):\n    R[k, 6] := simpli
-fy(limit((func(0, 0, 0, 0, 0, +e) - func(0, 0, 0, 0, 0, -e))/(2*e), e \+
-= 0)):\nend do:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 2 "R;" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#-%'RTABLEG6%\"*7[q7%-%'MATRIXG6#7%7(\"
-\"!&%\"vG6#\"\"$,$&F.6#\"\"#!\"\"\"\"\"F,F,7(,$F-F5F,&F.6#F6F,F6F,7(F2
-,$F9F5F,F,F,F6%'MatrixG" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "
-" }}}}{MARK "119 1 0" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }
-{PAGENUMBERS 0 1 2 33 1 1 }{RTABLE_HANDLES 544879900 412075076 
-412704812 }{RTABLE 
+3F*F*F*" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#===============
+====================================================" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 24 "# Rotation by Rodrigues." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#==============
+=====================================================" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 34 "vr1 := vectorScale(cos(theta), v);" }}{PARA 11 "" 1 "
+" {XPPMATH 20 "6#>%$vr1G7%*&-%$cosG6#%&thetaG\"\"\"&%\"vG6#F+F+*&F'F+&
+F-6#\"\"#F+*&F'F+&F-6#\"\"$F+" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
+0 57 "vr2 := vectorScale(sin(theta), vectorCrossProduct(n, v));" }}
+{PARA 11 "" 1 "" {XPPMATH 20 "6#>%$vr2G7%*&-%$sinG6#%&thetaG\"\"\",&*&
+&%\"nG6#\"\"#F+&%\"vG6#\"\"$F+F+*&&F/F4F+&F3F0F+!\"\"F+*&F'F+,&*&F7F+&
+F36#F+F+F+*&&F/F>F+F2F+F9F+*&F'F+,&*&F@F+F8F+F+*&F.F+F=F+F9F+" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 65 "vr3 := vectorScale(vectorSca
+larProd(n, v) * (1 - cos(theta)), n);" }}{PARA 11 "" 1 "" {XPPMATH 20 
+"6#>%$vr3G7%*(,(*&&%\"nG6#\"\"\"F,&%\"vGF+F,F,*&&F*6#\"\"#F,&F.F1F,F,*
+&&F*6#\"\"$F,&F.F6F,F,F,,&F,F,-%$cosG6#%&thetaG!\"\"F,F)F,*(F'F,F9F,F0
+F,*(F'F,F9F,F5F," }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 80 "vectorR
+otateRodAux := unapply(vectorAdd(vectorAdd(vr1, vr2), vr3), n, theta, \+
+v);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%3vectorRotateRodAuxGf*6%%\"nG
+%&thetaG%\"vG6\"6$%)operatorG%&arrowGF*7%,(*&-%$cosG6#9%\"\"\"&9&6#F5F
+5F5*&-%$sinGF3F5,&*&&9$6#\"\"#F5&F76#\"\"$F5F5*&&F?FCF5&F7F@F5!\"\"F5F
+5*(,(*&&F?F8F5F6F5F5*&F>F5FGF5F5*&FFF5FBF5F5F5,&F5F5F1FHF5FLF5F5,(*&F1
+F5FGF5F5*&F:F5,&*&FFF5F6F5F5*&FLF5FBF5FHF5F5*(FJF5FOF5F>F5F5,(*&F1F5FB
+F5F5*&F:F5,&*&FLF5FGF5F5*&F>F5F6F5FHF5F5*(FJF5FOF5FFF5F5F*F*F*" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 238 "vectorRotateRodrigues := proc(rot, vec)\n    local
+ rotLen, rotDir, f;\n    rotLen := vectorLength(rot);\n    f := piecew
+ise(rotLen = 0, 0, 1 / rotLen);\n    rotDir := vectorScale(f, rot);\n \+
+   vectorRotateRodAux(rotDir, rotLen, vec);\nend proc;" }}{PARA 11 "" 
+1 "" {XPPMATH 20 "6#>%6vectorRotateRodriguesGf*6$%$rotG%$vecG6%%'rotLe
+nG%'rotDirG%\"fG6\"F-C&>8$-%-vectorLengthG6#9$>8&-%*piecewiseG6%/F0\"
+\"!F;*&\"\"\"F=F0!\"\">8%-%,vectorScaleG6$F6F4-%3vectorRotateRodAuxG6%
+F@F09%F-F-F-" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#==========
+=========================================================" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 143 "# Derivatives by 6D.\n#\n# Movement of local coordin
+ates:\n# * From camera to global system.\n# * Apply movement M.\n# * F
+rom global back to camera." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "#==================
+=================================================" }}}{EXCHG {PARA 0 "
+> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
+90 "fromRodrigues := unapply(convert(quatImaginaryExp(vectorScale(1/2,
+ r)), piecewise, r), r):" }{TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 55 "cam := [Matrix(3, 3, symbol=cr), Vector(3, symbol=ct)
+];" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%$camG7$-%'RTABLEG6%\"*;!)*4:-%
+'MATRIXG6#7%7%&%#crG6$\"\"\"F2&F06$F2\"\"#&F06$F2\"\"$7%&F06$F5F2&F06$
+F5F5&F06$F5F87%&F06$F8F2&F06$F8F5&F06$F8F8%'MatrixG-F'6%\"*;I*4:-F+6#7
+%7#&%#ctG6#F27#&FP6#F57#&FP6#F8&%'VectorG6#%'columnG" }}}{EXCHG {PARA 
+0 "> " 0 "" {MPLTEXT 1 0 77 "camMovementApply := unapply(cam[1] . Vect
+or([v[1], v[2], v[3]]) + cam[2], v);" }}{PARA 12 "" 1 "" {XPPMATH 20 "
+6#>%1camMovementApplyGf*6#%\"vG6\"6$%)operatorG%&arrowGF(-%'rtableG6(;
+\"\"\"\"\"$<%/6#F0,**&&%#crG6$F0F0F0&9$F4F0F0*&&F86$F0\"\"#F0&F;6#F?F0
+F0*&&F86$F0F1F0&F;6#F1F0F0&%#ctGF4F0/FA,**&&F86$F?F0F0F:F0F0*&&F86$F?F
+?F0F@F0F0*&&F86$F?F1F0FEF0F0&FHFAF0/FF,**&&F86$F1F0F0F:F0F0*&&F86$F1F?
+F0F@F0F0*&&F86$F1F1F0FEF0F0&FHFFF0/%)datatypeG%)anythingG/%(subtypeG&%
+'VectorG6#%'columnG/%(storageG%,rectangularG/%&orderG%.Fortran_orderGF
+(F(F(" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 85 "camInverseApply :=
+ unapply((cam[1] ^ %T) . (Vector([v[1], v[2], v[3]]) - cam[2]), v);" }
+}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%0camInverseApplyGf*6#%\"vG6\"6$%)op
+eratorG%&arrowGF(-%'rtableG6(;\"\"\"\"\"$<%/6#F0,(*&&%#crG6$F0F0F0,&&9
+$F4F0&%#ctGF4!\"\"F0F0*&&F86$\"\"#F0F0,&&F<6#FCF0&F>FFF?F0F0*&&F86$F1F
+0F0,&&F<6#F1F0&F>FMF?F0F0/FF,(*&&F86$F0FCF0F:F0F0*&&F86$FCFCF0FDF0F0*&
+&F86$F1FCF0FKF0F0/FM,(*&&F86$F0F1F0F:F0F0*&&F86$FCF1F0FDF0F0*&&F86$F1F
+1F0FKF0F0/%)datatypeG%)anythingG/%(subtypeG&%'VectorG6#%'columnG/%(sto
+rageG%,rectangularG/%&orderG%.Fortran_orderGF(F(F(" }}}{EXCHG {PARA 0 
+"> " 0 "" {MPLTEXT 1 0 104 "paramMovement := unapply(movementApply(mov
+ementCreate(fromRodrigues(p), [p[4], p[5], p[6]]), vec), vec):" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 92 "paramMovement := unapply(vec
+torAdd(vectorRotateRodrigues(p, vec), [p[4], p[5], p[6]]), vec):" }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 92 "localDisp := unapply(camInverseApply(paramMovement(
+camMovementApply(v))), v[1], v[2], v[3]):" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 59 "# localDisp := unapply(paramMovement(v), v[1], v[2]
+, v[3]):" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG 
+{PARA 0 "> " 0 "" {MPLTEXT 1 0 23 "J := array(1..6, 1..3);" }}{PARA 
+11 "" 1 "" {XPPMATH 20 "6#>%\"JG-%&arrayG6%;\"\"\"\"\"';F)\"\"$7\"" }}
+}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 308 "for a from 1 to 6 do\n   f
+or k from 1 to 3 do\n       func := unapply(localDisp(v[1], v[2], v[3]
+)[k], p[1], p[2], p[3], p[4], p[5], p[6]);\n       sss := diff(func(p[
+1], p[2], p[3], p[4], p[5], p[6]), p[a]); \n       J[a, k] := limit(su
+bs(p[2]=0, p[3]=0, p[4]=0, p[5]=0, p[6]=0, sss), p[1]=0);\n   end do;
+\nend do:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 36 "codegen[cost](
+codegen[optimize](J));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#,**&\"#s\"\"
+\"%0multiplicationsGF&F&*&\"$N\"F&%+subscriptsGF&F&*&\"#OF&%,assignmen
+tsGF&F&*&\"#XF&%*additionsGF&F&" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 35 "# Camera matrix: 72*multiplications" }}}{EXCHG {PARA 0 "> " 0 
+"" {MPLTEXT 1 0 25 "codegen[C](J, optimized):" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      t1 = cr[1][2]*cr[2][0];" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      t4 = cr[1][1]*cr[2][0];" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     t6 = cr[2][1]*cr[1][0];" }}{PARA 6 "" 1 "" {TEXT -1 29 "      t8 \+
+= cr[2][2]*cr[1][0];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t14 = cr[1]
+[2]*cr[2][1];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t17 = cr[2][2]*cr[
+1][1];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t28 = cr[2][1]*cr[0][0];
+" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t30 = cr[2][2]*cr[0][0];" }}
+{PARA 6 "" 1 "" {TEXT -1 30 "      t33 = cr[0][1]*cr[2][0];" }}{PARA 
+6 "" 1 "" {TEXT -1 30 "      t35 = cr[0][2]*cr[2][0];" }}{PARA 6 "" 1 
+"" {TEXT -1 30 "      t40 = cr[2][2]*cr[0][1];" }}{PARA 6 "" 1 "" 
+{TEXT -1 30 "      t44 = cr[0][2]*cr[2][1];" }}{PARA 6 "" 1 "" {TEXT 
+-1 30 "      t55 = cr[1][1]*cr[0][0];" }}{PARA 6 "" 1 "" {TEXT -1 30 "
+      t57 = cr[1][2]*cr[0][0];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t
+60 = cr[0][1]*cr[1][0];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t62 = cr
+[0][2]*cr[1][0];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t67 = cr[1][2]*
+cr[0][1];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t71 = cr[0][2]*cr[1][1
+];" }}{PARA 6 "" 1 "" {TEXT -1 78 "      J[0][0] = v[2]*t1-cr[1][0]*ct
+[2]+v[1]*t4-v[1]*t6-v[2]*t8+cr[2][0]*ct[1];" }}{PARA 6 "" 1 "" {TEXT 
+-1 78 "      J[0][1] = -cr[1][1]*ct[2]+cr[2][1]*ct[1]+v[2]*t14-v[0]*t4
+-v[2]*t17+v[0]*" }}{PARA 6 "" 1 "" {TEXT -1 3 "t6;" }}{PARA 6 "" 1 "" 
+{TEXT -1 79 "      J[0][2] = cr[2][2]*ct[1]-v[1]*t14+v[0]*t8+v[1]*t17-
+v[0]*t1-cr[1][2]*ct[2]" }}{PARA 6 "" 1 "" {TEXT -1 1 ";" }}{PARA 6 "" 
+1 "" {TEXT -1 78 "      J[1][0] = v[1]*t28+v[2]*t30+cr[0][0]*ct[2]-v[1
+]*t33-v[2]*t35-cr[2][0]*ct" }}{PARA 6 "" 1 "" {TEXT -1 4 "[0];" }}
+{PARA 6 "" 1 "" {TEXT -1 78 "      J[1][1] = v[0]*t33+v[2]*t40+cr[0][1
+]*ct[2]-v[0]*t28-v[2]*t44-cr[2][1]*ct" }}{PARA 6 "" 1 "" {TEXT -1 4 "[
+0];" }}{PARA 6 "" 1 "" {TEXT -1 78 "      J[1][2] = v[0]*t35+v[1]*t44+
+cr[0][2]*ct[2]-v[0]*t30-v[1]*t40-cr[2][2]*ct" }}{PARA 6 "" 1 "" {TEXT 
+-1 4 "[0];" }}{PARA 6 "" 1 "" {TEXT -1 79 "      J[2][0] = -v[1]*t55-v
+[2]*t57-cr[0][0]*ct[1]+v[1]*t60+v[2]*t62+cr[1][0]*ct" }}{PARA 6 "" 1 "
+" {TEXT -1 4 "[0];" }}{PARA 6 "" 1 "" {TEXT -1 79 "      J[2][1] = -v[
+0]*t60-v[2]*t67-cr[0][1]*ct[1]+v[0]*t55+v[2]*t71+cr[1][1]*ct" }}{PARA 
+6 "" 1 "" {TEXT -1 4 "[0];" }}{PARA 6 "" 1 "" {TEXT -1 79 "      J[2][
+2] = -v[0]*t62-v[1]*t71-cr[0][2]*ct[1]+v[0]*t57+v[1]*t67+cr[1][2]*ct" 
+}}{PARA 6 "" 1 "" {TEXT -1 4 "[0];" }}{PARA 6 "" 1 "" {TEXT -1 25 "   \+
+   J[3][0] = cr[0][0];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      J[3][1] =
+ cr[0][1];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      J[3][2] = cr[0][2];" 
+}}{PARA 6 "" 1 "" {TEXT -1 25 "      J[4][0] = cr[1][0];" }}{PARA 6 "
+" 1 "" {TEXT -1 25 "      J[4][1] = cr[1][1];" }}{PARA 6 "" 1 "" 
+{TEXT -1 25 "      J[4][2] = cr[1][2];" }}{PARA 6 "" 1 "" {TEXT -1 25 
+"      J[5][0] = cr[2][0];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      J[5][
+1] = cr[2][1];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      J[5][2] = cr[2][2
+];" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 32 "R := Array(1..6, 1..6
+, 1..3, 0);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%\"RG-%'RTABLEG6,\"*Gs
+(\\T%)anythingG%&ArrayG%,rectangularG%.Fortran_orderG7\"\"\"$;\"\"\"\"
+\"'F/;F0F." }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 375 "for a from 1
+ to 6 do\n    for b from a to 6 do\n       for k from 1 to 3 do\n     \+
+      func := unapply(localDisp(v[1], v[2], v[3])[k], p[1], p[2], p[3]
+, p[4], p[5], p[6]);\n           sss := diff(func(p[1], p[2], p[3], p[
+4], p[5], p[6]), p[a], p[b]); \n           R[a, b, k] := limit(subs(p[
+2]=0, p[3]=0, p[4]=0, p[5]=0, p[6]=0, sss), p[1]=0);\n       end do;\n
+    end do; \nend do;" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 36 "co
+degen[cost](codegen[optimize](R));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#
+,**&\"$)>\"\"\"%0multiplicationsGF&F&*&\"$:$F&%+subscriptsGF&F&*&\"$!=
+F&%,assignmentsGF&F&*&\"$<\"F&%*additionsGF&F&" }}}{EXCHG {PARA 0 "> \+
+" 0 "" {MPLTEXT 1 0 25 "Matrix(R[1..6, 1..6, 1]);" }}{PARA 12 "" 1 "" 
+{XPPMATH 20 "6#-%'RTABLEG6%\"*74b9%-%'MATRIXG6#7(7(,2*&&%#crG6$\"\"#\"
+\"\"F2&%#ctG6#F1F2!\"\"*&)F.F1F2&%\"vG6#F2F2F6*&&F/6$\"\"$F2F2&F46#F?F
+2F6*&)F=F1F2F9F2F6*(F=F2&F/6$F?F?F2&F:FAF2F6*(F.F2&F/6$F1F1F2&F:F5F2F6
+*(F.F2&F/6$F1F?F2FGF2F6*(F=F2&F/6$F?F1F2FKF2F6,0*&#F2F1F2*(&F/6$F2F2F2
+FMF2FGF2F2F2*&FTF2*&F.F2&F4F;F2F2F2*&FTF2*(F.F2&F/6$F2F?F2FGF2F2F2*&FT
+F2*&FVF2F3F2F2F2*&FTF2*(F.F2&F/6$F2F1F2FKF2F2F2*(FVF2F.F2F9F2F2*&FTF2*
+(FVF2FIF2FKF2F2F2,0*&FTF2*&FVF2F@F2F2F2*&FTF2*(F=F2FgnF2FGF2F2F2*(FVF2
+F=F2F9F2F2*&FTF2*(F=F2F]oF2FKF2F2F2*&FTF2*(FVF2FPF2FKF2F2F2*&FTF2*(FVF
+2FEF2FGF2F2F2*&FTF2*&F=F2FZF2F2F2\"\"!F`pF`p7(F`p,2FDF6*(FVF2F]oF2FKF2
+F6*&FVF2FZF2F6*(FVF2FgnF2FGF2F6FBF6F<F6FOF6*&)FVF1F2F9F2F6,0*(F.F2F=F2
+F9F2F2*&FTF2*(F.F2FPF2FKF2F2F2*&FTF2*(F.F2FEF2FGF2F2F2*&FTF2*&F.F2F@F2
+F2F2*&FTF2*(F=F2FIF2FKF2F2F2*&FTF2*(F=F2FMF2FGF2F2F2*&FTF2*&F=F2F3F2F2
+F2F`pF`pF`p7(F`pF`p,2FLF6FdpF6FcpF6F7F6FepF6FHF6FfpF6F-F6F`pF`pF`p7(F`
+pF`pF`pF`pF`pF`pFhqFhq%'MatrixG" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
+1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 51 "Jseq := seq(seq(
+JJ[i,k] = J[i,k], i=1..6), k=1..3);" }}{PARA 12 "" 1 "" {XPPMATH 20 "6
+#>%%JseqG64/&%#JJG6$\"\"\"F*,.*(&%#crG6$\"\"$F*F*&F.6$\"\"#F0F*&%\"vG6
+#F0F*F**&&F.6$F3F*F*&%#ctGF6F*!\"\"*(F-F*&F.6$F3F3F*&F56#F3F*F**(F8F*&
+F.6$F0F3F*F@F*F<*(F8F*&F.6$F0F0F*F4F*F<*&F-F*&F;FAF*F*/&F(F9,.*(&F.F)F
+*FCF*F@F*F**(FNF*FFF*F4F*F**&FNF*F:F*F**(F-F*&F.6$F*F3F*F@F*F<*(F-F*&F
+.6$F*F0F*F4F*F<*&F-F*&F;6#F*F*F</&F(F/,.*(FNF*F>F*F@F*F<*(FNF*F1F*F4F*
+F<*&FNF*FIF*F<*(F8F*FRF*F@F*F**(F8F*FUF*F4F*F**&F8F*FXF*F*/&F(6$\"\"%F
+*FN/&F(6$\"\"&F*F8/&F(6$\"\"'F*F-/&F(FS,.*&F>F*F:F*F<*&FCF*FIF*F**(FCF
+*F1F*F4F*F**(F>F*F-F*&F5FYF*F<*(F>F*FFF*F4F*F<*(FCF*F8F*F`pF*F*/&F(F?,
+.*(FRF*F-F*F`pF*F**(FRF*FFF*F4F*F**&FRF*F:F*F**(FCF*FNF*F`pF*F<*(FCF*F
+UF*F4F*F<*&FCF*FXF*F</&F(FD,.*(FRF*F8F*F`pF*F<*(FRF*F1F*F4F*F<*&FRF*FI
+F*F<*(F>F*FNF*F`pF*F**(F>F*FUF*F4F*F**&F>F*FXF*F*/&F(6$F`oF3FR/&F(6$Fd
+oF3F>/&F(6$FhoF3FC/&F(FV,.*&FFF*FIF*F**(F1F*FCF*F@F*F<*(FFF*F8F*F`pF*F
+**(FFF*F>F*F@F*F**(F1F*F-F*F`pF*F<*&F1F*F:F*F</&F(F2,.*(FUF*F-F*F`pF*F
+**(FUF*FCF*F@F*F**&FUF*F:F*F**(FFF*FNF*F`pF*F<*(FFF*FRF*F@F*F<*&FFF*FX
+F*F</&F(FG,.*(FUF*F8F*F`pF*F<*(FUF*F>F*F@F*F<*&FUF*FIF*F<*(F1F*FNF*F`p
+F*F**(F1F*FRF*F@F*F**&F1F*FXF*F*/&F(6$F`oF0FU/&F(6$FdoF0F1/&F(6$FhoF0F
+F" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 68 "Rseq := seq(seq(seq(RR
+[a,b,k] = R[a,b,k], k=1..3), b=a..6), a=1..6);" }}{PARA 12 "" 1 "" 
+{XPPMATH 20 "6#>%%RseqG6[o/&%#RRG6%\"\"\"F*F*,2*&&%#crG6$\"\"#F*F*&%#c
+tG6#F0F*!\"\"*&)F-F0F*&%\"vG6#F*F*F4*&&F.6$\"\"$F*F*&F26#F=F*F4*&)F;F0
+F*F7F*F4*(F;F*&F.6$F=F=F*&F8F?F*F4*(F-F*&F.6$F0F0F*&F8F3F*F4*(F-F*&F.6
+$F0F=F*FEF*F4*(F;F*&F.6$F=F0F*FIF*F4/&F(6%F*F*F0,2*&)FGF0F*FIF*F4*(FNF
+*F;F*F7F*F4*&FNF*F>F*F4*&)FNF0F*FIF*F4*(FGF*F-F*F7F*F4*(FNF*FCF*FEF*F4
+*&FGF*F1F*F4*(FGF*FKF*FEF*F4/&F(6%F*F*F=,2*(FCF*FNF*FIF*F4*(FKF*FGF*FI
+F*F4*(FCF*F;F*F7F*F4*(FKF*F-F*F7F*F4*&FKF*F1F*F4*&)FCF0F*FEF*F4*&FCF*F
+>F*F4*&)FKF0F*FEF*F4/&F(6%F*F0F*,0*&#F*F0F**(&F.6$F*F*F*FKF*FEF*F*F**&
+F[pF**&F-F*&F2F9F*F*F**&F[pF**(F-F*&F.6$F*F=F*FEF*F*F**&F[pF**&F]pF*F1
+F*F*F**&F[pF**(F-F*&F.6$F*F0F*FIF*F*F**(F]pF*F-F*F7F*F**&F[pF**(F]pF*F
+GF*FIF*F*F*/&F(6%F*F0F0,0*&F[pF**(FjpF*F-F*F7F*F*F**(FGF*FjpF*FIF*F**&
+F[pF**&FjpF*F1F*F*F**&F[pF**(FGF*FdpF*FEF*F*F**&F[pF**(FjpF*FKF*FEF*F*
+F**&F[pF**(FGF*F]pF*F7F*F*F**&F[pF**&FGF*FapF*F*F*/&F(6%F*F0F=,0*&F[pF
+**(FdpF*F-F*F7F*F*F**&F[pF**(FKF*FjpF*FIF*F*F**&F[pF**&FKF*FapF*F*F**&
+F[pF**&FdpF*F1F*F*F**(FKF*FdpF*FEF*F**&F[pF**(FKF*F]pF*F7F*F*F**&F[pF*
+*(FdpF*FGF*FIF*F*F*/&F(6%F*F=F*,0*&F[pF**&F]pF*F>F*F*F**&F[pF**(F;F*Fd
+pF*FEF*F*F**(F]pF*F;F*F7F*F**&F[pF**(F;F*FjpF*FIF*F*F**&F[pF**(F]pF*FN
+F*FIF*F*F**&F[pF**(F]pF*FCF*FEF*F*F**&F[pF**&F;F*FapF*F*F*/&F(6%F*F=F0
+,0*&F[pF**(FjpF*F;F*F7F*F*F**&F[pF**(FjpF*FCF*FEF*F*F**&F[pF**&FjpF*F>
+F*F*F**&F[pF**&FNF*FapF*F*F**&F[pF**(FNF*FdpF*FEF*F*F**(FjpF*FNF*FIF*F
+**&F[pF**(FNF*F]pF*F7F*F*F*/&F(6%F*F=F=,0*&F[pF**&FCF*FapF*F*F**(FdpF*
+FCF*FEF*F**&F[pF**(FCF*FjpF*FIF*F*F**&F[pF**(FdpF*F;F*F7F*F*F**&F[pF**
+(FdpF*FNF*FIF*F*F**&F[pF**(FCF*F]pF*F7F*F*F**&F[pF**&FdpF*F>F*F*F*/&F(
+6%F*\"\"%F*\"\"!/&F(6%F*FgvF0Fhv/&F(6%F*FgvF=Fhv/&F(6%F*\"\"&F*Fhv/&F(
+6%F*FbwF0Fhv/&F(6%F*FbwF=Fhv/&F(6%F*\"\"'F*Fhv/&F(6%F*F\\xF0Fhv/&F(6%F
+*F\\xF=Fhv/&F(6%F0F0F*,2FBF4*(F]pF*FjpF*FIF*F4*&F]pF*FapF*F4*(F]pF*Fdp
+F*FEF*F4F@F4F:F4FMF4*&)F]pF0F*F7F*F4/&F(6%F0F0F0,2*&)FjpF0F*FIF*F4*(Fj
+pF*F]pF*F7F*F4FVF4*(FjpF*FdpF*FEF*F4FenF4*&FjpF*FapF*F4FWF4FXF4/&F(6%F
+0F0F=,2*(FdpF*FjpF*FIF*F4*(FdpF*F]pF*F7F*F4F^oF4*&)FdpF0F*FEF*F4FaoF4F
+coF4*&FdpF*FapF*F4F\\oF4/&F(6%F0F=F*,0*(F-F*F;F*F7F*F**&F[pF**(F-F*FNF
+*FIF*F*F**&F[pF**(F-F*FCF*FEF*F*F**&F[pF**&F-F*F>F*F*F**&F[pF**(F;F*FG
+F*FIF*F*F**&F[pF**(F;F*FKF*FEF*F*F**&F[pF**&F;F*F1F*F*F*/&F(6%F0F=F0,0
+*&F[pF**(FGF*F;F*F7F*F*F**(FGF*FNF*FIF*F**&F[pF**(FGF*FCF*FEF*F*F**&F[
+pF**&FGF*F>F*F*F**&F[pF**(FNF*F-F*F7F*F*F**&F[pF**(FNF*FKF*FEF*F*F**&F
+[pF**&FNF*F1F*F*F*/&F(6%F0F=F=,0*&F[pF**(FKF*F;F*F7F*F*F**&F[pF**(FKF*
+FNF*FIF*F*F**(FKF*FCF*FEF*F**&F[pF**&FKF*F>F*F*F**&F[pF**(FCF*F-F*F7F*
+F*F**&F[pF**(FCF*FGF*FIF*F*F**&F[pF**&FCF*F1F*F*F*/&F(6%F0FgvF*Fhv/&F(
+6%F0FgvF0Fhv/&F(6%F0FgvF=Fhv/&F(6%F0FbwF*Fhv/&F(6%F0FbwF0Fhv/&F(6%F0Fb
+wF=Fhv/&F(6%F0F\\xF*Fhv/&F(6%F0F\\xF0Fhv/&F(6%F0F\\xF=Fhv/&F(6%F=F=F*,
+2FJF4FhxF4FgxF4F5F4FixF4FFF4FjxF4F,F4/&F(6%F=F=F0,2FZF4FgnF4F`yF4FTF4F
+byF4FcyF4FfnF4FdyF4/&F(6%F=F=F=,2F`oF4FiyF4FdoF4FjyF4F_oF4F]oF4F[zF4F]
+zF4/&F(6%F=FgvF*Fhv/&F(6%F=FgvF0Fhv/&F(6%F=FgvF=Fhv/&F(6%F=FbwF*Fhv/&F
+(6%F=FbwF0Fhv/&F(6%F=FbwF=Fhv/&F(6%F=F\\xF*Fhv/&F(6%F=F\\xF0Fhv/&F(6%F
+=F\\xF=Fhv/&F(6%FgvFgvF*Fhv/&F(6%FgvFgvF0Fhv/&F(6%FgvFgvF=Fhv/&F(6%Fgv
+FbwF*Fhv/&F(6%FgvFbwF0Fhv/&F(6%FgvFbwF=Fhv/&F(6%FgvF\\xF*Fhv/&F(6%FgvF
+\\xF0Fhv/&F(6%FgvF\\xF=Fhv/&F(6%FbwFbwF*Fhv/&F(6%FbwFbwF0Fhv/&F(6%FbwF
+bwF=Fhv/&F(6%FbwF\\xF*Fhv/&F(6%FbwF\\xF0Fhv/&F(6%FbwF\\xF=Fhv/&F(6%F\\
+xF\\xF*Fhv/&F(6%F\\xF\\xF0Fhv/&F(6%F\\xF\\xF=Fhv" }}}{EXCHG {PARA 0 ">
+ " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 32 
+"codegen[C](evalf(R), optimized);" }}{PARA 6 "" 1 "" {TEXT -1 30 "    \+
+  t2 = 1.0*cr[1][0]*ct[1];" }}{PARA 6 "" 1 "" {TEXT -1 29 "      t3 = \+
+cr[1][0]*cr[1][0];" }}{PARA 6 "" 1 "" {TEXT -1 23 "      t5 = 1.0*v[0]
+*t3;" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t7 = 1.0*cr[2][0]*ct[2];" }
+}{PARA 6 "" 1 "" {TEXT -1 29 "      t8 = cr[2][0]*cr[2][0];" }}{PARA 
+6 "" 1 "" {TEXT -1 24 "      t10 = 1.0*v[0]*t8;" }}{PARA 6 "" 1 "" 
+{TEXT -1 30 "      t11 = cr[2][2]*cr[2][0];" }}{PARA 6 "" 1 "" {TEXT 
+-1 25 "      t13 = 1.0*v[2]*t11;" }}{PARA 6 "" 1 "" {TEXT -1 30 "     \+
+ t14 = cr[1][1]*cr[1][0];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t16 = \+
+1.0*v[1]*t14;" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t17 = cr[1][2]*cr[
+1][0];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t19 = 1.0*v[2]*t17;" }}
+{PARA 6 "" 1 "" {TEXT -1 30 "      t20 = cr[2][1]*cr[2][0];" }}{PARA 
+6 "" 1 "" {TEXT -1 25 "      t22 = 1.0*v[1]*t20;" }}{PARA 6 "" 1 "" 
+{TEXT -1 30 "      t24 = cr[1][1]*cr[1][1];" }}{PARA 6 "" 1 "" {TEXT 
+-1 25 "      t26 = 1.0*v[1]*t24;" }}{PARA 6 "" 1 "" {TEXT -1 25 "     \+
+ t28 = 1.0*v[0]*t20;" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t30 = 1.0*c
+r[2][1]*ct[2];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t31 = cr[2][1]*cr
+[2][1];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t33 = 1.0*v[1]*t31;" }}
+{PARA 6 "" 1 "" {TEXT -1 25 "      t35 = 1.0*v[0]*t14;" }}{PARA 6 "" 
+1 "" {TEXT -1 30 "      t36 = cr[2][2]*cr[2][1];" }}{PARA 6 "" 1 "" 
+{TEXT -1 25 "      t38 = 1.0*v[2]*t36;" }}{PARA 6 "" 1 "" {TEXT -1 31 
+"      t40 = 1.0*cr[1][1]*ct[1];" }}{PARA 6 "" 1 "" {TEXT -1 30 "     \+
+ t41 = cr[1][2]*cr[1][1];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t43 = \+
+1.0*v[2]*t41;" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t46 = 1.0*v[1]*t36
+;" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t48 = 1.0*v[1]*t41;" }}{PARA 
+6 "" 1 "" {TEXT -1 25 "      t50 = 1.0*v[0]*t11;" }}{PARA 6 "" 1 "" 
+{TEXT -1 25 "      t52 = 1.0*v[0]*t17;" }}{PARA 6 "" 1 "" {TEXT -1 31 
+"      t54 = 1.0*cr[1][2]*ct[1];" }}{PARA 6 "" 1 "" {TEXT -1 30 "     \+
+ t55 = cr[2][2]*cr[2][2];" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t57 = \+
+1.0*v[2]*t55;" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t59 = 1.0*cr[2][2]
+*ct[2];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t60 = cr[1][2]*cr[1][2];
+" }}{PARA 6 "" 1 "" {TEXT -1 25 "      t62 = 1.0*v[2]*t60;" }}{PARA 6 
+"" 1 "" {TEXT -1 30 "      t64 = cr[1][2]*cr[0][0];" }}{PARA 6 "" 1 "
+" {TEXT -1 30 "      t69 = cr[0][2]*cr[1][0];" }}{PARA 6 "" 1 "" 
+{TEXT -1 30 "      t74 = cr[0][1]*cr[1][0];" }}{PARA 6 "" 1 "" {TEXT 
+-1 30 "      t79 = cr[1][1]*cr[0][0];" }}{PARA 6 "" 1 "" {TEXT -1 30 "
+      t89 = cr[0][2]*cr[1][1];" }}{PARA 6 "" 1 "" {TEXT -1 30 "      t
+92 = cr[1][2]*cr[0][1];" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t117 = c
+r[0][2]*cr[2][0];" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t122 = cr[0][1
+]*cr[2][0];" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t125 = cr[2][1]*cr[0
+][0];" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t128 = cr[2][2]*cr[0][0];
+" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t136 = cr[2][2]*cr[0][1];" }}
+{PARA 6 "" 1 "" {TEXT -1 31 "      t143 = cr[0][2]*cr[2][1];" }}{PARA 
+6 "" 1 "" {TEXT -1 31 "      t166 = cr[0][1]*cr[0][0];" }}{PARA 6 "" 
+1 "" {TEXT -1 27 "      t168 = 1.0*v[1]*t166;" }}{PARA 6 "" 1 "" 
+{TEXT -1 32 "      t170 = 1.0*cr[0][0]*ct[0];" }}{PARA 6 "" 1 "" 
+{TEXT -1 31 "      t171 = cr[0][2]*cr[0][0];" }}{PARA 6 "" 1 "" {TEXT 
+-1 27 "      t173 = 1.0*v[2]*t171;" }}{PARA 6 "" 1 "" {TEXT -1 31 "   \+
+   t174 = cr[0][0]*cr[0][0];" }}{PARA 6 "" 1 "" {TEXT -1 27 "      t17
+6 = 1.0*v[0]*t174;" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t178 = cr[0][
+1]*cr[0][1];" }}{PARA 6 "" 1 "" {TEXT -1 27 "      t180 = 1.0*v[1]*t17
+8;" }}{PARA 6 "" 1 "" {TEXT -1 27 "      t182 = 1.0*v[0]*t166;" }}
+{PARA 6 "" 1 "" {TEXT -1 31 "      t183 = cr[0][2]*cr[0][1];" }}{PARA 
+6 "" 1 "" {TEXT -1 27 "      t185 = 1.0*v[2]*t183;" }}{PARA 6 "" 1 "" 
+{TEXT -1 32 "      t187 = 1.0*cr[0][1]*ct[0];" }}{PARA 6 "" 1 "" 
+{TEXT -1 27 "      t190 = 1.0*v[1]*t183;" }}{PARA 6 "" 1 "" {TEXT -1 
+27 "      t192 = 1.0*v[0]*t171;" }}{PARA 6 "" 1 "" {TEXT -1 31 "      \+
+t193 = cr[0][2]*cr[0][2];" }}{PARA 6 "" 1 "" {TEXT -1 27 "      t195 =
+ 1.0*v[2]*t193;" }}{PARA 6 "" 1 "" {TEXT -1 32 "      t197 = 1.0*cr[0]
+[2]*ct[0];" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t201 = cr[2][1]*cr[1]
+[0];" }}{PARA 6 "" 1 "" {TEXT -1 31 "      t204 = cr[2][2]*cr[1][0];" 
+}}{PARA 6 "" 1 "" {TEXT -1 31 "      t209 = cr[1][1]*cr[2][0];" }}
+{PARA 6 "" 1 "" {TEXT -1 31 "      t212 = cr[1][2]*cr[2][0];" }}{PARA 
+6 "" 1 "" {TEXT -1 31 "      t222 = cr[2][2]*cr[1][1];" }}{PARA 6 "" 
+1 "" {TEXT -1 31 "      t229 = cr[1][2]*cr[2][1];" }}{PARA 6 "" 1 "" 
+{TEXT -1 55 "      unknown[0][0][0] = -t2-t5-t7-t10-t13-t16-t19-t22;" 
+}}{PARA 6 "" 1 "" {TEXT -1 58 "      unknown[0][0][1] = -t26-t28-t30-t
+33-t35-t38-t40-t43;" }}{PARA 6 "" 1 "" {TEXT -1 58 "      unknown[0][0
+][2] = -t46-t48-t50-t52-t54-t57-t59-t62;" }}{PARA 6 "" 1 "" {TEXT -1 
+79 "      unknown[0][1][0] = 0.5*v[2]*t64+0.5*cr[1][0]*ct[0]+0.5*v[2]*
+t69+0.5*cr[0]" }}{PARA 6 "" 1 "" {TEXT -1 59 "[0]*ct[1]+0.5*v[1]*t74+c
+r[0][0]*cr[1][0]*v[0]+0.5*v[1]*t79;" }}{PARA 6 "" 1 "" {TEXT -1 79 "  \+
+    unknown[0][1][1] = 0.5*v[0]*t74+cr[1][1]*cr[0][1]*v[1]+0.5*cr[0][1
+]*ct[1]" }}{PARA 6 "" 1 "" {TEXT -1 59 "+0.5*v[2]*t89+0.5*v[2]*t92+0.5
+*v[0]*t79+0.5*cr[1][1]*ct[0];" }}{PARA 6 "" 1 "" {TEXT -1 79 "      un
+known[0][1][2] = 0.5*v[0]*t69+0.5*v[1]*t92+0.5*cr[1][2]*ct[0]+0.5*cr[0
+]" }}{PARA 6 "" 1 "" {TEXT -1 59 "[2]*ct[1]+cr[1][2]*cr[0][2]*v[2]+0.5
+*v[0]*t64+0.5*v[1]*t89;" }}{PARA 6 "" 1 "" {TEXT -1 77 "      unknown[
+0][2][0] = 0.5*cr[0][0]*ct[2]+0.5*v[2]*t117+cr[0][0]*cr[2][0]*v" }}
+{PARA 6 "" 1 "" {TEXT -1 65 "[0]+0.5*v[1]*t122+0.5*v[1]*t125+0.5*v[2]*
+t128+0.5*cr[2][0]*ct[0];" }}{PARA 6 "" 1 "" {TEXT -1 78 "      unknown
+[0][2][1] = 0.5*v[0]*t122+0.5*v[2]*t136+0.5*cr[0][1]*ct[2]+0.5*cr" }}
+{PARA 6 "" 1 "" {TEXT -1 64 "[2][1]*ct[0]+0.5*v[2]*t143+cr[0][1]*cr[2]
+[1]*v[1]+0.5*v[0]*t125;" }}{PARA 6 "" 1 "" {TEXT -1 76 "      unknown[
+0][2][2] = 0.5*cr[2][2]*ct[0]+cr[0][2]*cr[2][2]*v[2]+0.5*v[1]*" }}
+{PARA 6 "" 1 "" {TEXT -1 66 "t136+0.5*v[0]*t117+0.5*v[1]*t143+0.5*v[0]
+*t128+0.5*cr[0][2]*ct[2];" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknow
+n[0][3][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[0][3][
+1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[0][3][2] = 0.0
+;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[0][4][0] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[0][4][1] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[0][4][2] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[0][5][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[0][5][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[0][5][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[1][0][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[1][
+0][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[1][0][2] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 61 "      unknown[1][1][0] = -t13-t16
+8-t170-t173-t10-t7-t22-t176;" }}{PARA 6 "" 1 "" {TEXT -1 62 "      unk
+nown[1][1][1] = -t180-t182-t28-t185-t38-t187-t30-t33;" }}{PARA 6 "" 1 
+"" {TEXT -1 62 "      unknown[1][1][2] = -t190-t192-t50-t195-t57-t59-t
+197-t46;" }}{PARA 6 "" 1 "" {TEXT -1 79 "      unknown[1][2][0] = cr[1
+][0]*cr[2][0]*v[0]+0.5*v[1]*t201+0.5*v[2]*t204+0.5" }}{PARA 6 "" 1 "" 
+{TEXT -1 63 "*cr[1][0]*ct[2]+0.5*v[1]*t209+0.5*v[2]*t212+0.5*cr[2][0]*
+ct[1];" }}{PARA 6 "" 1 "" {TEXT -1 79 "      unknown[1][2][1] = 0.5*v[
+0]*t209+cr[1][1]*cr[2][1]*v[1]+0.5*v[2]*t222+0.5" }}{PARA 6 "" 1 "" 
+{TEXT -1 63 "*cr[1][1]*ct[2]+0.5*v[0]*t201+0.5*v[2]*t229+0.5*cr[2][1]*
+ct[1];" }}{PARA 6 "" 1 "" {TEXT -1 79 "      unknown[1][2][2] = 0.5*v[
+0]*t212+0.5*v[1]*t229+cr[2][2]*cr[1][2]*v[2]+0.5" }}{PARA 6 "" 1 "" 
+{TEXT -1 63 "*cr[1][2]*ct[2]+0.5*v[0]*t204+0.5*v[1]*t222+0.5*cr[2][2]*
+ct[1];" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[1][3][0] = 0.0;" 
+}}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[1][3][1] = 0.0;" }}{PARA 
+6 "" 1 "" {TEXT -1 29 "      unknown[1][3][2] = 0.0;" }}{PARA 6 "" 1 "
+" {TEXT -1 29 "      unknown[1][4][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[1][4][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[1][4][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[1][5][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[1][
+5][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[1][5][2] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[2][0][0] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[2][0][1] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[2][0][2] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[2][1][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[2][1][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[2][1][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 60 "      unk
+nown[2][2][0] = -t19-t170-t168-t5-t173-t16-t176-t2;" }}{PARA 6 "" 1 "
+" {TEXT -1 62 "      unknown[2][2][1] = -t35-t43-t180-t26-t182-t185-t4
+0-t187;" }}{PARA 6 "" 1 "" {TEXT -1 62 "      unknown[2][2][2] = -t54-
+t190-t62-t192-t52-t48-t195-t197;" }}{PARA 6 "" 1 "" {TEXT -1 29 "     \+
+ unknown[2][3][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown
+[2][3][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[2][3][2
+] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[2][4][0] = 0.0;
+" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[2][4][1] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[2][4][2] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[2][5][0] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[2][5][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[2][5][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[3][0][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[3][0][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][
+0][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][1][0] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][1][1] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][1][2] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[3][2][0] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[3][2][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[3][2][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[3][3][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[3][3][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][
+3][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][4][0] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][4][1] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[3][4][2] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[3][5][0] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[3][5][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[3][5][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[4][0][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[4][0][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][
+0][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][1][0] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][1][1] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][1][2] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[4][2][0] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[4][2][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[4][2][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[4][3][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[4][3][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][
+3][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][4][0] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][4][1] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[4][4][2] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[4][5][0] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[4][5][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[4][5][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[5][0][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[5][0][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][
+0][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][1][0] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][1][1] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][1][2] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[5][2][0] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[5][2][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[5][2][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 " \+
+     unknown[5][3][0] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unk
+nown[5][3][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][
+3][2] = 0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][4][0] = \+
+0.0;" }}{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][4][1] = 0.0;" }}
+{PARA 6 "" 1 "" {TEXT -1 29 "      unknown[5][4][2] = 0.0;" }}{PARA 6 
+"" 1 "" {TEXT -1 29 "      unknown[5][5][0] = 0.0;" }}{PARA 6 "" 1 "" 
+{TEXT -1 29 "      unknown[5][5][1] = 0.0;" }}{PARA 6 "" 1 "" {TEXT 
+-1 29 "      unknown[5][5][2] = 0.0;" }}}{EXCHG {PARA 0 "> " 0 "" 
+{MPLTEXT 1 0 0 "" }}}}{MARK "148" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 
+}{PAGENUMBERS 0 1 2 33 1 1 }{RTABLE_HANDLES 150570180 150569388 
+150998016 150993016 414977228 414550912 }{RTABLE 
 M7R0
-I6RTABLE_SAVE/544879900X*%)anythingG6"6"[gl!#%!!!"%"%,**&&%"AG6#""%"""&%"BG6#F-
+I6RTABLE_SAVE/150570180X*%)anythingG6"6"[gl!#%!!!"%"%,**&&%"AG6#""%"""&%"BG6#F-
 F-F-*&&F*F0F-&F/F+F-F-*&&F*6#""#F-&F/6#""$F-F-*&&F*F9F-&F/F6F-!"",**&F)F-F=F-F-
 *&F5F-F3F-F-*&F<F-F.F-F-*&F2F-F8F-F>,**&F)F-F8F-F-*&F<F-F3F-F-*&F2F-F=F-F-*&F5F
 -F.F-F>,**&F)F-F3F-F-*&F2F-F.F-F>*&F5F-F=F-F>*&F<F-F8F-F>F&
 }
 {RTABLE 
 M7R0
-I6RTABLE_SAVE/412075076X*%)anythingG6"6"[gl!#%!!!"$"$,$*&&%"VG6#"""F,,,*$&%"QGF
+I6RTABLE_SAVE/150569388X*%)anythingG6"6"[gl!#%!!!"$"$,$*&&%"VG6#"""F,,,*$&%"QGF
 +""#F,*$&F06#""%F1F,*$&F06#""$F1F,*$&F06#F1F1F,!""F,F,F=,$*&&F*F<F,F-F,F=,$*&&F
 *F8F,F-F,F=F&
 }
 {RTABLE 
 M7R0
-I6RTABLE_SAVE/412704812X,%)anythingG6"6"[gl!"%!!!#3"$"'""!,$&%"vG6#""$!""&F*6#"
-"#F)F',$&F*6#"""F-,$F.F-F2F'F4F'F'F'F4F'F'F'F4F&
+I6RTABLE_SAVE/150998016X,%)anythingG6"6"[gl!"%!!!#*"$"$&%#crG6$"""F*&F(6$""#F*&
+F(6$""$F*&F(6$F*F-&F(6$F-F-&F(6$F0F-&F(6$F*F0&F(6$F-F0&F(6$F0F0F&
+}
+{RTABLE 
+M7R0
+I6RTABLE_SAVE/150993016X*%)anythingG6"6"[gl!#%!!!"$"$&%#ctG6#"""&F(6#""#&F(6#""
+$F&
+}
+{RTABLE 
+M7R0
+I6RTABLE_SAVE/414977228X.%)anythingG6"6"[gl!!%!!!$gq"'"'"$,2*&&%#crG6$""#"""F-&
+%#ctG6#F,F-!""*&F)F,&%"vG6#F-F-F1*&&F*6$""$F-F-&F/6#F9F-F1*&F7F,F3F-F1*(F7F-&F*
+6$F9F9F-&F4F;F-F1*(F)F-&F*6$F,F,F-&F4F0F-F1*(F)F-&F*6$F,F9F-F@F-F1*(F7F-&F*6$F9
+F,F-FDF-F1""!FKFKFKFK,0*(&F*6$F-F-F-FFF-F@F-#F-F,*&F)F-&F/F5F-FP*(F)F-&F*6$F-F9
+F-F@F-FP*&FNF-F.F-FP*(F)F-&F*6$F-F,F-FDF-FP*(FNF-F)F-F3F-F-*(FNF-FBF-FDF-FP,2F=
+F1*(FNF-FXF-FDF-F1*&FNF-FRF-F1*(FNF-FTF-F@F-F1F<F1F6F1FHF1*&FNF,F3F-F1FKFKFKFK,
+0*&FNF-F:F-FP*(F7F-FTF-F@F-FP*(FNF-F7F-F3F-F-*(F7F-FXF-FDF-FP*(FNF-FIF-FDF-FP*(
+FNF-F>F-F@F-FP*&F7F-FRF-FP,0*(F)F-F7F-F3F-F-*(F)F-FIF-FDF-FP*(F)F-F>F-F@F-FP*&F
+)F-F:F-FP*(F7F-FBF-FDF-FP*(F7F-FFF-F@F-FP*&F7F-F.F-FP,2FEF1FhnF1FgnF1F2F1FinF1F
+AF1FjnF1F(F1FKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFK,2*&FBF,FDF-F1*(FIF-F7F-F
+3F-F1*&FIF-F:F-F1*&FIF,FDF-F1*(FBF-F)F-F3F-F1*(FIF-F>F-F@F-F1*&FBF-F.F-F1*(FBF-
+FFF-F@F-F1FKFKFKFKFK,0*(FXF-F)F-F3F-FP*(FBF-FXF-FDF-F-*&FXF-F.F-FP*(FBF-FTF-F@F
+-FP*(FXF-FFF-F@F-FP*(FBF-FNF-F3F-FP*&FBF-FRF-FP,2*&FXF,FDF-F1*(FXF-FNF-F3F-F1F^
+pF1*(FXF-FTF-F@F-F1FbpF1*&FXF-FRF-F1F_pF1F`pF1FKFKFKFK,0*(FXF-F7F-F3F-FP*(FXF-F
+>F-F@F-FP*&FXF-F:F-FP*&FIF-FRF-FP*(FIF-FTF-F@F-FP*(FXF-FIF-FDF-F-*(FIF-FNF-F3F-
+FP,0*(FBF-F7F-F3F-FP*(FBF-FIF-FDF-F-*(FBF-F>F-F@F-FP*&FBF-F:F-FP*(FIF-F)F-F3F-F
+P*(FIF-FFF-F@F-FP*&FIF-F.F-FP,2FapF1FdpF1F^qF1F]pF1F_qF1F`qF1FcpF1FaqF1FKFKFKFK
+FKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFK,2*(F>F-FIF-FDF-F1*(FFF-FBF-FDF-F1*(F>F-F7F-F
+3F-F1*(FFF-F)F-F3F-F1*&FFF-F.F-F1*&F>F,F@F-F1*&F>F-F:F-F1*&FFF,F@F-F1FKFKFKFKFK
+,0*(FTF-F)F-F3F-FP*(FFF-FXF-FDF-FP*&FFF-FRF-FP*&FTF-F.F-FP*(FFF-FTF-F@F-F-*(FFF
+-FNF-F3F-FP*(FTF-FBF-FDF-FP,2*(FTF-FXF-FDF-F1*(FTF-FNF-F3F-F1FfrF1*&FTF,F@F-F1F
+irF1FjrF1*&FTF-FRF-F1FdrF1FKFKFKFK,0*&F>F-FRF-FP*(FTF-F>F-F@F-F-*(F>F-FXF-FDF-F
+P*(FTF-F7F-F3F-FP*(FTF-FIF-FDF-FP*(F>F-FNF-F3F-FP*&FTF-F:F-FP,0*(FFF-F7F-F3F-FP
+*(FFF-FIF-FDF-FP*(FFF-F>F-F@F-F-*&FFF-F:F-FP*(F>F-F)F-F3F-FP*(F>F-FBF-FDF-FP*&F
+>F-F.F-FP,2FhrF1FesF1F[sF1FfsF1FgrF1FerF1FgsF1FhsF1FKFKFKFKFKFKFKFKFKFKFKFKFKFK
+FKFKFKFKFKFKFKF&
+}
+{RTABLE 
+M7R0
+I6RTABLE_SAVE/414550912X,%)anythingG6"6"[gl!"%!!!#E"'"',2*&&%#crG6$""#"""F-&%#c
+tG6#F,F-!""*&F)F,&%"vG6#F-F-F1*&&F*6$""$F-F-&F/6#F9F-F1*&F7F,F3F-F1*(F7F-&F*6$F
+9F9F-&F4F;F-F1*(F)F-&F*6$F,F,F-&F4F0F-F1*(F)F-&F*6$F,F9F-F@F-F1*(F7F-&F*6$F9F,F
+-FDF-F1""!FKFKFKFK,0*(&F*6$F-F-F-FFF-F@F-#F-F,*&F)F-&F/F5F-FP*(F)F-&F*6$F-F9F-F
+@F-FP*&FNF-F.F-FP*(F)F-&F*6$F-F,F-FDF-FP*(FNF-F)F-F3F-F-*(FNF-FBF-FDF-FP,2F=F1*
+(FNF-FXF-FDF-F1*&FNF-FRF-F1*(FNF-FTF-F@F-F1F<F1F6F1FHF1*&FNF,F3F-F1FKFKFKFK,0*&
+FNF-F:F-FP*(F7F-FTF-F@F-FP*(FNF-F7F-F3F-F-*(F7F-FXF-FDF-FP*(FNF-FIF-FDF-FP*(FNF
+-F>F-F@F-FP*&F7F-FRF-FP,0*(F)F-F7F-F3F-F-*(F)F-FIF-FDF-FP*(F)F-F>F-F@F-FP*&F)F-
+F:F-FP*(F7F-FBF-FDF-FP*(F7F-FFF-F@F-FP*&F7F-F.F-FP,2FEF1FhnF1FgnF1F2F1FinF1FAF1
+FjnF1F(F1FKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKFKF&
 }
 
