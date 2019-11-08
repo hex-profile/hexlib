@@ -61,13 +61,17 @@ Type nativeRecip(const Type& value);
 
     template <>
     sysinline float32 nativeRecip(const float32& value)
-        {return __fdividef(1, value);} // 6 instructions on Kepler
+        {return __fdividef(1, value);} // 6 instructions on Kepler, do not change to __frcp_rn, it is much slower!
 
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
 
     template <>
     sysinline float32 nativeRecip(const float32& value)
-        {return 1.f / value;}
+        {return 1 / value;}
+
+    template <>
+    sysinline float64 nativeRecip(const float64& value)
+        {return 1 / value;}
 
 #else
 
@@ -153,25 +157,37 @@ sysinline Type fastSqrt(const Type& value);
     template <>
     sysinline float32 recipSqrt(const float32& value)
     {
-        return rsqrtf(value);
+        return rsqrtf(value); // Do not change to __frsqrt_rn, it is much slower!
     }
 
     template <>
-    sysinline float32 fastSqrt(const float32& x)
+    sysinline float32 fastSqrt(const float32& value)
     {
-        float32 result = x * rsqrtf(x);
-        if (x == 0) result = 0;
+        // Do not change to "sqrtf", it is much slower!
+        float32 result = value * rsqrtf(value);
+        if (value == 0) result = 0;
         return result;
     }
 
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
 
-    sysinline float32 recipSqrt(float32 x)
-        {return 1.f / sqrtf(x);}
+    template <>
+    sysinline float32 recipSqrt(const float32& value)
+        {return 1 / sqrtf(value);}
 
     template <>
-    sysinline float32 fastSqrt(const float32& x)
-        {return sqrtf(x);}
+    sysinline float32 fastSqrt(const float32& value)
+        {return sqrtf(value);}
+
+    ////
+
+    template <>
+    sysinline float64 recipSqrt(const float64& value)
+        {return 1 / sqrt(value);}
+
+    template <>
+    sysinline float64 fastSqrt(const float64& value)
+        {return sqrt(value);}
 
 #else
 
