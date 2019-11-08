@@ -11,16 +11,16 @@
 
 #if __CUDA_ARCH__
 
-__global__ void testKernelQuat(Point3D<float32>* vec, Point4D<float32> R)
+__global__ void testKernel1(float32* value)
 {
-    *vec = ~R % (*vec);
+    *value = fastSqrt(*value);
 }
 
 ////
 
-__global__ void testKernelMat(Point3D<float32>* vec, Mat3D<float32> R)
+__global__ void testKernel2(float32* value)
 {
-    *vec = ~R % (*vec);
+    *value = sqrtf(*value);
 }
 
 ////
