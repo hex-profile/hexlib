@@ -109,7 +109,7 @@ GPUTOOL_2D_BEG
     const float32 upsampleSigma = 0.6f;
     const float32 divUpsampleSigmaSq = 1.f / (upsampleSigma * upsampleSigma);
 
-    const float32 filterCoverageRadius = 2.f;
+    // const float32 filterCoverageRadius = 2.f;
     const Space taps = 4; // ceil(2*filterCoverageRadius)
 
     ////
