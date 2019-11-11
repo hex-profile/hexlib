@@ -288,13 +288,13 @@ struct TypeSelect
 template <typename T1, typename T2>
 struct TypeEqual
 {
-    static const bool val = false;
+    static constexpr bool val = false;
 };
 
 template <typename T>
 struct TypeEqual<T, T>
 {
-    static const bool val = true;
+    static constexpr bool val = true;
 };
 
 //----------------------------------------------------------------

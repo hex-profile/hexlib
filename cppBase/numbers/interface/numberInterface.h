@@ -106,7 +106,7 @@ struct TypeIsSignedImpl;
 //----------------------------------------------------------------
 
 #define TYPE_IS_SIGNED_IMPL(Type, isSigned) \
-    template <> struct TypeIsSignedImpl<Type> {static const bool val = (isSigned);};
+    template <> struct TypeIsSignedImpl<Type> {static constexpr bool val = (isSigned);};
 
 //----------------------------------------------------------------
 
@@ -161,32 +161,15 @@ struct TypeMakeUnsignedImpl;
 //
 // Determines wheter the numeric type has built-in error state, like IEEE float.
 //
-//================================================================
-
-template <typename Type>
-struct TypeIsControlledImpl;
-
-//----------------------------------------------------------------
-
-#define TYPE_IS_CONTROLLED_IMPL(Type, isControlled) \
-    template <> struct TypeIsControlledImpl<Type> {static const bool val = (isControlled);};
-
-//----------------------------------------------------------------
-
-#define TYPE_IS_CONTROLLED(Type) \
-    TypeIsControlledImpl<VECTOR_BASE(Type)>::val
-
-#define TYPE_IS_CONTROLLED_(Type) \
-    TypeIsControlledImpl<VECTOR_BASE_(Type)>::val
-
-//================================================================
-//
 // TYPE_MAKE_CONTROLLED
 // TYPE_MAKE_UNCONTROLLED
 //
 // (Also removes const, etc).
 //
 //================================================================
+
+template <typename Type>
+struct TypeIsControlledImpl;
 
 template <typename Type>
 struct TypeMakeControlledImpl;
@@ -196,11 +179,11 @@ struct TypeMakeUncontrolledImpl;
 
 //----------------------------------------------------------------
 
-#define TYPE_MAKE_CONTROLLED_IMPL(Src, Dst) \
-    template <> struct TypeMakeControlledImpl<Src> {using T = Dst;};
+#define TYPE_IS_CONTROLLED(Type) \
+    TypeIsControlledImpl<VECTOR_BASE(Type)>::val
 
-#define TYPE_MAKE_UNCONTROLLED_IMPL(Src, Dst) \
-    template <> struct TypeMakeUncontrolledImpl<Src> {using T = Dst;};
+#define TYPE_IS_CONTROLLED_(Type) \
+    TypeIsControlledImpl<VECTOR_BASE_(Type)>::val
 
 //----------------------------------------------------------------
 
@@ -210,13 +193,46 @@ struct TypeMakeUncontrolledImpl;
 #define TYPE_MAKE_CONTROLLED_(Type) \
     VECTOR_REBASE_(Type, TypeMakeControlledImpl<VECTOR_BASE_(Type)>::T)
 
-////
+//----------------------------------------------------------------
 
 #define TYPE_MAKE_UNCONTROLLED(Type) \
     VECTOR_REBASE(Type, typename TypeMakeUncontrolledImpl<VECTOR_BASE(Type)>::T)
 
 #define TYPE_MAKE_UNCONTROLLED_(Type) \
     VECTOR_REBASE_(Type, TypeMakeUncontrolledImpl<VECTOR_BASE_(Type)>::T)
+
+//----------------------------------------------------------------
+
+#define TYPE_IS_CONTROLLED_IMPL(Type, isControlled) \
+    template <> struct TypeIsControlledImpl<Type> {static constexpr bool val = (isControlled);};
+
+#define TYPE_MAKE_CONTROLLED_IMPL(Src, Dst) \
+    template <> struct TypeMakeControlledImpl<Src> {using T = Dst;};
+
+#define TYPE_MAKE_UNCONTROLLED_IMPL(Src, Dst) \
+    template <> struct TypeMakeUncontrolledImpl<Src> {using T = Dst;};
+
+//----------------------------------------------------------------
+
+#define TYPE_CONTROL_TRAITS_VECTOR_IMPL(Vector) \
+    \
+    template <typename Type> \
+    struct TypeIsControlledImpl<Vector<Type>> \
+    { \
+        static constexpr bool val = TYPE_IS_CONTROLLED(Type); \
+    }; \
+    \
+    template <typename Type> \
+    struct TypeMakeControlledImpl<Vector<Type>> \
+    { \
+        using T = Vector<TYPE_MAKE_CONTROLLED(Type)>; \
+    }; \
+    \
+    template <typename Type> \
+    struct TypeMakeUncontrolledImpl<Vector<Type>> \
+    { \
+        using T = Vector<TYPE_MAKE_UNCONTROLLED(Type)>; \
+    };
 
 //================================================================
 //
@@ -280,8 +296,8 @@ sysinline Type typeMax()
     template <> \
     struct TypeMinMaxStaticImpl<Type> \
     { \
-        static const Type minVal = (minValue); \
-        static const Type maxVal = (maxValue); \
+        static constexpr Type minVal = (minValue); \
+        static constexpr Type maxVal = (maxValue); \
     };
 
 //----------------------------------------------------------------
@@ -434,7 +450,7 @@ enum Rounding {RoundUp, RoundDown, RoundNearest, RoundExact};
 // CONVERT_FAMILY
 //
 // Returns the family of Type, for group implementation of conversion routines.
-// (The family is just some type to disambiguate)
+// (The family is just a some type to disambiguate)
 //
 //================================================================
 
@@ -483,8 +499,8 @@ enum ConvertHint
 // The conversion can be checked or unchecked (for arithmetic overflows and undefined inputs).
 //
 // If the conversion is checked (specified by parameter),
-// the success flag is stored to destination type, which should
-// have built-in error state (like IEEE float).
+// the success flag is stored in the destination type, 
+// which should have built-in error state (like IEEE float).
 //
 // If the conversion is unchecked, no arithmetic check is performed,
 // and the destination type can be either controlled or uncontrolled type
@@ -553,7 +569,7 @@ struct ConvertImplFlagCall
 //
 // Conversions: Scalar layer.
 //
-// Implements automatic conversions of controlled types
+// Implements automatic conversions of unrelated controlled types
 // via their base types.
 //
 // Gates: ConvertScalar, ConvertScalarFlag.
@@ -564,144 +580,24 @@ struct ConvertImplFlagCall
 
 //================================================================
 //
-// ConvertScalarUncheckedTransitive
-//
-// Converts between controlled types via their base types (unchecked).
-//
-//================================================================
-
-template <typename Src, typename Dst, Rounding rounding, ConvertHint hint>
-struct ConvertScalarUncheckedTransitive
-{
-    using SrcBase = TYPE_MAKE_UNCONTROLLED(Src);
-    using DstBase = TYPE_MAKE_UNCONTROLLED(Dst);
-
-    using SrcExport = typename ConvertImplCall<Src, SrcBase, ConvertUnchecked, RoundExact, ConvertNormal>::Code;
-    using Conversion = typename ConvertImplCall<SrcBase, DstBase, ConvertUnchecked, rounding, hint>::Code;
-    using DstImport = typename ConvertImplCall<DstBase, Dst, ConvertUnchecked, RoundExact, ConvertNormal>::Code;
-
-    struct Code
-    {
-        static sysinline Dst func(const Src& src)
-        {
-            SrcBase srcBase = SrcExport::func(src);
-            DstBase dstBase = Conversion::func(srcBase);
-            return DstImport::func(dstBase);
-        }
-    };
-};
-
-//================================================================
-//
-// ConvertScalarCheckedTransitive
-//
-// Converts between controlled types via their base types (Checked).
-//
-//================================================================
-
-template <typename Src, typename Dst, Rounding rounding, ConvertHint hint>
-struct ConvertScalarCheckedTransitive
-{
-    using SrcBase = TYPE_MAKE_UNCONTROLLED(Src);
-    using DstBase = TYPE_MAKE_UNCONTROLLED(Dst);
-
-    COMPILE_ASSERT(TYPE_IS_CONTROLLED(Dst)); // No waste checks
-
-    using SrcExport = typename ConvertImplFlagCall<Src, SrcBase, RoundExact, ConvertNormal>::Code;
-    using Conversion = typename ConvertImplFlagCall<SrcBase, DstBase, rounding, hint>::Code;
-    using DstImport = typename ConvertImplCall<DstBase, Dst, ConvertChecked, RoundExact, ConvertNormal>::Code;
-
-    struct Code
-    {
-        static sysinline Dst func(const Src& src)
-        {
-            SrcBase srcBase;
-            bool ok1 = SrcExport::func(src, srcBase);
-
-            DstBase dstBase;
-            bool ok2 = Conversion::func(srcBase, dstBase);
-
-            Dst dst = DstImport::func(dstBase);
-
-            if_not (ok1 && ok2)
-                dst = nanOf<Dst>();
-
-            return dst;
-        }
-    };
-};
-
-//================================================================
-//
 // ConvertScalar
-//
-// Maps to ConvertScalarUnchecked / ConvertScalarChecked
 //
 //================================================================
 
 template <typename Src, typename Dst, ConvertCheck check, Rounding rounding, ConvertHint hint>
 struct ConvertScalar
 {
-    using SimpleConv = ConvertImplCall<Src, Dst, check, rounding, hint>;
-
-    ////
-
-    using UncheckedTransitiveConv = ConvertScalarUncheckedTransitive<Src, Dst, rounding, hint>;
-    using CheckedTransitiveConv = ConvertScalarCheckedTransitive<Src, Dst, rounding, hint>;
-    using TransitiveConv = TYPE_SELECT(check == ConvertChecked, CheckedTransitiveConv, UncheckedTransitiveConv);
-
-    ////
-
     using SrcBase = TYPE_MAKE_UNCONTROLLED(Src);
     using DstBase = TYPE_MAKE_UNCONTROLLED(Dst);
 
-    static const bool bothAreSelfBased = TYPE_EQUAL(Src, SrcBase) && TYPE_EQUAL(Dst, DstBase);
+    static constexpr bool bothAreSelfBased = TYPE_EQUAL(Src, SrcBase) && TYPE_EQUAL(Dst, DstBase);
 
     ////
 
-    COMPILE_ASSERT(bothAreSelfBased); // Currently no transitive conversions used
-    using Code = TYPE_SELECT(bothAreSelfBased, SimpleConv, TransitiveConv)::Code;
-};
+    using SimplePath = ConvertImplCall<Src, Dst, check, rounding, hint>;
 
-//================================================================
-//
-// ConvertScalarFlagTransitive
-//
-// Converts between controlled types via their base types (Flag).
-//
-//================================================================
-
-template <typename Src, typename Dst, Rounding rounding, ConvertHint hint>
-struct ConvertScalarFlagTransitive
-{
-    using SrcBase = TYPE_MAKE_UNCONTROLLED(Src);
-    using DstBase = TYPE_MAKE_UNCONTROLLED(Dst);
-
-    using SrcExport = typename ConvertImplFlagCall<Src, SrcBase, RoundExact, ConvertNormal>::Code;
-    using Conversion = typename ConvertImplFlagCall<SrcBase, DstBase, rounding, hint>::Code;
-    using DstImport = typename ConvertImplFlagCall<DstBase, Dst, RoundExact, ConvertNormal>::Code;
-
-
-    struct Code
-    {
-        static sysinline bool func(const Src& src, Dst& dst)
-        {
-            bool ok = true;
-
-            SrcBase srcBase;
-            check_flag(SrcExport::func(src, srcBase), ok);
-
-            DstBase dstBase;
-            check_flag(Conversion::func(srcBase, dstBase), ok);
-
-            check_flag(DstImport::func(dstBase, dst), ok);
-
-            if_not (ok)
-                dst = nanOf<Dst>();
-
-            return ok;
-        }
-    };
+    COMPILE_ASSERT(bothAreSelfBased); // Currently no transitive conversions are used.
+    using Code = typename SimplePath::Code;
 };
 
 //================================================================
@@ -716,17 +612,14 @@ struct ConvertScalarFlag
     using SrcBase = TYPE_MAKE_UNCONTROLLED(Src);
     using DstBase = TYPE_MAKE_UNCONTROLLED(Dst);
 
-    static const bool bothAreSelfBased = TYPE_EQUAL(Src, SrcBase) && TYPE_EQUAL(Dst, DstBase);
+    static constexpr bool bothAreSelfBased = TYPE_EQUAL(Src, SrcBase) && TYPE_EQUAL(Dst, DstBase);
 
     ////
 
     using SimplePath = ConvertImplFlagCall<Src, Dst, rounding, hint>;
-    using TransitivePath = ConvertScalarFlagTransitive<Src, Dst, rounding, hint>;
 
-    ////
-
-    COMPILE_ASSERT(bothAreSelfBased); // Currently no transitive conversions used
-    using Code = TYPE_SELECT(bothAreSelfBased, SimplePath, TransitivePath)::Code;
+    COMPILE_ASSERT(bothAreSelfBased); // Currently no transitive conversions are used.
+    using Code = typename SimplePath::Code;
 };
 
 //================================================================
@@ -756,8 +649,8 @@ struct ConvertResult
     using SrcBase = VECTOR_BASE(Src);
     using DstBase = VECTOR_BASE(Dst);
 
-    static const bool srcIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Src), SrcBase);
-    static const bool dstIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Dst), DstBase);
+    static constexpr bool srcIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Src), SrcBase);
+    static constexpr bool dstIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Dst), DstBase);
 
     // Rebase if Src is vector and Dst is scalar
     using T = TYPE_SELECT(srcIsVector && !dstIsVector, VECTOR_REBASE(Src, DstBase), TYPE_CLEANSE(Dst));
@@ -776,8 +669,8 @@ struct ConvertVector
     using SrcBase = VECTOR_BASE(Src);
     using DstBase = VECTOR_BASE(Dst);
 
-    static const bool srcIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Src), SrcBase);
-    static const bool dstIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Dst), DstBase);
+    static constexpr bool srcIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Src), SrcBase);
+    static constexpr bool dstIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Dst), DstBase);
 
     using ConvertScalarScalar = typename ConvertScalar<SrcBase, DstBase, check, rounding, hint>::Code;
 
@@ -814,14 +707,15 @@ struct ConvertVectorFlag
     using SrcBase = VECTOR_BASE(Src);
     using DstBase = VECTOR_BASE(Dst);
 
-    static const bool srcIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Src), SrcBase);
-    static const bool dstIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Dst), DstBase);
+    static constexpr bool srcIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Src), SrcBase);
+    static constexpr bool dstIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Dst), DstBase);
 
     ////
 
     using ConvertScalarScalar = typename ConvertScalarFlag<SrcBase, DstBase, rounding, hint>::Code;
 
-    using ConvertVectorVector = typename ConvertImplFlagCall<Src, Dst, rounding, hint>::Code; // Should be implemented as ConvertImplFlag
+    // Should be implemented as ConvertImplFlag
+    using ConvertVectorVector = typename ConvertImplFlagCall<Src, Dst, rounding, hint>::Code; 
 
     struct ConvertVectorScalarProhibited;
 

@@ -135,3 +135,69 @@ sysinline Point3D<Float> operator %(const MovementUnpacked3D<Float>& movement, c
 {
     return movement.rotation % vec + movement.translation;
 }
+
+//================================================================
+//
+// VectorBaseImpl
+// VectorRebaseImpl
+//
+//================================================================
+
+template <typename Type>
+struct VectorBaseImpl<Movement3D<Type>>
+{
+    using T = Type;
+};
+
+//----------------------------------------------------------------
+
+template <typename OldBase, typename NewBase>
+struct VectorRebaseImpl<Movement3D<OldBase>, NewBase>
+{
+    using T = Movement3D<NewBase>;
+};
+
+//----------------------------------------------------------------
+
+TYPE_CONTROL_TRAITS_VECTOR_IMPL(Movement3D)
+
+//================================================================
+//
+// Movement3D: conversions.
+//
+//================================================================
+
+struct Movement3DFamily;
+
+//----------------------------------------------------------------
+
+template <typename Type>
+struct ConvertFamilyImpl<Movement3D<Type>>
+{
+    using T = Movement3DFamily;
+};
+
+//----------------------------------------------------------------
+
+template <ConvertCheck check, Rounding rounding, ConvertHint hint>
+struct ConvertImpl<Movement3DFamily, Movement3DFamily, check, rounding, hint>
+{
+    template <typename SrcType, typename DstType>
+    struct Convert
+    {
+        using SrcBase = VECTOR_BASE(SrcType);
+        using DstBase = VECTOR_BASE(DstType);
+
+        using BaseImpl4D = typename ConvertImplCall<Point4D<SrcBase>, Point4D<DstBase>, check, rounding, hint>::Code;
+        using BaseImpl3D = typename ConvertImplCall<Point3D<SrcBase>, Point3D<DstBase>, check, rounding, hint>::Code;
+
+        static sysinline Movement3D<DstBase> func(const Movement3D<SrcBase>& src)
+        {
+            return 
+            {
+                BaseImpl4D::func(src.rotation), 
+                BaseImpl3D::func(src.translation)
+            };
+        }
+    };
+};
