@@ -193,11 +193,11 @@ struct ConvertImpl<Movement3DFamily, Movement3DFamily, check, rounding, hint>
 
         static sysinline Movement3D<DstBase> func(const Movement3D<SrcBase>& src)
         {
-            return 
-            {
+            return movement3D
+            (
                 BaseImpl4D::func(src.rotation), 
                 BaseImpl3D::func(src.translation)
-            };
+            );
         }
     };
 };
