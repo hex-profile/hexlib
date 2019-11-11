@@ -37,7 +37,7 @@ namespace downsampleHalfOctave {
 
 sysinline float32 sinc(float32 x)
 {
-    float32 t = pi<float32> * x;
+    float32 t = pi32 * x;
     float32 result = nativeDivide(sinf(t), t);
     if_not (def(result)) result = 1;
     return result;

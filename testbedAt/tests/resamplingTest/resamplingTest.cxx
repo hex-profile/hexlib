@@ -53,7 +53,7 @@ using FloatPixel = float16;
 template <typename Float>
 sysinline Float sinc(Float x)
 {
-    Float t = pi<Float> * x;
+    Float t = Float(pi64) * x;
     Float result = nativeDivide(sinf(t), t);
     if_not (def(result)) result = 1;
     return result;
