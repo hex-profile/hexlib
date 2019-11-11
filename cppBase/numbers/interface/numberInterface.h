@@ -73,6 +73,26 @@ struct VectorRebaseImpl
 
 //================================================================
 //
+// VECTOR_BASE_REBASE_VECTOR_IMPL
+//
+//================================================================
+
+#define VECTOR_BASE_REBASE_VECTOR_IMPL(Vector) \
+    \
+    template <typename Type> \
+    struct VectorBaseImpl<Vector<Type>> \
+    { \
+        using T = Type; \
+    }; \
+    \
+    template <typename OldBase, typename NewBase> \
+    struct VectorRebaseImpl<Vector<OldBase>, NewBase> \
+    { \
+        using T = Vector<NewBase>; \
+    };
+
+//================================================================
+//
 // vectorExtend
 //
 // Converts the scalar value to a vector.
@@ -214,7 +234,7 @@ struct TypeMakeUncontrolledImpl;
 
 //----------------------------------------------------------------
 
-#define TYPE_CONTROL_TRAITS_VECTOR_IMPL(Vector) \
+#define TYPE_CONTROL_VECTOR_IMPL(Vector) \
     \
     template <typename Type> \
     struct TypeIsControlledImpl<Vector<Type>> \
@@ -464,6 +484,18 @@ struct ConvertFamilyImpl
 
 #define CONVERT_FAMILY_IMPL(Type, Family) \
     template <> struct ConvertFamilyImpl<Type> {using T = Family;};
+
+//----------------------------------------------------------------
+
+#define CONVERT_FAMILY_VECTOR_IMPL(Vector, Family) \
+    \
+    struct Family; \
+    \
+    template <typename Type> \
+    struct ConvertFamilyImpl<Vector<Type>> \
+    { \
+        using T = Family; \
+    };
 
 //----------------------------------------------------------------
 

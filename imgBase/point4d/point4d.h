@@ -13,29 +13,8 @@
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-//================================================================
-//
-// VectorBaseImpl<Point4D>
-//
-//================================================================
-
-template <typename Type>
-struct VectorBaseImpl<Point4D<Type>>
-{
-    using T = Type;
-};
-
-//================================================================
-//
-// VectorRebaseImpl<Point4D>
-//
-//================================================================
-
-template <typename OldBase, typename NewBase>
-struct VectorRebaseImpl<Point4D<OldBase>, NewBase>
-{
-    using T = Point4D<NewBase>;
-};
+VECTOR_BASE_REBASE_VECTOR_IMPL(Point4D)
+TYPE_CONTROL_VECTOR_IMPL(Point4D)
 
 //================================================================
 //
@@ -51,14 +30,6 @@ struct VectorExtendImpl<Point4D<Type>>
         return point4D(value, value, value, value);
     }
 };
-
-//================================================================
-//
-// Controlled type traits.
-//
-//================================================================
-
-TYPE_CONTROL_TRAITS_VECTOR_IMPL(Point4D)
 
 //================================================================
 //
@@ -235,15 +206,7 @@ sysinline bool anyv(const Point4D<Type>& P)
 //
 //================================================================
 
-struct Point4DFamily;
-
-//----------------------------------------------------------------
-
-template <typename Type>
-struct ConvertFamilyImpl<Point4D<Type>>
-{
-    using T = Point4DFamily;
-};
+CONVERT_FAMILY_VECTOR_IMPL(Point4D, Point4DFamily)
 
 //================================================================
 //

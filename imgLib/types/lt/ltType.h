@@ -29,37 +29,8 @@ sysinline auto operator ==(const LinearTransform<Type>& a, const LinearTransform
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-//================================================================
-//
-// VectorBaseImpl<LinearTransform>
-//
-//================================================================
-
-template <typename Type>
-struct VectorBaseImpl<LinearTransform<Type>>
-{
-    using T = Type;
-};
-
-//================================================================
-//
-// VectorRebaseImpl<LinearTransform>
-//
-//================================================================
-
-template <typename OldBase, typename NewBase>
-struct VectorRebaseImpl<LinearTransform<OldBase>, NewBase>
-{
-    using T = LinearTransform<NewBase>;
-};
-
-//================================================================
-//
-// Controlled type traits.
-//
-//================================================================
-
-TYPE_CONTROL_TRAITS_VECTOR_IMPL(LinearTransform)
+VECTOR_BASE_REBASE_VECTOR_IMPL(LinearTransform)
+TYPE_CONTROL_VECTOR_IMPL(LinearTransform)
 
 //================================================================
 //
@@ -92,15 +63,7 @@ struct DefImpl<LinearTransform<Type>>
 //
 //================================================================
 
-struct LtFamily;
-
-//----------------------------------------------------------------
-
-template <typename Type>
-struct ConvertFamilyImpl<LinearTransform<Type>>
-{
-    using T = LtFamily;
-};
+CONVERT_FAMILY_VECTOR_IMPL(LinearTransform, LtFamily)
 
 //================================================================
 //
