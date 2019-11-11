@@ -138,44 +138,20 @@ sysinline Point3D<Float> operator %(const MovementUnpacked3D<Float>& movement, c
 
 //================================================================
 //
-// VectorBaseImpl
-// VectorRebaseImpl
+// Traits.
 //
 //================================================================
 
-template <typename Type>
-struct VectorBaseImpl<Movement3D<Type>>
-{
-    using T = Type;
-};
-
-//----------------------------------------------------------------
-
-template <typename OldBase, typename NewBase>
-struct VectorRebaseImpl<Movement3D<OldBase>, NewBase>
-{
-    using T = Movement3D<NewBase>;
-};
-
-//----------------------------------------------------------------
-
-TYPE_CONTROL_TRAITS_VECTOR_IMPL(Movement3D)
+VECTOR_BASE_REBASE_VECTOR_IMPL(Movement3D)
+TYPE_CONTROL_VECTOR_IMPL(Movement3D)
 
 //================================================================
 //
-// Movement3D: conversions.
+// Conversions.
 //
 //================================================================
 
-struct Movement3DFamily;
-
-//----------------------------------------------------------------
-
-template <typename Type>
-struct ConvertFamilyImpl<Movement3D<Type>>
-{
-    using T = Movement3DFamily;
-};
+CONVERT_FAMILY_VECTOR_IMPL(Movement3D, Movement3DFamily)
 
 //----------------------------------------------------------------
 
