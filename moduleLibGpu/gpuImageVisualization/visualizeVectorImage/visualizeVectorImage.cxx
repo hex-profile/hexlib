@@ -84,7 +84,7 @@ sysinline uint8_x4 computeVectorVisualization(const float32_x2& value, bool gray
 
 #if 0
 
-    H = atan2f(value.y, value.x) * (1.f / 2 / pi<float32>);
+    H = atan2f(value.y, value.x) * (1.f / 2 / pi32);
     if (H < 0) H += 1;
 
 #else

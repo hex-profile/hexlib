@@ -6,14 +6,16 @@
 //================================================================
 //
 // pi
+// 
+// (cannot use template constants because of MSVC bugs)
 //
 //================================================================
 
 #ifndef ROTATION_PI_DEFINED
 #define ROTATION_PI_DEFINED
 
-template <typename Float>
-constexpr Float pi = Float(3.14159265358979324);
+constexpr float32 pi32 = 3.14159265358979324f;
+constexpr float64 pi64 = 3.14159265358979324;
 
 #endif
 
@@ -28,7 +30,7 @@ constexpr Float pi = Float(3.14159265358979324);
 template <typename Float>
 sysinline Point<Float> circleCCW(Float v)
 {
-    Float angle = v * Float(2 * pi<Float>);
+    Float angle = v * (2 * Float(pi64));
     Point<Float> result;
     nativeCosSin(angle, result.X, result.Y);
     return result;
@@ -76,7 +78,7 @@ template <typename Float>
 sysinline Float getPhase(const Point<Float>& vec)
 {
     Float result = nativeAtan2(vec.Y, vec.X);
-    result *= (1 / (2 * pi<Float>));
+    result *= (1 / (2 * Float(pi64)));
     if_not (def(result)) result = 0;
     return result;
 }

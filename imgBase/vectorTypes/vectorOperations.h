@@ -451,14 +451,16 @@ sysinline float32 componentSum(const float32_x4& vec)
 //================================================================
 //
 // pi
+// 
+// (cannot use template constants because of MSVC bugs)
 //
 //================================================================
 
 #ifndef ROTATION_PI_DEFINED
 #define ROTATION_PI_DEFINED
 
-template <typename Float>
-constexpr Float pi = Float(3.14159265358979324);
+constexpr float32 pi32 = 3.14159265358979324f;
+constexpr float64 pi64 = 3.14159265358979324;
 
 #endif
 
@@ -471,7 +473,7 @@ constexpr Float pi = Float(3.14159265358979324);
 template <typename Float>
 sysinline auto circleCcw(Float v)
 {
-    Float angle = v * Float(2 * pi<Float>);
+    Float angle = v * (2 * Float(pi64));
     Float resultX, resultY;
     nativeCosSin(angle, resultX, resultY);
     return makeVec2(resultX, resultY);

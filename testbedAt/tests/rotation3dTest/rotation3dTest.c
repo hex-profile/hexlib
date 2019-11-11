@@ -85,7 +85,7 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
 
     ////
 
-    float32 maxDelta = pi<float32> * 0.999f;
+    float32 maxDelta = pi32 * 0.999f;
     float32 eps = 0.001f * maxDelta;
 
     ////
