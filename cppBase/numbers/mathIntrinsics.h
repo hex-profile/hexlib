@@ -220,6 +220,10 @@ sysinline Type nativeLog2(const Type& value);
     sysinline float32 nativeLog2(const float32& value)
         {return logf(value) * 1.44269504088896341f;}
 
+    template <>
+    sysinline float64 nativeLog2(const float64& value)
+        {return log(value) * 1.44269504088896341;}
+
 #else
 
     #error
