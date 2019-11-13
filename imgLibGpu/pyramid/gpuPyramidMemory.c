@@ -76,7 +76,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
 
     for (Space i = 0; i < newLevels; ++i)
     {
-        Point<Space> size = scaleFunc(newBaseSize, baseScaleFactor * scale(-i + baseScaleLevels)) + extraEdge; // @@@
+        Point<Space> size = scaleFunc(newBaseSize, baseScaleFactor * scale(-i + baseScaleLevels)) + extraEdge;
         require(pyramidArrayPtr[i].reallocEx(newLayers, size, baseByteAlignment, rowByteAlignment, allocator, stdPass));
     }
 
