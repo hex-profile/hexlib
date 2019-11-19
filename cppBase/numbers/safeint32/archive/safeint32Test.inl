@@ -310,7 +310,7 @@ stdbool testUnaryPlusMinus
         allCases[i] = specialCases[i];
 
     for (int32 i = COMPILE_ARRAY_SIZE(specialCases); i < COMPILE_ARRAY_SIZE(allCases); ++i)
-        allCases[i] = rand(rndgen, uint32(0x00000000UL), uint32(0xFFFFFFFFUL));
+        allCases[i] = randRange(rndgen, uint32(0x00000000UL), uint32(0xFFFFFFFFUL));
 
     require(typeTest1<Test>(allCases, COMPILE_ARRAY_SIZE(allCases), stdPass));
 
@@ -372,7 +372,7 @@ stdbool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit
         allCases[i] = specialCases[i];
 
     for (int32 i = COMPILE_ARRAY_SIZE(specialCases); i < COMPILE_ARRAY_SIZE(allCases); ++i)
-        allCases[i] = rand(rndgen, uint32(0x00000000UL), uint32(0xFFFFFFFFUL));
+        allCases[i] = randRange(rndgen, uint32(0x00000000UL), uint32(0xFFFFFFFFUL));
 
     ////
 
@@ -414,16 +414,16 @@ stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
 
     for (int32 i = 0; i < 8192; ++i)
     {
-        uint32 X = rand(rndgen, uint32(0x00000000UL), uint32(0x7FFFFFFFUL));
+        uint32 X = randRange(rndgen, uint32(0x00000000UL), uint32(0x7FFFFFFFUL));
 
-        double A = toDbl(X >> rand(rndgen, 0, 31));
+        double A = toDbl(X >> randRange(rndgen, 0, 31));
 
-        if (rand(rndgen, 0, 1) == 0)
+        if (randRange(rndgen, 0, 1) == 0)
             A = -A;
 
         if (A != 0)
         {
-            double M = (rand(rndgen, 0, 1) == 0) ? double(-0x7FFFFFFFL) : double(+0x7FFFFFFFL);
+            double M = (randRange(rndgen, 0, 1) == 0) ? double(-0x7FFFFFFFL) : double(+0x7FFFFFFFL);
 
             double Mdiv = M / A;
 
@@ -698,7 +698,7 @@ stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
         allCases[i] = specialCases[i];
 
     for (int32 i = COMPILE_ARRAY_SIZE(specialCases); i < COMPILE_ARRAY_SIZE(allCases); ++i)
-        allCases[i] = rand(rndgen, uint32(0x00000000UL), uint32(0xFFFFFFFFUL));
+        allCases[i] = randRange(rndgen, uint32(0x00000000UL), uint32(0xFFFFFFFFUL));
 
     ////
 

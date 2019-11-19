@@ -216,6 +216,19 @@ public:
         return recastEqualLayout<const Array<const Type>>(*arr);
     }
 
+public:
+
+    //----------------------------------------------------------------
+    //
+    // operator []
+    //
+    //----------------------------------------------------------------
+
+    sysinline auto& operator [](ptrdiff_t index) const
+    {
+        return Base::ptr()[index];
+    }
+
 };
 
 //================================================================
