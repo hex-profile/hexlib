@@ -1,15 +1,16 @@
 #include "randRange.h"
 
 #include "numbers/float/floatType.h"
+#include "point/point.h"
 
 //================================================================
 //
-// rand<uint32>
+// randRange<uint32>
 //
 //================================================================
 
 template <>
-uint32 rand(RndgenState& rndgen, uint32 lo, uint32 hi)
+uint32 randRange(RndgenState& rndgen, uint32 lo, uint32 hi)
 {
   
     uint32 result = lo;
@@ -36,12 +37,12 @@ uint32 rand(RndgenState& rndgen, uint32 lo, uint32 hi)
 
 //================================================================
 //
-// rand<int32>
+// randRange<int32>
 //
 //================================================================
 
 template <>
-int32 rand(RndgenState& rndgen, int32 lo, int32 hi)
+int32 randRange(RndgenState& rndgen, int32 lo, int32 hi)
 {
     int32 result = lo;
 
@@ -66,12 +67,12 @@ int32 rand(RndgenState& rndgen, int32 lo, int32 hi)
 
 //================================================================
 //
-// rand<float32>
+// randRange<float32>
 //
 //================================================================
 
 template <>
-float32 rand(RndgenState& rndgen, float32 lo, float32 hi)
+float32 randRange(RndgenState& rndgen, float32 lo, float32 hi)
 {
     float32 result = 0;
 
@@ -95,12 +96,12 @@ float32 rand(RndgenState& rndgen, float32 lo, float32 hi)
 
 //================================================================
 //
-// rand<float64>
+// randRange<float64>
 //
 //================================================================
 
 template <>
-float64 rand(RndgenState& rndgen, float64 lo, float64 hi)
+float64 randRange(RndgenState& rndgen, float64 lo, float64 hi)
 {
     float64 result = float64Nan();
 
@@ -133,3 +134,26 @@ float64 rand(RndgenState& rndgen, float64 lo, float64 hi)
 
     return result;
 }
+
+//================================================================
+//
+// randRange<Point<T>>
+//
+//================================================================
+
+#define TMP_MACRO(Type) \
+    \
+    template <> \
+    Point<Type> randRange(RndgenState& rndgen, Point<Type> lo, Point<Type> hi) \
+    { \
+        auto rX = randRange(rndgen, lo.X, hi.X); \
+        auto rY = randRange(rndgen, lo.Y, hi.Y); \
+        return point(rX, rY); \
+    }
+
+TMP_MACRO(int32)
+TMP_MACRO(uint32)
+TMP_MACRO(float32)
+TMP_MACRO(float64)
+
+#undef TMP_MACRO

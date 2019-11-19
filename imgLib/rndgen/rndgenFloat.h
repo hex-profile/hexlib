@@ -42,6 +42,8 @@ sysinline Dst rndgenUniform(RndgenState& state)
 template <typename Type>
 sysinline Type rndgenUniformRange(RndgenState& state, const Type& a, const Type& b)
 {
+    COMPILE_ASSERT(TYPE_IS_BUILTIN_FLOAT(Type));
+
     return a + (b - a) * rndgenUniform<Type>(state);
 }
 
