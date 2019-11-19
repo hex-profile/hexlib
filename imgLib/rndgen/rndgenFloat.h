@@ -4,6 +4,7 @@
 
 #include "rndgen/rndgenBase.h"
 #include "numbers/float/floatBase.h"
+#include "point/pointBase.h"
 
 //================================================================
 //
@@ -13,14 +14,6 @@
 //
 //================================================================
 
-sysinline void rndgenUniform(RndgenState& state, float32& result)
-{
-    uint32 tmp = rndgen32(state); // 32 random bits
-    result = tmp * 0.2328306436538696e-9f; // div by 2^32, result [0, 1)
-}
-
-//----------------------------------------------------------------
-
 sysinline void rndgenUniform(RndgenState& state, uint8& result)
 {
     uint32 tmp = rndgen16(state); // 16 random bits
@@ -29,20 +22,44 @@ sysinline void rndgenUniform(RndgenState& state, uint8& result)
 
 //----------------------------------------------------------------
 
-template <typename Dst>
-sysinline Dst rndgenUniform(RndgenState& state)
+sysinline void rndgenUniform(RndgenState& state, float32& result)
 {
-    Dst dst = 0;
-    rndgenUniform(state, dst);
-    return dst;
+    uint32 tmp = rndgen32(state); // 32 random bits
+    result = tmp * 0.2328306436538696e-9f; // div by 2^32, result [0, 1)
 }
 
 //----------------------------------------------------------------
 
+sysinline void rndgenUniform(RndgenState& state, Point<float32>& result)
+{
+    rndgenUniform(state, result.X);
+    rndgenUniform(state, result.Y);
+}
+
+//================================================================
+//
+// rndgenUniform<T>
+//
+//================================================================
+
+template <typename Dst>
+sysinline Dst rndgenUniform(RndgenState& state)
+{
+    Dst dst;
+    rndgenUniform(state, dst);
+    return dst;
+}
+
+//================================================================
+//
+// rndgenUniformRange
+//
+//================================================================
+
 template <typename Type>
 sysinline Type rndgenUniformRange(RndgenState& state, const Type& a, const Type& b)
 {
-    COMPILE_ASSERT(TYPE_IS_BUILTIN_FLOAT(Type));
+    COMPILE_ASSERT(TYPE_IS_BUILTIN_FLOAT(VECTOR_BASE(Type)));
 
     return a + (b - a) * rndgenUniform<Type>(state);
 }
