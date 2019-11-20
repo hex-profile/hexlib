@@ -9,7 +9,7 @@
 // Basic compile-time tools:
 //
 // * Language extensions: in lower case and with underscores.
-// * Compile-time expressions and types handling
+// * Compile-time expressions and types handling.
 //
 //================================================================
 

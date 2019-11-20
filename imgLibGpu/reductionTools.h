@@ -1,5 +1,7 @@
 #pragma once
 
+#include "compileTools/msvcTools.h"
+
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
@@ -26,8 +28,7 @@
 //================================================================
 
 #define PARALLEL_REDUCTION_TWICE(reductionSize, reductionMember, actionMacro, actionContext) \
-    \
-    COMPILE_ASSERT((reductionSize) <= 1024); \
+    MSVC_EXCLUDE(COMPILE_ASSERT((reductionSize) <= 1024)); \
     PARALLEL_REDUCTION_TWICE_ITER(reductionSize, reductionMember, actionMacro, actionContext, 512) \
     PARALLEL_REDUCTION_TWICE_ITER(reductionSize, reductionMember, actionMacro, actionContext, 256) \
     PARALLEL_REDUCTION_TWICE_ITER(reductionSize, reductionMember, actionMacro, actionContext, 128) \
@@ -43,7 +44,7 @@
 
 #define PARALLEL_REDUCTION_TWICE_ITER(reductionSize, reductionMember, actionMacro, actionContext, stageSize) \
     { \
-        constexpr Space _activeCount = COMPILE_CLAMP((reductionSize) - (stageSize), 0, stageSize); \
+        MSVC_SELECT(const, constexpr) Space _activeCount = COMPILE_CLAMP((reductionSize) - (stageSize), 0, stageSize); \
         \
         if (_activeCount != 0) /* Removes code for unused iterations at compile time. */ \
         { \
