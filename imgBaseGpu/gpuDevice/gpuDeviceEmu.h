@@ -213,6 +213,12 @@ struct GpuKernelLink
 #define devPass \
     emuParams
 
+#define devParsField \
+    EmuParams& emuParams;
+
+#define devParsInit \
+    emuParams(emuParams)
+
 //================================================================
 //
 // devConstant

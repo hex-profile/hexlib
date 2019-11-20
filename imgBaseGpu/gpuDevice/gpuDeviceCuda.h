@@ -37,10 +37,16 @@
     __device__
 
 #define devPars \
-    int
+    int __dummyPars
 
 #define devPass \
     0
+
+#define devParsField \
+    int __dummyPars
+
+#define devParsInit \
+    __dummyPars(__dummyPars)
 
 //================================================================
 //
