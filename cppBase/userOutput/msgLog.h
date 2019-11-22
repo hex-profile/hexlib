@@ -73,7 +73,7 @@ struct MsgLog : public MsgLogThreading, public MsgLogOutput
 //
 //================================================================
 
-struct MsgLogNull : public MsgLog
+class MsgLogNull : public MsgLog
 {
     virtual bool addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         {return true;}

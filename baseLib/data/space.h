@@ -3,8 +3,8 @@
 #ifndef HEXLIB_SPACE
 #define HEXLIB_SPACE
 
-#include <cstdint>
-#include <cstddef>
+#include <stdint.h>
+#include <stddef.h>
 
 //================================================================
 //
