@@ -3,8 +3,7 @@
 #ifndef HEXLIB_OPAQUE_STRUCT
 #define HEXLIB_OPAQUE_STRUCT
 
-#include <type_traits>
-#include <cstddef>
+#include "storage/typeAlignment.h"
 
 //================================================================
 //
@@ -38,8 +37,8 @@ public:
 private:
 
     using Self = OpaqueStruct<size>;
-    std::aligned_storage_t<size> data; // uses default alignment
 
+    alignas(maxNaturalAlignment) unsigned char data[size];
 };
 
 //================================================================

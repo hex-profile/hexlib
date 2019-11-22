@@ -3,8 +3,7 @@
 #ifndef HEXLIB_OPAQUE_STRUCT
 #define HEXLIB_OPAQUE_STRUCT
 
-#include <type_traits>
-#include <cstddef>
+#include <type_traits> // TODO: remove dependency on the whole STL
 
 #include "types/compileTools.h"
 

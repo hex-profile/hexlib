@@ -26,18 +26,14 @@ struct ErrorLog
 
 class ErrorLogNull : public ErrorLog
 {
-
-public:
-
-    bool isThreadProtected() const override
+    virtual bool isThreadProtected() const
         {return true;}
 
-    void addErrorSimple(const CharType* message) override
+    virtual void addErrorSimple(const CharType* message)
         {}
 
-    void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) override
+    virtual void addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
         {}
-
 };
 
 //================================================================

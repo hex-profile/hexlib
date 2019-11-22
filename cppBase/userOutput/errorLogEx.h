@@ -25,6 +25,21 @@ struct ErrorLogEx
 
 //================================================================
 //
+// ErrorLogExNull
+//
+//================================================================
+
+class ErrorLogExNull : public ErrorLogEx
+{
+    virtual bool isThreadProtected() const
+        {return true;}
+
+    virtual bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+        {return true;}
+};
+
+//================================================================
+//
 // printMsgTrace
 //
 // The same as printMsg, but the message is outputted with trace callstack.
