@@ -226,30 +226,49 @@ sysinline Point4D<Float> quatFromRodrigues(const Point3D<Float>& R)
 
 //================================================================
 //
-// quatBoxPlus
+// quatToRodrigues
 //
 // The quaternion should have unit length.
+// The function takes the shortest Rodrigues path.
 //
 //================================================================
 
 template <typename Float>
-sysinline Point4D<Float> quatBoxPlus(const Point4D<Float>& Q, const Point3D<Float>& D)
+sysinline Point3D<Float> quatToRodrigues(const Point4D<Float>& Q)
 {
-    return Q % quatFromRodrigues(D);
+    return 2 * quatUnitLogSpecial(Q);
 }
 
 //================================================================
 //
-// quatBoxMinus
+// quatMixedMinus
 //
 // The quaternions should have unit length.
+//
+// Returns D such that it moves a point from A to B.
 //
 //================================================================
 
 template <typename Float>
-sysinline Point3D<Float> quatBoxMinus(const Point4D<Float>& Q, const Point4D<Float>& P)
+sysinline Point3D<Float> quatMixedMinus(const Point4D<Float>& B, const Point4D<Float>& A)
 {
-    return 2 * quatUnitLogSpecial(~P % Q);
+    return quatToRodrigues(B % ~A);
+}
+
+//================================================================
+//
+// quatMixedPlus
+//
+// The quaternion should have unit length.
+//
+// If D is movement from A to B, the operation returns B.
+//
+//================================================================
+
+template <typename Float>
+sysinline Point4D<Float> quatMixedPlus(const Point4D<Float>& A, const Point3D<Float>& D)
+{
+    return quatFromRodrigues(D) % A; // Apply A, then apply D.
 }
 
 //================================================================

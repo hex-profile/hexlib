@@ -127,7 +127,7 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
             auto Q = generateUnitQuat();
             auto D = generateMapVec();
 
-            auto DErr = quatBoxMinus(quatBoxPlus(Q, D), Q) - D;
+            auto DErr = quatMixedMinus(quatMixedPlus(Q, D), Q) - D;
             require(vectorLength(DErr) <= eps);
         }
 
@@ -141,7 +141,7 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
             auto Q = generateUnitQuat();
             auto P = generateUnitQuat();
 
-            auto Ptest = quatBoxPlus(Q, quatBoxMinus(P, Q));
+            auto Ptest = quatMixedPlus(Q, quatMixedMinus(P, Q));
             auto err = quatL2Diff(P, Ptest);
             require(err <= eps);
         }
@@ -157,7 +157,7 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
             auto D1 = generateMapVec();
             auto D2 = generateMapVec();
 
-            auto len1 = vectorLength(quatBoxMinus(quatBoxPlus(Q, D1), quatBoxPlus(Q, D2)));
+            auto len1 = vectorLength(quatMixedMinus(quatMixedPlus(Q, D1), quatMixedPlus(Q, D2)));
             auto len2 = vectorLength(D1 - D2);
             require(len1 <= len2 + eps);
         }
@@ -222,10 +222,10 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
             require(quatL2Diff(+Q, -Q) <= eps);
 
             // [+]
-            require(quatL2Diff(quatBoxPlus(+Q, D), quatBoxPlus(-Q, D)) <= eps);
+            require(quatL2Diff(quatMixedPlus(+Q, D), quatMixedPlus(-Q, D)) <= eps);
 
             // [-]
-            require(vectorLength(quatBoxMinus(+Q, P) - quatBoxMinus(-Q, P)) <= eps);
+            require(vectorLength(quatMixedMinus(+Q, P) - quatMixedMinus(-Q, P)) <= eps);
 
             // Rotate vec
             require(vectorLength((+Q % vec) - (-Q % vec)) <= eps);

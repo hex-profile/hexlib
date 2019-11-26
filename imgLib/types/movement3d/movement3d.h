@@ -42,9 +42,9 @@ sysinline Movement3D<Float> movement3D(const Point3D<Float>& translation)
 //================================================================
  
 template <typename Float>
-sysinline bool operator ==(const Movement3D<Float>& a, const Movement3D<Float>& b)
+sysinline bool operator ==(const Movement3D<Float>& A, const Movement3D<Float>& B)
 {
-    return allv(a.rotation == b.rotation) && allv(a.translation == b.translation);
+    return allv(A.rotation == B.rotation) && allv(A.translation == B.translation);
 }
 
 //================================================================
@@ -66,11 +66,11 @@ sysinline Point3D<Float> operator %(const Movement3D<Float>& movement, const Poi
 //================================================================
 
 template <typename Float>
-sysinline Movement3D<Float> operator %(const Movement3D<Float>& A, const Movement3D<Float>& B)
+sysinline Movement3D<Float> operator %(const Movement3D<Float>& B, const Movement3D<Float>& A)
 {
     Movement3D<Float> result;
-    result.rotation = A.rotation % B.rotation;
-    result.translation = A.rotation % B.translation + A.translation;
+    result.rotation = B.rotation % A.rotation;
+    result.translation = B.rotation % A.translation + B.translation;
     return result;
 }
 
