@@ -2,6 +2,7 @@
 
 #include "numbers/float/floatType.h"
 #include "point/point.h"
+#include "point3d/point3d.h"
 
 //================================================================
 //
@@ -149,6 +150,30 @@ float64 randRange(RndgenState& rndgen, float64 lo, float64 hi)
         auto rX = randRange(rndgen, lo.X, hi.X); \
         auto rY = randRange(rndgen, lo.Y, hi.Y); \
         return point(rX, rY); \
+    }
+
+TMP_MACRO(int32)
+TMP_MACRO(uint32)
+TMP_MACRO(float32)
+TMP_MACRO(float64)
+
+#undef TMP_MACRO
+
+//================================================================
+//
+// randRange<Point3D<T>>
+//
+//================================================================
+
+#define TMP_MACRO(Type) \
+    \
+    template <> \
+    Point3D<Type> randRange(RndgenState& rndgen, Point3D<Type> lo, Point3D<Type> hi) \
+    { \
+        auto rX = randRange(rndgen, lo.X, hi.X); \
+        auto rY = randRange(rndgen, lo.Y, hi.Y); \
+        auto rZ = randRange(rndgen, lo.Z, hi.Z); \
+        return point3D(rX, rY, rZ); \
     }
 
 TMP_MACRO(int32)
