@@ -117,18 +117,40 @@ inline auto matrixCheckPointerConversion()
 
 //================================================================
 //
-// MATRIX_MUL_COORDS
+// MATRIX_VALID_ACCESS
+//
+//================================================================
+
+#define MATRIX_VALID_ACCESS(matrix, X, Y) \
+    \
+    ( \
+        SpaceU(X) < SpaceU(matrix##SizeX) && \
+        SpaceU(Y) < SpaceU(matrix##SizeY) \
+    )
+
+#define MATRIX_VALID_ACCESS_(matrix, pos) \
+    MATRIX_VALID_ACCESS(matrix, (pos).X, (pos).Y)
+
+////
+
+sysinline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& pos)
+{
+    return
+        SpaceU(pos.X) < SpaceU(size.X) &&
+        SpaceU(pos.Y) < SpaceU(size.Y);
+}
+
+//================================================================
+//
+// MATRIX_POINTER
+// MATRIX_ELEMENT
 //
 //================================================================
 
 #define MATRIX_MUL_COORDS(X, Y) \
     ((X) * (Y))
 
-//================================================================
-//
-// MATRIX_POINTER
-//
-//================================================================
+//----------------------------------------------------------------
 
 #define MATRIX_POINTER(matrix, X, Y) \
     (matrix##MemPtr + (X) + MATRIX_MUL_COORDS(Y, matrix##MemPitch))
@@ -196,15 +218,16 @@ class MatrixEx
 private:
 
     // Base pointer. If the matrix is empty, can be 0.
-    Pointer theMemPtr;
+    Pointer theMemPtr = Pointer(0);
 
     // Pitch. Can be negative. |pitch| >= sizeX.
     // If the matrix is empty, can be undefined.
-    Space theMemPitch;
+    Space theMemPitch = 0;
 
     // Dimensions. Always >= 0.
     // sizeX >= |pitch|
-    Point<Space> theSize;
+    Space theSizeX = 0;
+    Space theSizeY = 0;
 
 public:
 
@@ -212,7 +235,8 @@ public:
     {
         exchange(A.theMemPtr, B.theMemPtr);
         exchange(A.theMemPitch, B.theMemPitch);
-        exchange(A.theSize, B.theSize);
+        exchange(A.theSizeX, B.theSizeX);
+        exchange(A.theSizeY, B.theSizeY);
     }
 
 public:
@@ -255,7 +279,8 @@ public:
         :
         theMemPtr(that.thePtr),
         theMemPitch(that.theSize),
-        theSize(point(that.theSize, 1))
+        theSizeX(that.theSize),
+        theSizeY(1)
     {
         MATRIX__CHECK_CONVERSION(OtherPointer, Pointer);
     }
@@ -282,8 +307,8 @@ public:
         if_not (ok)
             {sizeX = 0; sizeY = 0;}
 
-        theSize.X = sizeX;
-        theSize.Y = sizeY;
+        theSizeX = sizeX;
+        theSizeY = sizeY;
         theMemPtr = memPtr;
         theMemPitch = memPitch;
 
@@ -298,8 +323,8 @@ public:
     {
         theMemPtr = memPtr;
         theMemPitch = memPitch;
-        theSize.X = sizeX;
-        theSize.Y = sizeY;
+        theSizeX = sizeX;
+        theSizeY = sizeY;
     }
 
 #if HEXLIB_GUARDED_MEMORY
@@ -346,13 +371,13 @@ public:
     {
         theMemPtr = Pointer(0);
         theMemPitch = 0;
-        theSize.X = 0;
-        theSize.Y = 0;
+        theSizeX = 0;
+        theSizeY = 0;
     }
 
     sysinline void assignEmptyFast()
     {
-        theSize.Y = 0;
+        theSizeY = 0;
     }
 
     //
@@ -361,13 +386,13 @@ public:
     //
 
     sysinline Space sizeX() const
-        {return theSize.X;}
+        {return theSizeX;}
 
     sysinline Space sizeY() const
-        {return theSize.Y;}
+        {return theSizeY;}
 
-    sysinline const Point<Space>& size() const
-        {return theSize;}
+    sysinline Point<Space> size() const
+        {return {theSizeX, theSizeY};}
 
     //
     // Get pitch.
@@ -386,7 +411,7 @@ public:
 #if HEXLIB_GUARDED_MEMORY
 
     sysinline typename MatrixPtr(Type) memPtr() const
-        {return MatrixPtrCreate(Type, theMemPtr, theMemPitch, theSize.X, theSize.Y, DbgptrMatrixPreconditions());}
+        {return MatrixPtrCreate(Type, theMemPtr, theMemPitch, theSizeX, theSizeY, DbgptrMatrixPreconditions());}
 
 #else
 
@@ -410,10 +435,10 @@ public:
 
         ////
 
-        if (SpaceU(Y) < SpaceU(theSize.Y))
+        if (SpaceU(Y) < SpaceU(theSizeY))
         {
             tmpPtr = MATRIX_POINTER(the, 0, Y);
-            tmpSizeX = theSize.X; // >= 0
+            tmpSizeX = theSizeX; // >= 0
             tmpOk = true;
         }
 
@@ -433,17 +458,17 @@ public:
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
-        Space clOrgX = clampRange(orgX, 0, theSize.X);
-        Space clOrgY = clampRange(orgY, 0, theSize.Y);
+        Space clOrgX = clampRange(orgX, 0, theSizeX);
+        Space clOrgY = clampRange(orgY, 0, theSizeY);
 
-        Space clEndX = clampRange(endX, clOrgX, theSize.X);
-        Space clEndY = clampRange(endY, clOrgY, theSize.Y);
+        Space clEndX = clampRange(endX, clOrgX, theSizeX);
+        Space clEndY = clampRange(endY, clOrgY, theSizeY);
 
         result.theMemPtr = MATRIX_POINTER(the, clOrgX, clOrgY);
         result.theMemPitch = theMemPitch;
 
-        result.theSize.X = clEndX - clOrgX;
-        result.theSize.Y = clEndY - clOrgY;
+        result.theSizeX = clEndX - clOrgX;
+        result.theSizeY = clEndY - clOrgY;
 
         return
             (clOrgX == orgX) &&
@@ -472,8 +497,8 @@ public:
         result.theMemPtr = MATRIX_POINTER(the, orgX, orgY);
         result.theMemPitch = theMemPitch;
 
-        result.theSize.X = sizeX;
-        result.theSize.Y = sizeY;
+        result.theSizeX = sizeX;
+        result.theSizeY = sizeY;
     }
 
     ////
@@ -498,17 +523,17 @@ public:
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
-        Space clOrgX = clampRange(orgX, 0, theSize.X);
-        Space clOrgY = clampRange(orgY, 0, theSize.Y);
+        Space clOrgX = clampRange(orgX, 0, theSizeX);
+        Space clOrgY = clampRange(orgY, 0, theSizeY);
 
-        Space clSizeX = clampRange(sizeX, 0, theSize.X - clOrgX);
-        Space clSizeY = clampRange(sizeY, 0, theSize.Y - clOrgY);
+        Space clSizeX = clampRange(sizeX, 0, theSizeX - clOrgX);
+        Space clSizeY = clampRange(sizeY, 0, theSizeY - clOrgY);
 
         result.theMemPtr = MATRIX_POINTER(the, clOrgX, clOrgY);
         result.theMemPitch = theMemPitch;
 
-        result.theSize.X = clSizeX;
-        result.theSize.Y = clSizeY;
+        result.theSizeX = clSizeX;
+        result.theSizeY = clSizeY;
 
         return
             (clOrgX == orgX) &&
@@ -539,9 +564,9 @@ public:
 
         bool ok = true;
 
-        check_flag(theMemPitch == theSize.X, ok);
+        check_flag(theMemPitch == theSizeX, ok);
 
-        Space totalSize = theSize.X * theSize.Y;
+        Space totalSize = theSizeX * theSizeY;
 
         if_not (ok)
             totalSize = 0;
@@ -551,38 +576,53 @@ public:
         return ok;
     }
 
+    //----------------------------------------------------------------
+    //
+    // Check access position.
+    //
+    //----------------------------------------------------------------
+
+    sysinline bool validAccess(const Point<Space>& pos) const
+    {
+        
+        return MATRIX_VALID_ACCESS_(the, pos);
+    }
+
+    //----------------------------------------------------------------
+    //
+    // Pointer and reference: not safe.
+    //
+    //----------------------------------------------------------------
+
+    sysinline auto pointer(const Point<Space>& pos) const
+        {return MATRIX_POINTER_(the, pos);}
+
+    sysinline auto& element(const Point<Space>& pos) const
+        {return MATRIX_ELEMENT_(the, pos);}
+
+    //----------------------------------------------------------------
+    //
+    // read
+    //
+    //----------------------------------------------------------------
+
+    sysinline auto read(const Point<Space>& pos) const
+        {return helpRead(MATRIX_ELEMENT_(the, pos));}
+
+    //----------------------------------------------------------------
+    //
+    // writeSafe
+    //
+    //----------------------------------------------------------------
+
+    template <typename Value>
+    sysinline void writeSafe(const Point<Space>& pos, const Value& value) const
+    {
+        if (MATRIX_VALID_ACCESS_(the, pos))
+            helpModify(MATRIX_ELEMENT_(the, pos)) = helpRead(value);
+    }
+
 };
-
-//================================================================
-//
-// MATRIX_VALID_ACCESS
-//
-//================================================================
-
-#define MATRIX_VALID_ACCESS(matrix, X, Y) \
-    \
-    ( \
-        SpaceU(X) < SpaceU(matrix##SizeX) && \
-        SpaceU(Y) < SpaceU(matrix##SizeY) \
-    )
-
-#define MATRIX_VALID_ACCESS_(matrix, pos) \
-    MATRIX_VALID_ACCESS(matrix, (pos).X, (pos).Y)
-
-////
-
-sysinline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& pos)
-{
-    return
-        SpaceU(pos.X) < SpaceU(size.X) &&
-        SpaceU(pos.Y) < SpaceU(size.Y);
-}
-
-template <typename Pointer>
-sysinline bool matrixValidAccess(const MatrixEx<Pointer>& matrix, const Point<Space>& pos)
-{
-    return matrixValidAccess(matrix.size(), pos);
-}
 
 //================================================================
 //
