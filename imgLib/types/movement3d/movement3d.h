@@ -138,6 +138,42 @@ sysinline Point3D<Float> operator %(const MovementUnpacked3D<Float>& movement, c
 
 //================================================================
 //
+// importMovementWithRotationBase
+//
+// Input movement:
+// (1) Rotate it around the given center by the given rotation.
+// (2) Translate it by the given translation.
+//
+//================================================================
+
+template <typename Float>
+sysinline Movement3D<Float> importMovementWithRotationBase(const Movement3D<Float>& movement, const Point3D<Float>& center)
+{
+    return movement3D
+    (
+        movement.rotation,
+        movement.translation + center - (movement.rotation % center)
+    );
+}
+
+//================================================================
+//
+// exportMovementWithRotationBase
+//
+//================================================================
+
+template <typename Float>
+sysinline Movement3D<Float> exportMovementWithRotationBase(const Movement3D<Float>& movement, const Point3D<Float>& center)
+{
+    return movement3D
+    (
+        movement.rotation,
+        movement.translation + (movement.rotation % center) - center
+    );
+}
+
+//================================================================
+//
 // Traits.
 //
 //================================================================
