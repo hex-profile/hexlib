@@ -197,6 +197,10 @@ public:
         {return Base::realloc(size, byteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
+    inline stdbool reallocForCpu(Space size, stdPars(Kit))
+        {return Base::realloc(size, cpuBaseByteAlignment, kit.cpuFastAlloc, stdPassThru);}
+
+    template <typename Kit>
     inline stdbool reallocForGpuExch(Space size, stdPars(Kit))
         {return Base::realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.cpuFastAlloc, stdPassThru);}
 
@@ -240,7 +244,7 @@ public:
 
 #define ARRAY_ALLOC(name, Type, size) \
     ArrayMemory<Type> name; \
-    require(name.realloc(size, cpuBaseByteAlignment, stdPass))
+    require(name.reallocForCpu(size, stdPass))
 
 #define ARRAY_ALLOC_FOR_GPU_EXCH(name, Type, size) \
     ArrayMemory<Type> name; \
