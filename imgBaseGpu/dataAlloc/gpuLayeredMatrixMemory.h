@@ -20,16 +20,24 @@ class GpuLayeredMatrixMemory : public GpuLayeredMatrix<Type>
 
 public:
 
-    inline GpuLayeredMatrixMemory()
+    sysinline GpuLayeredMatrixMemory()
         {initZero();}
 
-    inline ~GpuLayeredMatrixMemory()
+    sysinline ~GpuLayeredMatrixMemory()
         {dealloc();}
 
 private:
 
     GpuLayeredMatrixMemory(const GpuLayeredMatrixMemory<Type>& that); // forbidden
     void operator =(const GpuLayeredMatrixMemory<Type>& that); // forbidden
+
+public:
+
+    sysinline GpuLayeredMatrix<Type>& operator () ()
+        {return *this;}
+
+    sysinline const GpuLayeredMatrix<Type>& operator () () const 
+        {return *this;}
 
 public:
 
@@ -86,14 +94,14 @@ public:
 
     ////
 
-    inline Point<Space> size() const {return currentImageSize;}
+    sysinline Point<Space> size() const {return currentImageSize;}
 
-    inline Point<Space> maxSize() const {return allocSize;}
-    inline Space maxLayers() const {return allocLayers;}
+    sysinline Point<Space> maxSize() const {return allocSize;}
+    sysinline Space maxLayers() const {return allocLayers;}
 
     ////
 
-    inline void resizeNull()
+    sysinline void resizeNull()
     {
         currentImageSize = point(0);
         currentImagePitch = 0;
@@ -103,12 +111,12 @@ public:
 
     bool resize(Space layers, Space sizeX, Space sizeY); // rearrange without reallocation
 
-    inline bool resize(Space layers, const Point<Space>& size)
+    sysinline bool resize(Space layers, const Point<Space>& size)
         {return resize(layers, size.X, size.Y);}
 
 private:
 
-    inline void initZero()
+    sysinline void initZero()
     {
         currentImageSize = point(0);
         currentImagePitch = 0;
@@ -129,12 +137,12 @@ public:
     //
 
     template <typename Kit>
-    inline stdbool realloc(Space layers, const Point<Space>& size, stdPars(Kit))
+    sysinline stdbool realloc(Space layers, const Point<Space>& size, stdPars(Kit))
         {return reallocEx(layers, size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:
 
-    inline void releaseOwnership() {memoryOwner.discardAlloc(); initZero();}
+    sysinline void releaseOwnership() {memoryOwner.discardAlloc(); initZero();}
 
 private:
 
