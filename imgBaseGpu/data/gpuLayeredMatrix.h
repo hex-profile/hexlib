@@ -9,7 +9,7 @@
 //
 //================================================================
 
-template <typename Element>
+template <typename Type>
 struct GpuLayeredMatrix
 {
 
@@ -21,15 +21,15 @@ struct GpuLayeredMatrix
 
     virtual Space layers() const =0;
 
-    virtual GpuMatrix<Element> getLayer(Space r) const =0;
+    virtual GpuMatrix<Type> getLayer(Space r) const =0;
 
     //
     // Cast from GpuLayeredMatrix<T> to GpuLayeredMatrix<const T>
     //
 
-    sysinline operator const GpuLayeredMatrix<const Element>& () const
+    sysinline operator const GpuLayeredMatrix<const Type>& () const
     {
-        return recastEqualLayout<const GpuLayeredMatrix<const Element>>(*this);
+        return recastEqualLayout<const GpuLayeredMatrix<const Type>>(*this);
     }
 
 };
@@ -40,8 +40,8 @@ struct GpuLayeredMatrix
 //
 //================================================================
 
-template <typename Element>
-class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
+template <typename Type>
+class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Type>
 {
     Point<Space> size() const
         {return point(0);}
@@ -49,7 +49,7 @@ class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Element>
     Space layers() const
         {return 0;}
 
-    GpuMatrix<Element> getLayer(Space r) const
+    GpuMatrix<Type> getLayer(Space r) const
         {return 0;}
 };
 
@@ -102,13 +102,13 @@ sysinline Space getLayers(const GpuLayeredMatrix<Type>& matrix)
 //
 //================================================================
 
-template <typename Element>
-class GpuLayeredMatrixFromMatrix : public GpuLayeredMatrix<Element>
+template <typename Type>
+class GpuLayeredMatrixFromMatrix : public GpuLayeredMatrix<Type>
 {
 
 public:
 
-    sysinline GpuLayeredMatrixFromMatrix(const GpuMatrix<Element>& base)
+    sysinline GpuLayeredMatrixFromMatrix(const GpuMatrix<Type>& base)
         : base(base) {}
 
     Point<Space> size() const
@@ -117,19 +117,27 @@ public:
     Space layers() const
         {return 1;}
 
-    GpuMatrix<Element> getLayer(Space r) const
+    GpuMatrix<Type> getLayer(Space r) const
         {return r == 0 ? base : 0;}
+
+public:
+
+    sysinline const GpuLayeredMatrix<Type>& operator () () const 
+        {return *this;}
+
+    sysinline GpuLayeredMatrix<Type>& operator () ()
+        {return *this;}
 
 private:
 
-    GpuMatrix<Element> base;
+    GpuMatrix<Type> base;
 
 };
 
 //----------------------------------------------------------------
 
-template <typename Element>
-sysinline GpuLayeredMatrixFromMatrix<Element> gpuLayeredMatrixFromMatrix(const GpuMatrix<Element>& base)
+template <typename Type>
+sysinline GpuLayeredMatrixFromMatrix<Type> gpuLayeredMatrixFromMatrix(const GpuMatrix<Type>& base)
 {
-    return GpuLayeredMatrixFromMatrix<Element>(base);
+    return GpuLayeredMatrixFromMatrix<Type>(base);
 }
