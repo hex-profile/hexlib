@@ -5,6 +5,8 @@
 #include "compileTools/classContext.h"
 #include "tests/resamplingTest/resamplingTest.h"
 #include "tests/rotation3dTest/rotation3dTest.h"
+#include "tests/gaussPresentationTest/gaussPresentationTest.h"
+#include "tests/fourierFilterBank/fourierFilterBank.h"
 
 namespace testShell {
 
@@ -52,6 +54,9 @@ private:
 
 private:
 
+    fourierFilterBank::FourierFilterBank fourierFilterBank;
+    gaussPresentationTest::GaussPresentationTest gaussPresentationTest;
+
     resamplingTest::ResamplingTest resamplingTest;
     Rotation3DTest rotation3dTest;
 
@@ -76,6 +81,16 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
 
     {
         CFG_NAMESPACE("Tests");
+
+        {
+            CFG_NAMESPACE("Fourier Filter Bank");
+            fourierFilterBank.serialize(kit);
+        }
+
+        {
+            CFG_NAMESPACE("Gauss Presentation Test");
+            gaussPresentationTest.serialize(kit);
+        }
 
         {
             CFG_NAMESPACE("Resampling Test");
@@ -103,6 +118,18 @@ stdbool TestShellImpl::process(stdPars(AtEngineProcessKit))
     // Tests.
     //
     //----------------------------------------------------------------
+
+    if (fourierFilterBank.active())
+    {
+        require(fourierFilterBank.process(0, stdPass));
+        returnTrue;
+    }
+
+    if (gaussPresentationTest.active())
+    {
+        require(gaussPresentationTest.process(0, stdPass));
+        returnTrue;
+    }
 
     if (resamplingTest.active())
     {
