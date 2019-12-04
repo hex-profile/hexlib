@@ -64,19 +64,7 @@ struct GaborParams
 {
     float32 center; 
     float32 sigma; 
-    float32 factor;
 };
-
-sysinline GaborParams makeGaussParams(float32 center, float32 sigma, float32 factor)
-{
-    GaborParams tmp;
-  
-    tmp.center = center;
-    tmp.sigma = sigma;
-    tmp.factor = factor;
-
-    return tmp;
-}
 
 //================================================================
 //
@@ -99,6 +87,25 @@ sysinline float32 cosShape(float32 x)
 
 //================================================================
 //
+// circularDistance
+//
+//================================================================
+
+sysinline float32 circularDistance(float32 A, float32 B) // A, B in [0..1) range 
+{
+    float32 distance = A - B + 1; // [0, 2)
+  
+    if (distance >= 1) 
+        distance -= 1; // [0, 1)
+
+    if (distance >= 0.5f) 
+        distance = 1 - distance; // [0, 1/2)
+
+    return distance;
+}
+
+//================================================================
+//
 // makeGaborFreqTest
 //
 //================================================================
@@ -108,8 +115,10 @@ GPUTOOL_2D_BEG
     makeGaborFreqTest,
     PREP_EMPTY,
     ((float32_x2, dst)),
-    ((float32, orientation))
-    ((Space, orientationCount))
+    ((float32, orientCenter)) // in circles
+    ((float32, orientSigma)) // in circles
+    ((Space, orientCount))
+    ((float32, orientOfs)) // in orient samples
     ((GaborParams, g0))
     ((Space, scaleStart))
     ((Space, scaleLevels))
@@ -129,31 +138,41 @@ GPUTOOL_2D_BEG
 
     ////
 
-    float32 response = 0;
+    float32 sumWeight = 0;
+    float32 sumWeightValue = 0;
 
-    for (Space k = 0; k < scaleLevels; ++k)
+    ////
+
+    for (Space s = 0; s < scaleLevels; ++s)
     {
         float32 scaleRadius = 0.5f * scaleLevels;
         float32 scaleCenter = 0.5f * scaleLevels;
-        float32 scaleWeight = cosShape(((k + 0.5f) - scaleCenter) / scaleRadius);
+        float32 scaleWeight = cosShape(((s + 0.5f) - scaleCenter) / scaleRadius);
 
-        float32 scale = powf(scaleFactor, float32(scaleStart + k));
+        float32 scale = powf(scaleFactor, float32(scaleStart + s));
         float32 center = scale * g0.center;
         float32 sigma = scale * g0.sigma;
 
-        if (sigma > 0) 
-        {
-            Point<float32> rotatedCenter = complexMul(point(center, 0.f), circleCCW(orientation / orientationCount / 2));
+        Space totalOrientations = 2 * orientCount;
 
+        for (Space k = 0; k < totalOrientations; ++k)
+        {
+            float32 currentOrient = (k + orientOfs) / totalOrientations;
+            float32 dist = circularDistance(orientCenter, currentOrient);
+
+            float32 orientWeight = unitGauss(dist / clampMin(orientSigma, 1e-12f));
+
+            Point<float32> rotatedCenter = complexMul(point(center, 0.f), circleCCW(currentOrient));
             Point<float32> ofs = (freq - rotatedCenter) / sigma;
 
-            response += g0.factor * scaleWeight * unitGauss(ofs.X) * unitGauss(ofs.Y);
+            sumWeightValue += scaleWeight * orientWeight * unitGauss(ofs.X) * unitGauss(ofs.Y);
+            sumWeight += scaleWeight * orientWeight;
         }
     }
 
     ////
 
-    *dst = make_float32_x2(response, 0);
+    *dst = make_float32_x2(nativeRecipZero(sumWeight) * sumWeightValue, 0);
 }
 #endif
 GPUTOOL_2D_END
@@ -480,8 +499,8 @@ private:
 
     NumericVarStaticEx<float32, int, 0, 128, 0> gaborCenter;
     NumericVarStaticEx<float32, int, 0, 128, 0> gaborSigma;
-    NumericVarStaticEx<float32, int, 0, 1024, 0> gaborFactor;
     NumericVarStaticEx<float32, int, 0, 1024, 0> gaborScaleFactor;
+    NumericVar<float32> gaborOrientBlurSigma{0, 128, 0};
     NumericVarStatic<int, 0, 64, 0> gaborScaleStart;
     NumericVarStatic<int, 0, 64, 4> gaborScaleLevels;
 
@@ -501,7 +520,6 @@ FourierFilterBankImpl::FourierFilterBankImpl()
     gaborCenter = 0.2477296157f;
     gaborSigma = 0.06073787279f;
 
-    gaborFactor = 1.f;
     gaborScaleStart = 0;
     gaborScaleLevels = 5;
     gaborScaleFactor = 1/1.5f;
@@ -539,10 +557,10 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
 
         gaborCenter.serialize(kit, STR("Center"));
         gaborSigma.serialize(kit, STR("Sigma"));
-        gaborFactor.serialize(kit, STR("Factor"));
-        gaborScaleStart.serialize(kit, STR("ScaleStart"));
-        gaborScaleLevels.serialize(kit, STR("ScaleLevels"));
-        gaborScaleFactor.serialize(kit, STR("ScaleFactor"));
+        gaborScaleStart.serialize(kit, STR("Scale Start"));
+        gaborScaleLevels.serialize(kit, STR("Scale Levels"));
+        gaborScaleFactor.serialize(kit, STR("Scale Factor"));
+        gaborOrientBlurSigma.serialize(kit, STR("Orient Blur Sigma"));
     }
 
     displayFreqFilter.serialize(kit, STR("Display Freq Filter"));
@@ -600,6 +618,10 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
             printMsgL(kit, STR("Pyramid filter compensation: Fourier size should be %0 or %1"), COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd), COMPILE_ARRAY_SIZE(conservativeFilterFreqEven), msgErr);
     }
 
+    ////
+
+    Space totalOrientations = orientationCount * 2;
+
     //----------------------------------------------------------------
     //
     // Generate 2D Bank
@@ -609,15 +631,6 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
     if (displayType == DisplayGaborTest)
     {
 
-        if (outputFile)
-        {
-            fprintf(outputFile, "static const Space PREP_PASTE2(FILTER, SizeX) = %d;\n", filterSize.X);
-            fprintf(outputFile, "static const Space PREP_PASTE2(FILTER, SizeY) = %d;\n", filterSize.Y);
-            fprintf(outputFile, "\n");
-        }
-
-        ////
-
         GPU_MATRIX_ALLOC(filterFreqSum, float32_x2, fourierSize);
         require(gpuMatrixSet(filterFreqSum, make_float32_x2(0, 0), stdPass));
 
@@ -625,14 +638,22 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
         for (Space k = 0; k < orientationCount; ++k)
         {
-
             GPU_MATRIX_ALLOC(filterFreq, float32_x2, fourierSize);
 
             ////
 
-            require(makeGaborFreqTest(filterFreq, k + orientationOffset, orientationCount, 
-                makeGaussParams(gaborCenter, gaborSigma, gaborFactor), 
-                gaborScaleStart, gaborScaleLevels, gaborScaleFactor, stdPass));
+            require
+            (
+                makeGaborFreqTest
+                (
+                    filterFreq, 
+                    (k + orientationOffset) / totalOrientations, gaborOrientBlurSigma, 
+                    orientationCount, orientationOffset,
+                    GaborParams{gaborCenter, gaborSigma}, 
+                    gaborScaleStart, gaborScaleLevels, gaborScaleFactor, 
+                    stdPass
+                )
+            );
 
             if (fourierBlurSigma > 0)
             {
@@ -686,37 +707,6 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
                 require(gpuCopy(filterFreq, filterFreqCpu, stdPass));
                 require(gpuCopy(filterSpace, filterSpaceCpu, stdPass));
             }
-
-            ////
-
-            if (outputFile)
-            {
-                Matrix<const float32_x2> filter = filterSpaceCpu;
-                MATRIX_EXPOSE(filter);
-
-                ////
-
-                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE2(FILTER, Data%d)[%d][%d] = \n", k, filterSize.Y, filterSize.X);
-                fprintf(outputFile, "{\n");
-
-                for (Space Y = 0; Y < filterSize.Y; ++Y)
-                {
-                    fprintf(outputFile, "  { ");
-
-                    for (Space X = 0; X < filterSize.X; ++X)
-                    {
-                        // 2X because of Hilbert, and 2X because real input is [-1/2, +1/2].
-                        float32_x2 value = MATRIX_ELEMENT(filter, X, Y);
-                        fprintf(outputFile, "{%+.9ff, %+.9ff}, ", 4 * value.x, 4 * value.y);
-                    }
-
-                    fprintf(outputFile, "},\n");
-                }
-
-                fprintf(outputFile, "};\n\n");
-
-            }
-
         }
 
         ////
@@ -734,14 +724,29 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
     if (displayType == DisplayGaborSeparable)
     {
+        bool directGaborComputation = !pyramidFilterCompensation && fourierBlurSigma == 0;
 
         if (outputFile)
         {
-            fprintf(outputFile, "static const Space PREP_PASTE2(FILTER, SizeX) = %d;\n", filterSize.X);
-            fprintf(outputFile, "static const Space PREP_PASTE2(FILTER, SizeY) = %d;\n", filterSize.Y);
-            fprintf(outputFile, "static devConstant float32 PREP_PASTE2(FILTER, Freq) = %+.9ff;\n", gaborCenter());
-            fprintf(outputFile, "static devConstant float32 PREP_PASTE2(FILTER, Sigma) = %+.9ff;\n", gaborSigma());
-            fprintf(outputFile, "// Pyramid filter compensation = %s;\n", pyramidFilterCompensation ? "ON" : "OFF");
+            fprintf(outputFile, "//================================================================\n");
+            fprintf(outputFile, "//\n");
+            fprintf(outputFile, "// Generated by %s\n", __FILE__);
+            fprintf(outputFile, "//\n");
+            fprintf(outputFile, "// Pyramid filter compensation is %s.\n", pyramidFilterCompensation ? "ON" : "OFF");
+            fprintf(outputFile, "// Direct Gabor computation is %s.\n", directGaborComputation ? "ON" : "OFF");
+            fprintf(outputFile, "//\n");
+            fprintf(outputFile, "//================================================================\n");
+            fprintf(outputFile, "\n");
+        }
+
+        if (outputFile)
+        {
+            fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, OrientCount) = %d;\n", orientationCount());
+            fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, SizeX) = %d;\n", filterSize.X);
+            fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, SizeY) = %d;\n", filterSize.Y);
+            fprintf(outputFile, "\n");
+            fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, Freq) = %+.9ff;\n", gaborCenter());
+            fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, Sigma) = %+.9ff;\n", gaborSigma());
             fprintf(outputFile, "\n");
         }
 
@@ -749,11 +754,6 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
         GPU_MATRIX_ALLOC(filterFreqSum, float32_x2, fourierSize);
         require(gpuMatrixSet(filterFreqSum, make_float32_x2(0, 0), stdPass));
-
-        ////
-
-        float32 spaceSigma = 1.f / (2 * pi32 * gaborSigma());
-        float32 maxMagnitude = 1.f / (sqrtf(2 * pi32) * spaceSigma);
 
         ////
 
@@ -858,7 +858,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 ////
 
-                if (!pyramidFilterCompensation && fourierBlurSigma == 0)
+                if (directGaborComputation)
                 {
                     Point<float32> freq = gaborCenter() * circleCCW(float32(k + orientationOffset) / orientationCount / 2);
 
@@ -883,43 +883,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 if (k == 0)
                 {
-
-                    //
-                    // Odd size shape (Gauss)
-                    //
-
-                    if (0)
-                    {
-                        float32 spaceSigma = 1.f / ((2 * pi32) * gaborSigma());
-
-                        Point<Space> oddSize = filterSize | 1;
-
-                        fprintf(outputFile, "static devConstant float32 PREP_PASTE2(FILTER, OddShapeX)[%d] = { ", oddSize.X);
-
-                        for (Space i = 0; i < oddSize.X; ++i)
-                        {
-                            float32 t = (i + 0.5f) - 0.5f * oddSize.X;
-                            float32 shape = gauss1(t / spaceSigma) / spaceSigma;
-                            fprintf(outputFile, "%+.9ff, ", shape);
-                        }
-
-                        fprintf(outputFile, "};\n");
-
-                        fprintf(outputFile, "static devConstant float32 PREP_PASTE2(FILTER, OddShapeY)[%d] = { ", oddSize.X);
-
-                        for (Space i = 0; i < oddSize.Y; ++i)
-                        {
-                            float32 t = (i + 0.5f) - 0.5f * oddSize.Y;
-                            float32 shape = gauss1(t / spaceSigma) / spaceSigma;
-                            fprintf(outputFile, "%+.9ff, ", shape);
-                        }
-
-                        fprintf(outputFile, "};\n");
-                    }
-
-                    ////
-
-                    fprintf(outputFile, "static devConstant float32 PREP_PASTE2(FILTER, ShapeX)[%d] = { ", filterSize.X);
+                    fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, ShapeX)[%d] = { ", filterSize.X);
 
                     for (Space i = 0; i < filterSize.X; ++i)
                         fprintf(outputFile, "%+.9ff, ", vectorLength(filterXPtr[i]));
@@ -928,7 +892,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                     ////
 
-                    fprintf(outputFile, "static devConstant float32 PREP_PASTE2(FILTER, ShapeY)[%d] = { ", filterSize.Y);
+                    fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, ShapeY)[%d] = { ", filterSize.Y);
 
                     for (Space i = 0; i < filterSize.Y; ++i)
                         fprintf(outputFile, "%+.9ff, ", vectorLength(filterYPtr[i]));
@@ -938,8 +902,8 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 ////
 
-                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE2(FILTER, Freq%d) = {%+.9ff, %+.9ff};\n", k, freq.X, freq.Y);
-                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE2(FILTER, DataX%d)[%d] = { ", k, filterSize.X);
+                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, Freq%d) = {%+.9ff, %+.9ff};\n", k, freq.X, freq.Y);
+                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, DataX%d)[%d] = { ", k, filterSize.X);
 
                 for (Space i = 0; i < filterSize.X; ++i)
                     fprintf(outputFile, "{%+.9ff, %+.9ff}, ", filterXPtr[i].x, filterXPtr[i].y);
@@ -948,7 +912,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 ////
 
-                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE2(FILTER, DataY%d)[%d] = { ", k, filterSize.Y);
+                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, DataY%d)[%d] = { ", k, filterSize.Y);
 
                 for (Space i = 0; i < filterSize.Y; ++i)
                     fprintf(outputFile, "{%+.9ff, %+.9ff}, ", filterYPtr[i].x, filterYPtr[i].y);
@@ -973,7 +937,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
     //----------------------------------------------------------------
 
     if (outputFile)
-        printMsgG(kit, STR("Filter bank is saved to %0"), fileName);
+        printMsgG(kit, STR("Filter bank is saved to %0."), fileName);
 
     ////
 
