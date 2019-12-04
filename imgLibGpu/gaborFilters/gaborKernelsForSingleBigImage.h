@@ -13,4 +13,5 @@
 
 #if HOSTCODE
 #include "dataAlloc/gpuLayeredMatrixMemory.h"
+#include "dataAlloc/gpuMatrixMemory.h"
 #endif
