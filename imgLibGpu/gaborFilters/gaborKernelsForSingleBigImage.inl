@@ -46,8 +46,10 @@
 
 //----------------------------------------------------------------
 
-#if MASK_ENABLED && !(defined(MASK_PIXEL) && defined(DEFAULT_WEIGHTED_PIXEL) && defined(DEFAULT_PIXEL) && defined(MASK_BORDER_MODE))
-    #error
+#if MASK_ENABLED
+    #if !(defined(MASK_PIXEL) && defined(MASK_PARAMS) && defined(MASK_CHECK) && defined(MASK_BORDER_MODE) && defined(DEFAULT_WEIGHTED_PIXEL) && defined(DEFAULT_PIXEL))
+        #error
+    #endif
 #endif
 
 //================================================================
@@ -674,7 +676,7 @@ GPUTOOL_2D_BEG_EX
     ((const INPUT_PIXEL, image, INTERP_NEAREST, INPUT_BORDER_MODE))
     ((const MASK_PIXEL, mask, INTERP_NEAREST, MASK_BORDER_MODE)),
     ((DEFAULT_WEIGHTED_PIXEL, dst)),
-    PREP_EMPTY
+    ((MASK_PARAMS, maskParams))
 )
 #if DEVCODE
 {
@@ -734,7 +736,7 @@ GPUTOOL_2D_BEG_EX
 
         {
             auto texPos = srcReadTexPos + point(float32(iX), float32(iY)) * srcTexstep;
-            float32 mask = tex2D(maskSampler, texPos) != 0; // ```
+            float32 mask = float32(MASK_CHECK(tex2D(maskSampler, texPos), maskParams));
             float32 image = tex2D(imageSampler, texPos);
 
             *(maskCacheLoadPtr + iX + iY * maskCacheMemPitch) = mask;
@@ -925,6 +927,7 @@ stdbool PREP_PASTE3(FUNCNAME, DefaultFull, DIR(Hor, Ver))
     const GpuMatrix<const INPUT_PIXEL>& srcImage, 
     const GpuMatrix<const MASK_PIXEL>& srcMask, 
     const GpuMatrix<DEFAULT_PIXEL>& dst,
+    const MASK_PARAMS& maskParams,
     stdPars(GpuProcessKit)
 )
 {
@@ -940,7 +943,7 @@ stdbool PREP_PASTE3(FUNCNAME, DefaultFull, DIR(Hor, Ver))
 
     auto initialFunc = PREP_PASTE3(FUNCNAME, DefaultInitialCached, DIR(Hor, Ver));
 
-    require(initialFunc(srcImage, srcMask, tmp, stdPass));
+    require(initialFunc(srcImage, srcMask, tmp, maskParams, stdPass));
 
     ////
 
