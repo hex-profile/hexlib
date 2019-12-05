@@ -42,13 +42,31 @@ KIT_CREATE1(PipeControlKit, const PipeControl&, pipeControl);
 
 //================================================================
 //
-// OutputLevelKit
+// VerbosityKit
 //
 //================================================================
 
-enum OutputLevel {OUTPUT_NONE, OUTPUT_RENDER, OUTPUT_ENABLED};
+enum class Verbosity
+{
+    // Produce nothing.
+    Off, 
 
-KIT_CREATE1(OutputLevelKit, OutputLevel, outputLevel);
+    // Produce nothing but main fullscreen image.
+    Render, 
+
+    // Produce everything.
+    On
+};
+
+//----------------------------------------------------------------
+
+KIT_CREATE1(VerbosityKit, Verbosity, verbosity);
+
+//----------------------------------------------------------------
+
+template <typename Kit>
+sysinline auto verboseOnlyIf(bool condition, const Kit& kit)
+    {return kitReplace(kit, VerbosityKit(condition ? kit.verbosity : Verbosity::Off));}
 
 //================================================================
 //
@@ -60,7 +78,7 @@ KIT_CREATE1(OutputLevelKit, OutputLevel, outputLevel);
 KIT_COMBINE3(ModuleReallocKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit);
 
 KIT_COMBINE11(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, 
-    PipeControlKit, TimerKit, OutputLevelKit, UserPointKit, SetBusyStatusKit,
+    PipeControlKit, TimerKit, VerbosityKit, UserPointKit, SetBusyStatusKit,
     AlternativeVersionKit, DisplayParamsKit);
 
 //================================================================
@@ -81,4 +99,4 @@ KIT_COMBINE2(ModuleSerializeKit, CfgSerializeKit, OverlayTakeoverKit);
 //================================================================
 
 #define MODULE_OUTPUT_ENABLED \
-    (kit.dataProcessing && kit.outputLevel >= OUTPUT_ENABLED)
+    (kit.dataProcessing && kit.verbosity >= Verbosity::On)

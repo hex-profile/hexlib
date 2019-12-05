@@ -30,8 +30,8 @@ inline bool printMsgCheckDataProcessing(const DataProcessingKit* kit)
 inline bool printMsgCheckOutputEnabled(...)
     {return true;}
 
-inline bool printMsgCheckOutputEnabled(const OutputLevelKit* kit)
-    {return kit->outputLevel >= OUTPUT_ENABLED;}
+inline bool printMsgCheckOutputEnabled(const VerbosityKit* kit)
+    {return kit->verbosity >= Verbosity::On;}
 
 //----------------------------------------------------------------
 
