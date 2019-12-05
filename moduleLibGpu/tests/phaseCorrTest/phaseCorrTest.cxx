@@ -731,7 +731,7 @@ void PhaseCorrTestImpl::serialize(const ModuleSerializeKit& kit)
 
 stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
 {
-    DisplayType displayType = kit.outputLevel >= OUTPUT_RENDER ? displaySwitch : DisplayNothing;
+    DisplayType displayType = kit.verbosity >= Verbosity::On ? displaySwitch : DisplayNothing;
 
     //
     // sincos table

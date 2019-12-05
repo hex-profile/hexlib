@@ -381,7 +381,7 @@ public:
 
 public:
 
-    KIT_COMBINE4(Kit, GpuProcessKit, MsgLogsKit, UserPointKit, OutputLevelKit);
+    KIT_COMBINE4(Kit, GpuProcessKit, MsgLogsKit, UserPointKit, VerbosityKit);
 
 public:
 

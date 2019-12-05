@@ -597,7 +597,7 @@ stdbool VideoPreprocessorImpl::processTarget
     GpuBaseAtConsoleThunk gpuBaseConsoleAt(*atImageConsole, *atVideoOverlay, kit);
     GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleProhibited;
 
-    if (kit.outputLevel >= OUTPUT_ENABLED)
+    if (kit.verbosity >= Verbosity::On)
         gpuBaseConsole = &gpuBaseConsoleAt;
 
     GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, userDisplayFactor, vectorDisplayMode, kit);
@@ -636,7 +636,7 @@ stdbool VideoPreprocessorImpl::processTarget
     //
     //----------------------------------------------------------------
 
-    DisplayType displayType = kit.outputLevel >= OUTPUT_RENDER ? displaySwitch : DisplayNothing;
+    DisplayType displayType = kit.verbosity >= Verbosity::Render ? displaySwitch : DisplayNothing;
 
     if (displayType == DisplayFrameHistory)
     {
@@ -734,7 +734,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 
     if_not (overlaySmootherThunk.overlayIsSet)
     {
-        if (kit.outputLevel >= OUTPUT_ENABLED)
+        if (kit.verbosity >= Verbosity::On)
         {
             AtProviderFromGpuImage imageProvider(kit);
             require(imageProvider.setImage(inputFrame, stdPass));
@@ -897,7 +897,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     //
     //----------------------------------------------------------------
 
-    if (kit.outputLevel >= OUTPUT_ENABLED && !atOverlayMonitor.overlayIsSet)
+    if (kit.verbosity >= Verbosity::On && !atOverlayMonitor.overlayIsSet)
     {
         AtProviderFromGpuImage imageProvider(kit);
         require(imageProvider.setImage(processedFrame, stdPass));
@@ -978,7 +978,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     // If overlay is not set, use the cropped video image
     //
 
-    if (kit.outputLevel >= OUTPUT_ENABLED && !atOverlayMonitor.overlayIsSet)
+    if (kit.verbosity >= Verbosity::On && !atOverlayMonitor.overlayIsSet)
     {
         AtProviderFromGpuImage imageProvider(kit);
         require(imageProvider.setImage(croppedFrame, stdPass));
@@ -1140,7 +1140,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
                 PipeControl pipeControl = (k == histSize-1) ? PipeControl(initialRollback, randomize) : PipeControl(0, false);
                 PipeControlKit pipelineControlKit(pipeControl);
 
-                OutputLevelKit outputKit(k == 0 ? kit.outputLevel : OUTPUT_NONE);
+                VerbosityKit outputKit(k == 0 ? kit.verbosity : Verbosity::Off);
                 ProfilerKit profilerKit(k == 0 ? kit.profiler : 0);
 
                 require

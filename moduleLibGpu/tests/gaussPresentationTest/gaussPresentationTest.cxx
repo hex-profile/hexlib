@@ -286,7 +286,7 @@ void GaussPresentationTestImpl::serialize(const ModuleSerializeKit& kit)
 
 stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
 {
-    DisplayType displayType = kit.outputLevel >= OUTPUT_RENDER ? displaySwitch : DisplayNothing;
+    DisplayType displayType = kit.verbosity >= Verbosity::On ? displaySwitch : DisplayNothing;
 
     if (displayType == DisplayNothing)
         returnTrue;

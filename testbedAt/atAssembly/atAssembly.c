@@ -116,7 +116,7 @@ public:
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         TargetProcessKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
-        return toolModule.process(toolTarget, stdPassThruKit(kitCombine(kit, joinKit, OutputLevelKit(OUTPUT_ENABLED))));
+        return toolModule.process(toolTarget, stdPassThruKit(kitCombine(kit, joinKit, VerbosityKit(Verbosity::On))));
     }
 
 public:
