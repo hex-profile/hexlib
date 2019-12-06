@@ -99,18 +99,39 @@ public:
 
 //================================================================
 //
-// VectorDisplayMode
+// DisplayMode
 //
 //================================================================
 
-enum VectorDisplayMode
+enum class DisplayMode
 {
-    VectorDisplayColor,
-    VectorDisplayMagnitude,
-    VectorDisplayX,
-    VectorDisplayY,
+    // Display an image upsampled to the original frame size.
+    Fullscreen, 
 
-    VectorDisplayModeCount
+    // Display a true-sized image at the screen center,
+    // on top of black image of the original frame size.
+    Centered, 
+
+    // Display a true-sized image at the left upper corner.
+    Original, 
+    
+    COUNT
+};
+
+//================================================================
+//
+// VectorMode
+//
+//================================================================
+
+enum class VectorMode
+{
+    Color,
+    Magnitude,
+    OnlyX,
+    OnlyY,
+
+    COUNT
 };
 
 //================================================================
@@ -130,14 +151,9 @@ enum ColorMode {ColorYuv, ColorRgb};
 class GpuImageConsoleThunk : public GpuImageConsole
 {
 
-public:
-
-    inline GpuImageConsoleKit getKit()
-        {return GpuImageConsoleKit(*this, displayFactor);}
-
     //----------------------------------------------------------------
     //
-    //
+    // Basic thunks.
     //
     //----------------------------------------------------------------
 
@@ -385,17 +401,30 @@ public:
 
 public:
 
-    inline GpuImageConsoleThunk(GpuBaseConsole& baseConsole, float32 displayFactor, VectorDisplayMode vectorDisplayMode, const Kit& kit)
-        : baseConsole(baseConsole), displayFactor(displayFactor), vectorDisplayMode(vectorDisplayMode), kit(kit) {}
+    inline GpuImageConsoleThunk
+    (
+        GpuBaseConsole& baseConsole, 
+        DisplayMode displayMode,
+        float32 displayFactor, 
+        VectorMode vectorMode, 
+        const Kit& kit
+    )
+        : 
+        baseConsole(baseConsole),
+        displayMode(displayMode),
+        displayFactor(displayFactor), 
+        vectorMode(vectorMode), 
+        kit(kit) 
+    {
+    }
 
 private:
 
     GpuBaseConsole& baseConsole;
 
-    float32 displayFactor;
-
-    VectorDisplayMode const vectorDisplayMode;
-
+    DisplayMode const displayMode;
+    float32 const displayFactor;
+    VectorMode const vectorMode;
     Kit const kit;
 
 };

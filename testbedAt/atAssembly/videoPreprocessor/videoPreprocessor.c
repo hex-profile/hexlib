@@ -293,8 +293,6 @@ private:
 
 private:
 
-    RangeValueControl<float32> userDisplayFactor;
-    MultiSwitch<VectorDisplayMode, VectorDisplayModeCount, VectorDisplayColor> vectorDisplayMode;
     DisplayWaitController displayWaitController;
 
     enum DisplayType {DisplayNothing, DisplayFrameHistory, DisplayCount};
@@ -304,12 +302,16 @@ private:
 
     BoolSwitch<false> alternativeVersion;
 
+private:
+
+    RingSwitch<DisplayMode, DisplayMode::COUNT, DisplayMode::Fullscreen> displayMode;
+    RangeValueControl<float32> displayFactor;
+    MultiSwitch<VectorMode, VectorMode::COUNT, VectorMode::Color> vectorMode;
+
     RangeValueControl<int32> displayedViewIndex;
     RangeValueControl<int32> displayedTemporalIndex;
     RangeValueControl<int32> displayedCircularIndex;
     RangeValueControl<int32> displayedScaleIndex;
-
-    RingSwitch<DisplayMethod, DISPLAY_METHOD_COUNT, DISPLAY_FULLSCREEN> displayMethod;
 
 private:
 
@@ -343,8 +345,8 @@ VideoPreprocessorImpl::VideoPreprocessorImpl()
     rotationAngle(0, 1, 0, 1.f/128, RangeValueCircular),
     cropSizeCfg(point(0), point(8192), point(1280, 720)),
     genGratingPeriod(2, 2048, 6, 1.02189714865411668f, RangeValueLogscale),
-    userDisplayFactor(1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale),
 
+    displayFactor(1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale),
     displayedViewIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
     displayedTemporalIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
     displayedCircularIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
@@ -367,12 +369,22 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 
         check_flag(alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
 
+        displayMode.serialize(kit, STR("Display Mode"), STR("Ctrl+D"));
+        displayFactor.serialize(kit, STR("User Display Factor"), STR("Num +"), STR("Num -"), STR("Num *"));
+
+        vectorMode.serialize
+        (
+            kit, STR("Vector Gray Mode"),
+            {STR("Vector Display: Color"), STR("Alt+Z")},
+            {STR("Vector Display: Magnitude"), STR("Alt+X")},
+            {STR("Vector Display: X"), STR("Alt+C")},
+            {STR("Vector Display: Y"), STR("Alt+V")}
+        );
+
         displayedViewIndex.serialize(kit, STR("Displayed View Index"), STR("9"), STR("0"));
         displayedTemporalIndex.serialize(kit, STR("Displayed Temporal Index"), STR(","), STR("."));
         displayedCircularIndex.serialize(kit, STR("Displayed Circular Index"), STR(";"), STR("'"));
         displayedScaleIndex.serialize(kit, STR("Displayed Scale Index"), STR("="), STR("-"));
-
-        displayMethod.serialize(kit, STR("Display Method"), STR("Ctrl+D"));
     }
 
     {
@@ -413,18 +425,6 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
             CFG_NAMESPACE("Display Delayer");
             displayWaitController.serialize(kit);
         }
-
-        userDisplayFactor.serialize(kit, STR("User Display Factor"), STR("Num +"), STR("Num -"), STR("Num *"));
-
-        vectorDisplayMode.serialize
-        (
-            kit, STR("Vector Gray Mode"),
-            {STR("Vector Display: Color"), STR("Alt+Z")},
-            {STR("Vector Display: Magnitude"), STR("Alt+X")},
-            {STR("Vector Display: X"), STR("Alt+C")},
-            {STR("Vector Display: Y"), STR("Alt+V")}
-        );
-
     }
 
     {
@@ -600,7 +600,7 @@ stdbool VideoPreprocessorImpl::processTarget
     if (kit.verbosity >= Verbosity::On)
         gpuBaseConsole = &gpuBaseConsoleAt;
 
-    GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, userDisplayFactor, vectorDisplayMode, kit);
+    GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, displayMode, displayFactor, vectorMode, kit);
 
     //----------------------------------------------------------------
     //
@@ -619,7 +619,8 @@ stdbool VideoPreprocessorImpl::processTarget
 
     DisplayParams displayParams
     {
-        displayMethod,
+        displayMode == DisplayMode::Fullscreen,
+        displayFactor,
         inputFrame.size(), 
         displayedViewIndexVar, 
         displayedTemporalIndexVar, 
@@ -630,7 +631,7 @@ stdbool VideoPreprocessorImpl::processTarget
     DisplayParamsKit displayKit{displayParams};
 
     auto oldKit = kit;
-    auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole, userDisplayFactor), displayKit, AlternativeVersionKit(alternativeVersion));
+    auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole), displayKit, AlternativeVersionKit(alternativeVersion));
 
     //----------------------------------------------------------------
     //
@@ -649,7 +650,7 @@ stdbool VideoPreprocessorImpl::processTarget
             Space i = kit.display.temporalIndex(-(frameHistory.size()-1), 0);
 
             require(kit.gpuImageConsole.addRgbColorImage(makeConst(frameHistory[-i]->frameMemory),
-                0x00, 0xFF * kit.displayFactor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO,
+                0x00, 0xFF * kit.display.factor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO,
                 paramMsg(STR("Video Preprocessor: Frame history [%0]"), i), stdPass));
         }
     }

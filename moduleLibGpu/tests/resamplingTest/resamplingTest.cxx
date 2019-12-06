@@ -378,7 +378,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     if (displayType == DisplaySource)
     {
         require(kit.gpuImageConsole.addMatrixEx(srcImage, 
-            kit.displayFactor * pixelMin(), kit.displayFactor * pixelMax(), point(1.f), 
+            kit.display.factor * pixelMin(), kit.display.factor * pixelMax(), point(1.f), 
             INTERP_NEAREST, point(0), BORDER_ZERO, STR("Source Image"), stdPass));
     }
 
@@ -516,7 +516,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         int version = kit.display.circularIndex(2);
 
         require(kit.gpuImageConsole.addMatrixEx(version ? dstImageTest : dstImage, 
-            kit.displayFactor * pixelMin(), kit.displayFactor * pixelMax(), point(1.f), 
+            kit.display.factor * pixelMin(), kit.display.factor * pixelMax(), point(1.f), 
             INTERP_NEAREST, point(0), BORDER_ZERO, 
             paramMsg(STR("Destination Image (%)"), version ? STR("Test") : STR("Ref")), stdPass));
     }
@@ -534,7 +534,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
 
     if (displayType == DisplayError)
     {
-        require(kit.gpuImageConsole.addMatrixEx(error, -kit.displayFactor, +kit.displayFactor, point(1.f),
+        require(kit.gpuImageConsole.addMatrixEx(error, -kit.display.factor, +kit.display.factor, point(1.f),
             INTERP_NEAREST, point(0), BORDER_ZERO, STR("Error"), stdPass));
     }
 

@@ -43,7 +43,6 @@ public:
     Point<Space> minSize;
     ImgOutputTarget target;
     bool newLine;
-    bool overlayCentering;
     float32 textFactor;
     float32 arrowFactor;
 
@@ -55,7 +54,6 @@ private:
         this->minSize = point(0);
         this->newLine = false;
         this->target = ImgOutputOverlay;
-        this->overlayCentering = false;
         this->textFactor = 1;
         this->arrowFactor = 1;
     }
@@ -96,9 +94,6 @@ public:
 
     inline ImgOutputHint& setTargetConsole()
         {this->target = ImgOutputConsole; return *this;}
-
-    inline ImgOutputHint& setOverlayCentering(bool overlayCentering = true)
-        {this->overlayCentering = overlayCentering; return *this;}
 
     inline ImgOutputHint& setTextFactor(float32 factor)
         {this->textFactor = factor; return *this;}

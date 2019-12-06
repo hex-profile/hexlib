@@ -103,34 +103,14 @@ inline DisplaySide displaySide(const Kit& kit)
 
 //================================================================
 //
-// DisplayMethod
-//
-//================================================================
-
-enum DisplayMethod 
-{
-    // Display an image upsampled to the original frame size.
-    DISPLAY_FULLSCREEN, 
-
-    // Display a true-sized image at the screen center,
-    // on top of black image of the original frame size.
-    DISPLAY_CENTERED, 
-
-    // Display a true-sized image at the left upper corner.
-    DISPLAY_ORIGINAL, 
-    
-    DISPLAY_METHOD_COUNT
-};
-
-//================================================================
-//
 // DisplayParams
 //
 //================================================================
 
 struct DisplayParams
 {
-    DisplayMethod method;
+    bool const fullscreen;
+    float32 const factor;
     Point<Space> screenSize;
     DisplayedRangeIndex& viewIndex;
     DisplayedRangeIndex& temporalIndex;
