@@ -127,7 +127,7 @@ template <typename EnumType, EnumType positionCount, EnumType defaultPos>
 class MultiSwitch
 {
 
-    COMPILE_ASSERT(0 <= defaultPos && defaultPos < positionCount);
+    COMPILE_ASSERT(EnumType(0) <= defaultPos && defaultPos < positionCount);
 
 public:
 
@@ -140,13 +140,13 @@ public:
 public:
 
     inline bool serialize(const CfgSerializeKit& kit, const CharArray& name, const NameKeyCommentStruct descArray[], bool cfgPrefix = true, bool signalPrefix = true)
-        {return serializeMultiSwitch(kit, name, value, positionCount, signals, descArray, cfgPrefix, signalPrefix);}
+        {return serializeMultiSwitch(kit, name, value, size_t(positionCount), signals, descArray, cfgPrefix, signalPrefix);}
 
     SWSER_DEFINE
 
 private:
 
-    NumericVarStatic<size_t, 0, positionCount-1, defaultPos> value;
+    NumericVarStatic<size_t, 0, size_t(positionCount) - 1, size_t(defaultPos)> value;
     StandardSignal signals[positionCount];
 
 };

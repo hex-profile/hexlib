@@ -673,8 +673,8 @@ GPUTOOL_2D_BEG_EX
     PREP_PASTE3(FUNCNAME, DefaultInitialCached, DIR(Hor, Ver)),
     GABOR_INITIAL_CACHED_THREAD_COUNT,
     true,
-    ((const INPUT_PIXEL, image, INTERP_NEAREST, INPUT_BORDER_MODE))
-    ((const MASK_PIXEL, mask, INTERP_NEAREST, MASK_BORDER_MODE)),
+    ((const MASK_PIXEL, mask, INTERP_NEAREST, MASK_BORDER_MODE))
+    ((const INPUT_PIXEL, image, INTERP_NEAREST, INPUT_BORDER_MODE)),
     ((DEFAULT_WEIGHTED_PIXEL, dst)),
     ((MASK_PARAMS, maskParams))
 )
@@ -924,8 +924,8 @@ GPUTOOL_2D_END_EX
 template <int=0>
 stdbool PREP_PASTE3(FUNCNAME, DefaultFull, DIR(Hor, Ver))
 (
-    const GpuMatrix<const INPUT_PIXEL>& srcImage, 
     const GpuMatrix<const MASK_PIXEL>& srcMask, 
+    const GpuMatrix<const INPUT_PIXEL>& srcImage, 
     const GpuMatrix<DEFAULT_PIXEL>& dst,
     const MASK_PARAMS& maskParams,
     stdPars(GpuProcessKit)
@@ -943,7 +943,7 @@ stdbool PREP_PASTE3(FUNCNAME, DefaultFull, DIR(Hor, Ver))
 
     auto initialFunc = PREP_PASTE3(FUNCNAME, DefaultInitialCached, DIR(Hor, Ver));
 
-    require(initialFunc(srcImage, srcMask, tmp, maskParams, stdPass));
+    require(initialFunc(srcMask, srcImage, tmp, maskParams, stdPass));
 
     ////
 
