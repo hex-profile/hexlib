@@ -287,7 +287,7 @@ stdbool visualizeLayeredVector
     REQUIRE(equalSize(vectorValue, vectorPresence));
     Point<Space> size = vectorValue.size();
   
-    Space displayedLayer = kit.displayedCircularIndex(layers);
+    Space displayedLayer = kit.display.circularIndex(layers);
 
     //----------------------------------------------------------------
     //

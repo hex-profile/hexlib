@@ -95,11 +95,11 @@ enum DisplaySide {DisplayOld, DisplayNew, DisplaySide_Count};
 
 template <typename Type, typename Kit>
 inline const Type& displaySide(const Kit& kit, const Type& oldValue, const Type& newValue)
-    {return kit.displayedViewIndex(0, DisplaySide_Count-1) == DisplayOld ? oldValue : newValue;}
+    {return kit.display.viewIndex(0, DisplaySide_Count-1) == DisplayOld ? oldValue : newValue;}
 
 template <typename Kit>
 inline DisplaySide displaySide(const Kit& kit)
-    {return DisplaySide(kit.displayedViewIndex(0, DisplaySide_Count-1));}
+    {return DisplaySide(kit.display.viewIndex(0, DisplaySide_Count-1));}
 
 //================================================================
 //
@@ -124,16 +124,24 @@ enum DisplayMethod
 
 //================================================================
 //
+// DisplayParams
+//
+//================================================================
+
+struct DisplayParams
+{
+    DisplayMethod method;
+    Point<Space> screenSize;
+    DisplayedRangeIndex& viewIndex;
+    DisplayedRangeIndex& temporalIndex;
+    DisplayedRangeIndex& scaleIndex;
+    const DisplayedCircularIndex& circularIndex;
+};
+
+//================================================================
+//
 // DisplayParamsKit
 //
 //================================================================
 
-KIT_CREATE6(
-    DisplayParamsKit,
-    Point<Space>, displayFrameSize,
-    DisplayedRangeIndex&, displayedViewIndex,
-    DisplayedRangeIndex&, displayedTemporalIndex,
-    DisplayedRangeIndex&, displayedScaleIndex,
-    const DisplayedCircularIndex&, displayedCircularIndex,
-    DisplayMethod, displayMethod
-);
+KIT_CREATE1(DisplayParamsKit, const DisplayParams&, display);

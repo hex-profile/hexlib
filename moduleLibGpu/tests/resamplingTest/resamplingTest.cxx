@@ -402,7 +402,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         COUNT
     };
 
-    Test test = Test(kit.displayedTemporalIndex(0, int(Test::COUNT) - 1));
+    Test test = Test(kit.display.temporalIndex(0, int(Test::COUNT) - 1));
 
     float32 resampleFactorScalar =
         (test == Test::DownsampleTwice) ? 1/2.f : 
@@ -513,7 +513,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
 
     if (displayType == DisplayDestination)
     {
-        int version = kit.displayedCircularIndex(2);
+        int version = kit.display.circularIndex(2);
 
         require(kit.gpuImageConsole.addMatrixEx(version ? dstImageTest : dstImage, 
             kit.displayFactor * pixelMin(), kit.displayFactor * pixelMax(), point(1.f), 
