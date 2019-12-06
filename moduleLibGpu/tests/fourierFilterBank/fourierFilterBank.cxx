@@ -565,8 +565,6 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
 
     displayFreqFilter.serialize(kit, STR("Display Freq Filter"));
     displaySpaceFilter.serialize(kit, STR("Display Space Filter"));
-
-
 }
 
 //================================================================
@@ -745,8 +743,8 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
             fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, SizeX) = %d;\n", filterSize.X);
             fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, SizeY) = %d;\n", filterSize.Y);
             fprintf(outputFile, "\n");
-            fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, Freq) = %+.9ff;\n", gaborCenter());
-            fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, Sigma) = %+.9ff;\n", gaborSigma());
+            fprintf(outputFile, "constexpr float32 PREP_PASTE(FILTER, Freq) = %+.9ff;\n", gaborCenter());
+            fprintf(outputFile, "constexpr float32 PREP_PASTE(FILTER, Sigma) = %+.9ff;\n", gaborSigma());
             fprintf(outputFile, "\n");
         }
 

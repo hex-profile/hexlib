@@ -22,12 +22,12 @@ inline bool memoryUsageReport
     return printMsg
     (
         kit.localLog,
-        STR("%0: GPU %3M / %4M, CPU %1M / %2M"),
+        STR("%: GPU %M / %M, CPU %M / %M"),
         name,
-        fltf(ldexp(float32(stateUsage.cpuMemSize), -20), 1),
-        fltf(ldexp(float32(tempUsage.cpuMemSize), -20), 1),
         fltf(ldexp(float32(stateUsage.gpuMemSize), -20), 1),
         fltf(ldexp(float32(tempUsage.gpuMemSize), -20), 1),
+        fltf(ldexp(float32(stateUsage.cpuMemSize), -20), 1),
+        fltf(ldexp(float32(tempUsage.cpuMemSize), -20), 1),
 
         (stateActivity.sysAllocCount || tempActivity.sysAllocCount) ? msgErr :
         (stateActivity.fastAllocCount) ? msgWarn : msgInfo

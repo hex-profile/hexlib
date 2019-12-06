@@ -31,7 +31,7 @@ stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>
 
 template <typename Src, typename Interm, typename Dst>
 inline stdbool downsampleOneAndHalfGaussMask(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
-    {return downsampleOneAndHalfGaussMaskMultitask<Src, Interm, Dst>(gpuLayeredMatrixFromMatrix(src), gpuLayeredMatrixFromMatrix(dst), borderMode, initial, stdPassThru);}
+    {return downsampleOneAndHalfGaussMaskMultitask<Src, Interm, Dst>(layeredMatrix(src), layeredMatrix(dst), borderMode, initial, stdPassThru);}
 
 //----------------------------------------------------------------
 

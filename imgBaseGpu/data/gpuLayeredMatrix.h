@@ -36,20 +36,20 @@ struct GpuLayeredMatrix
 
 //================================================================
 //
-// GpuLayeredMatrixEmpty
+// GpuLayeredMatrixNull
 //
 //================================================================
 
 template <typename Type>
-class GpuLayeredMatrixEmpty : public GpuLayeredMatrix<Type>
+class GpuLayeredMatrixNull : public GpuLayeredMatrix<Type>
 {
-    Point<Space> size() const
+    virtual Point<Space> size() const
         {return point(0);}
 
-    Space layers() const
+    virtual Space layers() const
         {return 0;}
 
-    GpuMatrix<Type> getLayer(Space r) const
+    virtual GpuMatrix<Type> getLayer(Space r) const
         {return 0;}
 };
 
@@ -137,7 +137,58 @@ private:
 //----------------------------------------------------------------
 
 template <typename Type>
-sysinline GpuLayeredMatrixFromMatrix<Type> gpuLayeredMatrixFromMatrix(const GpuMatrix<Type>& base)
+sysinline GpuLayeredMatrixFromMatrix<Type> layeredMatrix(const GpuMatrix<Type>& base)
 {
     return GpuLayeredMatrixFromMatrix<Type>(base);
 }
+
+//================================================================
+//
+// GpuLayeredMatrixSubrange
+//
+//================================================================
+
+template <typename Type>
+class GpuLayeredMatrixSubrange : public GpuLayeredMatrix<Type>
+{
+
+public:
+
+    sysinline GpuLayeredMatrixSubrange(const GpuLayeredMatrix<Type>& base, Space layerOrg, Space layerEnd)
+        : base(base), layerOrg(layerOrg), layerEnd(layerEnd) 
+    {
+    }
+
+    virtual Point<Space> size() const
+    {
+        return base.size();
+    }
+
+    virtual Space layers() const
+    {
+        return isValid() ?
+            layerEnd - layerOrg :
+            0;
+    }
+
+    virtual GpuMatrix<Type> getLayer(Space i) const
+    {
+        return isValid() ?
+            base.getLayer(layerOrg + i) :
+            0;
+    }
+
+public:
+
+    sysinline bool isValid() const
+    {
+        return 0 <= layerOrg && layerOrg <= layerEnd && layerEnd <= base.layers();
+    }
+
+private:
+
+    const GpuLayeredMatrix<Type>& base;
+    Space const layerOrg;
+    Space const layerEnd;
+
+};
