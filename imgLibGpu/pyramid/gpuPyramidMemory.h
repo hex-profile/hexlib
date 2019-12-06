@@ -102,6 +102,6 @@ private:
     ArrayObjMemStatic<ImageStorage, gpuPyramidMemoryMaxLevels> pyramidArray;
     Space currentLayers = 0;
 
-    GpuLayeredMatrixEmpty<Type> emptyLayeredMatrix;
+    GpuLayeredMatrixNull<Type> emptyLayeredMatrix;
 
 };

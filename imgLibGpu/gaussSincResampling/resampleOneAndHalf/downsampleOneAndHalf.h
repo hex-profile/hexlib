@@ -34,7 +34,7 @@ stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const S
 
 template <typename Src, typename Interm, typename Dst>
 inline stdbool downsampleOneAndHalfConservative(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
-    {return downsampleOneAndHalfConservativeMultitask<Src, Interm, Dst>(gpuLayeredMatrixFromMatrix(src), gpuLayeredMatrixFromMatrix(dst), borderMode, stdPassThru);}
+    {return downsampleOneAndHalfConservativeMultitask<Src, Interm, Dst>(layeredMatrix(src), layeredMatrix(dst), borderMode, stdPassThru);}
 
 //================================================================
 //
