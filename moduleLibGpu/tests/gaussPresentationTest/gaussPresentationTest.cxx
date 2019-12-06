@@ -313,7 +313,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
             kit.gpuImageConsole.addMatrixEx
             (
                 hiresData,
-                0, kit.displayFactor, point(1.f),
+                0, kit.display.factor, point(1.f),
                 INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP, 
                 STR("Hires Input"),
                 stdPass
@@ -366,7 +366,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
             kit.gpuImageConsole.addMatrixEx
             (
                 upsampledData,
-                0, kit.displayFactor, point(1.f),
+                0, kit.display.factor, point(1.f),
                 INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP, 
                 STR("Hires Output"),
                 stdPass

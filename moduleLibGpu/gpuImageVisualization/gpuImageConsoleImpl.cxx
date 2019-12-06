@@ -2,39 +2,39 @@
 #include "gpuImageConsoleImpl.h"
 #endif
 
-#include "kit/kit.h"
+#include "convertYuv420/convertYuvRgbFunc.h"
 #include "data/gpuMatrix.h"
+#include "flipMatrix.h"
 #include "gpuDevice/gpuDevice.h"
 #include "gpuDevice/loadstore/loadNorm.h"
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "gpuSupport/gpuMixedCode.h"
 #include "gpuSupport/gpuTool.h"
-#include "vectorTypes/vectorOperations.h"
-#include "vectorTypes/vectorType.h"
-#include "convertYuv420/convertYuvRgbFunc.h"
-#include "flipMatrix.h"
+#include "kit/kit.h"
 #include "readInterpolate/gpuTexCubic.h"
 #include "types/lt/ltType.h"
+#include "vectorTypes/vectorOperations.h"
+#include "vectorTypes/vectorType.h"
 
 #if HOSTCODE
-#include "errorLog/errorLog.h"
-#include "numbers/divRound.h"
-#include "numbers/float/floatType.h"
-#include "userOutput/paramMsg.h"
-#include "dataAlloc/gpuMatrixMemory.h"
-#include "gpuAppliedApi/gpuAppliedApi.h"
-#include "gpuSupport/gpuTexTools.h"
-#include "numbers/float16/float16Type.h"
 #include "convertYuv420/convertYuv420ToBgr.h"
 #include "copyMatrixAsArray.h"
-#include "numbers/mathIntrinsics.h"
+#include "dataAlloc/gpuMatrixMemory.h"
 #include "dataAlloc/matrixMemory.h"
 #include "dataAlloc/matrixMemory.inl"
-#include "gpuImageVisualization/visualizeVectorImage/visualizeVectorImage.h"
-#include "userOutput/printMsgEx.h"
-#include "imageRead/positionTools.h"
 #include "diagTools/readGpuElement.h"
+#include "errorLog/errorLog.h"
 #include "formatting/prettyNumber.h"
+#include "gpuAppliedApi/gpuAppliedApi.h"
+#include "gpuImageVisualization/visualizeVectorImage/visualizeVectorImage.h"
+#include "gpuSupport/gpuTexTools.h"
+#include "imageRead/positionTools.h"
+#include "numbers/divRound.h"
+#include "numbers/float/floatType.h"
+#include "numbers/float16/float16Type.h"
+#include "numbers/mathIntrinsics.h"
+#include "userOutput/paramMsg.h"
+#include "userOutput/printMsgEx.h"
 #endif
 
 namespace gpuImageConsoleImpl {
@@ -601,6 +601,84 @@ stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& 
 
 //================================================================
 //
+// standardEntry
+//
+//================================================================
+
+template <typename Kit>
+stdbool standardEntry
+(
+    const Point<Space>& imageSize,
+    DisplayMode displayMode,
+    ImgOutputTarget target,
+    Point<float32>& upsampleFactor,
+    InterpType& upsampleType,
+    Point<Space>& upsampleSize,
+    BorderMode& borderMode, 
+    stdPars(Kit)
+)
+{
+    REQUIRE(imageSize >= 0);
+
+    REQUIRE(def(upsampleFactor) && upsampleFactor >= 1.f);
+    REQUIRE(upsampleSize >= 0);
+
+    ////
+
+    if (target == ImgOutputConsole)
+    {
+        if (allv(upsampleSize == 0))
+            upsampleSize = convertUp<Space>(convertFloat32(imageSize) * upsampleFactor);
+    }
+
+    ////
+
+    if (target == ImgOutputOverlay)
+    {
+        if (displayMode == DisplayMode::Fullscreen)
+        {
+            REQUIRE(upsampleSize >= 1);
+        }
+
+        else if (displayMode == DisplayMode::Original)
+        {
+            upsampleFactor = point(1.f);
+            upsampleType = INTERP_NONE;
+            upsampleSize = imageSize;
+            borderMode = BORDER_ZERO;
+        }
+
+        else if (displayMode == DisplayMode::Centered)
+        {
+            upsampleFactor = point(1.f);
+            upsampleType = INTERP_NONE;
+            REQUIRE(upsampleSize >= 1);
+            borderMode = BORDER_ZERO;
+        }
+
+        else
+        {
+            REQUIRE(false);
+        }
+    }
+
+    returnTrue;
+}
+
+//----------------------------------------------------------------
+
+#define STANDARD_ENTRY(image) \
+    \
+    auto upsampleFactorParam = upsampleFactor; \
+    auto upsampleFactor = upsampleFactorParam; \
+    \
+    auto upsampleTypeParam = upsampleSize; \
+    auto upsampleSize = upsampleTypeParam; \
+    \
+    require(standardEntry(image.size(), displayMode, hint.target, upsampleFactor, upsampleType, upsampleSize, borderMode, stdPass));
+
+//================================================================
+//
 // GpuImageConsoleThunk::addMatrixExImpl
 //
 //================================================================
@@ -619,12 +697,9 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     stdNullPars
 )
 {
-    REQUIRE(upsampleSize >= 0);
+    stdScopedBegin;
 
-    Point<Space> outputSize = upsampleSize;
-
-    if (allv(outputSize == point(0)))
-        outputSize = convertUp<Space>(convertFloat32(img.size()) * upsampleFactor);
+    STANDARD_ENTRY(img);
 
     //
     //
@@ -645,7 +720,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
     if (hint.target == ImgOutputConsole)
     {
-        GPU_MATRIX_ALLOC(gpuMatrix, uint8_x4, outputSize);
+        GPU_MATRIX_ALLOC(gpuMatrix, uint8_x4, upsampleSize);
 
         ////
 
@@ -659,14 +734,19 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     else if (hint.target == ImgOutputOverlay)
     {
 
-        ScalarVisualizationProvider<Type> outputProvider(ScalarVisualizationParams<Type>{img, channel, coordBack, valueTransform, upsampleType, borderMode, hint.overlayCentering}, kit);
+        ScalarVisualizationProvider<Type> outputProvider
+        {
+            ScalarVisualizationParams<Type>
+            {img, channel, coordBack, valueTransform, upsampleType, borderMode, displayMode == DisplayMode::Centered}, 
+            kit
+        };
 
         auto bits = -nativeLog2(maxVal - minVal);
 
         auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
             hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
 
-        require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, msg, stdPass));
+        require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, msg, stdPass));
     }
     else
     {
@@ -698,7 +778,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
     //// 
 
-    returnTrue;
+    stdScopedEnd;
 }
 
 //================================================================
@@ -862,20 +942,17 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
     stdNullPars
 )
 {
+    stdScopedBegin;
+
+    STANDARD_ENTRY(image);
+
+    ////
+
     REQUIRE(upsampleFactor >= 1.f);
     Point<float32> coordBackMul = 1.f / upsampleFactor;
 
     REQUIRE(def(maxVector));
     float32 valueFactor = nativeRecipZero(maxVector);
-
-    ////
-
-    REQUIRE(upsampleSize >= 0);
-
-    Point<Space> outputSize = upsampleSize;
-
-    if (allv(upsampleSize == point(0)))
-        outputSize = convertUp<Space>(convertFloat32(image.size()) * upsampleFactor);
 
     //----------------------------------------------------------------
     //
@@ -892,9 +969,9 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
     //
     //----------------------------------------------------------------
 
-    if (vectorDisplayMode == VectorDisplayX || vectorDisplayMode == VectorDisplayY)
+    if (vectorMode == VectorMode::OnlyX || vectorMode == VectorMode::OnlyY)
     {
-        require(addMatrixChan(image, vectorDisplayMode == VectorDisplayY, -maxVector, +maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPass));
+        require(addMatrixChan(image, vectorMode == VectorMode::OnlyY, -maxVector, +maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPass));
         returnTrue;
     }
 
@@ -904,10 +981,19 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
 
     if (hint.target == ImgOutputOverlay)
     {
-        VectorVisualizationProvider<Vector> sourceBgr(VectorVisualizationParams<Vector>{image, valueFactor, hint.textFactor, hint.arrowFactor, coordBackMul, upsampleType, borderMode, 
-            hint.overlayCentering, vectorDisplayMode == VectorDisplayMagnitude, getTextEnabled()}, kit);
+        VectorVisualizationProvider<Vector> sourceBgr
+        {
+            VectorVisualizationParams<Vector>
+            {
+                image, valueFactor, hint.textFactor, hint.arrowFactor, coordBackMul, upsampleType, borderMode, 
+                displayMode == DisplayMode::Centered, 
+                vectorMode == VectorMode::Magnitude,
+                getTextEnabled()
+            }, 
+            kit
+        };
 
-        require(baseConsole.overlaySetImageBgr(outputSize, sourceBgr, hint.desc, stdPass));
+        require(baseConsole.overlaySetImageBgr(upsampleSize, sourceBgr, hint.desc, stdPass));
     }
 
     //
@@ -916,10 +1002,10 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
 
     if (hint.target == ImgOutputConsole)
     {
-        GPU_MATRIX_ALLOC(result, uint8_x4, outputSize);
+        GPU_MATRIX_ALLOC(result, uint8_x4, upsampleSize);
     
         require(visualizeVectorImage(image, result, linearTransform(coordBackMul, point(0.f)), valueFactor, upsampleType, borderMode, 
-            vectorDisplayMode == VectorDisplayMagnitude, stdPass));
+            vectorMode == VectorMode::Magnitude, stdPass));
 
         ////
 
@@ -929,7 +1015,7 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
 
     ////
 
-    returnTrue;
+    stdScopedEnd;
 }
 
 //----------------------------------------------------------------
@@ -1146,13 +1232,9 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
     stdNullPars
 )
 {
-    REQUIRE(upsampleSize >= 0);
+    stdScopedBegin;
 
-    Point<Space> outputSize = upsampleSize;
-
-    if (allv(outputSize == point(0)))
-        outputSize = convertUp<Space>(convertFloat32(img.size()) * upsampleFactor);
-
+    STANDARD_ENTRY(img);
 
     //
     //
@@ -1173,17 +1255,17 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
     if (hint.target == ImgOutputOverlay)
     {
         UnpackedColorConvertProvider<Type> outputProvider
-        (
-            ScalarVisualizationParams<Type>{img, 0, coordBack, valueTransform, upsampleType, borderMode, hint.overlayCentering}, 
+        {
+            ScalarVisualizationParams<Type>{img, 0, coordBack, valueTransform, upsampleType, borderMode, displayMode == DisplayMode::Centered}, 
             colorMode, kit
-        );
+        };
 
         auto bits = -nativeLog2(maxVal - minVal);
         
         auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
             hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
 
-        require(baseConsole.overlaySetImageBgr(outputSize, outputProvider, msg, stdPass));
+        require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, msg, stdPass));
     }
 
     //----------------------------------------------------------------
@@ -1215,7 +1297,7 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
 
     ////
 
-    returnTrue;
+    stdScopedEnd;
 }
 
 //----------------------------------------------------------------

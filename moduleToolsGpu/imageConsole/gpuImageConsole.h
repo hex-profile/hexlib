@@ -64,6 +64,46 @@ struct GpuBaseConsole
 
 //================================================================
 //
+// Supported types.
+//
+//================================================================
+
+#define IMAGE_CONSOLE_FOREACH_SCALAR_TYPE(action, extra) \
+    action(uint8, extra) \
+    action(int8, extra) \
+    action(uint16, extra) \
+    action(int16, extra) \
+    action(uint32, extra) \
+    action(int32, extra) \
+    action(float16, extra) \
+    action(float32, extra) \
+
+#define IMAGE_CONSOLE_FOREACH_X2_TYPE(action, extra) \
+    action(uint8_x2, extra) \
+    action(int8_x2, extra) \
+    action(uint16_x2, extra) \
+    action(int16_x2, extra) \
+    action(uint32_x2, extra) \
+    action(int32_x2, extra) \
+    action(float16_x2, extra) \
+    action(float32_x2, extra)
+
+#define IMAGE_CONSOLE_FOREACH_X4_TYPE(action, extra) \
+    action(uint8_x4, extra) \
+    action(int8_x4, extra) \
+    action(uint16_x4, extra) \
+    action(int16_x4, extra) \
+    action(uint32_x4, extra) \
+    action(int32_x4, extra) \
+    action(float16_x4, extra) \
+    action(float32_x4, extra)
+
+#define IMAGE_CONSOLE_FOREACH_VECTOR_TYPE(action, extra) \
+    IMAGE_CONSOLE_FOREACH_X2_TYPE(action, extra) \
+    IMAGE_CONSOLE_FOREACH_X4_TYPE(action, extra)
+
+//================================================================
+//
 // GpuImageConsole
 //
 // Advanced image console interface: more types and ranged output.
@@ -78,19 +118,6 @@ struct GpuImageConsole : public GpuBaseConsole
     // Add scalar image with upsampling and range scaling
     //
     //----------------------------------------------------------------
-
-    #define IMAGE_CONSOLE_FOREACH_SCALAR_TYPE(action, extra) \
-        \
-        action(uint8, extra) \
-        action(int8, extra) \
-        action(uint16, extra) \
-        action(int16, extra) \
-        action(uint32, extra) \
-        action(int32, extra) \
-        action(float16, extra) \
-        action(float32, extra) \
-
-    ////
 
     #define TMP_MACRO(Type, _) \
         \
@@ -128,36 +155,6 @@ struct GpuImageConsole : public GpuBaseConsole
     {
         return addMatrixFunc(makeConst(img), minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdNullPassThru);
     }
-
-    //----------------------------------------------------------------
-    //
-    // Vector types
-    //
-    //----------------------------------------------------------------
-
-    #define IMAGE_CONSOLE_FOREACH_X2_TYPE(action, extra) \
-        action(uint8_x2, extra) \
-        action(int8_x2, extra) \
-        action(uint16_x2, extra) \
-        action(int16_x2, extra) \
-        action(uint32_x2, extra) \
-        action(int32_x2, extra) \
-        action(float16_x2, extra) \
-        action(float32_x2, extra)
-
-    #define IMAGE_CONSOLE_FOREACH_X4_TYPE(action, extra) \
-        action(uint8_x4, extra) \
-        action(int8_x4, extra) \
-        action(uint16_x4, extra) \
-        action(int16_x4, extra) \
-        action(uint32_x4, extra) \
-        action(int32_x4, extra) \
-        action(float16_x4, extra) \
-        action(float32_x4, extra)
-
-    #define IMAGE_CONSOLE_FOREACH_VECTOR_TYPE(action, extra) \
-        IMAGE_CONSOLE_FOREACH_X2_TYPE(action, extra) \
-        IMAGE_CONSOLE_FOREACH_X4_TYPE(action, extra)
 
     //----------------------------------------------------------------
     //

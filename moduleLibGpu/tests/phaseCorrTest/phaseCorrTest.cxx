@@ -780,7 +780,7 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
 
     ////
 
-    float32 imgMax = 1/32.f * kit.displayFactor;
+    float32 imgMax = 1/32.f * kit.display.factor;
 
     require
     (
@@ -803,7 +803,7 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
 
     ////
 
-    //kit.gpuImageConsole.addVectorImage(!displaySide(kit) ? oldFourier : newFourier, kit.displayFactor, 
+    //kit.gpuImageConsole.addVectorImage(!displaySide(kit) ? oldFourier : newFourier, kit.display.factor, 
     //  convertFloat32(phaseDisplayUpsample), INTERP_NONE, freqSize * phaseDisplayUpsample, BORDER_ZERO,
     //  ImgOutputHint(!displaySide(kit) ? STR("oldFourier") : STR("newFourier")).setTargetConsole(), stdPass);
 
@@ -831,7 +831,7 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
 
     ////
 
-    //kit.gpuImageConsole.addVectorImage(phaseProdFreq, kit.displayFactor, 
+    //kit.gpuImageConsole.addVectorImage(phaseProdFreq, kit.display.factor, 
     //  convertFloat32(phaseDisplayUpsample), INTERP_NONE, freqSize * phaseDisplayUpsample, BORDER_ZERO,
     //  ImgOutputHint(STR("Phase Product")).setTargetConsole(), stdPass);
 
