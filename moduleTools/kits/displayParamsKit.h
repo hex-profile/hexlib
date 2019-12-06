@@ -109,13 +109,35 @@ inline DisplaySide displaySide(const Kit& kit)
 
 struct DisplayParams
 {
+    // User request to display upsampled full-screen image.
     bool const fullscreen;
+
+    // Displayed data range multiplier.
     float32 const factor;
+
+    // Input frame size used to as full-screen target resolution.
     Point<Space> screenSize;
+
+    // User desire to see interpolated data.
+    const bool& interpolation;
+
+    // User desire to see individual data channels.
+    const bool& channels;
+
+    // Abstract view index or image side.
     DisplayedRangeIndex& viewIndex;
+
+    // Abstract temporal index.
     DisplayedRangeIndex& temporalIndex;
+
+    // Abstract scale index.
     DisplayedRangeIndex& scaleIndex;
+
+    // Abstract circular index.
     const DisplayedCircularIndex& circularIndex;
+
+    // Abstract stage index.
+    DisplayedRangeIndex& stageIndex;
 };
 
 //================================================================

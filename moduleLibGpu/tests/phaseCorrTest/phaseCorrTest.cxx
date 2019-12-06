@@ -710,7 +710,7 @@ void PhaseCorrTestImpl::serialize(const ModuleSerializeKit& kit)
     (
         kit, STR("Display"), 
         {STR("<Nothing>"), STR("")}, 
-        {STR("Phase Correlation"), STR("Shift+Alt+C")}
+        {STR("Phase Correlation"), STR("")}
     );
 
     useMagnitude.serialize(kit, STR("Use Magnitude"), STR("Shift+Alt+M"));

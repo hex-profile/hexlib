@@ -307,11 +307,14 @@ private:
     RingSwitch<DisplayMode, DisplayMode::COUNT, DisplayMode::Fullscreen> displayMode;
     RangeValueControl<float32> displayFactor;
     MultiSwitch<VectorMode, VectorMode::COUNT, VectorMode::Color> vectorMode;
+    BoolSwitch<true> displayInterpolation;
+    BoolSwitch<false> displayChannels;
 
-    RangeValueControl<int32> displayedViewIndex;
-    RangeValueControl<int32> displayedTemporalIndex;
-    RangeValueControl<int32> displayedCircularIndex;
-    RangeValueControl<int32> displayedScaleIndex;
+    RangeValueControl<int32> viewIndex;
+    RangeValueControl<int32> temporalIndex;
+    RangeValueControl<int32> circularIndex;
+    RangeValueControl<int32> scaleIndex;
+    RangeValueControl<int32> stageIndex;
 
 private:
 
@@ -347,10 +350,11 @@ VideoPreprocessorImpl::VideoPreprocessorImpl()
     genGratingPeriod(2, 2048, 6, 1.02189714865411668f, RangeValueLogscale),
 
     displayFactor(1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale),
-    displayedViewIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
-    displayedTemporalIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
-    displayedCircularIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
-    displayedScaleIndex(0, 0x7F, 0, 1, RangeValueLinear)
+    viewIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
+    temporalIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
+    circularIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
+    scaleIndex(0, 0x7F, 0, 1, RangeValueLinear),
+    stageIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear)
 
 {
     noiseSigma = 0.01f;
@@ -369,22 +373,26 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 
         check_flag(alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
 
-        displayMode.serialize(kit, STR("Display Mode"), STR("Ctrl+D"));
-        displayFactor.serialize(kit, STR("User Display Factor"), STR("Num +"), STR("Num -"), STR("Num *"));
+        displayMode.serialize(kit, STR("Mode"), STR("Ctrl+D"));
+        displayFactor.serialize(kit, STR("Display Factor"), STR("Num +"), STR("Num -"), STR("Num *"));
 
         vectorMode.serialize
         (
-            kit, STR("Vector Gray Mode"),
-            {STR("Vector Display: Color"), STR("Alt+Z")},
-            {STR("Vector Display: Magnitude"), STR("Alt+X")},
-            {STR("Vector Display: X"), STR("Alt+C")},
-            {STR("Vector Display: Y"), STR("Alt+V")}
+            kit, STR("Vector Mode"),
+            {STR("Color"), STR("Z")},
+            {STR("Magnitude"), STR("X")},
+            {STR("X"), STR("C")},
+            {STR("Y"), STR("V")}
         );
 
-        displayedViewIndex.serialize(kit, STR("Displayed View Index"), STR("9"), STR("0"));
-        displayedTemporalIndex.serialize(kit, STR("Displayed Temporal Index"), STR(","), STR("."));
-        displayedCircularIndex.serialize(kit, STR("Displayed Circular Index"), STR(";"), STR("'"));
-        displayedScaleIndex.serialize(kit, STR("Displayed Scale Index"), STR("="), STR("-"));
+        displayInterpolation.serialize(kit, STR("Interpolation"), STR("Alt+I"));
+        displayChannels.serialize(kit, STR("Channels"), STR("Alt+C"));
+
+        viewIndex.serialize(kit, STR("View Index"), STR("9"), STR("0"));
+        temporalIndex.serialize(kit, STR("Temporal Index"), STR(","), STR("."));
+        circularIndex.serialize(kit, STR("Circular Index"), STR(";"), STR("'"));
+        scaleIndex.serialize(kit, STR("Scale Index"), STR("="), STR("-"));
+        stageIndex.serialize(kit, STR("Stage Index"), STR("["), STR("]"));
     }
 
     {
@@ -608,24 +616,30 @@ stdbool VideoPreprocessorImpl::processTarget
     //
     //----------------------------------------------------------------
 
-    DisplayedRangeIndex displayedViewIndexVar(displayedViewIndex);
-    REMEMBER_CLEANUP(displayedViewIndex = displayedViewIndexVar);
+    DisplayedRangeIndex viewIndexThunk(viewIndex);
+    REMEMBER_CLEANUP(viewIndex = viewIndexThunk);
 
-    DisplayedRangeIndex displayedScaleIndexVar(displayedScaleIndex);
-    REMEMBER_CLEANUP(displayedScaleIndex = displayedScaleIndexVar);
+    DisplayedRangeIndex scaleIndexThunk(scaleIndex);
+    REMEMBER_CLEANUP(scaleIndex = scaleIndexThunk);
 
-    DisplayedRangeIndex displayedTemporalIndexVar(displayedTemporalIndex);
-    REMEMBER_CLEANUP(displayedTemporalIndex = displayedTemporalIndexVar);
+    DisplayedRangeIndex temporalIndexThunk(temporalIndex);
+    REMEMBER_CLEANUP(temporalIndex = temporalIndexThunk);
+
+    DisplayedRangeIndex stageIndexThunk(stageIndex);
+    REMEMBER_CLEANUP(stageIndex = stageIndexThunk);
 
     DisplayParams displayParams
     {
         displayMode == DisplayMode::Fullscreen,
         displayFactor,
         inputFrame.size(), 
-        displayedViewIndexVar, 
-        displayedTemporalIndexVar, 
-        displayedScaleIndexVar,
-        DisplayedCircularIndex(displayedCircularIndex), 
+        displayInterpolation,
+        displayChannels,
+        viewIndexThunk, 
+        temporalIndexThunk, 
+        scaleIndexThunk,
+        DisplayedCircularIndex(circularIndex),
+        stageIndexThunk
     };
 
     DisplayParamsKit displayKit{displayParams};
