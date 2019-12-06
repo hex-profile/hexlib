@@ -293,7 +293,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
 
     ////
 
-    Point<Space> hiSize = kit.displayFrameSize;
+    Point<Space> hiSize = kit.display.screenSize;
 
     //----------------------------------------------------------------
     //
@@ -314,7 +314,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
             (
                 hiresData,
                 0, kit.displayFactor, point(1.f),
-                INTERP_NEAREST, kit.displayFrameSize, BORDER_CLAMP, 
+                INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP, 
                 STR("Hires Input"),
                 stdPass
             )
@@ -367,7 +367,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
             (
                 upsampledData,
                 0, kit.displayFactor, point(1.f),
-                INTERP_NEAREST, kit.displayFrameSize, BORDER_CLAMP, 
+                INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP, 
                 STR("Hires Output"),
                 stdPass
             )

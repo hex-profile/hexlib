@@ -129,14 +129,6 @@ struct GpuImageConsole : public GpuBaseConsole
         return addMatrixFunc(makeConst(img), minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdNullPassThru);
     }
 
-    ////
-
-    template <typename Type>
-    inline stdbool addMatrix(const GpuMatrix<Type>& img, float32 minVal, float32 maxVal, const ImgOutputHint& hint, stdNullPars)
-    {
-        return addMatrixFunc(makeConst(img), minVal, maxVal, point(1.f), INTERP_NONE, img.size(), BORDER_ZERO, hint, stdNullPassThru);
-    }
-
     //----------------------------------------------------------------
     //
     // Vector types

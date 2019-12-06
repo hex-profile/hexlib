@@ -617,18 +617,20 @@ stdbool VideoPreprocessorImpl::processTarget
     DisplayedRangeIndex displayedTemporalIndexVar(displayedTemporalIndex);
     REMEMBER_CLEANUP(displayedTemporalIndex = displayedTemporalIndexVar);
 
-    DisplayParamsKit displayKit
-    (
+    DisplayParams displayParams
+    {
+        displayMethod,
         inputFrame.size(), 
         displayedViewIndexVar, 
         displayedTemporalIndexVar, 
         displayedScaleIndexVar,
         DisplayedCircularIndex(displayedCircularIndex), 
-        displayMethod
-    );
+    };
 
-    ProcessKit oldKit = kit;
-    ProcessExKit kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole, userDisplayFactor), displayKit, AlternativeVersionKit(alternativeVersion));
+    DisplayParamsKit displayKit{displayParams};
+
+    auto oldKit = kit;
+    auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole, userDisplayFactor), displayKit, AlternativeVersionKit(alternativeVersion));
 
     //----------------------------------------------------------------
     //
@@ -644,7 +646,7 @@ stdbool VideoPreprocessorImpl::processTarget
             printMsgL(kit, STR("Video Preprocessor: Frame history empty"), msgErr);
         else
         {
-            Space i = kit.displayedTemporalIndex(-(frameHistory.size()-1), 0);
+            Space i = kit.display.temporalIndex(-(frameHistory.size()-1), 0);
 
             require(kit.gpuImageConsole.addRgbColorImage(makeConst(frameHistory[-i]->frameMemory),
                 0x00, 0xFF * kit.displayFactor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO,
