@@ -99,8 +99,9 @@ stdbool gaborExampleFunc
     const GpuMatrix<const float16>& src,
     const GpuMatrix<const float32_x2>& circleTable,
     const GpuLayeredMatrix<float16_x2>& dst,
+    bool demodulateOutput,
     bool intermIsHorizontal,
-    bool simpleVersion,
+    bool uncachedVersion,
     stdPars(GpuProcessKit)
 )
 {
@@ -111,8 +112,9 @@ stdbool gaborExampleFunc
             src, 
             circleTable, 
             dst, 
+            demodulateOutput,
             PostprocessParams{},
-            simpleVersion, 
+            uncachedVersion, 
             stdPass
         )
     );
