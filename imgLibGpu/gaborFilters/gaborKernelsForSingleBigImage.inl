@@ -96,7 +96,7 @@ GPUTOOL_2D_BEG
     ((const INPUT_PIXEL, src, INTERP_NEAREST, INPUT_BORDER_MODE))
     ((const float32_x2, circleTable, INTERP_LINEAR, BORDER_WRAP)),
     GPUTOOL_INDEXED_NAME(ORIENT_COUNT, COMPLEX_PIXEL, dst),
-    PREP_EMPTY
+    ((bool, demodulateOutput))
 )
 #if DEVCODE
 {
@@ -156,7 +156,10 @@ GPUTOOL_2D_BEG
     float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
 
     #define TMP_MACRO(k, _) \
-        sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
+        if (demodulateOutput) \
+            sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
         storeNorm(dst##k, sum##k);
 
     PREP_FOR(ORIENT_COUNT, TMP_MACRO, _)
@@ -181,7 +184,7 @@ GPUTOOL_2D_BEG_EX
     ((const INPUT_PIXEL, src, INTERP_NEAREST, INPUT_BORDER_MODE))
     ((const float32_x2, circleTable, INTERP_LINEAR, BORDER_WRAP)),
     GPUTOOL_INDEXED_NAME(ORIENT_COUNT, COMPLEX_PIXEL, dst),
-    PREP_EMPTY
+    ((bool, demodulateOutput))
 )
 #if DEVCODE
 {
@@ -295,7 +298,10 @@ GPUTOOL_2D_BEG_EX
     float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
 
     #define TMP_MACRO(k, _) \
-        sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
+        if (demodulateOutput) \
+            sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
         storeNorm(dst##k, sum##k);
 
     PREP_FOR(ORIENT_COUNT, TMP_MACRO, _)
@@ -318,6 +324,7 @@ GPUTOOL_2D_BEG
     GPUTOOL_INDEXED_SAMPLER(ORIENT_COUNT, const COMPLEX_PIXEL, src, INTERP_NONE, INPUT_BORDER_MODE)
     ((const float32_x2, circleTable, INTERP_LINEAR, BORDER_WRAP)),
     GPUTOOL_INDEXED_NAME(ORIENT_COUNT, COMPLEX_PIXEL, dst),
+    ((bool, demodulateOutput))
     ((POSTPROCESS_PARAMS, postprocessParams))
 )
 #if DEVCODE
@@ -381,7 +388,10 @@ GPUTOOL_2D_BEG
     float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
 
     #define TMP_MACRO(k, _) \
-        sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
+        if (demodulateOutput) \
+            sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
         sum##k *= GABOR_FINAL_FACTOR;
 
     PREP_FOR(ORIENT_COUNT, TMP_MACRO, _)
@@ -427,6 +437,7 @@ GPUTOOL_2D_BEG_EX
     GPUTOOL_INDEXED_SAMPLER(ORIENT_COUNT, const COMPLEX_PIXEL, src, INTERP_NONE, INPUT_BORDER_MODE)
     ((const float32_x2, circleTable, INTERP_LINEAR, BORDER_WRAP)),
     GPUTOOL_INDEXED_NAME(ORIENT_COUNT, COMPLEX_PIXEL, dst),
+    ((bool, demodulateOutput))
     ((POSTPROCESS_PARAMS, postprocessParams))
 )
 #if DEVCODE
@@ -537,7 +548,10 @@ GPUTOOL_2D_BEG_EX
     float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
 
     #define TMP_MACRO(k, _) \
-        sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
+        if (demodulateOutput) \
+            sum##k = complexMul(sum##k, devTex2D(circleTableSampler, -PREP_PASTE3(GABOR_BANK, Freq, k).DIR(x, y) * filterCenter, 0)); \
+        \
         sum##k *= GABOR_FINAL_FACTOR;
 
     PREP_FOR(ORIENT_COUNT, TMP_MACRO, _)
@@ -583,8 +597,9 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
     const GpuMatrix<const INPUT_PIXEL>& src, 
     const GpuMatrix<const float32_x2>& circleTable,
     const GpuLayeredMatrix<COMPLEX_PIXEL>& dst,
+    bool demodulateOutput,
     const POSTPROCESS_PARAMS& postprocessParams,
-    bool simpleVersion,
+    bool uncachedVersion,
     stdPars(GpuProcessKit)
 )
 {
@@ -600,7 +615,7 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
     require
     (
         (
-            simpleVersion ?
+            uncachedVersion ?
                 PREP_PASTE3(FUNCNAME, ProcessInitialSimple, DIR(Hor, Ver)) :
                 PREP_PASTE3(FUNCNAME, ProcessInitialCached, DIR(Hor, Ver))
         )
@@ -608,6 +623,7 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
             src, 
             circleTable, 
             GPU_LAYERED_MATRIX_PASS(ORIENT_COUNT, tmp), 
+            demodulateOutput,
             stdPass
         )
     );
@@ -617,7 +633,7 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
     require
     (
         ( 
-            simpleVersion ? 
+            uncachedVersion ? 
             PREP_PASTE3(FUNCNAME, ProcessFinalSimple, DIR(Ver, Hor)) :
             PREP_PASTE3(FUNCNAME, ProcessFinalCached, DIR(Ver, Hor))
         )
@@ -625,6 +641,7 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
             GPU_LAYERED_MATRIX_PASS(ORIENT_COUNT, tmp), 
             circleTable, 
             GPU_LAYERED_MATRIX_PASS(ORIENT_COUNT, dst), 
+            demodulateOutput,
             postprocessParams,
             stdPass
         )
@@ -644,17 +661,43 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 // Gabor fixing.
 //
 // If some of input pixels are undefined, they cannot be
-// fed into Gabor filters or replaced with zero.
+// simply fed into Gabor filters or replaced with zeros.
 //
 // The simplest way of handling undefined pixels is:
 //
-// (1) For each Gabor position, compute a default input value:
-// 2D weighted average of defined pixels with weight window equal 
-// to Gabor envelope (Gaussian ball).
+// * For each Gabor position, compute a default input value:
+// 2D weighted average of defined pixels with weight window of
+// Gabor envelope, Gaussian ball.
 //
-// (2) When computing a Gabor, replace undefined input pixels with default value.
-// The replacement cannot be done in input image, as the same undefined pixel
-// may have different default values when it is read for different Gabor positions.
+// * When computing each Gabor filter, replace undefined input pixels with 
+// the default value. The replacement cannot be done inside the input image, 
+// because the same undefined pixel may have different default values 
+// when it is used for different Gabor positions.
+//
+// The above description prevents separable filtering if implemented directly.
+// To keep filtering separable, the following method is used:
+//
+// Assume we don't know the default input value at the filtering stage, 
+// let's denote it by variable D. 
+//
+// For an unconditional input, the filtered value is sum(Fi * Vi)
+// where F is the filter and V is value.
+//
+// For conditional input, handled by replacing invalid pixels with value D,
+// the input value is (Mi * Vi + (1 - Mi) * D), where M is mask (or probability).
+//
+// sum(Fi * (Mi * Vi + (1 - Mi) * D))
+// ==
+// sum(Fi * Mi * Vi) + D * sum(Fi * 1) - sum(Fi * Mi)
+//
+// So, the result of any linear filter, including complex Gabors, splits into three sums: 
+// (Filtered product of image and mask) + (Filtered 1) - D * (Filtered mask).
+//
+// For Gabor filters, filtered 1 is zero, so the result is:
+// (Gabor-filtered product of image and mask) - D * (Gabor-filtered mask).
+//
+// Both filters can be computed separably, as well as the default value D, which is 
+// (envelope-filtered product of image and mask) / (envelope-filtered mask).
 //
 //----------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
