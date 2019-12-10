@@ -736,7 +736,7 @@ GPUTOOL_2D_BEG_EX
 
         {
             auto texPos = srcReadTexPos + point(float32(iX), float32(iY)) * srcTexstep;
-            float32 mask = float32(MASK_CHECK(tex2D(maskSampler, texPos), maskParams));
+            float32 mask = MASK_CHECK(tex2D(maskSampler, texPos), maskParams);
             float32 image = tex2D(imageSampler, texPos);
 
             *(maskCacheLoadPtr + iX + iY * maskCacheMemPitch) = mask;
