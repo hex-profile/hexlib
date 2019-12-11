@@ -578,15 +578,15 @@ public:
 
     //----------------------------------------------------------------
     //
-    // Check access position.
+    // validAccess.
     //
     //----------------------------------------------------------------
 
     sysinline bool validAccess(const Point<Space>& pos) const
-    {
-        
-        return MATRIX_VALID_ACCESS_(the, pos);
-    }
+        {return MATRIX_VALID_ACCESS_(the, pos);}
+
+    sysinline bool validAccess(Space X, Space Y) const
+        {return MATRIX_VALID_ACCESS(the, X, Y);}
 
     //----------------------------------------------------------------
     //
@@ -597,8 +597,16 @@ public:
     sysinline auto pointer(const Point<Space>& pos) const
         {return MATRIX_POINTER_(the, pos);}
 
+    sysinline auto pointer(Space X, Space Y) const
+        {return MATRIX_POINTER(the, X, Y);}
+
+    ////
+
     sysinline auto& element(const Point<Space>& pos) const
         {return MATRIX_ELEMENT_(the, pos);}
+
+    sysinline auto& element(Space X, Space Y) const
+        {return MATRIX_ELEMENT(the, X, Y);}
 
     //----------------------------------------------------------------
     //
@@ -608,6 +616,9 @@ public:
 
     sysinline auto read(const Point<Space>& pos) const
         {return helpRead(MATRIX_ELEMENT_(the, pos));}
+
+    sysinline auto read(Space X, Space Y) const
+        {return helpRead(MATRIX_ELEMENT(the, X, Y));}
 
     //----------------------------------------------------------------
     //
@@ -620,6 +631,12 @@ public:
     {
         if (MATRIX_VALID_ACCESS_(the, pos))
             helpModify(MATRIX_ELEMENT_(the, pos)) = helpRead(value);
+    }
+
+    template <typename Value>
+    sysinline void writeSafe(Space X, Space Y, const Value& value) const
+    {
+        writeSafe(point(X, Y), value);
     }
 
 };
