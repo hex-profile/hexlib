@@ -6,7 +6,6 @@
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "gpuSupport/gpuTexTools.h"
 #include "gpuSupport/gpuTool.h"
-#include "gpuSupport/gpuTool/gpuToolPlain.h"
 #include "imageRead/positionTools.h"
 #include "mathFuncs/bsplineShapes.h"
 #include "mathFuncs/gaussApprox.h"
