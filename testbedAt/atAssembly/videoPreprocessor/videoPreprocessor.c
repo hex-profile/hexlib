@@ -406,7 +406,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         );
 
         frameHistoryCapacity.serialize(kit, STR("Frame History Size"));
-        displayFrameSize.serialize(kit, STR("Display Frame Size"), STR("Ctrl+F"));
+        displayFrameSize.serialize(kit, STR("Display Frame Size"), STR(""));
 
         check_flag(cropMode.serialize(kit, STR("Crop Mode"), STR("Ctrl+C")), prepParamsSteady);
         check_flag(cropSizeCfg.serialize(kit, STR("Crop Size")), prepParamsSteady);
