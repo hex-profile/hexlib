@@ -903,15 +903,18 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
         require(getElementAtUserPoint(image, linearTransform(coordBackMul, coordBackAdd), userIndex, userValue, stdPass));
 
         Point<float32> vectorValue = point(convertFloat32(userValue.x), convertFloat32(userValue.y));
-        require(def(vectorValue));
 
         if (textOutputEnabled)
             printMsgL(kit, STR("Value[%0] = %1"), userIndex, fltfs(textFactor * vectorValue, 2));
 
         ////
 
-        Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // to space format
-        require(imposeVectorArrow(dest, dstPos, arrowFactor * vectorValue, stdPass));
+        if (allv(def(vectorValue)))
+        {
+            Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // to space format
+            require(imposeVectorArrow(dest, dstPos, arrowFactor * vectorValue, stdPass));
+        }
+
         returnTrue;
     };
 
