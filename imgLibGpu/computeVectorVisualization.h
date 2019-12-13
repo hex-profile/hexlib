@@ -2,6 +2,8 @@
 
 #include "vectorTypes/vectorOperations.h"
 #include "numbers/mathIntrinsics.h"
+#include "mathFuncs/rotationMath.h"
+#include "mathFuncs/gaussApprox.h"
 
 namespace computeVecVisualization {
 
@@ -26,25 +28,16 @@ sysinline float32 circularDistance(float32 A, float32 B) // A, B in [0..1) range
 
 //================================================================
 //
-// colorBspline
+// colorSupport
 //
 //================================================================
 
-sysinline float32 colorBspline(float32 t)
+sysinline float32 colorSupport(float32 t)
 {
-    t = absv(t);
-
-    float32 t2 = square(t);
-
-    float32 result = -21.33333333f * t2 + 1;
-
-    if (t >= 0.125f)
-        result = 10.66666667f * t2 - 8*t + 1.5f;
-
-    if (t >= 0.375f)
-        result = 0;
-
-    return result;
+    // Gausses are joined on sigma = 0.55f
+    constexpr float32 sigma = 0.55f;
+    constexpr float32 divSigma = 1 / sigma;
+    return gaussExpoApprox<4>(square(t * divSigma));
 }
 
 //================================================================
@@ -53,87 +46,50 @@ sysinline float32 colorBspline(float32 t)
 //
 //================================================================
 
-template <bool useSaturation>
-sysinline float32_x4 computeVectorVisualization(const float32_x2& value)
+sysinline float32_x4 computeVectorVisualization(const float32_x2& value, bool grayMode = false)
 {
 
     //
     // vector to H(S)V
     //
 
-    float32 H = 0;
+    float32 H = approxPhase(point(value.x, value.y)); 
+    if (H < 0) H += 1;
 
-    {
-        float32 aX = absv(value.x);
-        float32 aY = absv(value.y);
-
-        float32 minXY = minv(aX, aY);
-        float32 maxXY = maxv(aX, aY);
-
-        float32 D = nativeDivide(minXY, maxXY);
-        if (maxXY == 0) D = 0; /* range [0..1] */
-
-        // Cubic polynom approximation, at interval ends x=0 and x=1 both value and 1st derivative are equal to real function.
-        float32 result = (0.1591549430918954f + ((-0.02288735772973838f) + (-0.01126758536215698f) * D) * D) * D;
-
-        if (aY >= aX)
-            result = 0.25f - result;
-
-        if (value.x < 0)
-            result = 0.5f - result;
-
-        if (value.y < 0)
-            result = 1 - result;
-
-        H = result; // range [0..1]
-    }
-
-    ////
-
-    float32 length2 = square(value.x) + square(value.y);
-    float32 length = fastSqrt(length2);
+    float32 length = vectorLength(value);
 
     //
     // Color conversion
     //
 
-    #define HV_GET_CHANNEL(C, center) \
-        \
-        float32 C = colorBspline(circularDistance(H, center)); /* [0, 1] */ \
+    #define TMP_MACRO(C, center) \
+        float32 C = colorSupport(4.f * circularDistance(H, center)); /* [0, 1] */ \
 
-    HV_GET_CHANNEL(weightR, 0.f/4)
-    HV_GET_CHANNEL(weightB, 1.f/4)
-    HV_GET_CHANNEL(weightG, 2.f/4)
-    HV_GET_CHANNEL(weightY, 3.f/4)
+    TMP_MACRO(weightR, 0.f/4)
+    TMP_MACRO(weightB, 1.f/4)
+    TMP_MACRO(weightG, 2.f/4)
+    TMP_MACRO(weightY, 3.f/4)
+
+    #undef TMP_MACRO
 
     ////
 
     float32_x4 colorR = make_float32_x4(0, 0, 1, 0);
     float32_x4 colorB = make_float32_x4(1, 0, 0, 0);
     float32_x4 colorG = make_float32_x4(0, 1, 0, 0);
-    float32_x4 colorY = make_float32_x4(0, 0.5f, 0.5f, 0);
+    float32_x4 colorY = make_float32_x4(0, 1.f, 1.f, 0);
 
-    float32_x4 pureColor =
-        weightR * colorR +
-        weightB * colorB +
-        weightG * colorG +
-        weightY * colorY;
+    float32 divSumWeight = nativeRecip(weightR + weightB + weightG + weightY);
+    float32_x4 pureColor = divSumWeight * (weightR * colorR + weightB * colorB + weightG * colorG + weightY * colorY);
 
     ////
 
-    float32 saturation = saturate(length);
+    if (grayMode)
+        pureColor = make_float32_x4(1, 1, 1, 0);
 
-    float32_x4 resultColor = pureColor;
+    ////
 
-    if_not (useSaturation)
-        resultColor = pureColor * length;
-    else
-    {
-        float32 avgBrightness = (1.f/3) * (pureColor.x + pureColor.y + pureColor.z);
-        float32_x4 equivalentGray = make_float32_x4(avgBrightness, avgBrightness, avgBrightness, 0);
-
-        resultColor = linerp(saturation, equivalentGray, pureColor);
-    }
+    float32_x4 resultColor = pureColor * length;
 
     ////
 

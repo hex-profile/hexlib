@@ -14,165 +14,7 @@
 #include "gpuDevice/loadstore/loadNorm.h"
 #include "numbers/mathIntrinsics.h"
 #include "imageRead/positionTools.h"
-
-//================================================================
-//
-// circularDistance
-//
-//================================================================
-
-sysinline float32 circularDistance(float32 A, float32 B) // A, B in [0..1) range 
-{
-    float32 distance = A - B + 1; // [0, 2)
-  
-    if (distance >= 1) 
-        distance -= 1; // [0, 1)
-
-    if (distance >= 0.5f) 
-        distance = 1 - distance; // [0, 1/2)
-
-    return distance;
-}
-
-//================================================================
-//
-// colorTent
-//
-//================================================================
-
-sysinline float32 colorTent(float32 value)
-{
-    return clampMin(1 - 4*absv(value), 0.f);
-}
-
-//================================================================
-//
-// colorBspline
-//
-//================================================================
-
-sysinline float32 colorBspline(float32 t)
-{
-    t = absv(t);
-
-    float32 t2 = square(t);
-
-    float32 result = -21.33333333f * t2 + 1;
-
-    if (t >= 0.125f)
-        result = 10.66666667f * t2 - 8*t + 1.5f;
-
-    if (t >= 0.375f)
-        result = 0;
-
-    return result;
-}
-
-//================================================================
-//
-// computeVectorVisualization
-//
-//================================================================
-
-sysinline uint8_x4 computeVectorVisualization(const float32_x2& value, bool grayMode)
-{
-    //
-    // vector to H(S)V
-    //
-
-    float32 H = 0;
-
-#if 0
-
-    H = atan2f(value.y, value.x) * (1.f / 2 / pi32);
-    if (H < 0) H += 1;
-
-#else
-
-    {
-        float32 aX = absv(value.x);
-        float32 aY = absv(value.y);
-
-        float32 minXY = minv(aX, aY);
-        float32 maxXY = maxv(aX, aY);
-
-        float32 D = nativeDivide(minXY, maxXY);
-        if (maxXY == 0) D = 0; /* range [0..1] */
-
-        // Cubic polynom approximation, at interval ends x=0 and x=1 both value and 1st derivative are equal to real function.
-        float32 result = (0.1591549430918954f + ((-0.02288735772973838f) + (-0.01126758536215698f) * D) * D) * D;
-
-        if (aY >= aX)
-            result = 0.25f - result;
-
-        if (value.x < 0)
-            result = 0.5f - result;
-
-        if (value.y < 0)
-            result = 1 - result;
-
-        H = result; // range [0..1]
-    }
-
-#endif
-
-    ////
-
-    float32 length2 = square(value.x) + square(value.y);
-    float32 length = fastSqrt(length2);
-
-    //
-    // Color conversion
-    //
-
-    #define HV_GET_CHANNEL(C, center) \
-        \
-        float32 C = colorBspline(circularDistance(H, center)); /* [0, 1] */ \
-
-    HV_GET_CHANNEL(weightR, 0.f/4)
-    HV_GET_CHANNEL(weightB, 1.f/4)
-    HV_GET_CHANNEL(weightG, 2.f/4)
-    HV_GET_CHANNEL(weightY, 3.f/4)
-
-    ////
-
-    float32_x4 colorR = make_float32_x4(0, 0, 1, 0);
-    float32_x4 colorB = make_float32_x4(1, 0, 0, 0);
-    float32_x4 colorG = make_float32_x4(0, 1, 0, 0);
-    float32_x4 colorY = make_float32_x4(0, 0.5f, 0.5f, 0);
-
-    float32_x4 color = 
-        weightR * colorR + 
-        weightB * colorB +
-        weightG * colorG +
-        weightY * colorY;
-
-    if (grayMode)
-        color = make_float32_x4(1, 1, 1, 0);
-
-    ////
-
-    color *= length;
-
-    ////
-
-    float32 maxComponent = maxv(color.x, color.y, color.z);
-
-    if (maxComponent > 1.f)
-    {
-        float32 divMaxComponent = 1 / maxComponent;
-        color *= divMaxComponent;
-    }
-
-    ////
-
-    if_not (def(value.x) && def(value.y))
-        color = make_float32_x4(1, 0, 1, 0); // magenta
-
-    ////
-
-    return convertNormClamp<uint8_x4>(color);
-}
+#include "computeVectorVisualization.h"
 
 //================================================================
 //
@@ -229,9 +71,16 @@ sysinline uint8_x4 computeVectorVisualization(const float32_x2& value, bool gray
         \
         { \
             Point<float32> srcPos = coordBackTransform(point(Xs, Ys)); \
+            \
             auto value = vectorFactor * devTex2D(srcSampler, srcPos.X * srcTexstep.X, srcPos.Y * srcTexstep.Y); \
-            if (interpType == INTERP_CUBIC) value = vectorFactor * tex2DCubic(srcSampler, srcPos, srcTexstep); \
-            *dst = computeVectorVisualization(make_float32_x2(value.x, value.y), grayMode); \
+            \
+            if (interpType == INTERP_CUBIC) \
+                value = vectorFactor * tex2DCubic(srcSampler, srcPos, srcTexstep); \
+            \
+            auto color = computeVectorVisualization(make_float32_x2(value.x, value.y), grayMode); \
+            color = limitColorBrightness(color); \
+            \
+            storeNorm(dst, color); \
         } \
     )
 
