@@ -121,9 +121,6 @@ struct DisplayParams
     // User desire to see interpolated data.
     const bool& interpolation;
 
-    // User desire to see individual data channels.
-    const bool& channels;
-
     // Abstract view index or image side.
     DisplayedRangeIndex& viewIndex;
 
@@ -138,6 +135,10 @@ struct DisplayParams
 
     // Abstract stage index.
     DisplayedRangeIndex& stageIndex;
+
+    // Abstract channel index.
+    const DisplayedCircularIndex& channelIndex;
+
 };
 
 //================================================================

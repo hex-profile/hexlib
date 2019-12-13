@@ -184,8 +184,6 @@ class VideoPreprocessorImpl
 
 public:
 
-    VideoPreprocessorImpl();
-
     void serialize(const ModuleSerializeKit& kit);
     void setFrameSize(const Point<Space>& frameSize);
 
@@ -250,21 +248,21 @@ private:
     ////
 
     BoolSwitch<false> cropMode;
-    NumericVar<Point<Space>> cropSizeCfg;
+    NumericVar<Point<Space>> cropSizeCfg{point(0), point(8192), point(1280, 720)};
 
     ////
 
     enum GenMode {GenNone, GenPulse, GenGrating, GenRandom, GenModeCount};
     RingSwitch<GenMode, GenModeCount, GenNone> genMode;
 
-    RangeValueControl<float32> genGratingPeriod;
+    RangeValueControl<float32> genGratingPeriod{2, 2048, 6, 1.02189714865411668f, RangeValueLogscale};
     BoolSwitch<false> genGratingRectangleShape;
 
     NumericVarStatic<Space, 1, 1 << 20, 256> genPulsePeriod;
 
     ////
 
-    RangeValueControl<float32> rotationAngle;
+    RangeValueControl<float32> rotationAngle{0, 1, 0, 1.f/128, RangeValueCircular};
 
     uint32 movingFrameIndex = 0;
 
@@ -284,7 +282,7 @@ private:
     //
 
     BoolSwitch<false> noiseActive;
-    NumericVarStaticEx<float32, int, 0, 1, 0> noiseSigma;
+    NumericVar<float32> noiseSigma{0, 1, 0.01f};
 
 private:
 
@@ -305,16 +303,18 @@ private:
 private:
 
     RingSwitch<DisplayMode, DisplayMode::COUNT, DisplayMode::Fullscreen> displayMode;
-    RangeValueControl<float32> displayFactor;
+
+    RangeValueControl<float32> displayFactor{1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale};
+
     MultiSwitch<VectorMode, VectorMode::COUNT, VectorMode::Color> vectorMode;
     BoolSwitch<true> displayInterpolation;
-    BoolSwitch<false> displayChannels;
 
-    RangeValueControl<int32> viewIndex;
-    RangeValueControl<int32> temporalIndex;
-    RangeValueControl<int32> circularIndex;
-    RangeValueControl<int32> scaleIndex;
-    RangeValueControl<int32> stageIndex;
+    RangeValueControl<int32> viewIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> temporalIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> circularIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> scaleIndex{0, 0x7F, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> stageIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> channelIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
 
 private:
 
@@ -336,29 +336,6 @@ private:
     GpuMatrixMemory<RndgenState> rndgenFrame;
 
 };
-
-//================================================================
-//
-// VideoPreprocessorImpl::VideoPreprocessorImpl
-//
-//================================================================
-
-VideoPreprocessorImpl::VideoPreprocessorImpl()
-    :
-    rotationAngle(0, 1, 0, 1.f/128, RangeValueCircular),
-    cropSizeCfg(point(0), point(8192), point(1280, 720)),
-    genGratingPeriod(2, 2048, 6, 1.02189714865411668f, RangeValueLogscale),
-
-    displayFactor(1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale),
-    viewIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
-    temporalIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
-    circularIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear),
-    scaleIndex(0, 0x7F, 0, 1, RangeValueLinear),
-    stageIndex(-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear)
-
-{
-    noiseSigma = 0.01f;
-}
 
 //================================================================
 //
@@ -386,13 +363,13 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         );
 
         displayInterpolation.serialize(kit, STR("Interpolation"), STR("Alt+I"));
-        displayChannels.serialize(kit, STR("Channels"), STR("Alt+C"));
 
         viewIndex.serialize(kit, STR("View Index"), STR("9"), STR("0"));
         temporalIndex.serialize(kit, STR("Temporal Index"), STR(","), STR("."));
         circularIndex.serialize(kit, STR("Circular Index"), STR(";"), STR("'"));
         scaleIndex.serialize(kit, STR("Scale Index"), STR("="), STR("-"));
         stageIndex.serialize(kit, STR("Stage Index"), STR("["), STR("]"));
+        channelIndex.serialize(kit, STR("Channel Index"), STR(""), STR("Alt+C"));
     }
 
     {
@@ -634,12 +611,12 @@ stdbool VideoPreprocessorImpl::processTarget
         displayFactor,
         inputFrame.size(), 
         displayInterpolation,
-        displayChannels,
         viewIndexThunk, 
         temporalIndexThunk, 
         scaleIndexThunk,
         DisplayedCircularIndex(circularIndex),
-        stageIndexThunk
+        stageIndexThunk,
+        DisplayedCircularIndex(channelIndex)
     };
 
     DisplayParamsKit displayKit{displayParams};
