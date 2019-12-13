@@ -48,7 +48,7 @@ GPUTOOL_2D_BEG
             \
             float32 spatialWeight = gaussExpoApprox<4>(vectorLengthSq(pos - vec) * divThicknessRadius2); \
             \
-            float32_x4 pureColor = limitColorBrightness(computeVectorVisualization<true>(8.f * vecPure)); \
+            float32_x4 pureColor = limitColorBrightness(computeVectorVisualization(8.f * vecPure)); \
             \
             sumWeightColor += spatialWeight * presence * pureColor; \
             sumWeight += spatialWeight * presence; \
@@ -136,7 +136,7 @@ GPUTOOL_2D_BEG
             \
             vec *= divMaxVector; \
             \
-            float32_x4 color = computeVectorVisualization<false>(vec); \
+            float32_x4 color = computeVectorVisualization(vec); \
             float32 presence = clampMin(localPresence##r, PRESENCE_EPSILON); \
             localPresenceSum += presence; \
             localPresenceColorSum += presence * color; \
