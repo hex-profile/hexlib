@@ -18,8 +18,11 @@
 template <typename Float>
 struct Movement3D
 {
-    Point4D<Float> rotation{}; // quaternion of unit length
-    Point3D<Float> translation{};
+    // Quaternion of unit length.
+    Point4D<Float> rotation{0, 0, 0, 1}; 
+
+    // Translation.
+    Point3D<Float> translation{0, 0, 0};
 };
 
 //----------------------------------------------------------------
