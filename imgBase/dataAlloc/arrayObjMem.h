@@ -5,10 +5,10 @@
 
 //================================================================
 //
-// The same as ArrayMemory<T> but calls constructors and destructors
-// of elements.
+// The same as ArrayMemory<T> but with support of element constructors/destructors.
 //
-// USAGE EXAMPLES:
+// The constructors/destructors of elements are called only on realloc/dealloc.
+// Resize functions do not call constructors or destructors.
 //
 //================================================================
 
