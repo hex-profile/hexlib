@@ -100,6 +100,18 @@ sysinline Point3D<Float> applyInverse(const Movement3D<Float>& movement, const P
 
 //================================================================
 //
+// normalize
+//
+//================================================================
+
+template <typename Float>
+sysinline Movement3D<Float> normalize(const Movement3D<Float>& movement)
+{
+    return movement3D(vectorNormalize(movement.rotation), movement.translation);
+}
+
+//================================================================
+//
 // MovementUnpacked3D
 //
 //================================================================
