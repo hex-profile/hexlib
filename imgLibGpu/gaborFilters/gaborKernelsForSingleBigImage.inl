@@ -848,8 +848,9 @@ GPUTOOL_2D_BEG_EX
     GABOR_FINAL_CACHED_THREAD_COUNT,
     true,
     ((const DEFAULT_WEIGHTED_PIXEL, src, INTERP_NONE, INPUT_BORDER_MODE)),
-    ((DEFAULT_PIXEL, dst)),
-    PREP_EMPTY
+    ((MASK_PIXEL, dstMask))
+    ((DEFAULT_PIXEL, dstImage)),
+    ((float32, dstMaskMinValue))
 )
 #if DEVCODE
 {
@@ -944,13 +945,21 @@ GPUTOOL_2D_BEG_EX
 
     //----------------------------------------------------------------
     //
-    // Divide filtered (image * mask) by filtered mask.
+    // Divide the filtered (image * mask) by the filtered mask.
     //
     //----------------------------------------------------------------
 
     auto result = nativeRecipZero(sum.x) * sum.y;
+    storeNorm(dstImage, result);
 
-    storeNorm(dst, result);
+    ////
+
+    auto maskValue = sum.x;
+
+    if_not (maskValue >= dstMaskMinValue)
+        maskValue = 0;
+
+    storeNorm(dstMask, maskValue);
 
 }
 #endif
@@ -969,16 +978,23 @@ stdbool PREP_PASTE3(FUNCNAME, DefaultFull, DIR(Hor, Ver))
 (
     const GpuMatrix<const MASK_PIXEL>& srcMask, 
     const GpuMatrix<const INPUT_PIXEL>& srcImage, 
-    const GpuMatrix<DEFAULT_PIXEL>& dst,
+    const GpuMatrix<MASK_PIXEL>& dstMask,
+    const GpuMatrix<DEFAULT_PIXEL>& dstImage,
     const MASK_PARAMS& maskParams,
+    float32 dstMaskMinValue,
     stdPars(GpuProcessKit)
 )
 {
-    REQUIRE(equalSize(srcImage, srcMask));
+    REQUIRE(equalSize(srcMask, srcImage));
     auto srcSize = srcImage.size();
 
+    REQUIRE(equalSize(dstMask, dstImage));
+    auto dstSize = dstImage.size();
+
+    ////
+
     Point<Space> tmpSize = srcSize;
-    tmpSize.DIR(X, Y) = dst.size().DIR(X, Y);
+    tmpSize.DIR(X, Y) = dstSize.DIR(X, Y);
 
     GPU_MATRIX_ALLOC(tmp, DEFAULT_WEIGHTED_PIXEL, tmpSize);
 
@@ -992,7 +1008,7 @@ stdbool PREP_PASTE3(FUNCNAME, DefaultFull, DIR(Hor, Ver))
 
     auto finalFunc = PREP_PASTE3(FUNCNAME, DefaultFinalCached, DIR(Ver, Hor));
 
-    require(finalFunc(tmp, dst, stdPass));
+    require(finalFunc(tmp, dstMask, dstImage, dstMaskMinValue, stdPass));
 
     ////
 
