@@ -136,6 +136,12 @@ public:
     }
 };
 
+////
+
+template <typename Float>
+sysinline auto movementUnpacked3D(const Movement3D<Float>& movement)
+    {return MovementUnpacked3D<Float>(movement);}
+
 //================================================================
 //
 // apply
