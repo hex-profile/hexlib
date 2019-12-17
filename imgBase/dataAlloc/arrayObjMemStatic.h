@@ -10,9 +10,9 @@
 //
 // ArrayObjMemStatic<T>
 //
-// The interface is similar to ArrayMemory<T>,
-// but memory is statically reserved to max size,
-// and constructors/destructors of elements are called.
+// The interface is similar to ArrayMemory<T>, but memory is statically reserved to max size.
+//
+// The constructors/destructors of elements are called on realloc/dealloc.
 //
 //================================================================
 
