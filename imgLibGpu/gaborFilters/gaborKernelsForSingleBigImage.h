@@ -9,6 +9,7 @@
 #include "mapDownsampleIndexToSource.h"
 #include "numbers/mathIntrinsics.h"
 #include "prepTools/prepEnum.h"
+#include "prepTools/prepList.h"
 #include "vectorTypes/vectorOperations.h"
 
 #if HOSTCODE
