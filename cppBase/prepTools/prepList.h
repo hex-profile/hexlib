@@ -22,15 +22,15 @@
 //================================================================
 
 #define PREP_LIST_FOREACH(list, action, extra) \
-    PREP_FOR(PREP_DEC(PREP_SEQ_SIZE(list)), PREP__LIST_FOREACH0, (list, action, extra))
+    PREP_FOR(PREP_DEC(PREP_SEQ_SIZE(list)), PREP_LIST__FOREACH0, (list, action, extra))
 
-#define PREP__LIST_FOREACH0(n, param) \
-    PREP__LIST_FOREACH1(n, PREP_ARG3_0 param, PREP_ARG3_1 param, PREP_ARG3_2 param)
+#define PREP_LIST__FOREACH0(n, param) \
+    PREP_LIST__FOREACH1(n, PREP_ARG3_0 param, PREP_ARG3_1 param, PREP_ARG3_2 param)
 
-#define PREP__LIST_FOREACH1(n, list, action, extra) \
-    PREP__LIST_FOREACH2(action, PREP_SEQ_ELEM(n, list), extra)
+#define PREP_LIST__FOREACH1(n, list, action, extra) \
+    PREP_LIST__FOREACH2(action, PREP_SEQ_ELEM(n, list), extra)
 
-#define PREP__LIST_FOREACH2(action, item, extra) \
+#define PREP_LIST__FOREACH2(action, item, extra) \
     action(item, extra)
 
 //================================================================
@@ -45,12 +45,12 @@
 //================================================================
 
 #define PREP_LIST_FOREACH_PAIR(list, action, extra) \
-    PREP_LIST_FOREACH(list, PREP__LIST_FOREACH_PAIR0, (action, extra))
+    PREP_LIST_FOREACH(list, PREP_LIST__FOREACH_PAIR0, (action, extra))
 
-#define PREP__LIST_FOREACH_PAIR0(item, param) \
-    PREP__LIST_FOREACH_PAIR1(PREP_ARG2_0 param, PREP_ARG2_1 param, PREP_ARG2_0 item, PREP_ARG2_1 item)
+#define PREP_LIST__FOREACH_PAIR0(item, param) \
+    PREP_LIST__FOREACH_PAIR1(PREP_ARG2_0 param, PREP_ARG2_1 param, PREP_ARG2_0 item, PREP_ARG2_1 item)
 
-#define PREP__LIST_FOREACH_PAIR1(action, extra, Type, name) \
+#define PREP_LIST__FOREACH_PAIR1(action, extra, Type, name) \
     action(Type, name, extra)
 
 //================================================================
@@ -65,16 +65,16 @@
 //================================================================
 
 #define PREP_LIST_ENUM(list, action, extra) \
-    PREP__LIST_ENUM_MAIN(PREP_DEC(PREP_SEQ_SIZE(list)), list, action, extra)
+    PREP_LIST__ENUM_MAIN(PREP_DEC(PREP_SEQ_SIZE(list)), list, action, extra)
 
-#define PREP__LIST_ENUM_MAIN(size, list, action, extra) \
-    PREP_FOR(PREP_DEC(size), PREP__LIST_ENUM_ACTION, (list, action, extra)) \
+#define PREP_LIST__ENUM_MAIN(size, list, action, extra) \
+    PREP_FOR(PREP_DEC(size), PREP_LIST__ENUM_ACTION, (list, action, extra)) \
     action(PREP_SEQ_ELEM(PREP_DEC(size), list), extra)
 
-#define PREP__LIST_ENUM_ACTION(n, param) \
-    PREP__LIST_ENUM_ACTION0(n, PREP_ARG3_0 param, PREP_ARG3_1 param, PREP_ARG3_2 param)
+#define PREP_LIST__ENUM_ACTION(n, param) \
+    PREP_LIST__ENUM_ACTION0(n, PREP_ARG3_0 param, PREP_ARG3_1 param, PREP_ARG3_2 param)
 
-#define PREP__LIST_ENUM_ACTION0(n, list, action, extra) \
+#define PREP_LIST__ENUM_ACTION0(n, list, action, extra) \
     action(PREP_SEQ_ELEM(n, list), extra),
 
 //================================================================
@@ -86,10 +86,10 @@
 //================================================================
 
 #define PREP_LIST_ENUM_PAIR(list, action, extra) \
-    PREP_LIST_ENUM(list, PREP__LIST_ENUM_PAIR__ACTION, (action, extra))
+    PREP_LIST_ENUM(list, PREP_LIST__ENUM_PAIR__ACTION, (action, extra))
 
-#define PREP__LIST_ENUM_PAIR__ACTION(item, param) \
-    PREP__LIST_ENUM_PAIR__ACTION0(PREP_ARG2_0 param, PREP_ARG2_1 param, PREP_ARG2_0 item, PREP_ARG2_1 item)
+#define PREP_LIST__ENUM_PAIR__ACTION(item, param) \
+    PREP_LIST__ENUM_PAIR_ACTION0(PREP_ARG2_0 param, PREP_ARG2_1 param, PREP_ARG2_0 item, PREP_ARG2_1 item)
 
-#define PREP__LIST_ENUM_PAIR__ACTION0(action, extra, Type, name) \
+#define PREP_LIST__ENUM_PAIR_ACTION0(action, extra, Type, name) \
     action(Type, name, extra)

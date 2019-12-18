@@ -28,38 +28,26 @@ struct PostprocessParams
 
 //================================================================
 //
-// postprocessAction
-//
-//================================================================
-
-sysinline void postprocessAction
-(
-    const Point<Space>& dstPos,
-    const Point<Space>& dstSize,
-    PREP_ENUM_INDEXED(ORIENTATION_COUNT, float32_x2& sum),
-    const PostprocessParams& params
-)
-{
-}
-
-//================================================================
-//
 // gaborSimpleBank.inl
 //
 //================================================================
 
 #define FUNCNAME gaborExample
-#define MASK_ENABLED 0
-
-#define INPUT_PIXEL float16
-#define COMPLEX_PIXEL float16_x2
-
-#define ORIENT_COUNT ORIENTATION_COUNT
+#define GABOR_ENABLED 1
+#define ENVELOPE_ENABLED 0
 #define COMPRESS_OCTAVES 1
-#define INPUT_BORDER_MODE BORDER_MIRROR
 
-#define POSTPROCESS_PARAMS PostprocessParams
-#define POSTPROCESS_ACTION postprocessAction
+#define GABOR_INPUT_PIXEL float16
+#define GABOR_COMPLEX_PIXEL float16_x2
+
+#define GABOR_ORIENT_COUNT ORIENTATION_COUNT
+#define GABOR_BORDER_MODE BORDER_MIRROR
+
+#define GABOR_PARAMS PostprocessParams
+#define GABOR_PREPROCESS_IMAGES 
+#define GABOR_PREPROCESS(value, texPos)
+#define GABOR_POSTPROCESS_IMAGES
+#define GABOR_POSTPROCESS(value)
 
 //----------------------------------------------------------------
 
@@ -74,17 +62,19 @@ sysinline void postprocessAction
 //----------------------------------------------------------------
 
 #undef FUNCNAME
-#undef GABOR_BANK
-
-#undef INPUT_PIXEL
-#undef COMPLEX_PIXEL
-
-#undef ORIENT_COUNT
+#undef GABOR_ENABLED
+#undef ENVELOPE_ENABLED
 #undef COMPRESS_OCTAVES
-#undef INPUT_BORDER_MODE
 
-#undef POSTPROCESS_PARAMS 
-#undef POSTPROCESS_ACTION
+#undef GABOR_INPUT_PIXEL
+#undef GABOR_COMPLEX_PIXEL
+#undef GABOR_ORIENT_COUNT
+#undef GABOR_BORDER_MODE
+#undef GABOR_PARAMS
+#undef GABOR_PREPROCESS_IMAGES
+#undef GABOR_PREPROCESS
+#undef GABOR_POSTPROCESS_IMAGES
+#undef GABOR_POSTPROCESS
 
 //================================================================
 //
@@ -100,14 +90,14 @@ stdbool gaborExampleFunc
     const GpuMatrix<const float32_x2>& circleTable,
     const GpuLayeredMatrix<float16_x2>& dst,
     bool demodulateOutput,
-    bool intermIsHorizontal,
+    bool horizontallyFirst,
     bool uncachedVersion,
     stdPars(GpuProcessKit)
 )
 {
     require
     (
-        (intermIsHorizontal ? gaborExampleProcessFullHor<> : gaborExampleProcessFullVer<>)
+        (horizontallyFirst ? gaborExampleProcessFullHor<> : gaborExampleProcessFullVer<>)
         (
             src, 
             circleTable, 

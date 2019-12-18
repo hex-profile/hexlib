@@ -16,7 +16,7 @@ stdbool gaborExampleFunc
     const GpuMatrix<const float32_x2>& circleTable,
     const GpuLayeredMatrix<float16_x2>& dst,
     bool demodulateOutput,
-    bool intermIsHorizontal,
+    bool horizontallyFirst,
     bool uncachedVersion,
     stdPars(GpuProcessKit)
 );
