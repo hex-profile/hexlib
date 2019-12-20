@@ -80,7 +80,7 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
     ////
 
     {
-        CFG_NAMESPACE("Tests");
+        CFG_NAMESPACE("~Tests");
 
         {
             CFG_NAMESPACE("Fourier Filter Bank");

@@ -428,7 +428,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     }
 
     {
-        CFG_NAMESPACE("Tests");
+        CFG_NAMESPACE("~Tests");
         halfFloatTest.serialize(kit);
         floatRangesTest.serialize(kit);
     }
