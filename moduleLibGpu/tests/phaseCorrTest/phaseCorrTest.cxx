@@ -713,10 +713,10 @@ void PhaseCorrTestImpl::serialize(const ModuleSerializeKit& kit)
         {STR("Phase Correlation"), STR("")}
     );
 
-    useMagnitude.serialize(kit, STR("Use Magnitude"), STR("Shift+Alt+M"));
+    useMagnitude.serialize(kit, STR("Use Magnitude"), STR(""));
     corrDisplayedHardMax.serialize(kit, STR("Corr Displayed Hard Max"));
-    dataWeightType.serialize(kit, STR("Data Weight Type"), STR("Shift+Alt+D"));
-    freqWeightType.serialize(kit, STR("Freq Weight Type"), STR("Shift+Alt+F"));
+    dataWeightType.serialize(kit, STR("Data Weight Type"), STR(""));
+    freqWeightType.serialize(kit, STR("Freq Weight Type"), STR(""));
     cfgTestSize.serialize(kit, STR("Test Size"));
     cfgFreqCount.serialize(kit, STR("Frequencies Count"));
     displayUpsampleFactor.serialize(kit, STR("Display Upsample Factor"));
