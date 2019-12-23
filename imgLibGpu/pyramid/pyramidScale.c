@@ -13,12 +13,13 @@ void PyramidScaleArray::configure(float32 levelFactor)
     for (Space i = -maxLevel; i <= +maxLevel; ++i)
     {
         float32 factor = powf(levelFactor, float32(i));
-        theScaleArray[maxLevel + i] = factor;
+        scaleArray[maxLevel + i] = factor;
 
         hash ^= recastEqualLayout<uint32>(factor);
     }
 
-    theHash = hash;
+    currentHash = hash;
+    scaleIsUniform = true;
 }
 
 //================================================================
@@ -34,11 +35,12 @@ PyramidScaleArray& PyramidScaleArray::operator =(const PyramidScale& that)
     for (Space i = -maxLevel; i <= +maxLevel; ++i)
     {
         float32 factor = that(i);
-        theScaleArray[maxLevel + i] = factor;
+        scaleArray[maxLevel + i] = factor;
         hash ^= recastEqualLayout<uint32>(factor);
     }
 
-    theHash = hash;
+    currentHash = hash;
+    scaleIsUniform = that.isUniform();
 
     return *this;
 }
