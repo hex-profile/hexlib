@@ -47,15 +47,15 @@ GPUTOOL_2D_BEG
 
     //// 
 
-    float32_x2 sum = make_float32_x2(0, 0);
+    auto sum = zeroOf<float32_x2>();
 
     for (Space i = 0; i < srcSize; ++i)
     {
-        float32_x2 value = devTex2D(srcSampler, (iX + 0.5f) * srcTexstep.X, (iY + 0.5f) * srcTexstep.Y);
+        auto value = devTex2D(srcSampler, (iX + 0.5f) * srcTexstep.X, (iY + 0.5f) * srcTexstep.Y);
 
         float32 s = (i + 0.5f) - srcCenter;
         float32 phase = s * freq;
-        float32_x2 spiral = circleCcw(phase);
+        auto spiral = circleCcw(phase);
 
         sum += complexMul(spiral, value);
 
@@ -147,18 +147,18 @@ GPUTOOL_2D_BEG
 
     float32 spatialPos = (horizontal ? Xs : Ys);
 
-    float32_x2 sum = make_float32_x2(0, 0);
+    auto sum = zeroOf<float32_x2>();
 
     ////
 
     for (Space f = 0; f < srcSize; ++f)
     {
-        float32_x2 value = devTex2D(srcSampler, (iX + 0.5f) * srcTexstep.X, (iY + 0.5f) * srcTexstep.Y);
+        auto value = devTex2D(srcSampler, (iX + 0.5f) * srcTexstep.X, (iY + 0.5f) * srcTexstep.Y);
 
         float32 freq = srcToFreq(f + 0.5f);
 
         float32 phase = -(spatialPos - dstCenter) * freq;
-        float32_x2 spiral = circleCcw(phase);
+        auto spiral = circleCcw(phase);
 
         sum += complexMul(spiral, value);
 
@@ -231,15 +231,15 @@ GPUTOOL_2D_BEG
     ////
 
     float32 orientAngle = Ys / vGlobSize.Y; // (0..1)
-    float32_x2 orientBackRotate = complexConjugate(devTex2D(circleTableSampler, 0.5f * orientAngle, 0)); // (0, 1/2)
+    auto orientBackRotate = complexConjugate(devTex2D(circleTableSampler, 0.5f * orientAngle, 0)); // (0, 1/2)
 
     ////
 
-    float32_x2 srcCenter = 0.5f * convertNearest<float32_x2>(srcSize);
+    auto srcCenter = 0.5f * convertNearest<float32_x2>(srcSize);
 
     //// 
 
-    float32_x2 sum = make_float32_x2(0, 0);
+    auto sum = zeroOf<float32_x2>();
 
     for (Space iY = 0; iY < srcSize.Y; ++iY)
     {
@@ -248,11 +248,11 @@ GPUTOOL_2D_BEG
             float32 srcX = iX + 0.5f;
             float32 srcY = iY + 0.5f;
 
-            float32_x2 value = devTex2D(srcSampler, srcX * srcTexstep.X, srcY * srcTexstep.Y);
+            auto value = devTex2D(srcSampler, srcX * srcTexstep.X, srcY * srcTexstep.Y);
 
             float32 s = complexMul(make_float32_x2(srcX, srcY) - srcCenter, orientBackRotate).x;
             float32 phase = -s * freq;
-            float32_x2 spiral = devTex2D(circleTableSampler, phase, 0);
+            auto spiral = devTex2D(circleTableSampler, phase, 0);
             sum += complexMul(spiral, value);
         }
     }
@@ -311,29 +311,29 @@ GPUTOOL_2D_BEG
 #if DEVCODE
 {
     float32 divOrientCount = 1.f / freqSize.Y;
-    float32_x2 dstCenter = 0.5f * convertNearest<float32_x2>(vGlobSize);
+    auto dstCenter = 0.5f * convertNearest<float32_x2>(vGlobSize);
 
     //// 
 
-    float32_x2 sum = make_float32_x2(0, 0);
+    auto sum = zeroOf<float32_x2>();
 
     for (Space iY = 0; iY < freqSize.Y; ++iY)
     {
         float32 orientAngle = (iY + 0.5f) * divOrientCount; // (0, 1)
-        float32_x2 orientBackRotate = complexConjugate(devTex2D(circleTableSampler, 0.5f * orientAngle, 0)); // (0, 1/2)
-        float32_x2 pos = complexMul(make_float32_x2(Xs, Ys) - dstCenter, orientBackRotate);
+        auto orientBackRotate = complexConjugate(devTex2D(circleTableSampler, 0.5f * orientAngle, 0)); // (0, 1/2)
+        auto pos = complexMul(make_float32_x2(Xs, Ys) - dstCenter, orientBackRotate);
 
         for (Space iX = 0; iX < freqSize.X; ++iX)
         {
             float32 frX = iX + 0.5f;
             float32 frY = iY + 0.5f;
 
-            float32_x2 freqResponse = devTex2D(freqSampler, frX * freqTexstep.X, frY * freqTexstep.Y);
+            auto freqResponse = devTex2D(freqSampler, frX * freqTexstep.X, frY * freqTexstep.Y);
             VECTOR_DECOMPOSE(freqResponse);
 
             float32 freq = srcToFreq(iX + 0.5f);
             float32 phase = pos.x * freq;
-            float32_x2 spiral = devTex2D(circleTableSampler, phase, 0);
+            auto spiral = devTex2D(circleTableSampler, phase, 0);
             sum += complexMul(spiral, freqResponse);
         }
     }

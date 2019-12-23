@@ -72,7 +72,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
             const Space tX = (kX) * threadCountX; \
             const Space tY = (kY) * threadCountY; \
             \
-            float32_x4 bgrValue = tex2D(srcSampler, o.srcTransform(point(srcBaseXs + tX, srcBaseYs + tY))); \
+            auto bgrValue = tex2D(srcSampler, o.srcTransform(point(srcBaseXs + tX, srcBaseYs + tY))); \
             \
             float32 Yf, Pb, Pr; \
             convertBgrToYPbPr(bgrValue, Yf, Pb, Pr); \

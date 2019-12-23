@@ -290,7 +290,7 @@ GPUTOOL_2D
     {
         Point<float32> srcPos = point(Xs, Ys) * dstToSrcFactor;
 
-        float32 result = tex2DCubicBsplineFast(srcSampler, srcPos, srcTexstep);
+        auto result = tex2DCubicBsplineFast(srcSampler, srcPos, srcTexstep);
         storeNorm(dst, result);
     }
 )
@@ -341,9 +341,9 @@ void ResamplingTestImpl::serialize(const ModuleSerializeKit& kit)
     (
         kit, STR("Display"), 
         {STR("<Nothing>"), STR("")},
-        {STR("Resample Test: Source"), STR("Alt+Shift+1")},
-        {STR("Resample Test: Destination"), STR("Alt+Shift+2")},
-        {STR("Resample Test: Error"), STR("Alt+Shift+3")}
+        {STR("Resample Test: Source"), STR("Shift+Alt+1")},
+        {STR("Resample Test: Destination"), STR("Shift+Alt+2")},
+        {STR("Resample Test: Error"), STR("Shift+Alt+3")}
     );
 
     errorSpatialMargin.serialize(kit, STR("Error Spatial Margin"));

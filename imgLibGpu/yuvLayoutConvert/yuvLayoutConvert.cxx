@@ -195,7 +195,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    float32_x2 value = 0.5f * loadNorm(src) + 0.5f; // to [0, 1]
+    auto value = 0.5f * loadNorm(src) + 0.5f; // to [0, 1]
 
     ////
 

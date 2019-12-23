@@ -53,7 +53,7 @@ void Rotation3DTestImpl::serialize(const ModuleSerializeKit& kit)
     (
         kit, STR("Display"), 
         {STR("<Nothing>"), STR("")},
-        {STR("Rotation 3D Test"), STR("Ctrl+Alt+Shift+R")}
+        {STR("Rotation 3D Test"), STR("Ctrl+Shift+Alt+R")}
     );
 }
 

@@ -122,7 +122,7 @@ GPUTOOL_2D_BEG
         for (Space iX = 0; iX < taps; ++iX)
         {
             Point<float32> srcReadPos = point(filterOrg.X + iX, filterOrg.Y + iY);
-            float32 value = tex2D(srcSampler, srcReadPos * srcTexstep);
+            auto value = tex2D(srcSampler, srcReadPos * srcTexstep);
 
             Point<float32> dist = srcReadPos - srcCenterPos;
             float32 spatialWeight = filterShape(dist * divFilterScale, gaussSigma, alternative);
@@ -185,7 +185,7 @@ GPUTOOL_2D_BEG
         for (Space iX = 0; iX < taps; ++iX)
         {
             Point<float32> srcReadPos = point(filterOrg.X + iX, filterOrg.Y + iY);
-            float32 value = tex2D(srcSampler, srcReadPos * srcTexstep);
+            auto value = tex2D(srcSampler, srcReadPos * srcTexstep);
 
             Point<float32> dist = srcReadPos - srcCenterPos;
             float32 weight = filterShape(dist * divFilterScale, gaussSigma, alternative);

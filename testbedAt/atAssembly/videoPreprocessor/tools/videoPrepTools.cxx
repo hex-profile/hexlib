@@ -52,7 +52,7 @@ devDefineKernel(copyRectKernel, CopyRectKernel, o)
     float32 srcXs = X + o.ofsPlusHalf.X;
     float32 srcYs = Y + o.ofsPlusHalf.Y;
 
-    uint32 srcValue = devTex2D(srcSamplerBgra, srcXs, srcYs);
+    auto srcValue = devTex2D(srcSamplerBgra, srcXs, srcYs);
 
     MATRIX_ELEMENT(dst, X, Y) = srcValue;
 }
@@ -206,17 +206,17 @@ GPUTOOL_2D
     ((float32, sigma)),
 
     {
-        float32_x4 srcValue = loadNorm(src);
+        auto srcValue = loadNorm(src);
 
         RndgenState rnd = *rndgenState;
 
         ////
 
-        float32_x4 err = make_float32_x4(0, 0, 0, 0);
+        auto err = zeroOf<float32_x4>();
         rndgenQualityGauss(rnd, err.x, err.y);
         rndgenQualityGauss(rnd, err.z, err.w);
 
-        float32_x4 dstValue = srcValue + sigma * err;
+        auto dstValue = srcValue + sigma * err;
 
         ////
 

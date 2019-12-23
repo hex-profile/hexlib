@@ -49,7 +49,8 @@ sysinline auto simpleConvolutionSeparable
 
     for (Space i = 0; i < filterSize; ++i)
     {
-        FloatType value = tex2D(srcSampler, texPos);
+        auto value = tex2D(srcSampler, texPos);
+
         sum += filterCoeffs[i] * value;
 
         if (horizontal) 
@@ -132,7 +133,7 @@ sysinline void simpleConvolutionValueAndSquare
 
     for (Space i = 0; i < filterSize; ++i)
     {
-        FloatType value = tex2D(srcSampler, texPos);
+        auto value = tex2D(srcSampler, texPos);
 
         sum += filterCoeffs[i] * value;
         sumSq += filterCoeffs[i] * square(value);

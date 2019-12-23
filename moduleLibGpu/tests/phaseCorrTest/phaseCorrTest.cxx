@@ -74,7 +74,7 @@ GPUTOOL_2D
     ((Point<float32>, offs)),
 
     {
-        float32 value = tex2DCubic(srcSampler, point(Xs, Ys) + offs, srcTexstep);
+        auto value = tex2DCubic(srcSampler, point(Xs, Ys) + offs, srcTexstep);
         storeNorm(dst, make_float32_x2(value, 0));
     }
 )
@@ -155,7 +155,7 @@ GPUTOOL_2D
         float32 posLen = sqrtf(square(pos.X) + square(pos.Y));
         float32 coeff = dataWeightFunc(posLen, dataWeightType);
     
-        float32_x2 value = devTex2D(srcSampler, Xs * srcTexstep.X, Ys * srcTexstep.Y);
+        auto value = devTex2D(srcSampler, Xs * srcTexstep.X, Ys * srcTexstep.Y);
         storeNorm(dst, coeff * value);
     }
 )
@@ -313,10 +313,10 @@ GPUTOOL_2D
     PREP_EMPTY,
 
     {
-        float32_x2 oldValue = *oldSrc;
-        float32_x2 newValue = *newSrc;
+        auto oldValue = *oldSrc;
+        auto newValue = *newSrc;
 
-        float32_x2 result = complexMul(newValue, complexConjugate(oldValue));
+        auto result = complexMul(newValue, complexConjugate(oldValue));
     
         storeNorm(dst, result);
     }
@@ -338,7 +338,7 @@ GPUTOOL_2D
     ((float32, empower)),
 
     {
-        float32_x2 value = devTex2D(srcSampler, (Xs + offs.X) * srcTexstep.X, (Ys + offs.Y) * srcTexstep.Y);
+        auto value = devTex2D(srcSampler, (Xs + offs.X) * srcTexstep.X, (Ys + offs.Y) * srcTexstep.Y);
         float32 v = clampMin(factor * value.x, 0.f);
         v = powf(v, empower);
         storeNorm(dst, v);
@@ -510,8 +510,8 @@ stdbool processFreqProd
 
         for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr)
         {
-            float32_x2 oldVal = *oldPtr;
-            float32_x2 newVal = *newPtr;
+            auto oldVal = *oldPtr;
+            auto newVal = *newPtr;
             VECTOR_DECOMPOSE(oldVal);
             VECTOR_DECOMPOSE(newVal);
 
@@ -603,7 +603,7 @@ stdbool processFreqProd
 
         for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr, ++resultPtr)
         {
-            float32_x2 prod = divOldLen * divNewLen * complexMul(*newPtr, complexConjugate(*oldPtr));
+            auto prod = divOldLen * divNewLen * complexMul(*newPtr, complexConjugate(*oldPtr));
             *resultPtr = prod;
             localScalarProd += prod.x;
         }

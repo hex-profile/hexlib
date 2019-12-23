@@ -540,6 +540,9 @@ stdbool AviWriter::writeImage
     stdPars(Kit)
 )
 {
+    if_not (imageProvider.dataProcessing())
+        returnTrue;
+
     REQUIRE(maxSegmentFrames >= 0);
 
     //
