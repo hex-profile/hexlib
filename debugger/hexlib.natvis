@@ -46,12 +46,12 @@
         <AlternativeType Name="MatrixMemory&lt;*&gt;"/>
         <AlternativeType Name="MatrixMemoryEx&lt;*&gt;"/>
 
-        <DisplayString>{theSize.X} x {theSize.Y}, ptr = {size_t(theMemPtr),Xb}, pitch = {theMemPitch}</DisplayString>
+        <DisplayString>{theSizeX} x {theSizeY}, ptr = {size_t(theMemPtr),Xb}, pitch = {theMemPitch}</DisplayString>
         
         <Expand>
             <IndexListItems>
-                <Size>theSize.Y</Size>
-                <ValueNode>theMemPtr == 0 ? nullptr : theMemPtr + theMemPitch * $i, [theSize.X]na</ValueNode>
+                <Size>theSizeY</Size>
+                <ValueNode>theMemPtr == 0 ? nullptr : theMemPtr + theMemPitch * $i, [theSizeX]na</ValueNode>
             </IndexListItems>
         </Expand>
     </Type>
@@ -59,7 +59,7 @@
     <Type Name="GpuMatrix&lt;*&gt;">
         <AlternativeType Name="GpuMatrixMemory&lt;*&gt;"/>
 
-        <DisplayString> {theSize.X} x {theSize.Y}, ptr = {theMemPtr}, pitch = {theMemPitch}</DisplayString>
+        <DisplayString> {theSizeX} x {theSizeY}, ptr = {theMemPtr}, pitch = {theMemPitch}</DisplayString>
     </Type>
 
 
