@@ -32,7 +32,7 @@ GPUTOOL_2D_BEG
     for (Space iX = srcOrgGrid - 4; iX <= srcEndGrid + 4; ++iX)
     {
         float32 srcX = iX + 0.5f;
-        FloatType value = tex2D(srcSampler, point(srcX, Ys) * srcTexstep);
+        auto value = tex2D(srcSampler, point(srcX, Ys) * srcTexstep);
 
         float32 w = filterKernel.func((srcX - srcCenter) / clampMin(downsampleFactor, 1.f)) / clampMin(downsampleFactor, 1.f);
         sumWV += w * value;
@@ -81,7 +81,7 @@ GPUTOOL_2D_BEG
     for (Space iY = srcOrgGrid; iY <= srcEndGrid; ++iY)
     {
         float32 srcY = iY + 0.5f;
-        FloatType value = tex2D(srcSampler, point(Xs, srcY) * srcTexstep);
+        auto value = tex2D(srcSampler, point(Xs, srcY) * srcTexstep);
 
         float32 w = filterKernel.func((srcY - srcCenter) / clampMin(downsampleFactor, 1.f)) / clampMin(downsampleFactor, 1.f);
         sumWV += w * value;

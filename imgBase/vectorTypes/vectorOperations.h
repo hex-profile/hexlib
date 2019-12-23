@@ -421,7 +421,7 @@ sysinline float32_x2 complexMul(const float32_x2& a, const float32_x2& b)
 
 sysinline float32_x2 complexMad(const float32_x2& sum, const float32_x2& a, const float32_x2& b)
 {
-    float32_x2 result = sum;
+    auto result = sum;
 
     result.x += a.x * b.x;
     result.x -= a.y * b.y;

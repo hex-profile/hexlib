@@ -47,7 +47,7 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
     #define READ_ITER(bX, bY, chromaReader) \
         { \
             auto chromaPos = chromaReadBaseTex + convertFloat32(point(bX, bY) + devThreadIdx) * o.chromaTexstep; \
-            float32_x2 value = chromaReader(chromaPos); \
+            auto value = chromaReader(chromaPos); \
             SRC_BUFFERU((bX) + devThreadX, (bY) + devThreadY) = value.x; \
             SRC_BUFFERV((bX) + devThreadX, (bY) + devThreadY) = value.y; \
         }
@@ -165,26 +165,26 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
     float32 lumaY0 = convertIndexToPos(srcY0) * o.lumaTexstep.Y;
     float32 lumaY1 = convertIndexToPos(srcY1) * o.lumaTexstep.Y;
 
-    float32 y00 = devTex2D(lumaSampler, lumaX0, lumaY0);
-    float32 y01 = devTex2D(lumaSampler, lumaX0, lumaY1);
-    float32 y10 = devTex2D(lumaSampler, lumaX1, lumaY0);
-    float32 y11 = devTex2D(lumaSampler, lumaX1, lumaY1);
+    auto y00 = devTex2D(lumaSampler, lumaX0, lumaY0);
+    auto y01 = devTex2D(lumaSampler, lumaX0, lumaY1);
+    auto y10 = devTex2D(lumaSampler, lumaX1, lumaY0);
+    auto y11 = devTex2D(lumaSampler, lumaX1, lumaY1);
 
     ////
 
     #if CONVERT == CONVERT_RGB
 
-        float32_x4 r00 = convertYPbPrToBgr(y00, u00, v00);
-        float32_x4 r01 = convertYPbPrToBgr(y01, u01, v01);
-        float32_x4 r10 = convertYPbPrToBgr(y10, u10, v10);
-        float32_x4 r11 = convertYPbPrToBgr(y11, u11, v11);
+        auto r00 = convertYPbPrToBgr(y00, u00, v00);
+        auto r01 = convertYPbPrToBgr(y01, u01, v01);
+        auto r10 = convertYPbPrToBgr(y10, u10, v10);
+        auto r11 = convertYPbPrToBgr(y11, u11, v11);
 
     #elif CONVERT == CONVERT_YUV
 
-        float32_x4 r00 = make_float32_x4(y00, u00, v00, 0);
-        float32_x4 r01 = make_float32_x4(y01, u01, v01, 0);
-        float32_x4 r10 = make_float32_x4(y10, u10, v10, 0);
-        float32_x4 r11 = make_float32_x4(y11, u11, v11, 0);
+        auto r00 = make_float32_x4(y00, u00, v00, 0);
+        auto r01 = make_float32_x4(y01, u01, v01, 0);
+        auto r10 = make_float32_x4(y10, u10, v10, 0);
+        auto r11 = make_float32_x4(y11, u11, v11, 0);
 
     #else
 

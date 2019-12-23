@@ -208,8 +208,8 @@ GPUTOOL_2D_BEG
 
     ////
 
-    float32_x4 imageValue = loadNorm(dst);
-    storeNorm(dst, imagePart * imageValue + shadowPart * make_float32_x4(0, 0, 0, 0) + figurePart * make_float32_x4(1, 1, 1, 0));
+    auto imageValue = loadNorm(dst);
+    storeNorm(dst, imagePart * imageValue + shadowPart * zeroOf<float32_x4>() + figurePart * make_float32_x4(1, 1, 1, 0));
 
 }
 #endif

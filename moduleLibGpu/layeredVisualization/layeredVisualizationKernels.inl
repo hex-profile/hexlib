@@ -32,14 +32,14 @@ GPUTOOL_2D_BEG
 
     ////
 
-    float32_x4 sumWeightColor = make_float32_x4(0, 0, 0, 0);
+    auto sumWeightColor = zeroOf<float32_x4>();
     float32 sumWeight = 0;
     float32 maxWeight = 0;
 
     #define TMP_MACRO(k, o) \
         { \
-            float32_x2 vecPure = vectorFactor * tex2D(srcVector##k##Sampler, srcPos * srcVector##k##Texstep); \
-            float32_x2 vecf = minRadius * vecPure; \
+            auto vecPure = vectorFactor * tex2D(srcVector##k##Sampler, srcPos * srcVector##k##Texstep); \
+            auto vecf = minRadius * vecPure; \
             float32 presence = clampMin(tex2D(srcPresence##k##Sampler, srcPos * srcPresence##k##Texstep), 0.25f); \
             Point<float32> vec = point(vecf.x, vecf.y); \
             float32 factorX = 1.f / clampMin(absv(vec.X) * divBorderedRectRadius.X, 1.f); \
@@ -48,7 +48,7 @@ GPUTOOL_2D_BEG
             \
             float32 spatialWeight = gaussExpoApprox<4>(vectorLengthSq(pos - vec) * divThicknessRadius2); \
             \
-            float32_x4 pureColor = limitColorBrightness(computeVectorVisualization(8.f * vecPure)); \
+            auto pureColor = limitColorBrightness(computeVectorVisualization(8.f * vecPure)); \
             \
             sumWeightColor += spatialWeight * presence * pureColor; \
             sumWeight += spatialWeight * presence; \
@@ -62,16 +62,16 @@ GPUTOOL_2D_BEG
     ////
 
     float32 vectorPresence = saturate(independentPresenceMode ? maxWeight : sumWeight); 
-    float32_x4 vectorColor = nativeRecipZero(sumWeight) * sumWeightColor;
+    auto vectorColor = nativeRecipZero(sumWeight) * sumWeightColor;
 
     ////
 
     float32 axisPresence = gaussExpoApprox<4>(minv(square(2.f * pos.X), square(2.f * pos.Y)));
-    float32_x4 backgroundColor = linerp(axisPresence, make_float32_x4(0, 0, 0, 0), make_float32_x4(0.15f, 0.15f, 0.15f, 0));
+    auto backgroundColor = linerp(axisPresence, zeroOf<float32_x4>(), make_float32_x4(0.15f, 0.15f, 0.15f, 0));
 
     ////
 
-    float32_x4 result = linerp(vectorPresence, backgroundColor, vectorColor);
+    auto result = linerp(vectorPresence, backgroundColor, vectorColor);
 
     ////
 
@@ -125,18 +125,18 @@ GPUTOOL_2D_BEG
 
     float32 sumWeight = 0;
     float32 sumWeightPresence = 0;
-    float32_x4 sumWeightColor = convertNearest<float32_x4>(0);
+    auto sumWeightColor = zeroOf<float32_x4>();
 
     ////
 
     #define LOCAL_ACCUMULATION(r, _) \
         { \
-            float32_x2 vec = tex2D(srcVector##r##Sampler, readTexPos); \
+            auto vec = tex2D(srcVector##r##Sampler, readTexPos); \
             float32 localPresence##r = tex2D(srcPresence##r##Sampler, readTexPos); \
             \
             vec *= divMaxVector; \
             \
-            float32_x4 color = computeVectorVisualization(vec); \
+            auto color = computeVectorVisualization(vec); \
             float32 presence = clampMin(localPresence##r, PRESENCE_EPSILON); \
             localPresenceSum += presence; \
             localPresenceColorSum += presence * color; \
@@ -152,7 +152,7 @@ GPUTOOL_2D_BEG
         ////
 
         float32 localPresenceSum = 0;
-        float32_x4 localPresenceColorSum = make_float32_x4(0, 0, 0, 0);
+        auto localPresenceColorSum = zeroOf<float32_x4>();
 
         PREP_FOR(LAYERS, LOCAL_ACCUMULATION, _)
 
@@ -189,7 +189,7 @@ GPUTOOL_2D_BEG
                 ////
 
                 float32 localPresenceSum = 0;
-                float32_x4 localPresenceColorSum = make_float32_x4(0, 0, 0, 0);
+                auto localPresenceColorSum = zeroOf<float32_x4>();
 
                 PREP_FOR(LAYERS, LOCAL_ACCUMULATION, _)
 
@@ -207,11 +207,11 @@ GPUTOOL_2D_BEG
     float32 divSumWeight = nativeRecipZero(sumWeight);
 
     float32 filteredPresence = divSumWeight * sumWeightPresence;
-    float32_x4 filteredColor = nativeRecipZero(sumWeightPresence) * sumWeightColor;
+    auto filteredColor = nativeRecipZero(sumWeightPresence) * sumWeightColor;
 
     ////
 
-    float32_x4 resultColor = linerp(saturate(filteredPresence), make_float32_x4(0.5f, 0.5f, 0.5f, 0), filteredColor);
+    auto resultColor = linerp(saturate(filteredPresence), make_float32_x4(0.5f, 0.5f, 0.5f, 0), filteredColor);
 
     ////
 

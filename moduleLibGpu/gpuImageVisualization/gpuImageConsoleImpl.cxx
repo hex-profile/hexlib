@@ -1044,7 +1044,7 @@ public:
     stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
     {
         REQUIRE(equalSize(image.luma, dest));
-        require(convertYuv420ToBgr<Pixel>(image.luma, image.chroma, nullptr, nullptr, point(0), make_uint8_x4(0, 0, 0, 0), dest, stdPass)); // 0.22 ms
+        require(convertYuv420ToBgr<Pixel>(image.luma, image.chroma, nullptr, nullptr, point(0), zeroOf<uint8_x4>(), dest, stdPass)); // 0.22 ms
         returnTrue;
     }
 
@@ -1088,7 +1088,7 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
     if (hint.target == ImgOutputConsole)
     {
         GPU_MATRIX_ALLOC(tmp, uint8_x4, image.luma.size());
-        require(convertYuv420ToBgr<Type>(image.luma, image.chroma, nullptr, nullptr, point(0), make_uint8_x4(0, 0, 0, 0), tmp, stdPass));
+        require(convertYuv420ToBgr<Type>(image.luma, image.chroma, nullptr, nullptr, point(0), zeroOf<uint8_x4>(), tmp, stdPass));
     
         require(baseConsole.addImageBgr(tmp, hint, stdPass));
     }
@@ -1160,8 +1160,8 @@ GPUTOOL_2D_BEG
 )
 #if DEVCODE
 {
-    float32_x4 srcValue = loadNorm(src);
-    float32_x4 dstValue = convertYPbPrToBgr(srcValue.x, srcValue.y, srcValue.z);
+    auto srcValue = loadNorm(src);
+    auto dstValue = convertYPbPrToBgr(srcValue.x, srcValue.y, srcValue.z);
     storeNorm(dst, dstValue);
 }
 #endif

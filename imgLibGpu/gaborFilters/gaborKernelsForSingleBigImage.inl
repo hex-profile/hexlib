@@ -168,7 +168,7 @@ GPUTOOL_2D_BEG
     //----------------------------------------------------------------
 
     #define TMP_MACRO(k, _) \
-        float32_x2 sum##k = make_float32_x2(0, 0);
+        auto sum##k = zeroOf<float32_x2>();
 
     PREP_FOR(GABOR_ORIENT_COUNT, TMP_MACRO, _)
 
@@ -321,7 +321,7 @@ GPUTOOL_2D_BEG_EX
     //----------------------------------------------------------------
 
     #define TMP_MACRO(k, _) \
-        float32_x2 sum##k = make_float32_x2(0, 0);
+        auto sum##k = zeroOf<float32_x2>();
 
     PREP_FOR(GABOR_ORIENT_COUNT, TMP_MACRO, _)
 
@@ -415,7 +415,7 @@ GPUTOOL_2D_BEG
 
     #define TMP_MACRO(k, _) \
         \
-        float32_x2 sum##k = make_float32_x2(0, 0); \
+        auto sum##k = zeroOf<float32_x2>(); \
         \
         devUnrollLoop \
         for (Space i = 0; i < filterSize; ++i) \
@@ -423,7 +423,7 @@ GPUTOOL_2D_BEG
             Point<Space> ofs = point(0); \
             ofs.DIR(X, Y) = i; \
             \
-            float32_x2 value = tex2D(src##k##Sampler, srcReadTexPos + convertFloat32(ofs) * src0Texstep); \
+            auto value = tex2D(src##k##Sampler, srcReadTexPos + convertFloat32(ofs) * src0Texstep); \
             sum##k = complexMad(sum##k, PREP_PASTE3(GABOR_BANK, DIR(DataX, DataY), k)[i], value); \
         }
 
@@ -575,7 +575,7 @@ GPUTOOL_2D_BEG_EX
 
     #define TMP_MACRO(k, _) \
         \
-        float32_x2 sum##k = make_float32_x2(0, 0); \
+        auto sum##k = zeroOf<float32_x2>(); \
         \
         /* Finish using cache */ \
         if (k != 0) devSyncThreads(); \
@@ -587,7 +587,7 @@ GPUTOOL_2D_BEG_EX
         devUnrollLoop \
         for (Space i = 0; i < filterSize; ++i) \
         { \
-            float32_x2 value = cacheStartPtr[i * DIR(1, cacheMemPitch)]; \
+            auto value = cacheStartPtr[i * DIR(1, cacheMemPitch)]; \
             sum##k = complexMad(sum##k, PREP_PASTE3(GABOR_BANK, DIR(DataX, DataY), k)[i], value); \
         }
 

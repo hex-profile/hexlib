@@ -221,8 +221,8 @@ GPUTOOL_2D_BEG
 )
 #if DEVCODE
 {
-    float32_x2 fX = devTex2D(freqXSampler, Xs * freqXTexstep.X, 0);
-    float32_x2 fY = devTex2D(freqYSampler, Ys * freqYTexstep.X, 0);
+    auto fX = devTex2D(freqXSampler, Xs * freqXTexstep.X, 0);
+    auto fY = devTex2D(freqYSampler, Ys * freqYTexstep.X, 0);
     *dst = complexMul(fX, fY);
 }
 #endif
@@ -257,7 +257,7 @@ GPUTOOL_2D_BEG
 #if DEVCODE
 {
 
-    float32_x2 sum = make_float32_x2(0, 0);
+    auto sum = zeroOf<float32_x2>();
     float32 sumCoeff = 0;
 
     Point<float32> freqSize = convertFloat32(vGlobSize);
@@ -287,7 +287,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    *dst = sumCoeff > 0 ? sum / sumCoeff : make_float32_x2(0, 0);
+    *dst = sumCoeff > 0 ? sum / sumCoeff : zeroOf<float32_x2>();
 }
 #endif
 GPUTOOL_2D_END
@@ -313,14 +313,14 @@ GPUTOOL_2D_BEG
 )
 #if DEVCODE
 {
-    float32_x2 response = *src;
+    auto response = *src;
 
     if (allv(vGlobSize == COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd)))
         response = response / conservativeFilterFreqOdd[X] / conservativeFilterFreqOdd[Y];
     else if (allv(vGlobSize == COMPILE_ARRAY_SIZE(conservativeFilterFreqEven)))
         response = response / conservativeFilterFreqEven[X] / conservativeFilterFreqEven[Y];
     else
-        response = make_float32_x2(0, 0);
+        response = zeroOf<float32_x2>();
 
     *dst = response;
 }
@@ -339,14 +339,14 @@ GPUTOOL_2D_BEG
 )
 #if DEVCODE
 {
-    float32_x2 response = *src;
+    auto response = *src;
 
     if (vGlobSize.X == COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd))
         response = response / conservativeFilterFreqOdd[X];
     else if (vGlobSize.X == COMPILE_ARRAY_SIZE(conservativeFilterFreqEven))
         response = response / conservativeFilterFreqEven[X];
     else
-        response = make_float32_x2(0, 0);
+        response = zeroOf<float32_x2>();
 
     *dst = response;
 }
@@ -630,7 +630,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
     {
 
         GPU_MATRIX_ALLOC(filterFreqSum, float32_x2, fourierSize);
-        require(gpuMatrixSet(filterFreqSum, make_float32_x2(0, 0), stdPass));
+        require(gpuMatrixSet(filterFreqSum, zeroOf<float32_x2>(), stdPass));
 
         ////
 
@@ -751,7 +751,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
         ////
 
         GPU_MATRIX_ALLOC(filterFreqSum, float32_x2, fourierSize);
-        require(gpuMatrixSet(filterFreqSum, make_float32_x2(0, 0), stdPass));
+        require(gpuMatrixSet(filterFreqSum, zeroOf<float32_x2>(), stdPass));
 
         ////
 

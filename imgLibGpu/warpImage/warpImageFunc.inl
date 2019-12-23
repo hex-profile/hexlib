@@ -43,7 +43,7 @@
         \
         { \
             Point<float32> pos = point(Xs, Ys); \
-            float32_x2 offset = tex2D(mapSampler, pos * mapScaleFactor * mapTexstep); \
+            auto offset = tex2D(mapSampler, pos * mapScaleFactor * mapTexstep); \
             Point<float32> srcPos = srcTransform(pos + mapValueFactor * point(offset.x, offset.y)); \
             storeNorm(dst, texStatement); \
         } \

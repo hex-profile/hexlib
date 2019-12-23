@@ -23,7 +23,7 @@
         { \
             Point<float32> srcPos = complexMul(point(Xs, Ys), transMul) + transAdd; \
             \
-            float32_x4 result = sampleTerm; \
+            auto result = sampleTerm; \
             \
             storeNorm(dst, result); \
         } \
