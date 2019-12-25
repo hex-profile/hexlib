@@ -13,7 +13,7 @@
 #include "gpuSupport/gpuTool.h"
 #include "copyMatrixAsArray.h"
 #include "flipMatrix.h"
-#include "history/historyObj.h"
+#include "history/historyObject.h"
 #include "dataAlloc/arrayMemory.h"
 #include "dataAlloc/matrixMemory.h"
 #include "cfgTools/multiSwitch.h"
@@ -240,15 +240,15 @@ struct SharedStruct
     }
 
     float32 varTargetDelay;
-    HistoryObjStatic<float32, outputMonitorCount> varActualDelays;
-    HistoryObjStatic<float32, outputMonitorCount> varRenderDelays;
+    HistoryObjectStatic<float32, outputMonitorCount> varActualDelays;
+    HistoryObjectStatic<float32, outputMonitorCount> varRenderDelays;
 
     //
     // Queue
     //
 
     CriticalSection queueLock; // queue lock first, output lock second!
-    HistoryObjStatic<QueueImage, queueCapacity> queue;
+    HistoryObjectStatic<QueueImage, queueCapacity> queue;
 
     //
     // Output interface

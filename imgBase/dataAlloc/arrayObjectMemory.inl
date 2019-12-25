@@ -1,15 +1,15 @@
-#include "arrayObjMem.h"
+#include "arrayObjectMemory.h"
 
 #include "dataAlloc/arrayMemory.inl"
 
 //================================================================
 //
-// ArrayObjMem<Type>::realloc
+// ArrayObjectMemory<Type>::realloc
 //
 //================================================================
 
 template <typename Type>
-stdbool ArrayObjMem<Type>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit))
+stdbool ArrayObjectMemory<Type>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit))
 {
     dealloc(); // Call destructors and dealloc memory
 
@@ -37,12 +37,12 @@ stdbool ArrayObjMem<Type>::realloc(Space size, Space byteAlignment, AllocatorObj
 
 //================================================================
 //
-// ArrayObjMem<Type>::dealloc
+// ArrayObjectMemory<Type>::dealloc
 //
 //================================================================
 
 template <typename Type>
-void ArrayObjMem<Type>::dealloc()
+void ArrayObjectMemory<Type>::dealloc()
 {
     Type* allocPtr = this->allocPtr();
     Space allocSize = this->maxSize();

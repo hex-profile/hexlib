@@ -2,7 +2,7 @@
 
 #include "errorLog/errorLog.h"
 #include "gpuLayer/gpuLayer.h"
-#include "dataAlloc/arrayObjMem.h"
+#include "dataAlloc/arrayObjectMemory.h"
 #include "dataAlloc/memoryAllocatorKit.h"
 #include "userOutput/errorLogEx.h"
 #include "allocation/mallocKit.h"
@@ -92,12 +92,12 @@ private:
     ArrayMemory<Space> modrefToKernelIndex;
     ArrayMemory<Space> modrefToSamplerIndex;
 
-    ArrayObjMem<ModuleInfo> moduleInfo;
+    ArrayObjectMemory<ModuleInfo> moduleInfo;
 
-    ArrayObjMem<GpuKernel> kernelHandle; // separate array, for better performance
-    ArrayObjMem<KernelInfo> kernelInfo;
+    ArrayObjectMemory<GpuKernel> kernelHandle; // separate array, for better performance
+    ArrayObjectMemory<KernelInfo> kernelInfo;
 
-    ArrayObjMem<GpuSampler> samplerHandle; // separate array, for better performance
-    ArrayObjMem<SamplerInfo> samplerInfo;
+    ArrayObjectMemory<GpuSampler> samplerHandle; // separate array, for better performance
+    ArrayObjectMemory<SamplerInfo> samplerInfo;
 
 };

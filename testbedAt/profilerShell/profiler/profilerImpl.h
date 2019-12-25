@@ -7,7 +7,7 @@
 #include "dataAlloc/arrayMemory.h"
 #include "dataAlloc/memoryAllocatorKit.h"
 #include "profilerShell/profiler/profilerTimer.h"
-#include "dataAlloc/arrayObjMem.h"
+#include "dataAlloc/arrayObjectMemory.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "allocation/mallocKit.h"
 

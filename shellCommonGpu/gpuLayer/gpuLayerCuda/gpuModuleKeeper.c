@@ -1,7 +1,7 @@
 #include "gpuModuleKeeper.h"
 
 #include "shared/gpuModule.h"
-#include "dataAlloc/arrayObjMem.inl"
+#include "dataAlloc/arrayObjectMemory.inl"
 #include "storage/rememberCleanup.h"
 
 //================================================================
@@ -103,27 +103,27 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
     require(moduleInfo.realloc(moduleCount, kit.malloc, true, stdPass));
     ARRAY_EXPOSE(moduleInfo);
-    REMEMBER_CLEANUP1_EX(moduleInfoCleanup, moduleInfo.dealloc(), ArrayObjMem<ModuleInfo>&, moduleInfo);
+    REMEMBER_CLEANUP1_EX(moduleInfoCleanup, moduleInfo.dealloc(), ArrayObjectMemory<ModuleInfo>&, moduleInfo);
 
     ////
 
     require(kernelHandle.realloc(kernelCount, kit.malloc, true, stdPass));
     ARRAY_EXPOSE(kernelHandle);
-    REMEMBER_CLEANUP1_EX(kernelHandleCleanup, kernelHandle.dealloc(), ArrayObjMem<GpuKernel>&, kernelHandle);
+    REMEMBER_CLEANUP1_EX(kernelHandleCleanup, kernelHandle.dealloc(), ArrayObjectMemory<GpuKernel>&, kernelHandle);
 
     require(kernelInfo.realloc(kernelCount, kit.malloc, true, stdPass));
     ARRAY_EXPOSE(kernelInfo);
-    REMEMBER_CLEANUP1_EX(kernelInfoCleanup, kernelInfo.dealloc(), ArrayObjMem<KernelInfo>&, kernelInfo);
+    REMEMBER_CLEANUP1_EX(kernelInfoCleanup, kernelInfo.dealloc(), ArrayObjectMemory<KernelInfo>&, kernelInfo);
 
     ////
 
     require(samplerHandle.realloc(samplerCount, kit.malloc, true, stdPass));
     ARRAY_EXPOSE(samplerHandle);
-    REMEMBER_CLEANUP1_EX(samplerHandleCleanup, samplerHandle.dealloc(), ArrayObjMem<GpuSampler>&, samplerHandle);
+    REMEMBER_CLEANUP1_EX(samplerHandleCleanup, samplerHandle.dealloc(), ArrayObjectMemory<GpuSampler>&, samplerHandle);
 
     require(samplerInfo.realloc(samplerCount, kit.malloc, true, stdPass));
     ARRAY_EXPOSE(samplerInfo);
-    REMEMBER_CLEANUP1_EX(samplerInfoCleanup, samplerInfo.dealloc(), ArrayObjMem<SamplerInfo>&, samplerInfo);
+    REMEMBER_CLEANUP1_EX(samplerInfoCleanup, samplerInfo.dealloc(), ArrayObjectMemory<SamplerInfo>&, samplerInfo);
 
     //----------------------------------------------------------------
     //

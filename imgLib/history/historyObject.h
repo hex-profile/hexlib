@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dataAlloc/arrayObjMemStatic.h"
-#include "dataAlloc/arrayObjMem.h"
+#include "dataAlloc/arrayObjectMemoryStatic.h"
+#include "dataAlloc/arrayObjectMemory.h"
 #include "numbers/int/intType.h"
 
 //================================================================
@@ -37,7 +37,7 @@ struct HistoryRanges
 
 //================================================================
 //
-// HistoryObj
+// HistoryObject
 //
 //================================================================
 
@@ -308,22 +308,22 @@ sysinline void historyForEach(const HistoryRanges<Type>& historyRanges, const Ac
 
 //================================================================
 //
-// HistoryObjStatic
+// HistoryObjectStatic
 //
 //================================================================
 
 template <typename Type, Space maxSize>
-class HistoryObjStatic : public HistoryGeneric<ArrayObjMemStatic<Type, maxSize>>
+class HistoryObjectStatic : public HistoryGeneric<ArrayObjectMemoryStatic<Type, maxSize>>
 {
 };
 
 //================================================================
 //
-// HistoryObj
+// HistoryObject
 //
 //================================================================
 
 template <typename Type>
-class HistoryObj : public HistoryGeneric<ArrayObjMem<Type>>
+class HistoryObject : public HistoryGeneric<ArrayObjectMemory<Type>>
 {
 };

@@ -21,7 +21,7 @@ MultiSwitch<*,*,*> {preview($e.value)}
 ;
 ;================================================================
 
-ArrayEx<*>|ArrayMemoryEx<*>|Array<*>|ArrayMemory<*>|ArrayObjMem<*>|GpuArray<*>|GpuArrayMemory<*>|ArrayObjMemStatic<*,*> {
+ArrayEx<*>|ArrayMemoryEx<*>|Array<*>|ArrayMemory<*>|ArrayObjectMemory<*>|GpuArray<*>|GpuArrayMemory<*>|ArrayObjectMemoryStatic<*,*> {
   preview
   ( 
     #
