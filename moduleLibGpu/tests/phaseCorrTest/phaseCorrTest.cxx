@@ -220,7 +220,7 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
 
     for (Space Y = 0; Y < imgSizeY; ++Y)
     {
-        MatrixPtr(float32_x2) ptr = MATRIX_POINTER(img, 0, Y);
+        auto ptr = MATRIX_POINTER(img, 0, Y);
         float32 SW = 0;
         float32 SWV = 0;
 
@@ -269,7 +269,7 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
 
     for (Space Y = 0; Y < imgSizeY; ++Y)
     {
-        MatrixPtr(float32_x2) ptr = MATRIX_POINTER(img, 0, Y);
+        auto ptr = MATRIX_POINTER(img, 0, Y);
 
         for (Space X = 0; X < imgSizeX; ++X, ++ptr)
         {
@@ -369,7 +369,7 @@ stdbool findMax(const Matrix<const float32>& src, float32& maxValue, stdPars(Cpu
 
     for (Space Y = 0; Y < srcSizeY; ++Y)
     {
-        MatrixPtr(const float32) ptr = MATRIX_POINTER(src, 0, Y);
+        auto ptr = MATRIX_POINTER(src, 0, Y);
 
         for (Space X = 0; X < srcSizeX; ++X, ++ptr)
         {
@@ -438,8 +438,8 @@ stdbool processFreqProd
 
     for (Space Y = 0; Y < size.Y; ++Y)
     {
-        MatrixPtr(float32_x2) oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
-        MatrixPtr(float32_x2) newPtr = MATRIX_POINTER(newFourier, 0, Y);
+        auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
+        auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
 
         for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr)
         {
@@ -470,8 +470,8 @@ stdbool processFreqProd
 
     for (Space Y = 0; Y < size.Y; ++Y)
     {
-        MatrixPtr(const float32_x2) oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
-        MatrixPtr(const float32_x2) newPtr = MATRIX_POINTER(newFourier, 0, Y);
+        auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
+        auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
 
         float32 maxHarmonic = 0;
 
@@ -505,13 +505,13 @@ stdbool processFreqProd
 
     for (Space Y = 0; Y < size.Y; ++Y)
     {
-        MatrixPtr(float32_x2) oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
-        MatrixPtr(float32_x2) newPtr = MATRIX_POINTER(newFourier, 0, Y);
+        auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
+        auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
 
         for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr)
         {
-            auto oldVal = *oldPtr;
-            auto newVal = *newPtr;
+            auto oldVal = helpRead(*oldPtr);
+            auto newVal = helpRead(*newPtr);
             VECTOR_DECOMPOSE(oldVal);
             VECTOR_DECOMPOSE(newVal);
 
@@ -557,8 +557,8 @@ stdbool processFreqProd
 
     for (Space Y = 0; Y < size.Y; ++Y)
     {
-        MatrixPtr(const float32_x2) oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
-        MatrixPtr(const float32_x2) newPtr = MATRIX_POINTER(newFourier, 0, Y);
+        auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
+        auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
 
         float32 oldSum2 = 0;
         float32 newSum2 = 0;
@@ -595,9 +595,9 @@ stdbool processFreqProd
 
     for (Space Y = 0; Y < size.Y; ++Y)
     {
-        MatrixPtr(const float32_x2) oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
-        MatrixPtr(const float32_x2) newPtr = MATRIX_POINTER(newFourier, 0, Y);
-        MatrixPtr(float32_x2) resultPtr = MATRIX_POINTER(result, 0, Y);
+        auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
+        auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
+        auto resultPtr = MATRIX_POINTER(result, 0, Y);
 
         float32 localScalarProd = 0;
 

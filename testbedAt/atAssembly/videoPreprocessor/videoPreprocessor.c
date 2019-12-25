@@ -416,7 +416,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     #if USE_OVERLAY_SMOOTHER
 
         CFG_NAMESPACE("Overlay Smoother");
-        overlaySmootherEnabled.serialize(kit, STR("@Enabled"), STR("Alt+O"));
+        overlaySmootherEnabled.serialize(kit, STR("@Enabled"), STR(""));
         overlaySmoother.serialize(kit);
 
     #endif

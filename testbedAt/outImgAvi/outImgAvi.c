@@ -871,8 +871,8 @@ stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, std
     MATRIX_EXPOSE(source);
     MATRIX_EXPOSE(dest);
 
-    MatrixPtr(const Element) sourceRow = sourceMemPtr;
-    MatrixPtr(Element) destRow = destMemPtr;
+    auto sourceRow = sourceMemPtr;
+    auto destRow = destMemPtr;
 
     for (Space Y = 0; Y < sourceSizeY; ++Y)
     {

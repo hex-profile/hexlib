@@ -118,11 +118,11 @@
 //================================================================
 
 #define GPT_EXPOSE_SAMPLER(Type, name, interp, border, prefix) \
-    const Point<float32>& name##Texstep = o.name##Texstep; MAKE_VARIABLE_USED(name##Texstep); \
+    const auto& name##Texstep = o.name##Texstep; MAKE_VARIABLE_USED(name##Texstep); \
     auto name##Sampler = PREP_PASTE3(prefix, name, Sampler); GPT_MAKE_SAMPLER_USED(name##Sampler);
 
 #define GPT_EXPOSE_MATRIX(Type, name) \
-    GpuMatrixPtr(Type) name = MATRIX_POINTER(o.name, X, Y); MAKE_VARIABLE_USED(name);
+    auto name = MATRIX_POINTER(o.name, X, Y); MAKE_VARIABLE_USED(name);
 
 #define GPT_EXPOSE_PARAM(Type, name) \
     ParamType<Type>::T name = o.name; MAKE_VARIABLE_USED(name);

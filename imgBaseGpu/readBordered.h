@@ -98,7 +98,7 @@ struct ReadBordered<BORDER_ZERO>
         MATRIX_EXPOSE(img);
 
         bool valid = MATRIX_VALID_ACCESS(img, X, Y);
-        MatrixPtr(Src) ptr = MATRIX_POINTER(img, X, Y);
+        auto ptr = MATRIX_POINTER(img, X, Y);
         TYPE_CLEANSE(Src) result = zeroOf<Src>();
 
         if (valid)
@@ -132,7 +132,7 @@ struct ReadBordered<BORDER_CLAMP>
         X = clampRange(X, 0, lastX);
         Y = clampRange(Y, 0, lastY);
 
-        MatrixPtr(Src) ptr = MATRIX_POINTER(img, X, Y);
+        auto ptr = MATRIX_POINTER(img, X, Y);
 
         TYPE_CLEANSE(Src) result = zeroOf<Src>();
         if (valid) result = LoadElement::func(&helpRead(*ptr));
@@ -164,7 +164,7 @@ struct ReadBordered<BORDER_MIRROR>
 
         ////
 
-        MatrixPtr(Src) ptr = MATRIX_POINTER(img, X, Y);
+        auto ptr = MATRIX_POINTER(img, X, Y);
         bool valid = MATRIX_VALID_ACCESS(img, X, Y);
 
         TYPE_CLEANSE(Src) result = zeroOf<Src>();
