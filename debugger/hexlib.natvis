@@ -27,8 +27,8 @@
         <AlternativeType Name="ArrayEx&lt;*&gt;"/>
         <AlternativeType Name="ArrayMemory&lt;*&gt;"/>
         <AlternativeType Name="ArrayMemoryEx&lt;*&gt;"/>
-        <AlternativeType Name="ArrayObjMem&lt;*&gt;"/>
-        <AlternativeType Name="ArrayObjMemStatic&lt;*, *&gt;"/>
+        <AlternativeType Name="ArrayObjectMemory&lt;*&gt;"/>
+        <AlternativeType Name="ArrayObjectMemoryStatic&lt;*, *&gt;"/>
         <AlternativeType Name="GpuArray&lt;*&gt;"/>
         <AlternativeType Name="GpuArrayMemory&lt;*&gt;"/>
 

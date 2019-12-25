@@ -8,16 +8,16 @@
 
 //================================================================
 //
-// ArrayObjMemStatic<T>
+// ArrayMemoryStatic<T>
 //
-// The interface is similar to ArrayMemory<T>, but memory is statically reserved to max size.
-//
-// The constructors/destructors of elements are called on realloc/dealloc.
+// The interface is similar to ArrayMemory<T>,
+// but memory is statically reserved to max size,
+// and constructors/destructors of elements are NOT called.
 //
 //================================================================
 
 template <typename Type, Space maxSize>
-class ArrayObjMemStatic : public Array<Type>
+class ArrayMemoryStatic : public Array<Type>
 {
 
 public:
@@ -27,18 +27,18 @@ public:
 private:
 
     using BaseArray = Array<Type>;
-    using SelfType = ArrayObjMemStatic<Type, maxSize>;
+    using SelfType = ArrayMemoryStatic<Type, maxSize>;
     COMPILE_ASSERT(maxSize >= 1);
 
 private:
 
-    ArrayObjMemStatic(const SelfType& that); // forbidden
+    ArrayMemoryStatic(const SelfType& that); // forbidden
     void operator =(const SelfType& that); // forbidden
 
 public:
 
-    inline ArrayObjMemStatic() {}
-    inline ~ArrayObjMemStatic() {dealloc();}
+    inline ArrayMemoryStatic() {}
+    inline ~ArrayMemoryStatic() {dealloc();}
 
 public:
 
@@ -51,13 +51,7 @@ public:
     {
         ensure(SpaceU(newSize) <= SpaceU(maxSize));
 
-        dealloc();
-
-        for (Space i = 0; i < newSize; ++i)
-            constructDefault(data[i]);
-
         currentSize = newSize;
-
         BaseArray::assign(data, newSize, arrayPreconditionsAreVerified());
 
         return true;
@@ -73,17 +67,12 @@ public:
 
     void dealloc()
     {
-        for (Space i = currentSize-1; i >= 0; --i)
-            destruct(data[i]);
-
         currentSize = 0;
-
         BaseArray::assignNull();
     }
 
 private:
 
-    // Only elements [0, currentSize) are constructed
     UninitializedArray<Type, maxSize> data;
     Space currentSize = 0;
 
@@ -96,4 +85,15 @@ private:
 //================================================================
 
 template <typename Type, Space maxSize>
-GET_SIZE_DEFINE(PREP_PASS2(ArrayObjMemStatic<Type, maxSize>), value.size())
+GET_SIZE_DEFINE(PREP_PASS2(ArrayMemoryStatic<Type, maxSize>), value.size())
+
+//================================================================
+//
+// ARRAY_STATIC_ALLOC
+//
+//================================================================
+
+#define ARRAY_STATIC_ALLOC(name, Type, maxSize, size) \
+    \
+    ArrayMemoryStatic<Type, maxSize> name; \
+    require(name.realloc(size, stdPass))

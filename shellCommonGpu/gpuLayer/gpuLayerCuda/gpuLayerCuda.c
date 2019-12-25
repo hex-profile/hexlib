@@ -12,8 +12,8 @@
 #include "timer/timer.h"
 #include "emptyKernel.h"
 #include "userOutput/printMsg.h"
-#include "history/historyObj.h"
-#include "dataAlloc/arrayObjMem.inl"
+#include "history/historyObject.h"
+#include "dataAlloc/arrayObjectMemory.inl"
 #include "types/lt/ltBase.h"
 #include "numbers/divRound.h"
 #include "gpuLayer/gpuLayerCuda/cudaErrorReport.h"
@@ -1166,7 +1166,7 @@ public:
 private:
 
     bool allocated = false;
-    HistoryObj<CoverageRecord> history;
+    HistoryObject<CoverageRecord> history;
 
 public:
 

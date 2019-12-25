@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dataAlloc/arrayObjMemStatic.h"
+#include "dataAlloc/arrayObjectMemoryStatic.h"
 #include "dataAlloc/gpuLayeredMatrixMemory.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "pyramid/gpuPyramid.h"
@@ -99,7 +99,7 @@ public:
 private:
 
     using ImageStorage = GpuLayeredMatrixMemory<Type>;
-    ArrayObjMemStatic<ImageStorage, gpuPyramidMemoryMaxLevels> pyramidArray;
+    ArrayObjectMemoryStatic<ImageStorage, gpuPyramidMemoryMaxLevels> pyramidArray;
     Space currentLayers = 0;
 
     GpuLayeredMatrixNull<Type> emptyLayeredMatrix;

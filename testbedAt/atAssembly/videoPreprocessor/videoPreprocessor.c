@@ -11,7 +11,7 @@
 #include "cfgTools/rangeValueControl.h"
 #include "storage/classThunks.h"
 #include "cfgTools/boolSwitch.h"
-#include "history/historyObj.h"
+#include "history/historyObject.h"
 #include "gpuMatrixSet/gpuMatrixSet.h"
 #include "copyMatrixAsArray.h"
 #include "storage/rememberCleanup.h"
@@ -234,7 +234,7 @@ private:
     ////
 
     NumericVarStatic<Space, 1, maxFrameHistoryCapacity, 4> frameHistoryCapacity;
-    using FrameHistory = HistoryObjStatic<FrameSnapshot, maxFrameHistoryCapacity>;
+    using FrameHistory = HistoryObjectStatic<FrameSnapshot, maxFrameHistoryCapacity>;
     FrameHistory frameHistory;
 
 private:

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stl/stlArray.h"
-#include "history/historyObj.h"
+#include "history/historyObject.h"
 
 //================================================================
 //

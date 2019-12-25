@@ -1,4 +1,4 @@
-#include "dataAlloc/arrayObjMem.inl"
+#include "dataAlloc/arrayObjectMemory.inl"
 #include "errorLog/errorLog.h"
 
 //================================================================
@@ -36,14 +36,14 @@ KIT_COMBINE3(TestKit, CpuFastAllocKit, ErrorLogKit, DataProcessingKit);
 
 //================================================================
 //
-// arrayObjMemUsage
+// arrayObjectMemoryUsage
 //
 //================================================================
 
-stdbool arrayObjMemUsage(stdPars(TestKit))
+stdbool arrayObjectMemoryUsage(stdPars(TestKit))
 {
     // Construct empty array; no memory allocation performed.
-    ArrayObjMem<MyClass> m0;
+    ArrayObjectMemory<MyClass> m0;
 
     // Allocate array, call default constructors of elements and check error.
     // If reallocation fails, array has zero size.

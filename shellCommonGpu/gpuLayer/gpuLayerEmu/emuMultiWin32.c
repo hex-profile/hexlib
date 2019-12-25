@@ -9,7 +9,7 @@
 
 #include "gpuLayer/gpuLayerEmu/uniformPartition.h"
 #include "errorLog/debugBreak.h"
-#include "dataAlloc/arrayObjMem.inl"
+#include "dataAlloc/arrayObjectMemory.inl"
 #include "storage/rememberCleanup.h"
 #include "data/matrix.h"
 #include "numbers/safeuint32/safeuint32.h"
@@ -341,7 +341,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
     //
 
     require(serverArray.realloc(streamCount, kit.malloc, true, stdPass));
-    REMEMBER_CLEANUP1_EX(serverArrayCleanup, serverArray.dealloc(), ArrayObjMem<ServerKeeper>&, serverArray);
+    REMEMBER_CLEANUP1_EX(serverArrayCleanup, serverArray.dealloc(), ArrayObjectMemory<ServerKeeper>&, serverArray);
 
     //
     // Create thread servers (can be interrupted by error).

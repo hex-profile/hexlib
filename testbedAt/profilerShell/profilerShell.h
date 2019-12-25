@@ -4,7 +4,7 @@
 #include "profilerShell/profilerTarget.h"
 #include "cfgTools/boolSwitch.h"
 #include "timer/timer.h"
-#include "history/historyObj.h"
+#include "history/historyObject.h"
 #include "kits/moduleKit.h"
 #include "configFile/cfgSimpleString.h"
 #include "interfaces/fileTools.h"
@@ -79,6 +79,6 @@ private:
 
     BoolSwitch<false> displayFrameTime;
     static const Space frameTimeHistCapacity = 128;
-    HistoryObjStatic<float32, frameTimeHistCapacity> frameTimeHist;
+    HistoryObjectStatic<float32, frameTimeHistCapacity> frameTimeHist;
 
 };

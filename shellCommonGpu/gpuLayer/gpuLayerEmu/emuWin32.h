@@ -4,7 +4,7 @@
 #include "stdFunc/stdFunc.h"
 #include "gpuDevice/gpuDeviceEmu.h"
 #include "dataAlloc/arrayMemory.h"
-#include "dataAlloc/arrayObjMem.h"
+#include "dataAlloc/arrayObjectMemory.h"
 #include "allocation/mallocKit.h"
 
 namespace emuWin32 {
@@ -146,7 +146,7 @@ private:
 
     bool created = false;
 
-    ArrayObjMem<class FiberOwner> fibers;
+    ArrayObjectMemory<class FiberOwner> fibers;
     ArrayMemory<struct FiberTask> fiberTasks;
     ArrayMemory<Byte> sramHolder;
 

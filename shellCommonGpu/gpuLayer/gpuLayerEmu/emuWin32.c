@@ -7,7 +7,7 @@
 
 #include "errorLog/debugBreak.h"
 #include "storage/rememberCleanup.h"
-#include "dataAlloc/arrayObjMem.inl"
+#include "dataAlloc/arrayObjectMemory.inl"
 #include "point3d/point3d.h"
 
 namespace emuWin32 {
@@ -154,7 +154,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     //
 
     require(fibers.realloc(EMU_MAX_THREAD_COUNT, kit.malloc, true, stdPass));
-    REMEMBER_CLEANUP1_EX(fibersCleanup, fibers.dealloc(), ArrayObjMem<FiberOwner>&, fibers);
+    REMEMBER_CLEANUP1_EX(fibersCleanup, fibers.dealloc(), ArrayObjectMemory<FiberOwner>&, fibers);
     ARRAY_EXPOSE(fibers);
 
     for (Space i = 0; i < fibersSize; ++i) // can be interrupted in the middle by error

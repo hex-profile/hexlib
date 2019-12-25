@@ -2,7 +2,7 @@
 
 #include "errorLog/errorLog.h"
 #include "errorLog/debugBreak.h"
-#include "dataAlloc/arrayObjMem.inl"
+#include "dataAlloc/arrayObjectMemory.inl"
 #include "storage/rememberCleanup.h"
 
 //================================================================

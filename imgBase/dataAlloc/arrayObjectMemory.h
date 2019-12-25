@@ -15,7 +15,7 @@
 #if 0
 
 // Construct empty array; no memory allocation performed.
-ArrayObjMem<MyClass> m0;
+ArrayObjectMemory<MyClass> m0;
 
 // Allocate array, call default constructors of elements and check error.
 // If reallocation fails, array has zero size.
@@ -37,12 +37,12 @@ REQUIRE(m0.maxSize() == 33);
 
 //================================================================
 //
-// ArrayObjMem<T>
+// ArrayObjectMemory<T>
 //
 //================================================================
 
 template <typename Type>
-class ArrayObjMem : public ArrayMemoryEx<Type*>
+class ArrayObjectMemory : public ArrayMemoryEx<Type*>
 {
 
     using Base = ArrayMemoryEx<Type*>;
@@ -58,10 +58,10 @@ public:
     // Override to call redefined realloc/dealloc
     //
 
-    inline ArrayObjMem()
+    inline ArrayObjectMemory()
         {}
 
-    inline ~ArrayObjMem()
+    inline ~ArrayObjectMemory()
         {dealloc();}
 
     //
