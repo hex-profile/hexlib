@@ -224,8 +224,8 @@
     REDUCTION_ACCUM_VARS3(PREP_ARG2_0 typeName, PREP_ARG2_1 typeName, prefix, activeFlag, stageSize)
 
 #define REDUCTION_ACCUM_VARS3(Type, name, prefix, activeFlag, stageSize) \
-    ArrayPtr(Type) PREP_PASTE(name, L) = PREP_PASTE3(prefix, name, ReductionPtr); \
-    ArrayPtr(const Type) PREP_PASTE(name, R) = PREP_PASTE3(prefix, name, ReductionPtr) + (stageSize); /* make it const to avoid user mistakes */
+    auto PREP_PASTE(name, L) = PREP_PASTE3(prefix, name, ReductionPtr); \
+    auto PREP_PASTE(name, R) = PREP_PASTE3(prefix, name, ReductionPtr) + (stageSize); /* make it const to avoid user mistakes */
 
 //================================================================
 //

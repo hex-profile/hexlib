@@ -158,8 +158,8 @@ struct InterpolateSpace<INTERP_LINEAR, BORDER_CLAMP>
 
         ////
 
-        MatrixPtr(const Src) ptrY0 = MATRIX_POINTER(src, 0, Y0);
-        MatrixPtr(const Src) ptrY1 = MATRIX_POINTER(src, 0, Y1);
+        auto ptrY0 = MATRIX_POINTER(src, 0, Y0);
+        auto ptrY1 = MATRIX_POINTER(src, 0, Y1);
 
         VectorFloat v00 = convertNearest<VectorFloat>(LoadElement::func(unsafePtr(ptrY0 + X0, 1)));
         VectorFloat v10 = convertNearest<VectorFloat>(LoadElement::func(unsafePtr(ptrY0 + X1, 1)));
@@ -214,10 +214,10 @@ struct InterpolateSpace<INTERP_CUBIC, BORDER_CLAMP>
 
         ////
 
-        MatrixPtr(const Src) ptrY0 = MATRIX_POINTER(src, 0, clampRange(bY - 1, 0, srcLastY));
-        MatrixPtr(const Src) ptrY1 = MATRIX_POINTER(src, 0, clampRange(bY + 0, 0, srcLastY));
-        MatrixPtr(const Src) ptrY2 = MATRIX_POINTER(src, 0, clampRange(bY + 1, 0, srcLastY));
-        MatrixPtr(const Src) ptrY3 = MATRIX_POINTER(src, 0, clampRange(bY + 2, 0, srcLastY));
+        auto ptrY0 = MATRIX_POINTER(src, 0, clampRange(bY - 1, 0, srcLastY));
+        auto ptrY1 = MATRIX_POINTER(src, 0, clampRange(bY + 0, 0, srcLastY));
+        auto ptrY2 = MATRIX_POINTER(src, 0, clampRange(bY + 1, 0, srcLastY));
+        auto ptrY3 = MATRIX_POINTER(src, 0, clampRange(bY + 2, 0, srcLastY));
 
         Space X0 = clampRange(bX - 1, 0, srcLastX);
         Space X1 = clampRange(bX + 0, 0, srcLastX);

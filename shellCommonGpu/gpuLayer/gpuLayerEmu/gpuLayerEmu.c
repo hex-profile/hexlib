@@ -589,8 +589,8 @@ devDefineKernel(copyArrayKernel, CopyArrayParams, o)
 
     ////
 
-    ArrayPtr(Byte) src = o.srcPtr + byteStart;
-    ArrayPtr(Byte) dst = o.dstPtr + byteStart;
+    auto src = o.srcPtr + byteStart;
+    auto dst = o.dstPtr + byteStart;
 
     ////
 
@@ -623,8 +623,8 @@ inline stdbool genericArrayCopy
 
     ////
 
-    ArrayPtr(Byte) srcPtr = ArrayPtrCreate(Byte, (Byte*) srcAddr, byteSize, DbgptrArrayPreconditions());
-    ArrayPtr(Byte) dstPtr = ArrayPtrCreate(Byte, (Byte*) dstAddr, byteSize, DbgptrArrayPreconditions());
+    auto srcPtr = ArrayPtrCreate(Byte, (Byte*) srcAddr, byteSize, DbgptrArrayPreconditions());
+    auto dstPtr = ArrayPtrCreate(Byte, (Byte*) dstAddr, byteSize, DbgptrArrayPreconditions());
 
     CopyArrayParams params(srcPtr, dstPtr, byteSize);
 

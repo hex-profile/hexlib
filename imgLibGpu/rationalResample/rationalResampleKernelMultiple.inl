@@ -71,7 +71,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
     //
     //----------------------------------------------------------------
 
-    MatrixPtr(FloatType) cacheLoadPtr = cacheMemPtr + devThreadX + devThreadY * cacheMemPitch;
+    auto cacheLoadPtr = cacheMemPtr + devThreadX + devThreadY * cacheMemPitch;
 
     ////
 
@@ -116,7 +116,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
     Point<Space> cacheReadPos = devThreadIdx;
     cacheReadPos.DIR(X, Y) *= PACK_TO_SRC_FACTOR;
 
-    MatrixPtr(const FloatType) cacheReadPtr = cacheMemPtr + cacheReadPos.X + cacheReadPos.Y * cacheMemPitch;
+    auto cacheReadPtr = cacheMemPtr + cacheReadPos.X + cacheReadPos.Y * cacheMemPitch;
 
     devUnrollLoop
     for (Space i = 0; i < filterSize; ++i)
@@ -173,7 +173,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
         { \
             Point<Space> dstIdx##k = dstIdx; dstIdx.DIR(X, Y)++; \
             bool dstValid##k = MATRIX_VALID_ACCESS_(dst, dstIdx##k); \
-            MatrixPtr(Dst) dstPtr##k = MATRIX_POINTER_(dst, dstIdx##k); \
+            auto dstPtr##k = MATRIX_POINTER_(dst, dstIdx##k); \
             if (dstValid##k) storeNorm(dstPtr##k, result##k); \
         }
     

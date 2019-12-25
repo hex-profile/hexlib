@@ -86,7 +86,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
     //
     //----------------------------------------------------------------
 
-    MatrixPtr(FloatType) cacheLoadPtr = MATRIX_POINTER_(cache, devThreadIdx);
+    auto cacheLoadPtr = MATRIX_POINTER_(cache, devThreadIdx);
     Point<Space> srcReadIdx = srcBase + devThreadIdx;
     Point<float32> srcReadTexPos = convertIndexToPos(srcReadIdx) * o.srcTexstep;
 
@@ -129,7 +129,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 
     Point<Space> cacheReadPos = devThreadIdx;
     cacheReadPos.DIR(X, Y) *= downsampleFactor; // Potential bank conflicts, but not important
-    MatrixPtr(const FloatType) cacheReadPtr = MATRIX_POINTER_(cache, cacheReadPos);
+    auto cacheReadPtr = MATRIX_POINTER_(cache, cacheReadPos);
 
     ////
 
@@ -168,7 +168,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
     #define TMP_MACRO(k, _) \
         \
         MATRIX_EXPOSE_EX(o.dst[k], dst##k); \
-        MatrixPtr(Dst) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
+        auto dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
         storeNorm(dstPtr##k, result##k);
 
     PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
@@ -246,7 +246,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
     //
     //----------------------------------------------------------------
 
-    MatrixPtr(FloatType) cacheLoadPtr = MATRIX_POINTER_(cache, devThreadIdx);
+    auto cacheLoadPtr = MATRIX_POINTER_(cache, devThreadIdx);
     Point<Space> srcLoadIdx = srcBase + devThreadIdx;
     Point<float32> srcLoadTexPos = convertIndexToPos(srcLoadIdx) * o.srcTexstep;
 
@@ -271,7 +271,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
 
     Point<Space> cacheReadPos = devThreadIdx;
     cacheReadPos.DIR(X, Y) *= downsampleFactor; // Potential bank conflicts, but not important
-    MatrixPtr(const FloatType) cacheReadPtr = MATRIX_POINTER_(cache, cacheReadPos);
+    auto cacheReadPtr = MATRIX_POINTER_(cache, cacheReadPos);
 
     ////
 
@@ -319,7 +319,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
 
     #define TMP_MACRO(k, _) \
         MATRIX_EXPOSE_EX(o.dst[k], dst##k); \
-        MatrixPtr(Dst) dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
+        auto dstPtr##k = MATRIX_POINTER_(dst##k, dstIdx); \
         storeNorm(dstPtr##k, result##k);
 
     PREP_FOR(FILTER_COUNT, TMP_MACRO, _)

@@ -319,8 +319,8 @@ static void EMU_SAMPLER_TEX_DECL emuSamplerLinear2D(const EmuSamplerData& data, 
         iY >= 0 && iY <= srcSizeY - 2
     )
     {
-        MatrixPtr(const MemType) ptr0 = MATRIX_POINTER(src, iX, iY);
-        MatrixPtr(const MemType) ptr1 = ptr0 + srcMemPitch;
+        auto ptr0 = MATRIX_POINTER(src, iX, iY);
+        auto ptr1 = ptr0 + srcMemPitch;
 
         v00 = Result::func(ptr0[0]);
         v10 = Result::func(ptr0[1]);

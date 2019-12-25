@@ -279,7 +279,7 @@ GPUTOOL_2D_BEG_EX
 
     devSramMatrixFor2dAccess(cache, float32, cacheSizeX, cacheSizeY, threadCountX);
 
-    MatrixPtr(float32) cacheLoadPtr = MATRIX_POINTER_(cache, threadIdx);
+    auto cacheLoadPtr = MATRIX_POINTER_(cache, threadIdx);
 
     ////
 
@@ -332,7 +332,7 @@ GPUTOOL_2D_BEG_EX
 
     Point<Space> extendedIdx = threadIdx;
     extendedIdx.DIR(X, Y) *= downsampleFactor; // 2X bank conflicts, but not important.
-    MatrixPtr(const float32) cachePtr = MATRIX_POINTER_(cache, extendedIdx);
+    auto cachePtr = MATRIX_POINTER_(cache, extendedIdx);
 
     ////
 
@@ -547,7 +547,7 @@ GPUTOOL_2D_BEG_EX
 
     ////
 
-    MatrixPtr(float32_x2) cacheLoadPtr = MATRIX_POINTER_(cache, threadIdx);
+    auto cacheLoadPtr = MATRIX_POINTER_(cache, threadIdx);
     Point<Space> srcReadIdx = srcBase + threadIdx;
     Point<float32> srcReadTexPos = convertIndexToPos(srcReadIdx) * src0Texstep;
 
@@ -569,7 +569,7 @@ GPUTOOL_2D_BEG_EX
 
     Point<Space> extendedIdx = threadIdx;
     extendedIdx.DIR(X, Y) *= downsampleFactor; // 2X bank conflicts, but not important.
-    MatrixPtr(const float32_x2) cacheStartPtr = MATRIX_POINTER_(cache, extendedIdx);
+    auto cacheStartPtr = MATRIX_POINTER_(cache, extendedIdx);
 
     ////
 
@@ -945,7 +945,7 @@ GPUTOOL_2D_BEG_EX
     Point<Space> extendedIdx = threadIdx;
     extendedIdx.DIR(X, Y) *= downsampleFactor; // 2X bank conflicts, but not important.
 
-    MatrixPtr(const ValueType) valueCachePtr = MATRIX_POINTER_(valueCache, extendedIdx);
+    auto valueCachePtr = MATRIX_POINTER_(valueCache, extendedIdx);
 
     ////
 
@@ -1028,7 +1028,7 @@ GPUTOOL_2D_BEG_EX
 
     ////
 
-    MatrixPtr(ValueType) cacheLoadPtr = MATRIX_POINTER_(cache, threadIdx);
+    auto cacheLoadPtr = MATRIX_POINTER_(cache, threadIdx);
     Point<Space> srcReadIdx = srcBase + threadIdx;
     Point<float32> srcReadTexPos = convertIndexToPos(srcReadIdx) * srcTexstep;
 
@@ -1061,7 +1061,7 @@ GPUTOOL_2D_BEG_EX
 
     Point<Space> extendedIdx = threadIdx;
     extendedIdx.DIR(X, Y) *= downsampleFactor; // 2X bank conflicts, but not important.
-    MatrixPtr(const ValueType) cacheStartPtr = MATRIX_POINTER_(cache, extendedIdx);
+    auto cacheStartPtr = MATRIX_POINTER_(cache, extendedIdx);
 
     ////
 

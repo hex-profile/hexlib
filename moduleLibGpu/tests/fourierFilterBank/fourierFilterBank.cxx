@@ -313,7 +313,7 @@ GPUTOOL_2D_BEG
 )
 #if DEVCODE
 {
-    auto response = *src;
+    auto response = helpRead(*src);
 
     if (allv(vGlobSize == COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd)))
         response = response / conservativeFilterFreqOdd[X] / conservativeFilterFreqOdd[Y];
@@ -339,7 +339,7 @@ GPUTOOL_2D_BEG
 )
 #if DEVCODE
 {
-    auto response = *src;
+    auto response = helpRead(*src);
 
     if (vGlobSize.X == COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd))
         response = response / conservativeFilterFreqOdd[X];
@@ -390,7 +390,7 @@ stdbool normalizeFreqResponse(const Matrix<float32_x2>& dst, stdPars(CpuFuncKit)
 
     for (Space Y = 0; Y < dstSizeY; ++Y)
     {
-        MatrixPtr(float32_x2) dst = MATRIX_POINTER(dst, 0, Y);
+        auto dst = MATRIX_POINTER(dst, 0, Y);
 
         for (Space X = 0; X < dstSizeX; ++X, ++dst)
             maxFreq2 = maxv(maxFreq2, vectorLengthSq(*dst));
@@ -404,7 +404,7 @@ stdbool normalizeFreqResponse(const Matrix<float32_x2>& dst, stdPars(CpuFuncKit)
 
     for (Space Y = 0; Y < dstSizeY; ++Y)
     {
-        MatrixPtr(float32_x2) dst = MATRIX_POINTER(dst, 0, Y);
+        auto dst = MATRIX_POINTER(dst, 0, Y);
 
         for (Space X = 0; X < dstSizeX; ++X, ++dst)
             *dst *= divMaxFreq;

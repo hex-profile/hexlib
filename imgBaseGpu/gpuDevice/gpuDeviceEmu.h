@@ -365,7 +365,7 @@ struct GpuKernelLink
 #define devSramArray(name, Type, size) \
     CpuAddrU PREP_PASTE(name, Addr) = emuParams.sramAllocator.alloc((size) * sizeof(Type)); \
     devDebugCheck(PREP_PASTE(name, Addr) != 0); \
-    ArrayPtr(Type) name = ArrayPtrCreate(Type, (Type*) PREP_PASTE(name, Addr), (size), DbgptrArrayPreconditions())
+    auto name = ArrayPtrCreate(Type, (Type*) PREP_PASTE(name, Addr), (size), DbgptrArrayPreconditions())
 
 //================================================================
 //
@@ -384,7 +384,7 @@ struct GpuKernelLink
     enum {name##MemPitch = (memPitch)}; \
     CpuAddrU name##Addr = emuParams.sramAllocator.alloc(name##MemPitch * (sizeY) * sizeof(Type)); \
     devDebugCheck(name##Addr != 0); \
-    MatrixPtr(Type) name##MemPtr = MatrixPtrCreate(Type, (Type*) name##Addr, name##MemPitch, sizeX, sizeY, DbgptrMatrixPreconditions())
+    auto name##MemPtr = MatrixPtrCreate(Type, (Type*) name##Addr, name##MemPitch, sizeX, sizeY, DbgptrMatrixPreconditions())
 
 #define devSramMatrixDense(name, Type, sizeX, sizeY) \
     devSramMatrixEx(name, Type, sizeX, sizeY, (sizeX) + 1) /* Extra elements for additonal access checking */

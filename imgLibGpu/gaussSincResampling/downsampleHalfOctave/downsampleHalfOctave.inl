@@ -130,7 +130,7 @@ GPUTOOL_2D_BEG_EX
     //----------------------------------------------------------------
 
     devSramMatrixDense(coeffsCache, float32, downHoFilterLength, dhoAcrossThreads);
-    MatrixPtr(float32) coeffsPtr = MATRIX_POINTER(coeffsCache, 0, devThreadX);
+    auto coeffsPtr = MATRIX_POINTER(coeffsCache, 0, devThreadX);
 
     PARALLEL_LOOP_UNBASED(i, downHoFilterLength, devThreadY, dhoAlongThreads,
         coeffsPtr[i] = devTex2D(coeffsSampler, (i + (devThreadY + 0.5f)) * coeffsTexstep.X, srcOrgFrac))
@@ -203,7 +203,7 @@ GPUTOOL_2D_BEG_EX
     //----------------------------------------------------------------
 
     devSramMatrixDense(coeffsCache, float32, downHoFilterLength, dhoAcrossThreads);
-    MatrixPtr(float32) coeffsPtr = MATRIX_POINTER(coeffsCache, 0, devThreadY);
+    auto coeffsPtr = MATRIX_POINTER(coeffsCache, 0, devThreadY);
 
     PARALLEL_LOOP_UNBASED(i, downHoFilterLength, devThreadX, dhoAlongThreads,
         coeffsPtr[i] = devTex2D(coeffsSampler, (i + (devThreadX + 0.5f)) * coeffsTexstep.X, srcOrgFrac))
