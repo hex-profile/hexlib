@@ -144,13 +144,13 @@ public:
     CharArray outputDirName() {return STR("Output Directory");}
     SimpleStringVar outputDir{STR("")};
     SimpleStringVar outputCodec{STR("DIB ")};
-    NumericVarStatic<int32, 0, 0x7FFFFFFF, 0> maxSegmentFrames;
+    NumericVarStatic<int32, 0, 0x7FFFFFFF, 256> maxSegmentFrames;
 
 public:
 
     void serialize(const ModuleSerializeKit& kit)
     {
-        savingActive.serialize(kit, STR("Active"));
+        savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+V"));
         outputFps.serialize(kit, STR("Playback FPS"), STR("Playback framerate specified in AVI header"));
 
         outputDir.serialize(kit, outputDirName(), STR("Use double backslashes, for example C:\\\\Temp"));
