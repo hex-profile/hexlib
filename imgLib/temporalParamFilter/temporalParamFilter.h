@@ -93,7 +93,7 @@ private:
 //----------------------------------------------------------------
 
 template <typename Type>
-using TemporalFilterStd = TemporalFilter<float32, temporalParamFilter::defaultStageCount>;
+using TemporalFilterStd = TemporalFilter<Type, temporalParamFilter::defaultStageCount>;
 
 //================================================================
 //
