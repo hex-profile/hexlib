@@ -2,6 +2,8 @@
 
 #include "numbers/mathIntrinsics.h"
 #include "point/point.h"
+#include "point3d/point3d.h"
+#include "point4d/point4d.h"
 
 namespace temporalParamFilter {
 
@@ -172,6 +174,8 @@ Type TemporalWeightedFilter<Type, n>::operator () () const
 #define TMP_MACRO(Type, stageCount) \
     TMP_MACRO_EX(Type, stageCount); \
     TMP_MACRO_EX(Point<Type>, stageCount); \
+    TMP_MACRO_EX(Point3D<Type>, stageCount); \
+    TMP_MACRO_EX(Point4D<Type>, stageCount); \
 
 TMP_MACRO(float32, 8);
 TMP_MACRO(float32, 4);
