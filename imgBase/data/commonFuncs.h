@@ -31,6 +31,8 @@ sysinline bool equalSize(const T0& v0)
     return true;
 }
 
+//----------------------------------------------------------------
+
 template <typename T0, typename... Types>
 sysinline bool equalSize(const T0& v0, const Types&... values)
 {

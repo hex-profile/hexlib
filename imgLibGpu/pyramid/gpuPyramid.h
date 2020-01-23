@@ -73,16 +73,34 @@ struct GpuPyramid : public PyramidStructure, GpuPyramidLayoutGetting<Type>
 //================================================================
 
 template <typename T1, typename T2>
-inline bool equalSize(const GpuPyramid<T1>& p1, const GpuPyramid<T2>& p2)
+inline bool equalSizePyramid(const GpuPyramid<T1>& p1, const GpuPyramid<T2>& p2)
 {
-    require(p1.levels() == p2.levels());
+    ensure(p1.levels() == p2.levels());
 
     Space levels = p1.levels();
 
     for (Space k = 0; k < levels; ++k)
-        require(equalSize(p1.levelSize(k), p2.levelSize(k)));
+        ensure(equalSize(p1.levelSize(k), p2.levelSize(k)));
 
     return true;
+}
+
+//----------------------------------------------------------------
+
+template <typename T1, typename T2>
+inline bool equalSize(const GpuPyramid<T1>& p1, const GpuPyramid<T2>& p2)
+{
+    return equalSizePyramid(p1, p2);
+}
+
+//----------------------------------------------------------------
+
+template <typename T0, typename... Types>
+sysinline bool equalSize(const GpuPyramid<T0>& v0, const GpuPyramid<Types>&... values)
+{
+    bool ok = true;
+    char tmp[] = {(ok &= equalSizePyramid(v0, values), 'x')...};
+    return ok;
 }
 
 //================================================================
