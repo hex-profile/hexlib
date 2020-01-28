@@ -43,6 +43,10 @@ public:
     stdbool send(const void* dataPtr, size_t dataSize, stdPars(Kit));
     stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit));
 
+public:
+
+    stdbool shutdown(bool sending, bool receiving, stdPars(Kit));
+
 private:
 
     enum class Status {None, LibUsed, Resolved, Connected};
