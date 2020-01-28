@@ -104,48 +104,71 @@ public:
     using ClearFunc = at_bool AT_CALL (const AtApi* api);
     using UpdateFunc = at_bool AT_CALL (const AtApi* api);
 
+    struct OutputFuncs
+    {
+        PrintFunc* print;
+        ClearFunc* clear;
+        UpdateFunc* update;
+    };
+
 public:
 
     OutputLogByAt
     (
-        PrintFunc* printFunc, ClearFunc* clearFunc, UpdateFunc* updateFunc,
+        const OutputFuncs& func,
+        const OutputFuncs& aux,
         const AtApi* api,
         bool useDebugOutput
     )
         :
-        printFunc(printFunc), clearFunc(clearFunc), updateFunc(updateFunc),
-        api(api), useDebugOutput(useDebugOutput)
+        func(func),
+        aux(aux),
+        api(api),
+        useDebugOutput(useDebugOutput)
     {
     }
 
     bool isThreadProtected() const
-        {return false;}
+    {
+        return false;
+    }
 
     void lock()
-        {}
+    {
+    }
 
     void unlock()
-        {}
+    {
+    }
 
     bool addMsg(const FormatOutputAtom& v, MsgKind msgKind);
 
     bool clear()
     {
-        return clearFunc(api) != 0;
+        ensure(func.clear(api) != 0);
+
+        if (aux.clear)
+            ensure(aux.clear(api) != 0);
+
+        return true;
     }
 
     bool update()
     {
-        return updateFunc(api) != 0;
+        ensure(func.update(api) != 0);
+
+        if (aux.update)
+            ensure(aux.update(api) != 0);
+
+        return true;
     }
 
 private:
 
-    PrintFunc* const printFunc;
-    ClearFunc* const clearFunc;
-    UpdateFunc* const updateFunc;
-
     const AtApi* const api;
+
+    OutputFuncs const func;
+    OutputFuncs const aux;
 
     bool const useDebugOutput;
 
@@ -171,7 +194,10 @@ bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         ensure(formatToStream.isOk());
         ensure(!!stringStream);
 
-        ensure(printFunc(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
+        ensure(func.print(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
+
+        if (aux.print)
+            ensure(aux.print(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
 
     #if defined(_WIN32)
         stringStream << endl;
@@ -556,8 +582,11 @@ private:
 
 #define COMMON_KIT_IMPL(AtApi, baseKit) \
     \
-    OutputLogByAt<AtApi> msgLog(api->gcon_print_ex, api->gcon_clear, api->gcon_update, api, true); \
-    OutputLogByAt<AtApi> localLog(api->lcon_print_ex, api->lcon_clear, api->lcon_update, api, false); \
+    OutputLogByAt<AtApi> msgLog({api->gcon_print_ex, api->gcon_clear, api->gcon_update}, \
+        {api->lcon_print_ex, api->lcon_clear, api->lcon_update}, api, true); \
+    \
+    OutputLogByAt<AtApi> localLog({api->lcon_print_ex, api->lcon_clear, api->lcon_update}, \
+        {nullptr, nullptr, nullptr}, api, false); \
     \
     ErrorLogByMsgLog errorLog(msgLog); \
     ErrorLogKit errorLogKit(errorLog); \
