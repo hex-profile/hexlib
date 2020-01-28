@@ -279,6 +279,17 @@ stdbool ConnectionWin32::reconnect(stdPars(Kit))
 
     //----------------------------------------------------------------
     //
+    // Linger.
+    //
+    //----------------------------------------------------------------
+
+    /*
+    LINGER linger = {1, 60};
+    REQUIRE(setsockopt(theSocket, SOL_SOCKET, SO_LINGER, (char*) &linger, sizeof(linger)) == 0);
+    */
+
+    //----------------------------------------------------------------
+    //
     // Connect the socket.
     //
     //----------------------------------------------------------------
@@ -388,6 +399,32 @@ stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& receive
     REQUIRE_TRACE1(actualSize >= 0, STR("Connection: Cannot receive data. %0"), ErrorWin32(WSAGetLastError()));
 
     receivedSize = size_t(actualSize);
+    returnTrue;
+}
+
+//================================================================
+//
+// ConnectionWin32::shutdown
+//
+//================================================================
+
+stdbool ConnectionWin32::shutdown(bool sending, bool receiving, stdPars(Kit))
+{
+    REQUIRE(theStatus == Status::Connected);
+
+    ////
+
+    if (sending && receiving)
+        REQUIRE(::shutdown(theSocket, SD_BOTH) == 0);
+    else if (sending)
+        REQUIRE(::shutdown(theSocket, SD_SEND) == 0);
+    else if (receiving)
+        REQUIRE(::shutdown(theSocket, SD_RECEIVE) == 0);
+    else
+        REQUIRE(false);
+
+    ////
+
     returnTrue;
 }
 
