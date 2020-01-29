@@ -707,7 +707,7 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
             deactivateOverlay.serialize(kit, STR("Deactivate Overlay"), STR("\\"));
             displayMemoryUsage.serialize(kit, STR("Display Memory Usage"), STR("Ctrl+Shift+U"));
 
-            debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"));
+            debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"), STR("Ctrl+B"));
 
             toolModule.serialize(kit);
         }

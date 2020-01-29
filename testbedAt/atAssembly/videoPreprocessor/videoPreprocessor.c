@@ -233,7 +233,7 @@ private:
 
     ////
 
-    NumericVarStatic<Space, 1, maxFrameHistoryCapacity, 4> frameHistoryCapacity;
+    NumericVarStatic<Space, 1, maxFrameHistoryCapacity, 1> frameHistoryCapacity;
     using FrameHistory = HistoryObjectStatic<FrameSnapshot, maxFrameHistoryCapacity>;
     FrameHistory frameHistory;
 
