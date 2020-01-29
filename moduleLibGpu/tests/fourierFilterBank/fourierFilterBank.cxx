@@ -548,7 +548,7 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
     fourierBlurSigma.serialize(kit, STR("Fourier Blur Sigma"));
     orientationCount.serialize(kit, STR("Orientation Count"));
     orientationOffset.serialize(kit, STR("Orientation Offset"));
-    generateFilterBank.serialize(kit, STR("Generate Filter Bank"), STR("Ctrl+B"));
+    generateFilterBank.serialize(kit, STR("Generate Filter Bank"), STR("Ctrl+Shift+B"));
     pyramidFilterCompensation.serialize(kit, STR("Pyramid Filter Compensation"), STR(""));
     displayUpsampleFactor.serialize(kit, STR("Display Upsample Factor"));
   
