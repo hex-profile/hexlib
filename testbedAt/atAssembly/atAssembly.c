@@ -457,7 +457,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
     printMsgL(kit, STR("Reloading metadata config."), msgWarn);
 
-    cfgvarResetValue(serialization);
+    // cfgvarResetValue(serialization);
 
     REMEMBER_CLEANUP_EX(resetStateCleanup, {resetObject(*this); cfgvarResetValue(serialization);});
 
