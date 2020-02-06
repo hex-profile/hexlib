@@ -63,6 +63,14 @@ struct Key
 //----------------------------------------------------------------
 
 template <typename Iterator>
+inline bool isIndex(const Key<Iterator>& key)
+{
+    return key.index != invalidIndex;
+}
+
+//----------------------------------------------------------------
+
+template <typename Iterator>
 constexpr inline auto makeKey(const Range<Iterator>& name)
 {
     return Key<Iterator>{name, invalidIndex};
