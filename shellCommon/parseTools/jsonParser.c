@@ -173,7 +173,7 @@ bool parseElement(Iterator& paramPtr, const Kit<Iterator>& kit)
     {
         auto valueStart = s;
         ENSURE(skipJsonValueBody(s, end), valueStart);
-        kit.visitor->handleValue({valueStart, s});
+        ENSURE(kit.visitor->handleValue({valueStart, s}), valueStart);
         skipAnySpace(s, end);
     }
 
