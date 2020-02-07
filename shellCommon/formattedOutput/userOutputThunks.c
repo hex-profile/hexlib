@@ -79,7 +79,7 @@ void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace
         {
             if (depth < maxTraceDepth)
             {
-                printMsg(*msgLog, STR("    %0: called from"), charArrayFromPtr(p->location), msgErr);
+                printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgErr);
             }
             else
             {
