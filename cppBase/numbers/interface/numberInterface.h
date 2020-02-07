@@ -397,7 +397,7 @@ enum BinaryOperation {OpAdd, OpSub, OpMul, OpDiv, OpRem, OpShl, OpShr, OpBitAnd,
 
 //================================================================
 //
-// canAdd, canMul, etc.
+// safeAdd, safeMul, etc.
 //
 // Semi-controlled validation functions,
 // can be implemented by controlled types for their base types.
