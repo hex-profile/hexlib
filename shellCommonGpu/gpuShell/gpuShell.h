@@ -71,7 +71,7 @@ class GpuShellImpl
 
 public:
 
-    void serialize(const ModuleSerializeKit& kit);
+    void serialize(const CfgSerializeKit& kit);
 
 public:
 

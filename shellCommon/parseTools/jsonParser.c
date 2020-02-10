@@ -230,7 +230,7 @@ void getRowCol(const Range<Iterator>& buffer, Iterator place, int& resX, int& re
             break;
 
         if (place >= linePtr && place < lineEnd)
-            {resX = place - linePtr; resY = row; break;}
+            {resX = int(place - linePtr); resY = row; break;}
     }
 }
 

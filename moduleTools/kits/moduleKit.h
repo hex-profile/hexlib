@@ -77,7 +77,7 @@ sysinline auto verboseOnlyIf(bool condition, const Kit& kit)
 
 KIT_COMBINE3(ModuleReallocKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit);
 
-KIT_COMBINE11(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, 
+KIT_COMBINE10(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit,
     PipeControlKit, TimerKit, VerbosityKit, UserPointKit, SetBusyStatusKit,
     AlternativeVersionKit, DisplayParamsKit);
 

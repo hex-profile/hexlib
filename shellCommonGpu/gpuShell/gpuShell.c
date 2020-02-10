@@ -86,7 +86,7 @@ private:
 //
 //================================================================
 
-void GpuShellImpl::serialize(const ModuleSerializeKit& kit)
+void GpuShellImpl::serialize(const CfgSerializeKit& kit)
 {
     {
         CFG_NAMESPACE("GPU Shell");
