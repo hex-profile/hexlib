@@ -12,23 +12,10 @@
 
 struct OverlayTakeover
 {
-    virtual void setActiveID(size_t id) =0;
-    virtual size_t getActiveID() =0;
-};
+    using ID = size_t;
 
-//================================================================
-//
-// OverlayTakeoverNull
-//
-//================================================================
-
-class OverlayTakeoverNull : public OverlayTakeover
-{
-    void setActiveID(size_t id)
-        {}
-
-    size_t getActiveID()
-        {return 0;}
+    virtual void setActiveID(const ID& id) const =0;
+    virtual ID getActiveID() const =0;
 };
 
 //================================================================
@@ -37,4 +24,4 @@ class OverlayTakeoverNull : public OverlayTakeover
 //
 //================================================================
 
-KIT_CREATE1(OverlayTakeoverKit, OverlayTakeover&, overlayTakeover);
+KIT_CREATE1(OverlayTakeoverKit, const OverlayTakeover&, overlayTakeover);
