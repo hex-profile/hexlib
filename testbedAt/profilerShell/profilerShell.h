@@ -32,7 +32,6 @@ public:
 
 public:
 
-    ProfilerShell();
     void serialize(const ModuleSerializeKit& kit);
 
     stdbool init(stdPars(InitKit));
@@ -56,8 +55,10 @@ private:
     ////
 
     StandardSignal htmlReportSignal;
+    
     static CharArray htmlOutputDirName() {return STR("Output Directory");}
     SimpleStringVar htmlOutputDir{STR("")};
+
     profilerReport::HtmlReport htmlReport;
 
     ////

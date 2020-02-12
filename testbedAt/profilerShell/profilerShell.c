@@ -12,20 +12,6 @@
 
 //================================================================
 //
-// ProfilerShell::ProfilerShell
-//
-//================================================================
-
-ProfilerShell::ProfilerShell()
-{
-    CharType* tempDir = getenv("TEMP");
-  
-    if (tempDir != 0)
-        htmlOutputDir = SimpleString(tempDir) + SimpleString("\\profilerReport");
-}
-
-//================================================================
-//
 // ProfilerShell::serialize
 //
 //================================================================
@@ -46,7 +32,7 @@ void ProfilerShell::serialize(const ModuleSerializeKit& kit)
 
         {
             CFG_NAMESPACE("HTML Report");
-            htmlOutputDir.serialize(kit, htmlOutputDirName(), STR("Use double backslashes, for example C:\\\\Temp"));
+            htmlOutputDir.serialize(kit, htmlOutputDirName(), STR("For example, C:/Temp"));
             htmlReport.serialize(kit);
         }
     }
@@ -225,7 +211,28 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
     auto makeHtmlReport = [&] () -> stdbool
     {
-        if_not (htmlOutputDir().length() > 0)
+
+        SimpleString outputDir = htmlOutputDir();
+        REQUIRE(def(outputDir));
+
+        ////
+
+        if (outputDir.length() == 0)
+        {
+            auto tempDir = getenv("HEX_TEMP");
+
+            if_not (tempDir)
+                tempDir = getenv("TEMP");
+  
+            if (tempDir != 0)
+                outputDir = SimpleString(tempDir) + SimpleString("/profilerReport");
+
+            REQUIRE(def(outputDir));
+        }
+
+        ////
+
+        if (outputDir.length() == 0)
         {
             printMsgL(kit, STR("<%0> is not set"), htmlOutputDirName(), msgErr);
             returnFalse;
@@ -242,11 +249,11 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
         require(htmlReport.makeReport(MakeReportParams(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
-            cycleCount, processingThroughput, htmlOutputDir().cstr()), stdPassKit(kitEx)));
+            cycleCount, processingThroughput, outputDir), stdPassKit(kitEx)));
 
         float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
 
-        printMsg(kit.localLog, STR("Profiler report saved to %0 (%1 ms)"), htmlOutputDir().cstr(), fltf(reportTime * 1e3f, 2), msgWarn);
+        printMsg(kit.localLog, STR("Profiler report saved to %0 (%1 ms)"), outputDir, fltf(reportTime * 1e3f, 2), msgWarn);
 
         returnTrue;
     };
