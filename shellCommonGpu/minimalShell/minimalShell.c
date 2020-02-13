@@ -1,4 +1,4 @@
-#include "minimalAssembly.h"
+#include "minimalShell.h"
 
 #include "cfgTools/boolSwitch.h"
 #include "errorLog/debugBreak.h"
@@ -12,7 +12,7 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
 
-namespace minimalAssembly {
+namespace minimalShell {
 
 using namespace gpuShell;
 
@@ -218,11 +218,11 @@ private:
 
 //================================================================
 //
-// MinimalAssemblyImpl
+// MinimalShellImpl
 //
 //================================================================
 
-class MinimalAssemblyImpl : public CfgSerialization
+class MinimalShellImpl : public CfgSerialization
 {
 
 public:
@@ -256,14 +256,14 @@ private:
 
 //================================================================
 //
-// MinimalAssemblyImpl::serialize
+// MinimalShellImpl::serialize
 //
 //================================================================
 
-void MinimalAssemblyImpl::serialize(const CfgSerializeKit& kit)
+void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 {
     {
-        CFG_NAMESPACE("Minimal Assembly");
+        CFG_NAMESPACE("Minimal Shell");
         gpuShell.serialize(kit);
         gpuContextHelper.serialize(kit);
     }
@@ -271,11 +271,11 @@ void MinimalAssemblyImpl::serialize(const CfgSerializeKit& kit)
 
 //================================================================
 //
-// MinimalAssemblyImpl::init
+// MinimalShellImpl::init
 //
 //================================================================
 
-stdbool MinimalAssemblyImpl::init(stdPars(InitKit))
+stdbool MinimalShellImpl::init(stdPars(InitKit))
 {
     initialized = false;
 
@@ -309,11 +309,11 @@ stdbool MinimalAssemblyImpl::init(stdPars(InitKit))
 
 //================================================================
 //
-// MinimalAssemblyImpl::process
+// MinimalShellImpl::process
 //
 //================================================================
 
-stdbool MinimalAssemblyImpl::process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit))
+stdbool MinimalShellImpl::process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit))
 {
     REQUIRE_EX(initialized, printMsg(kit.localLog, STR("Initialization failed, processing is disabled"), msgWarn));
 
@@ -403,10 +403,10 @@ stdbool MinimalAssemblyImpl::process(EngineModule& engineModule, MemController& 
 //
 //================================================================
 
-CLASSTHUNK_CONSTRUCT_DESTRUCT(MinimalAssembly)
-CLASSTHUNK_VOID1(MinimalAssembly, serialize, const CfgSerializeKit&)
-CLASSTHUNK_BOOL_STD0(MinimalAssembly, init, InitKit)
-CLASSTHUNK_BOOL_STD2(MinimalAssembly, process, EngineModule&, MemController&, ProcessKit)
+CLASSTHUNK_CONSTRUCT_DESTRUCT(MinimalShell)
+CLASSTHUNK_VOID1(MinimalShell, serialize, const CfgSerializeKit&)
+CLASSTHUNK_BOOL_STD0(MinimalShell, init, InitKit)
+CLASSTHUNK_BOOL_STD2(MinimalShell, process, EngineModule&, MemController&, ProcessKit)
 
 //----------------------------------------------------------------
 

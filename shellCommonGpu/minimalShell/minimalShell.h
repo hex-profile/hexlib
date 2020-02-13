@@ -6,7 +6,7 @@
 #include "kits/moduleHeader.h"
 #include "memController/memController.h"
 
-namespace minimalAssembly {
+namespace minimalShell {
 
 //================================================================
 //
@@ -44,17 +44,17 @@ struct EngineModule
 
 //================================================================
 //
-// MinimalAssembly
+// MinimalShell
 //
 //================================================================
 
-class MinimalAssembly : public CfgSerialization
+class MinimalShell : public CfgSerialization
 {
 
 public:
 
-    MinimalAssembly();
-    ~MinimalAssembly();
+    MinimalShell();
+    ~MinimalShell();
 
 public:
 
@@ -70,7 +70,7 @@ public:
 
 private:
 
-    DynamicClass<class MinimalAssemblyImpl> instance;
+    DynamicClass<class MinimalShellImpl> instance;
 
 };
 
