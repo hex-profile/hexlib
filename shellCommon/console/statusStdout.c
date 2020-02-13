@@ -60,7 +60,7 @@ bool StatusStdout::vprintf(const TimerKit& kit, const CharType* format, va_list 
         phase = (phase+1) % 4;
         const CharType* phaseChars = CT("|/-\\");
 
-        ensure(fprintf(stdout, CT("%c %.0f%%%s%s"), phaseChars[phase], progressValue * 100.f, *buffer ? CT(": ") : CT(""), buffer) >= 0);
+        ensure(fprintf(stdout, CT("%c %.0f%%%s%s "), phaseChars[phase], progressValue * 100.f, *buffer ? CT(": ") : CT(""), buffer) >= 0);
     }
 
     ////
