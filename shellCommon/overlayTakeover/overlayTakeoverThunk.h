@@ -69,3 +69,11 @@ private:
     const OverlayTakeover& overlayTakeover;
 
 };
+
+//----------------------------------------------------------------
+
+template <typename Target>
+inline auto overlaySerializationThunk(Target& target, const OverlayTakeover& overlayTakeover = OverlayTakeoverNull{})
+{
+    return OverlaySerializationThunk(target, overlayTakeover);
+}
