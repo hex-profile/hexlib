@@ -4,6 +4,17 @@
 
 //================================================================
 //
+// uncommonActivity
+//
+//================================================================
+
+inline bool uncommonActivity(const ReallocActivity& stateActivity, const ReallocActivity& tempActivity)
+{
+    return stateActivity.sysAllocCount || tempActivity.sysAllocCount || stateActivity.fastAllocCount;
+}
+
+//================================================================
+//
 // memoryUsageReport
 //
 //================================================================

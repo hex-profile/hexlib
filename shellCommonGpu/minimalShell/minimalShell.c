@@ -11,6 +11,7 @@
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
+#include "memController/memoryUsageReport.h"
 
 namespace minimalShell {
 
@@ -160,6 +161,9 @@ stdbool processWithGpu(EngineModule& engineModule, MemController& engineMemory, 
     REQUIRE(engineTempActivity.sysAllocCount <= 1);
     REQUIRE(engineStateActivity.fastAllocCount <= 1);
     REQUIRE(engineStateActivity.sysAllocCount <= 1);
+
+    if (uncommonActivity(engineStateActivity, engineTempActivity))
+        memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, stdPass);
 
     //----------------------------------------------------------------
     //
