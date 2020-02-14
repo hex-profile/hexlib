@@ -12,6 +12,7 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
 #include "memController/memoryUsageReport.h"
+#include "formattedOutput/errorBreakThunks.h"
 
 namespace minimalShell {
 
@@ -106,7 +107,7 @@ private:
 //
 //================================================================
 
-stdbool processWithGpu(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessGpuKit))
+stdbool processWithGpu(EngineModule& engineModule, MemController& engineMemory, bool displayMemoryUsage, stdPars(ProcessGpuKit))
 {
 
     //----------------------------------------------------------------
@@ -162,7 +163,7 @@ stdbool processWithGpu(EngineModule& engineModule, MemController& engineMemory, 
     REQUIRE(engineStateActivity.fastAllocCount <= 1);
     REQUIRE(engineStateActivity.sysAllocCount <= 1);
 
-    if (uncommonActivity(engineStateActivity, engineTempActivity))
+    if (displayMemoryUsage || uncommonActivity(engineStateActivity, engineTempActivity))
         memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, stdPass);
 
     //----------------------------------------------------------------
@@ -207,16 +208,27 @@ class GpuShellExecAppImpl : public GpuShellTarget
 public:
 
     stdbool exec(stdPars(GpuShellKit))
-        {return processWithGpu(engineModule, engineMemory, stdPassThruKit(kitCombine(baseKit, kit)));}
+    {
+        auto kitEx = kitCombine(the.baseKit, kit);
+        return processWithGpu(the.engineModule, the.engineMemory, the.displayMemoryUsage, stdPassThruKit(kitEx));
+    }
 
-    inline GpuShellExecAppImpl(EngineModule& engineModule, MemController& engineMemory, const BaseKit& baseKit)
-        : engineModule(engineModule), engineMemory(engineMemory), baseKit(baseKit) {}
+public:
+
+    struct State 
+    {
+        EngineModule& engineModule; 
+        MemController& engineMemory;
+        BaseKit const baseKit;
+        bool const displayMemoryUsage;
+    };
+
+    GpuShellExecAppImpl(const State& state)
+        : the(state) {}
 
 private:
 
-    EngineModule& engineModule; 
-    MemController& engineMemory;
-    BaseKit const baseKit;
+    State the;
 
 };
 
@@ -256,6 +268,13 @@ private:
 
     GpuShellImpl gpuShell;
 
+    //
+    // Options.
+    //
+
+    BoolSwitch<false> displayMemoryUsage;
+    BoolSwitch<false> debugBreakOnErrors;
+
 };
 
 //================================================================
@@ -270,6 +289,9 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
         CFG_NAMESPACE("Minimal Shell");
         gpuShell.serialize(kit);
         gpuContextHelper.serialize(kit);
+
+        displayMemoryUsage.serialize(kit, STR("Display Memory Usage"));
+        debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"));
     }
 }
 
@@ -319,7 +341,30 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
 
 stdbool MinimalShellImpl::process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit))
 {
+    stdScopedBegin;
+
     REQUIRE_EX(initialized, printMsg(kit.localLog, STR("Initialization failed, processing is disabled"), msgWarn));
+
+    //----------------------------------------------------------------
+    //
+    // Intercept error output and add debug break functionality.
+    //
+    //----------------------------------------------------------------
+
+    MsgLogBreakShell msgLog(kit.msgLog, debugBreakOnErrors);
+    MsgLogKit msgLogKit(msgLog);
+
+    ErrorLogBreakShell errorLog(kit.errorLog, debugBreakOnErrors);
+    ErrorLogKit errorLogKit(errorLog);
+
+    ErrorLogExBreakShell errorLogEx(kit.errorLogEx, debugBreakOnErrors);
+    ErrorLogExKit errorLogExKit(errorLogEx);
+
+    ////
+
+    auto oldKit = kit;
+
+    auto kit = kitReplace(oldKit, kitCombine(msgLogKit, errorLogKit, errorLogExKit));
 
     //----------------------------------------------------------------
     //
@@ -393,12 +438,12 @@ stdbool MinimalShellImpl::process(EngineModule& engineModule, MemController& eng
 
     ////
 
-    GpuShellExecAppImpl<ProcessEnrichedKit> gpuShellExecApp(engineModule, engineMemory, kitEx);
+    GpuShellExecAppImpl<ProcessEnrichedKit> gpuShellExecApp{{engineModule, engineMemory, kitEx, displayMemoryUsage}};
     require(gpuShell.execCyclicShell(gpuShellExecApp, stdPassKit(kitEx)));
 
     ////
 
-    returnTrue;
+    stdScopedEnd;
 }
 
 //================================================================
