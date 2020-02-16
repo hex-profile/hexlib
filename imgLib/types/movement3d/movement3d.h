@@ -231,3 +231,15 @@ struct ConvertImpl<Movement3DFamily, Movement3DFamily, check, rounding, hint>
         }
     };
 };
+
+//================================================================
+//
+// fullyDefined
+//
+//================================================================
+
+template <typename Float>
+inline bool fullyDefined(const Movement3D<Float>& movement)
+{
+    return allv(def(movement.rotation) && allv(def(movement.translation)));
+}
