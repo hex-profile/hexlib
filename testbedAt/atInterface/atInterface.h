@@ -39,7 +39,7 @@ struct AtImageProvider
 struct AtVideoOverlay
 {
     virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars) =0;
-    virtual stdbool setFakeImage(stdNullPars) =0;
+    virtual stdbool setImageFake(stdNullPars) =0;
     virtual stdbool updateImage(stdNullPars) =0;
 };
 

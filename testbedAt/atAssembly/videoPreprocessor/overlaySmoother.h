@@ -43,7 +43,7 @@ public:
 public:
 
     stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
-    stdbool setFakeImage(stdPars(ProcessKit)) {returnTrue;}
+    stdbool setImageFake(stdPars(ProcessKit)) {returnTrue;}
     stdbool updateImage(stdPars(ProcessKit));
     stdbool clearQueue(stdPars(ProcessKit));
     stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));
@@ -81,8 +81,8 @@ public:
     stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
         {overlayIsSet = true; return base.setImage(size, imageProvider, desc, id, textEnabled, stdPassThru);}
 
-    stdbool setFakeImage(stdNullPars)
-        {overlayIsSet = true; return base.setFakeImage(stdPassThru);}
+    stdbool setImageFake(stdNullPars)
+        {overlayIsSet = true; return base.setImageFake(stdPassThru);}
 
     stdbool updateImage(stdNullPars)
         {return base.updateImage(stdPassThru);}

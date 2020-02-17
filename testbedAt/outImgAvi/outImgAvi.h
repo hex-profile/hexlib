@@ -1,7 +1,6 @@
 #pragma once
 
 #include "atInterface/atInterface.h"
-#include "outImgAvi/objectHolder.h"
 #include "errorLog/errorLogKit.h"
 #include "kits/msgLogsKit.h"
 #include "interfaces/fileTools.h"
@@ -115,9 +114,9 @@ public:
         returnTrue;
     }
 
-    stdbool setFakeImage(stdNullPars)
+    stdbool setImageFake(stdNullPars)
     {
-        return baseOverlay.setFakeImage(stdPassThru);
+        return baseOverlay.setImageFake(stdPassThru);
     }
 
     stdbool updateImage(stdNullPars) 

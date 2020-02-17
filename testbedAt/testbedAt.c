@@ -495,7 +495,7 @@ public:
         returnTrue;
     }
 
-    stdbool setFakeImage(stdNullPars)
+    stdbool setImageFake(stdNullPars)
     {
         returnTrue;
     }
