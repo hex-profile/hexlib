@@ -106,7 +106,7 @@ public:
 
 public:
 
-    inline auto kit()
+    inline auto getKit()
     {
         return kitCombine
         (

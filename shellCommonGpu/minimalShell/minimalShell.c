@@ -13,6 +13,7 @@
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
+#include "displayParamsImpl/displayParamsImpl.h"
 
 namespace minimalShell {
 
@@ -79,6 +80,8 @@ private:
     BoolSwitch<false> displayMemoryUsage;
     BoolSwitch<false> debugBreakOnErrors;
 
+    DisplayParamsImpl displayParams;
+
 };
 
 //----------------------------------------------------------------
@@ -97,12 +100,20 @@ UniquePtr<MinimalShell> MinimalShell::create()
 void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 {
     {
-        CFG_NAMESPACE("Minimal Shell");
+        CFG_NAMESPACE("~Shell");
+
         gpuShell.serialize(kit);
         gpuContextHelper.serialize(kit);
 
         displayMemoryUsage.serialize(kit, STR("Display Memory Usage"));
         debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"));
+
+        {
+            CFG_NAMESPACE("Display Params");
+
+            bool unused = false;
+            displayParams.serialize(kit, unused);
+        }
     }
 }
 
@@ -369,6 +380,7 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 {
 
     SetBusyStatusNull setBusyStatus;
+    UserPoint userPoint{false, point(0), false, false};
 
     ////
 
@@ -377,43 +389,18 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 
     ////
 
-    UserPoint userPoint{false, point(0), false, false};
+    DisplayParamsThunk displayParamsThunk{point(1), displayParams}; // Screen size not supported well.
 
     ////
-
-    AlternativeVersionKit alternativeVersionKit(false);
-
-    ////
-
-    DisplayedRangeIndex viewIndex(0);
-    DisplayedRangeIndex rangeInex(0);
-    DisplayedCircularIndex circularIndex(0);
-    DisplayedRangeIndex stageIndex(0);
-    DisplayedCircularIndex channelIndex(0);
-
-    DisplayParams displayParams
-    {
-        true,
-        1.f,
-        point(0),
-        false,
-        viewIndex,
-        rangeInex,
-        rangeInex,
-        circularIndex,
-        stageIndex,
-        channelIndex
-    };
 
     auto kitEx = kitCombine
     (
         kit,
-        UserPointKit{userPoint},
         SetBusyStatusKit{setBusyStatus},
-        DisplayParamsKit{displayParams},
-        alternativeVersionKit,
+        UserPointKit{userPoint},
         VerbosityKit{Verbosity::On},
-        gpuImageConsoleKit
+        gpuImageConsoleKit,
+        displayParamsThunk.getKit()
     );
 
     ////
