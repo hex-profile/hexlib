@@ -5,18 +5,9 @@
 #include "interfaces/threadManagerKit.h"
 #include "kits/moduleHeader.h"
 #include "memController/memController.h"
+#include "storage/smartPtr.h"
 
 namespace minimalShell {
-
-//================================================================
-//
-// InitKit
-// ProcessKit
-//
-//================================================================
-
-using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, ThreadManagerKit>;
-using ProcessKit = InitKit;
 
 //================================================================
 //
@@ -44,6 +35,14 @@ struct EngineModule
 
 //================================================================
 //
+// EngineKit
+//
+//================================================================
+
+KIT_CREATE2(EngineKit, EngineModule&, engineModule, MemController&, engineMemory);
+
+//================================================================
+//
 // MinimalShell
 //
 //================================================================
@@ -53,24 +52,31 @@ class MinimalShell : public CfgSerialization
 
 public:
 
-    MinimalShell();
-    ~MinimalShell();
+    static UniquePtr<MinimalShell> create();
+    virtual ~MinimalShell() {}
 
 public:
 
-    void serialize(const CfgSerializeKit& kit);
+    virtual void serialize(const CfgSerializeKit& kit) =0;
 
 public:
 
-    stdbool init(stdPars(InitKit));
+    using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, ThreadManagerKit>;
+
+    virtual stdbool init(stdPars(InitKit)) =0;
 
 public:
 
-    stdbool process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit));
+    using ProcessKit = InitKit;
 
-private:
+    stdbool process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit))
+        {return processEntry(stdPassKit(kitCombine(kit, EngineKit(engineModule, engineMemory))));}
 
-    DynamicClass<class MinimalShellImpl> instance;
+public:
+
+    using ProcessEntryKit = KitCombine<ProcessKit, EngineKit>;
+
+    virtual stdbool processEntry(stdPars(ProcessEntryKit)) =0;
 
 };
 
