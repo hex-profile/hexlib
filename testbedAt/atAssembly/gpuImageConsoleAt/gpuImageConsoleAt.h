@@ -89,7 +89,7 @@ public:
     stdbool overlaySetFakeImage(stdNullPars)
     {
         if (kit.dataProcessing)
-            require(atVideoOverlay.setFakeImage(stdPassThru));
+            require(atVideoOverlay.setImageFake(stdPassThru));
 
         returnTrue;
     }
