@@ -1,11 +1,12 @@
 #pragma once
 
-#include "imageConsole/gpuImageConsole.h"
-#include "gpuProcessKit.h"
-#include "kits/msgLogsKit.h"
 #include "errorLog/errorLog.h"
-#include "kits/userPoint.h"
+#include "gpuProcessKit.h"
+#include "imageConsole/gpuImageConsole.h"
+#include "imageConsole/imageConsoleModes.h"
 #include "kits/moduleKit.h"
+#include "kits/msgLogsKit.h"
+#include "kits/userPoint.h"
 
 namespace gpuImageConsoleImpl {
 
@@ -95,43 +96,6 @@ public:
     void setTextEnabled(bool textEnabled)
         {}
 
-};
-
-//================================================================
-//
-// DisplayMode
-//
-//================================================================
-
-enum class DisplayMode
-{
-    // Display an image upsampled to the original frame size.
-    Fullscreen, 
-
-    // Display a true-sized image at the screen center,
-    // on top of black image of the original frame size.
-    Centered, 
-
-    // Display a true-sized image at the left upper corner.
-    Original, 
-    
-    COUNT
-};
-
-//================================================================
-//
-// VectorMode
-//
-//================================================================
-
-enum class VectorMode
-{
-    Color,
-    Magnitude,
-    OnlyX,
-    OnlyY,
-
-    COUNT
 };
 
 //================================================================
@@ -405,14 +369,12 @@ public:
     (
         GpuBaseConsole& baseConsole, 
         DisplayMode displayMode,
-        float32 displayFactor, 
         VectorMode vectorMode, 
         const Kit& kit
     )
         : 
         baseConsole(baseConsole),
         displayMode(displayMode),
-        displayFactor(displayFactor), 
         vectorMode(vectorMode), 
         kit(kit) 
     {
@@ -423,7 +385,6 @@ private:
     GpuBaseConsole& baseConsole;
 
     DisplayMode const displayMode;
-    float32 const displayFactor;
     VectorMode const vectorMode;
     Kit const kit;
 

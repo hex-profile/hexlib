@@ -1,38 +1,37 @@
 #include "videoPreprocessor.h"
 
-#include "flipMatrix.h"
-#include "dataAlloc/gpuArrayMemory.h"
-#include "dataAlloc/gpuMatrixMemory.h"
-#include "gpuAppliedApi/gpuAppliedApi.h"
-#include "mathFuncs/rotationMath.h"
-#include "dataAlloc/arrayMemory.inl"
-#include "gpuImageVisualization/gpuImageConsoleImpl.h"
-#include "cfgTools/numericVar.h"
-#include "cfgTools/rangeValueControl.h"
-#include "storage/classThunks.h"
-#include "cfgTools/boolSwitch.h"
-#include "history/historyObject.h"
-#include "gpuMatrixSet/gpuMatrixSet.h"
-#include "copyMatrixAsArray.h"
-#include "storage/rememberCleanup.h"
-#include "atAssembly/halfFloatTest/halfFloatTest.h"
 #include "atAssembly/floatRangesTest/floatRangesTest.h"
+#include "atAssembly/gpuImageConsoleAt/gpuImageConsoleAt.h"
+#include "atAssembly/halfFloatTest/halfFloatTest.h"
+#include "atAssembly/videoPreprocessor/displayWaitController.h"
 #include "atAssembly/videoPreprocessor/tools/rotateImage.h"
 #include "atAssembly/videoPreprocessor/tools/videoPrepTools.h"
-#include "atAssembly/videoPreprocessor/displayWaitController.h"
-
-
-#include "kits/userPoint.h"
-#include "rndgen/rndgenFloat.h"
-#include "timer/timer.h"
+#include "cfgTools/boolSwitch.h"
 #include "cfgTools/multiSwitch.h"
-#include "outImgAvi/outImgAvi.h"
+#include "cfgTools/numericVar.h"
+#include "cfgTools/rangeValueControl.h"
 #include "configFile/cfgSimpleString.h"
-#include "randomImage/randomImage.h"
+#include "copyMatrixAsArray.h"
+#include "dataAlloc/arrayMemory.inl"
+#include "dataAlloc/gpuArrayMemory.h"
+#include "dataAlloc/gpuMatrixMemory.h"
+#include "flipMatrix.h"
+#include "gpuAppliedApi/gpuAppliedApi.h"
+#include "gpuImageVisualization/gpuImageConsoleImpl.h"
+#include "gpuMatrixSet/gpuMatrixSet.h"
+#include "history/historyObject.h"
 #include "kits/displayParamsKit.h"
+#include "kits/userPoint.h"
+#include "mathFuncs/rotationMath.h"
+#include "outImgAvi/outImgAvi.h"
+#include "randomImage/randomImage.h"
+#include "rndgen/rndgenFloat.h"
+#include "storage/classThunks.h"
+#include "storage/rememberCleanup.h"
+#include "timer/timer.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsgEx.h"
-#include "atAssembly/gpuImageConsoleAt/gpuImageConsoleAt.h"
+#include "displayParamsImpl/displayParamsImpl.h"
 
 #define USE_OVERLAY_SMOOTHER 0
 
@@ -298,23 +297,7 @@ private:
 
 private:
 
-    BoolSwitch<false> alternativeVersion;
-
-private:
-
-    RingSwitch<DisplayMode, DisplayMode::COUNT, DisplayMode::Fullscreen> displayMode;
-
-    RangeValueControl<float32> displayFactor{1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale};
-
-    MultiSwitch<VectorMode, VectorMode::COUNT, VectorMode::Color> vectorMode;
-    BoolSwitch<true> displayInterpolation;
-
-    RangeValueControl<int32> viewIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> temporalIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> circularIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> scaleIndex{0, 0x7F, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> stageIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> channelIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    DisplayParamsImpl displayParams;
 
 private:
 
@@ -348,28 +331,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     {
         CFG_NAMESPACE("Display Params");
 
-        check_flag(alternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
-
-        displayMode.serialize(kit, STR("Mode"), STR("Ctrl+D"));
-        displayFactor.serialize(kit, STR("Display Factor"), STR("Num +"), STR("Num -"), STR("Num *"));
-
-        vectorMode.serialize
-        (
-            kit, STR("Vector Mode"),
-            {STR("Color"), STR("Z")},
-            {STR("Magnitude"), STR("X")},
-            {STR("X"), STR("C")},
-            {STR("Y"), STR("V")}
-        );
-
-        displayInterpolation.serialize(kit, STR("Interpolation"), STR("Alt+I"));
-
-        viewIndex.serialize(kit, STR("View Index"), STR("9"), STR("0"));
-        temporalIndex.serialize(kit, STR("Temporal Index"), STR(","), STR("."));
-        circularIndex.serialize(kit, STR("Circular Index"), STR(";"), STR("'"));
-        scaleIndex.serialize(kit, STR("Scale Index"), STR("="), STR("-"));
-        stageIndex.serialize(kit, STR("Stage Index"), STR("["), STR("]"));
-        channelIndex.serialize(kit, STR("Channel Index"), STR(""), STR("Alt+C"));
+        displayParams.serialize(kit, prepParamsSteady);
     }
 
     {
@@ -574,7 +536,8 @@ stdbool VideoPreprocessorImpl::processTarget
 
     //----------------------------------------------------------------
     //
-    // GPU image console
+    // GPU image console.
+    // Display params.
     //
     //----------------------------------------------------------------
 
@@ -585,44 +548,18 @@ stdbool VideoPreprocessorImpl::processTarget
     if (kit.verbosity >= Verbosity::On)
         gpuBaseConsole = &gpuBaseConsoleAt;
 
-    GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, displayMode, displayFactor, vectorMode, kit);
+    auto& dp = displayParams;
 
-    //----------------------------------------------------------------
-    //
-    // Display params
-    //
-    //----------------------------------------------------------------
+    GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, dp.displayMode(), dp.vectorMode(), kit);
 
-    DisplayedRangeIndex viewIndexThunk(viewIndex);
-    REMEMBER_CLEANUP(viewIndex = viewIndexThunk);
+    ////
 
-    DisplayedRangeIndex scaleIndexThunk(scaleIndex);
-    REMEMBER_CLEANUP(scaleIndex = scaleIndexThunk);
+    DisplayParamsThunk displayParamsThunk{inputFrame.size(), displayParams};
 
-    DisplayedRangeIndex temporalIndexThunk(temporalIndex);
-    REMEMBER_CLEANUP(temporalIndex = temporalIndexThunk);
-
-    DisplayedRangeIndex stageIndexThunk(stageIndex);
-    REMEMBER_CLEANUP(stageIndex = stageIndexThunk);
-
-    DisplayParams displayParams
-    {
-        displayMode == DisplayMode::Fullscreen,
-        displayFactor,
-        inputFrame.size(), 
-        displayInterpolation,
-        viewIndexThunk, 
-        temporalIndexThunk, 
-        scaleIndexThunk,
-        DisplayedCircularIndex(circularIndex),
-        stageIndexThunk,
-        DisplayedCircularIndex(channelIndex)
-    };
-
-    DisplayParamsKit displayKit{displayParams};
+    ////
 
     auto oldKit = kit;
-    auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole), displayKit, AlternativeVersionKit(alternativeVersion));
+    auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole), displayParamsThunk.kit());
 
     //----------------------------------------------------------------
     //
@@ -1004,7 +941,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     ////
 
-    if (alternativeVersion)
+    if (displayParams.alternativeVersion())
         printMsgL(kit, STR("Alternative Version!"), msgWarn);
 
     //----------------------------------------------------------------
