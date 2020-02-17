@@ -559,7 +559,7 @@ stdbool VideoPreprocessorImpl::processTarget
     ////
 
     auto oldKit = kit;
-    auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole), displayParamsThunk.kit());
+    auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole), displayParamsThunk.getKit());
 
     //----------------------------------------------------------------
     //

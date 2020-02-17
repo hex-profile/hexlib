@@ -683,7 +683,7 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
         //
 
         {
-            CFG_NAMESPACE("~At Testbed");
+            CFG_NAMESPACE("~Shell");
 
             {
                 CFG_NAMESPACE("Config");
