@@ -51,6 +51,30 @@ struct GpuShellTarget
 
 //================================================================
 //
+// GpuShellTargetThunk
+//
+//================================================================
+
+template <typename Lambda>
+class GpuShellTargetThunk : public GpuShellTarget
+{
+
+public:
+
+    virtual stdbool exec(stdPars(GpuShellKit))
+        {return lambda(stdPassThru);}
+
+    GpuShellTargetThunk(const Lambda& lambda)
+        : lambda(lambda) {}
+
+private:
+
+    const Lambda& lambda;
+
+};
+
+//================================================================
+//
 // ExecGlobalToolkit
 // ExecCyclicToolkit
 //
@@ -76,6 +100,15 @@ public:
 public:
 
     stdbool execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit));
+
+public:
+
+    template <typename Lambda>
+    stdbool execCyclicShellLambda(const Lambda& lambda, stdPars(ExecCyclicToolkit))
+    {
+        GpuShellTargetThunk<Lambda> target{lambda};
+        return execCyclicShell(target, stdPassThru);
+    }
 
 private:
 

@@ -2,17 +2,17 @@
 
 #include "cfgTools/boolSwitch.h"
 #include "errorLog/debugBreak.h"
+#include "formattedOutput/errorBreakThunks.h"
 #include "gpuLayer/gpuCallsProhibition.h"
 #include "gpuShell/gpuShell.h"
 #include "imageConsole/gpuImageConsole.h"
 #include "kits/setBusyStatus.h"
+#include "memController/memoryUsageReport.h"
 #include "storage/classThunks.h"
 #include "storage/disposableObject.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
-#include "memController/memoryUsageReport.h"
-#include "formattedOutput/errorBreakThunks.h"
 
 namespace minimalShell {
 
@@ -20,225 +20,11 @@ using namespace gpuShell;
 
 //================================================================
 //
-// ProcessEnrichedKit
-// ProcessGpuKit
-//
-//================================================================
-
-using ProcessEnrichedKit = KitCombine<ProcessKit, ProfilerKit, UserPointKit, SetBusyStatusKit, DisplayParamsKit, AlternativeVersionKit, VerbosityKit, GpuImageConsoleKit>;
-using ProcessGpuKit = KitCombine<ProcessEnrichedKit, GpuShellKit>;
-
-//================================================================
-//
-// EngineModuleReallocThunk
-//
-//================================================================
-
-class EngineModuleReallocThunk : public MemControllerReallocTarget
-{
-
-    using BaseKit = ProcessGpuKit;
-
-public:
-
-    bool reallocValid() const
-        {return engineModule.reallocValid();}
-
-public:
-
-    stdbool realloc(stdPars(memController::FastAllocToolkit))
-    {
-        GpuProhibitedExecApiThunk prohibitedApi(baseKit);
-        BaseKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
-
-        return engineModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
-    }
-
-public:
-
-    inline EngineModuleReallocThunk(EngineModule& engineModule, const BaseKit& baseKit)
-        : engineModule(engineModule), baseKit(baseKit) {}
-
-private:
-
-    EngineModule& engineModule;
-    BaseKit const baseKit;
-
-};
-
-//================================================================
-//
-// EngineModuleProcessThunk
-//
-//================================================================
-
-class EngineModuleProcessThunk : public MemControllerProcessTarget
-{
-
-public:
-
-    using BaseKit = KitCombine<ProcessGpuKit, PipeControlKit>;
-
-public:
-
-    stdbool process(stdPars(memController::FastAllocToolkit))
-    {
-        GpuProhibitedExecApiThunk prohibitedApi(baseKit);
-        BaseKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
-
-        return engineModule.process(stdPassThruKit(kitCombine(kit, joinKit)));
-    }
-
-public:
-
-    inline EngineModuleProcessThunk(EngineModule& engineModule, const BaseKit& baseKit)
-        : engineModule(engineModule), baseKit(baseKit) {}
-
-private:
-
-    EngineModule& engineModule;
-    BaseKit const baseKit;
-
-};
-
-//================================================================
-//
-// processWithGpu
-//
-//================================================================
-
-stdbool processWithGpu(EngineModule& engineModule, MemController& engineMemory, bool displayMemoryUsage, stdPars(ProcessGpuKit))
-{
-
-    //----------------------------------------------------------------
-    //
-    // Engine module state memory
-    //
-    //----------------------------------------------------------------
-
-    MemoryUsage engineStateUsage;
-    ReallocActivity engineStateActivity;
-
-    {
-        EngineModuleReallocThunk engineModuleThunk(engineModule, kit);
-        require(engineMemory.handleStateRealloc(engineModuleThunk, kit, engineStateUsage, engineStateActivity, stdPass));
-    }
-
-    REQUIRE(engineStateActivity.fastAllocCount <= 1);
-    REQUIRE(engineStateActivity.sysAllocCount <= 1);
-
-    //----------------------------------------------------------------
-    //
-    // Count engine module temp memory
-    //
-    //----------------------------------------------------------------
-
-    MemoryUsage engineTempUsage;
-
-    {
-        //
-        // Pipe control on memory counting stage: advance 1 frame
-        //
-
-        PipeControl pipeControl(0, false);
-        auto kitEx = kitCombine(kit, PipeControlKit(pipeControl));
-
-        ////
-
-        EngineModuleProcessThunk engineModuleThunk(engineModule, kitEx);
-        require(engineMemory.processCountTemp(engineModuleThunk, engineTempUsage, stdPassKit(kitEx)));
-    }
-
-    //----------------------------------------------------------------
-    //
-    // Reallocate temp memory pools (if necessary).
-    //
-    //----------------------------------------------------------------
-
-    ReallocActivity engineTempActivity;
-    require(engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
-
-    REQUIRE(engineTempActivity.fastAllocCount <= 1);
-    REQUIRE(engineTempActivity.sysAllocCount <= 1);
-    REQUIRE(engineStateActivity.fastAllocCount <= 1);
-    REQUIRE(engineStateActivity.sysAllocCount <= 1);
-
-    if (displayMemoryUsage || uncommonActivity(engineStateActivity, engineTempActivity))
-        memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, stdPass);
-
-    //----------------------------------------------------------------
-    //
-    // Execute process with memory distribution.
-    //
-    //----------------------------------------------------------------
-
-    {
-        //
-        // Pipe control on execution stage: advance 0 frames (rollback 1 frame)
-        //
-
-        PipeControl pipeControl(1, false);
-        auto kitEx = kitCombine(kit, PipeControlKit(pipeControl));
-
-        ////
-
-        EngineModuleProcessThunk engineModuleThunk(engineModule, kitEx);
-        MemoryUsage actualEngineTempUsage;
-
-        require(engineMemory.processAllocTemp(engineModuleThunk, kitEx, actualEngineTempUsage, stdPass));
-
-        CHECK(actualEngineTempUsage == engineTempUsage);
-    }
-
-    ////
-
-    returnTrue;
-}
-
-//================================================================
-//
-// GpuShellExecAppImpl
-//
-//================================================================
-
-template <typename BaseKit>
-class GpuShellExecAppImpl : public GpuShellTarget
-{
-
-public:
-
-    stdbool exec(stdPars(GpuShellKit))
-    {
-        auto kitEx = kitCombine(the.baseKit, kit);
-        return processWithGpu(the.engineModule, the.engineMemory, the.displayMemoryUsage, stdPassThruKit(kitEx));
-    }
-
-public:
-
-    struct State 
-    {
-        EngineModule& engineModule; 
-        MemController& engineMemory;
-        BaseKit const baseKit;
-        bool const displayMemoryUsage;
-    };
-
-    GpuShellExecAppImpl(const State& state)
-        : the(state) {}
-
-private:
-
-    State the;
-
-};
-
-//================================================================
-//
 // MinimalShellImpl
 //
 //================================================================
 
-class MinimalShellImpl : public CfgSerialization
+class MinimalShellImpl : public MinimalShell
 {
 
 public:
@@ -251,15 +37,31 @@ public:
 
 public:
 
-    stdbool process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit));
+    using ProcessEnrichedKit = KitCombine<ProcessEntryKit, ProfilerKit>;
+
+    stdbool processEntry(stdPars(ProcessEntryKit));
+
+private:
+
+    using ProcessWithGpuKit = KitCombine<ProcessEnrichedKit, GpuShellKit>;
+
+    stdbool processWithGpu(stdPars(ProcessWithGpuKit));
+
+private:
+
+    using ProcessWithAllocatorsKit = KitCombine<ProcessWithGpuKit, memController::FastAllocToolkit, PipeControlKit>;
+
+    stdbool processWithAllocators(stdPars(ProcessWithAllocatorsKit));
 
 private:
 
     bool initialized = false;
 
+    //----------------------------------------------------------------
     //
     // GPU layer
     //
+    //----------------------------------------------------------------
 
     GpuContextHelper gpuContextHelper;
     GpuProperties gpuProperties;
@@ -268,14 +70,23 @@ private:
 
     GpuShellImpl gpuShell;
 
+    //----------------------------------------------------------------
     //
     // Options.
     //
+    //----------------------------------------------------------------
 
     BoolSwitch<false> displayMemoryUsage;
     BoolSwitch<false> debugBreakOnErrors;
 
 };
+
+//----------------------------------------------------------------
+
+UniquePtr<MinimalShell> MinimalShell::create()
+{
+    return makeUnique<MinimalShellImpl>();
+}
 
 //================================================================
 //
@@ -335,11 +146,11 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
 
 //================================================================
 //
-// MinimalShellImpl::process
+// MinimalShellImpl::processEntry
 //
 //================================================================
 
-stdbool MinimalShellImpl::process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit))
+stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
 {
     stdScopedBegin;
 
@@ -360,11 +171,16 @@ stdbool MinimalShellImpl::process(EngineModule& engineModule, MemController& eng
     ErrorLogExBreakShell errorLogEx(kit.errorLogEx, debugBreakOnErrors);
     ErrorLogExKit errorLogExKit(errorLogEx);
 
-    ////
+    auto errorBreakKit = kitReplace(kit, kitCombine(msgLogKit, errorLogKit, errorLogExKit));
 
-    auto oldKit = kit;
+    //----------------------------------------------------------------
+    //
+    // Profiler.
+    //
+    //----------------------------------------------------------------
 
-    auto kit = kitReplace(oldKit, kitCombine(msgLogKit, errorLogKit, errorLogExKit));
+    ProfilerKit profilerKit(nullptr);
+    auto baseKit = kitCombine(errorBreakKit, profilerKit);
 
     //----------------------------------------------------------------
     //
@@ -372,7 +188,192 @@ stdbool MinimalShellImpl::process(EngineModule& engineModule, MemController& eng
     //
     //----------------------------------------------------------------
 
-    ProfilerKit profilerKit(nullptr);
+    auto gpuShellExec = [this, &baseKit] (stdPars(GpuShellKit))
+    {
+        return processWithGpu(stdPassThruKit(kitCombine(baseKit, kit)));
+    };
+
+    ////
+
+    GpuInitApiImpl gpuInitApi(baseKit);
+    GpuExecApiImpl gpuExecApi(baseKit);
+
+    auto kitEx = kitCombine
+    (
+        baseKit,
+        GpuApiImplKit{gpuInitApi, gpuExecApi},
+        GpuPropertiesKit{gpuProperties},
+        GpuCurrentContextKit{gpuContext},
+        GpuCurrentStreamKit{gpuStream}
+    );
+
+    require(gpuShell.execCyclicShellLambda(gpuShellExec, stdPassKit(kitEx)));
+
+    ////
+
+    stdScopedEnd;
+}
+
+//================================================================
+//
+// MinimalShellImpl::processWithGpu
+//
+//================================================================
+
+stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
+{
+
+    //----------------------------------------------------------------
+    //
+    // ReallocThunk
+    //
+    //----------------------------------------------------------------
+
+    class ReallocThunk : public MemControllerReallocTarget
+    {
+        using BaseKit = ProcessWithGpuKit;
+
+        bool reallocValid() const
+        {
+            return engineModule.reallocValid();
+        }
+
+        stdbool realloc(stdPars(memController::FastAllocToolkit))
+        {
+            GpuProhibitedExecApiThunk prohibitedApi(baseKit);
+            BaseKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
+
+            return engineModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
+        }
+
+        CLASS_CONTEXT(ReallocThunk, ((EngineModule&, engineModule)) ((BaseKit, baseKit)));
+    };
+
+    //----------------------------------------------------------------
+    //
+    // Engine module state memory
+    //
+    //----------------------------------------------------------------
+
+    MemoryUsage engineStateUsage;
+    ReallocActivity engineStateActivity;
+
+    ////
+
+    {
+        ReallocThunk reallocThunk(kit.engineModule, kit);
+        require(kit.engineMemory.handleStateRealloc(reallocThunk, kit, engineStateUsage, engineStateActivity, stdPass));
+    }
+
+    ////
+
+    REQUIRE(engineStateActivity.fastAllocCount <= 1);
+    REQUIRE(engineStateActivity.sysAllocCount <= 1);
+
+    //----------------------------------------------------------------
+    //
+    // ProcessThunk
+    //
+    //----------------------------------------------------------------
+
+    class ProcessThunk : public MemControllerProcessTarget
+    {
+        using BaseKit = KitCombine<ProcessWithGpuKit, PipeControlKit>;
+
+        stdbool process(stdPars(memController::FastAllocToolkit))
+        {
+            GpuProhibitedExecApiThunk prohibitedApi(baseKit);
+            BaseKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
+
+            return shell.processWithAllocators(stdPassThruKit(kitCombine(kit, joinKit)));
+        }
+
+        CLASS_CONTEXT(ProcessThunk, ((MinimalShellImpl&, shell)) ((BaseKit, baseKit)));
+    };
+
+    //----------------------------------------------------------------
+    //
+    // Count engine module temp memory
+    //
+    //----------------------------------------------------------------
+
+    MemoryUsage engineTempUsage;
+
+    {
+        //
+        // Pipe control on memory counting stage: advance 1 frame
+        //
+
+        PipeControl pipeControl(0, false);
+        auto kitEx = kitCombine(kit, PipeControlKit(pipeControl));
+
+        ////
+
+        ProcessThunk processThunk{*this, kitEx};
+        require(kit.engineMemory.processCountTemp(processThunk, engineTempUsage, stdPassKit(kitEx)));
+    }
+
+    //----------------------------------------------------------------
+    //
+    // Reallocate temp memory pools (if necessary).
+    //
+    //----------------------------------------------------------------
+
+    ReallocActivity engineTempActivity;
+    require(kit.engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
+
+    REQUIRE(engineTempActivity.fastAllocCount <= 1);
+    REQUIRE(engineTempActivity.sysAllocCount <= 1);
+    REQUIRE(engineStateActivity.fastAllocCount <= 1);
+    REQUIRE(engineStateActivity.sysAllocCount <= 1);
+
+    if (displayMemoryUsage || uncommonActivity(engineStateActivity, engineTempActivity))
+        memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, stdPass);
+
+    //----------------------------------------------------------------
+    //
+    // Execute process with memory distribution.
+    //
+    //----------------------------------------------------------------
+
+    {
+        //
+        // Pipe control on execution stage: advance 0 frames (rollback 1 frame)
+        //
+
+        PipeControl pipeControl(1, false);
+        auto kitEx = kitCombine(kit, PipeControlKit(pipeControl));
+
+        ////
+
+        ProcessThunk processThunk{*this, kitEx};
+        MemoryUsage actualEngineTempUsage;
+
+        require(kit.engineMemory.processAllocTemp(processThunk, kitEx, actualEngineTempUsage, stdPass));
+
+        CHECK(actualEngineTempUsage == engineTempUsage);
+    }
+
+    ////
+
+    returnTrue;
+}
+
+//================================================================
+//
+// MinimalShellImpl::processWithAllocators
+//
+//================================================================
+
+stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit))
+{
+
+    SetBusyStatusNull setBusyStatus;
+
+    ////
+
+    GpuImageConsoleNull gpuImageConsole;
+    GpuImageConsoleKit gpuImageConsoleKit{gpuImageConsole};
 
     ////
 
@@ -404,58 +405,25 @@ stdbool MinimalShellImpl::process(EngineModule& engineModule, MemController& eng
         channelIndex
     };
 
-    ////
-
-    GpuInitApiImpl gpuInitApi(kit);
-    GpuExecApiImpl gpuExecApi(kitCombine(kit, profilerKit));
-
-    ////
-
-    SetBusyStatusNull setBusyStatus;
-
-    ////
-
-    GpuImageConsoleNull gpuImageConsole;
-    GpuImageConsoleKit gpuImageConsoleKit{gpuImageConsole};
-
-    ////
-
     auto kitEx = kitCombine
     (
         kit,
-        profilerKit,
         UserPointKit{userPoint},
         SetBusyStatusKit{setBusyStatus},
         DisplayParamsKit{displayParams},
         alternativeVersionKit,
         VerbosityKit{Verbosity::On},
-        gpuImageConsoleKit,
-        GpuApiImplKit{gpuInitApi, gpuExecApi},
-        GpuPropertiesKit{gpuProperties},
-        GpuCurrentContextKit{gpuContext},
-        GpuCurrentStreamKit{gpuStream}
+        gpuImageConsoleKit
     );
 
     ////
 
-    GpuShellExecAppImpl<ProcessEnrichedKit> gpuShellExecApp{{engineModule, engineMemory, kitEx, displayMemoryUsage}};
-    require(gpuShell.execCyclicShell(gpuShellExecApp, stdPassKit(kitEx)));
+    require(kit.engineModule.process(stdPassKit(kitEx)));
 
     ////
 
-    stdScopedEnd;
+    returnTrue;
 }
-
-//================================================================
-//
-// Thunks
-//
-//================================================================
-
-CLASSTHUNK_CONSTRUCT_DESTRUCT(MinimalShell)
-CLASSTHUNK_VOID1(MinimalShell, serialize, const CfgSerializeKit&)
-CLASSTHUNK_BOOL_STD0(MinimalShell, init, InitKit)
-CLASSTHUNK_BOOL_STD2(MinimalShell, process, EngineModule&, MemController&, ProcessKit)
 
 //----------------------------------------------------------------
 
