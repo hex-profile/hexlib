@@ -74,9 +74,11 @@ public:
         o(o),
 
         viewIndexThunk(o.viewIndex),
-        scaleIndexThunk(o.viewIndex),
+        scaleIndexThunk(o.scaleIndex),
+        circularIndexThunk(o.circularIndex),
         temporalIndexThunk(o.temporalIndex),
         stageIndexThunk(o.stageIndex),
+        channelIndexThunk(o.channelIndex),
 
         displayParams
         {
@@ -87,9 +89,9 @@ public:
             viewIndexThunk, 
             temporalIndexThunk, 
             scaleIndexThunk,
-            DisplayedCircularIndex(o.circularIndex),
+            circularIndexThunk,
             stageIndexThunk,
-            DisplayedCircularIndex(o.channelIndex)
+            channelIndexThunk
         }
     {
     }
@@ -119,8 +121,10 @@ private:
 
     DisplayedRangeIndex viewIndexThunk;
     DisplayedRangeIndex scaleIndexThunk;
+    DisplayedCircularIndex circularIndexThunk;
     DisplayedRangeIndex temporalIndexThunk;
     DisplayedRangeIndex stageIndexThunk;
+    DisplayedCircularIndex channelIndexThunk;
 
     DisplayParams const displayParams;
 
