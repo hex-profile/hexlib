@@ -2,10 +2,10 @@
 
 #include "allocation/mallocKit.h"
 #include "baseImageConsole/baseImageConsole.h"
-#include "errorLog/errorLogKit.h"
 #include "interfaces/fileTools.h"
 #include "kits/msgLogsKit.h"
 #include "storage/dynamicClass.h"
+#include "userOutput/diagnosticKit.h"
 
 namespace baseConsoleBmp {
 
@@ -23,7 +23,7 @@ using Pixel = uint8_x4;
 //
 //================================================================
 
-using Kit = KitCombine<ErrorLogKit, MsgLogsKit, FileToolsKit, MallocKit>;
+using Kit = KitCombine<DiagnosticKit, FileToolsKit, MallocKit>;
 
 //================================================================
 //

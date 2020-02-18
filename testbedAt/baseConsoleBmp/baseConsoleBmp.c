@@ -1,12 +1,7 @@
 #include "baseConsoleBmp.h"
 
-#include <string>
-#include <map>
 #include <sstream>
 #include <iomanip>
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 #include "errorLog/errorLog.h"
 #include "storage/rememberCleanup.h"
@@ -16,46 +11,11 @@
 #include "formattedOutput/formatStreamStl.h"
 #include "data/spacex.h"
 #include "baseImageConsole/imageProviderMemcpy.h"
+#include "binaryFile/binaryFileImpl.h"
 
 namespace baseConsoleBmp {
 
 using namespace std;
-
-//================================================================
-//
-// convertControlled
-//
-//================================================================
-
-template <typename Src, typename Dst>
-bool convertControlled(Src src, Dst& dst);
-
-//----------------------------------------------------------------
-
-bool convertControlled(Space src, DWORD& dst)
-{
-    ensure(src >= 0 && src <= 0x7FFFFFFF); // DWORD is signed 32-bit
-    dst = src;
-    return true;
-}
-
-//----------------------------------------------------------------
-
-bool convertControlled(Space src, LONG& dst)
-{
-    ensure(src >= LONG_MIN && src <= LONG_MAX); // LONG is signed 32-bit
-    dst = src;
-    return true;
-}
-
-//================================================================
-//
-// ASSIGN_CONVERT
-//
-//================================================================
-
-#define ASSIGN_CONVERT(dst, src) \
-    REQUIRE(convertControlled(src, dst));
 
 //================================================================
 //
@@ -152,69 +112,54 @@ stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 
 //================================================================
 //
-// BitmapheaderPalette
+// BitmapFileHeader
 //
 //================================================================
 
-struct BitmapinfoPalette : public BITMAPINFO
+#pragma pack(push, 1)
+
+struct BitmapFileHeader
 {
-    RGBQUAD additionalColors[255];
+    uint16 bfType;
+    uint32 bfSize;
+    uint16 bfReserved1;
+    uint16 bfReserved2;
+    uint32 bfOffBits;
 };
 
-//================================================================
-//
-// makeBitmapHeader
-//
-//================================================================
+COMPILE_ASSERT(sizeof(BitmapFileHeader) == (2*32 + 3*16) / 8);
+COMPILE_ASSERT(alignof(BitmapFileHeader) == 1);
 
-template <typename Pixel>
-stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, stdPars(ErrorLogKit))
+//----------------------------------------------------------------
+
+struct BitmapInfoHeader
 {
-    BITMAPINFOHEADER& bmi = result.bmiHeader;
+    uint32 biSize;
+    int32 biWidth;
+    int32 biHeight;
+    uint16 biPlanes;
+    uint16 biBitCount;
+    uint32 biCompression;
+    uint32 biSizeImage;
+    int32 biXPelsPerMeter;
+    int32 biYPelsPerMeter;
+    uint32 biClrUsed;
+    uint32 biClrImportant;
+};
 
-    ////
+COMPILE_ASSERT(sizeof(BitmapInfoHeader) == (2*16 + 9*32) / 8);
+COMPILE_ASSERT(alignof(BitmapInfoHeader) == 1);
 
-    REQUIRE(size.X >= 0 && size.Y >= 0);
+//----------------------------------------------------------------
 
-    //
-    // check dimensions
-    //
+struct BitmapFullHeader : public BitmapFileHeader, public BitmapInfoHeader {};
 
-    Space alignedPitch = 0;
-    require(getAlignedPitch(size.X, alignedPitch, stdPass));
+COMPILE_ASSERT(sizeof(BitmapFullHeader) == sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader));
+COMPILE_ASSERT(alignof(BitmapFullHeader) == 1);
 
-    //
-    // fill the structure
-    //
+//----------------------------------------------------------------
 
-    bmi.biSize = sizeof(BITMAPINFOHEADER);
-    ASSIGN_CONVERT(bmi.biWidth, size.X);
-    ASSIGN_CONVERT(bmi.biHeight, size.Y);
-    bmi.biPlanes = 1;
-    bmi.biBitCount = sizeof(Pixel) * 8;
-    bmi.biCompression = BI_RGB;
-    bmi.biSizeImage = 0;
-    bmi.biXPelsPerMeter = 3200;
-    bmi.biYPelsPerMeter = 3200;
-    bmi.biClrUsed = 0;
-    bmi.biClrImportant = 0;
-
-    //
-    //
-    //
-
-    for (int32 i = 0; i < 256; ++i)
-    {
-        result.bmiColors[i].rgbRed = i;
-        result.bmiColors[i].rgbGreen = i;
-        result.bmiColors[i].rgbBlue = i;
-        result.bmiColors[i].rgbReserved = 0;
-    }
-
-    ////
-
-    returnTrue;
-}
+#pragma pack(pop)
 
 //================================================================
 //
@@ -235,9 +180,11 @@ stdbool writeImage
     if_not (imageProvider.dataProcessing())
         returnTrue;
 
+    //----------------------------------------------------------------
     //
     // File name.
     //
+    //----------------------------------------------------------------
 
     basic_stringstream<CharType> ss;
 
@@ -251,37 +198,91 @@ stdbool writeImage
 
     ss << CT(".bmp");
 
-    const CharType* filename = ss.str().c_str();
+    auto str = ss.str();
+    auto filename = CharArray{str.data(), str.size()};
 
+    //----------------------------------------------------------------
     //
+    // Properly align the buffer.
     //
-    //
+    //----------------------------------------------------------------
 
     Space alignedPitch = 0;
     require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
 
-    //
-    // buffer
-    //
+    ////
 
-    Space tmpSize = 0;
-    REQUIRE(safeMul(alignedPitch, imageSize.Y, tmpSize));
+    Space imageArea = 0;
+    REQUIRE(safeMul(alignedPitch, imageSize.Y, imageArea));
 
-    if_not (buffer.resize(tmpSize))
-        require(buffer.realloc(tmpSize, imageProvider.baseByteAlignment(), kit.malloc, stdPass));
+    if_not (buffer.resize(imageArea))
+        require(buffer.realloc(imageArea, imageProvider.baseByteAlignment(), kit.malloc, stdPass));
 
     ARRAY_EXPOSE(buffer);
 
     Space bufferMemPitch = alignedPitch;
 
+    //----------------------------------------------------------------
     //
-    // copy image
+    // Copy image to the buffer.
     //
+    //----------------------------------------------------------------
 
     Matrix<Pixel> bufferMatrix(bufferPtr, bufferMemPitch, imageSize.X, imageSize.Y);
 
     REQUIRE(imageProvider.dataProcessing());
     require(imageProvider.saveImage(flipMatrix(bufferMatrix), stdPass));
+
+    //----------------------------------------------------------------
+    //
+    // Prepare header.
+    //
+    //----------------------------------------------------------------
+
+    Space dataSize = bufferSize * sizeof(Pixel);
+
+    Space headerSize = sizeof(BitmapFullHeader);
+
+    Space totalSize{};
+    REQUIRE(safeAdd(headerSize, dataSize, totalSize));
+
+    ////
+
+    BitmapFullHeader header;
+
+    ////
+
+    header.bfType = 0x4D42; // BM
+    REQUIRE(convertExact(totalSize, header.bfSize));
+    header.bfReserved1 = 0; 
+    header.bfReserved2 = 0;
+    REQUIRE(convertExact(headerSize, header.bfOffBits));
+
+    ////
+
+    header.biSize = sizeof(BitmapInfoHeader);
+    REQUIRE(convertExact(imageSize.X, header.biWidth));
+    REQUIRE(convertExact(imageSize.Y, header.biHeight));
+    header.biPlanes = 1;
+    header.biBitCount = sizeof(Pixel) * 8;
+    header.biCompression = 0x0000; // BI_RGB
+    header.biSizeImage = 0;
+    header.biXPelsPerMeter = 3200;
+    header.biYPelsPerMeter = 3200;
+    header.biClrUsed = 0;
+    header.biClrImportant = 0;
+
+    //----------------------------------------------------------------
+    //
+    // Save to file.
+    //
+    //----------------------------------------------------------------
+
+    BinaryFileImpl file;
+    require(file.open(filename, true, true, stdPass));
+
+    require(file.write(&header, sizeof(header), stdPass));
+    require(file.write(bufferPtr, dataSize, stdPass));
 
     returnTrue;
 }
@@ -305,6 +306,7 @@ public:
 private:
 
     String currentOutputDir;
+    ArrayMemory<Pixel> tmpBuffer;
 
 };
 
@@ -385,7 +387,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
         ////
 
-        // require(writer.writeImage(basename.c_str(), id, imageSize, imageProvider, currentFps, currentCodec, currentMaxSegmentFrames, tmpBuffer, stdPass));
+        require(writeImage(basename.c_str(), id, imageSize, imageProvider, tmpBuffer, stdPass));
     }
     catch (const std::exception& e)
     {
