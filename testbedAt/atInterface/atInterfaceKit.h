@@ -31,7 +31,7 @@ KIT_CREATE1(AtAsyncOverlayKit, AtAsyncOverlay&, atAsyncOverlay);
 //
 //================================================================
 
-struct AtVideoOverlay;
+using AtVideoOverlay = struct BaseVideoOverlay;
 
 KIT_CREATE1(AtVideoOverlayKit, AtVideoOverlay&, atVideoOverlay);
 
@@ -41,7 +41,7 @@ KIT_CREATE1(AtVideoOverlayKit, AtVideoOverlay&, atVideoOverlay);
 //
 //================================================================
 
-struct AtImgConsole;
+using AtImgConsole = struct BaseImageConsole;
 
 KIT_CREATE1(AtImgConsoleKit, AtImgConsole&, atImgConsole);
 

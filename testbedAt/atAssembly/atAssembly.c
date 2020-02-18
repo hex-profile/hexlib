@@ -12,7 +12,7 @@
 #include "fileToolsImpl/fileToolsImpl.h"
 #include "formattedOutput/userOutputThunks.h"
 #include "atEngine/atEngine.h"
-#include "gpuImageVisualization/gpuImageConsoleImpl.h"
+#include "gpuImageConsoleImpl/gpuImageConsoleImpl.h"
 #include "gpuLayer/gpuCallsProhibition.h"
 #include "gpuShell/gpuShell.h"
 #include "memController/memController.h"

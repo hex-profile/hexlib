@@ -147,19 +147,18 @@ static const size_t bmpAlignmentMask = 3;
 //
 //================================================================
 
-template <typename Element>
 stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 {
     REQUIRE(sizeX >= 0);
 
-    REQUIRE(sizeX <= spaceMax / Space(sizeof(Element)));
-    Space rowMemSize = sizeX * Space(sizeof(Element));
+    REQUIRE(sizeX <= spaceMax / Space(sizeof(Pixel)));
+    Space rowMemSize = sizeX * Space(sizeof(Pixel));
 
     REQUIRE(rowMemSize <= spaceMax - bmpAlignmentMask);
     Space rowAlignedSize = (rowMemSize + bmpAlignmentMask) & (~bmpAlignmentMask);
 
-    Space bufSizeX = rowAlignedSize / Space(sizeof(Element));
-    REQUIRE(bufSizeX * Space(sizeof(Element)) == rowAlignedSize);
+    Space bufSizeX = rowAlignedSize / Space(sizeof(Pixel));
+    REQUIRE(bufSizeX * Space(sizeof(Pixel)) == rowAlignedSize);
 
     pitch = bufSizeX;
 
@@ -183,7 +182,7 @@ struct BitmapinfoPalette : public BITMAPINFO
 //
 //================================================================
 
-template <typename Element>
+template <typename Pixel>
 stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, stdPars(ErrorLogKit))
 {
     BITMAPINFOHEADER& bmi = result.bmiHeader;
@@ -197,7 +196,7 @@ stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, st
     //
 
     Space alignedPitch = 0;
-    require(getAlignedPitch<Element>(size.X, alignedPitch, stdPass));
+    require(getAlignedPitch(size.X, alignedPitch, stdPass));
 
     //
     // fill the structure
@@ -207,7 +206,7 @@ stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, st
     ASSIGN_CONVERT(bmi.biWidth, size.X);
     ASSIGN_CONVERT(bmi.biHeight, size.Y);
     bmi.biPlanes = 1;
-    bmi.biBitCount = sizeof(Element) * 8;
+    bmi.biBitCount = sizeof(Pixel) * 8;
     bmi.biCompression = BI_RGB;
     bmi.biSizeImage = 0;
     bmi.biXPelsPerMeter = 3200;
@@ -369,23 +368,21 @@ public:
     {
     }
 
-    template <typename Element>
     stdbool writeImage
     (
         const CharType* basename,
         uint32 id,
         const Point<Space>& imageSize,
-        AtImageProvider<Element>& imageProvider,
+        AtImageProvider& imageProvider,
         FPS fps,
         Codec codec,
         int32 maxSegmentFrames,
-        ArrayMemory<Element>& buffer,
+        ArrayMemory<Pixel>& buffer,
         stdPars(Kit)
     );
 
 private:
 
-    template <typename Element>
     stdbool open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit));
 
 private:
@@ -403,7 +400,7 @@ private:
     }
 
 private:
-
+    
     bool opened() const {return aviFile && aviStreamBase && aviStreamCompressed;}
 
 private:
@@ -438,7 +435,6 @@ private:
 //
 //================================================================
 
-template <typename Element>
 stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit))
 {
     //
@@ -479,7 +475,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
 
     BitmapinfoPalette format;
     memset(&format, 0, sizeof(format));
-    require(makeBitmapHeader<Element>(size, format, stdPass));
+    require(makeBitmapHeader<Pixel>(size, format, stdPass));
 
     ////
 
@@ -526,17 +522,16 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
 //
 //================================================================
 
-template <typename Element>
 stdbool AviWriter::writeImage
 (
     const CharType* basename,
     uint32 id,
     const Point<Space>& imageSize,
-    AtImageProvider<Element>& imageProvider,
+    AtImageProvider& imageProvider,
     FPS fps,
     Codec codec,
     int32 maxSegmentFrames,
-    ArrayMemory<Element>& buffer,
+    ArrayMemory<Pixel>& buffer,
     stdPars(Kit)
 )
 {
@@ -599,7 +594,7 @@ stdbool AviWriter::writeImage
 
         ss << CT(".avi");
 
-        require(open<Element>(ss.str().c_str(), imageSize, fps, codec, stdPass));
+        require(open(ss.str().c_str(), imageSize, fps, codec, stdPass));
     }
 
     //
@@ -607,7 +602,7 @@ stdbool AviWriter::writeImage
     //
 
     Space alignedPitch = 0;
-    require(getAlignedPitch<Element>(imageSize.X, alignedPitch, stdPass));
+    require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
 
     //
     // buffer
@@ -627,7 +622,7 @@ stdbool AviWriter::writeImage
     // copy image
     //
 
-    Matrix<Element> bufferMatrix(bufferPtr, bufferMemPitch, imageSize.X, imageSize.Y);
+    Matrix<Pixel> bufferMatrix(bufferPtr, bufferMemPitch, imageSize.X, imageSize.Y);
 
     REQUIRE(imageProvider.dataProcessing());
     require(imageProvider.saveImage(flipMatrix(bufferMatrix), stdPass));
@@ -643,7 +638,7 @@ stdbool AviWriter::writeImage
             aviStreamCompressed,
             currentPosition, 1,
             unsafePtr(bufferPtr, bufferSize),
-            bufferSize * sizeof(Element),
+            bufferSize * sizeof(Pixel),
             AVIIF_KEYFRAME,
             NULL, NULL
         )
@@ -701,13 +696,8 @@ public:
 
     OutImgAviImpl() {CoInitialize(0);} // for VFW
 
-    template <typename Element>
-    stdbool saveImageGeneric(const Point<Space>& imageSize, AtImageProvider<Element>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-
-    template <typename Element>
-    stdbool saveImage(const Matrix<const Element>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-
-    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
     stdbool setFps(FPS fps, stdPars(Kit));
@@ -726,23 +716,13 @@ private:
 
 private:
 
-    ArrayMemory<uint8> tmpBuffer8;
-    ArrayMemory<uint8_x4> tmpBuffer32;
-
-    template <typename Element>
-    ArrayMemory<Element>& getTmpBuffer();
-
-    template <>
-    ArrayMemory<uint8>& getTmpBuffer() {return tmpBuffer8;}
-
-    template <>
-    ArrayMemory<uint8_x4>& getTmpBuffer() {return tmpBuffer32;}
+    ArrayMemory<Pixel> tmpBuffer;
 
 };
 
 //================================================================
 //
-// thunks
+// Thunks.
 //
 //================================================================
 
@@ -754,13 +734,10 @@ OutImgAvi::~OutImgAvi()
 
 ////
 
-stdbool OutImgAvi::saveImage(const Matrix<const uint8>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAvi::saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return instance->saveImage(img, desc, id, stdPassThru);}
 
-stdbool OutImgAvi::saveImage(const Matrix<const uint8_x4>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return instance->saveImage(img, desc, id, stdPassThru);}
-
-stdbool OutImgAvi::saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAvi::saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
 
 ////
@@ -828,13 +805,12 @@ stdbool OutImgAviImpl::setFps(FPS fps, stdPars(Kit))
 //
 //================================================================
 
-template <typename Element>
-class ImageProviderMemcpy : public AtImageProvider<Element>
+class ImageProviderMemcpy : public AtImageProvider
 {
 
 public:
 
-    ImageProviderMemcpy(const Matrix<const Element>& source, const ErrorLogKit& kit)
+    ImageProviderMemcpy(const Matrix<const Pixel>& source, const ErrorLogKit& kit)
         : source(source), kit(kit) {}
 
 public:
@@ -848,11 +824,11 @@ public:
     Space baseByteAlignment() const
         {return cpuBaseByteAlignment;}
 
-    stdbool saveImage(const Matrix<Element>& dest, stdNullPars);
+    stdbool saveImage(const Matrix<Pixel>& dest, stdNullPars);
 
 private:
 
-    Matrix<const Element> source;
+    Matrix<const Pixel> source;
     ErrorLogKit kit;
 
 };
@@ -863,8 +839,7 @@ private:
 //
 //================================================================
 
-template <typename Element>
-stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, stdNullPars)
+stdbool ImageProviderMemcpy::saveImage(const Matrix<Pixel>& dest, stdNullPars)
 {
     REQUIRE(source.size() == dest.size());
 
@@ -876,7 +851,7 @@ stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, std
 
     for (Space Y = 0; Y < sourceSizeY; ++Y)
     {
-        memcpy(unsafePtr(destRow, sourceSizeX), unsafePtr(sourceRow, sourceSizeX), sourceSizeX * sizeof(Element));
+        memcpy(unsafePtr(destRow, sourceSizeX), unsafePtr(sourceRow, sourceSizeX), sourceSizeX * sizeof(Pixel));
         destRow += destMemPitch;
         sourceRow += sourceMemPitch;
     }
@@ -890,11 +865,8 @@ stdbool ImageProviderMemcpy<Element>::saveImage(const Matrix<Element>& dest, std
 //
 //================================================================
 
-template <typename Element>
-stdbool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImageProvider<Element>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAviImpl::saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
-    ArrayMemory<Element>& tmpBuffer = getTmpBuffer<Element>();
-
     try
     {
         String descStr;
@@ -924,22 +896,10 @@ stdbool OutImgAviImpl::saveImageGeneric(const Point<Space>& imageSize, AtImagePr
 //
 //================================================================
 
-template <typename Element>
-stdbool OutImgAviImpl::saveImage(const Matrix<const Element>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool OutImgAviImpl::saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
-    ImageProviderMemcpy<Element> imageProvider(image, kit);
-    return saveImageGeneric(image.size(), imageProvider, desc, id, stdPassThru);
-}
-
-//================================================================
-//
-// OutImgAviImpl::saveImage
-//
-//================================================================
-
-stdbool OutImgAviImpl::saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-{
-    return saveImageGeneric(imageSize, imageProvider, desc, id, stdPassThru);
+    ImageProviderMemcpy imageProvider(image, kit);
+    return saveImage(image.size(), imageProvider, desc, id, stdPassThru);
 }
 
 //----------------------------------------------------------------

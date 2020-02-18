@@ -11,6 +11,14 @@ namespace outImgAvi {
 
 //================================================================
 //
+// Pixel
+//
+//================================================================
+
+using Pixel = uint8_x4;
+
+//================================================================
+//
 // Codec
 //
 //================================================================
@@ -45,9 +53,8 @@ public:
     OutImgAvi();
     ~OutImgAvi();
 
-    stdbool saveImage(const Matrix<const uint8>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const Matrix<const uint8_x4>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
     stdbool setFps(const FPS& fps, stdPars(Kit));
@@ -86,7 +93,7 @@ public:
 
 public:
 
-    stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageFunc(const Matrix<const Pixel>& img, const ImgOutputHint& hint, stdNullPars)
     {
         bool ok1 = errorBlock(outAvi.saveImage(img, hint.desc, hint.id, stdPass));
         bool ok2 = errorBlock(baseConsole.addImage(img, hint, stdPass));
@@ -106,7 +113,7 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         bool ok1 = errorBlock(outAvi.saveImage(size, imageProvider, desc, id, stdPass));
         bool ok2 = errorBlock(baseOverlay.setImage(size, imageProvider, desc, id, textEnabled, stdPass));

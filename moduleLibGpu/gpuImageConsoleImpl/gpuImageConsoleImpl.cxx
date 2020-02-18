@@ -26,7 +26,7 @@
 #include "errorLog/errorLog.h"
 #include "formatting/prettyNumber.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
-#include "gpuImageVisualization/visualizeVectorImage/visualizeVectorImage.h"
+#include "visualizeVectorImage/visualizeVectorImage.h"
 #include "gpuSupport/gpuTexTools.h"
 #include "imageRead/positionTools.h"
 #include "numbers/divRound.h"

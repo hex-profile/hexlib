@@ -435,7 +435,7 @@ class AtImageProviderThunk
 
 public:
 
-    AtImageProviderThunk(AtImageProvider<uint8_x4>& imageProvider, const TraceScope& trace)
+    AtImageProviderThunk(AtImageProvider& imageProvider, const TraceScope& trace)
         : imageProvider(imageProvider), trace(trace) {}
 
     static at_bool AT_CALL callbackFunc
@@ -457,7 +457,7 @@ public:
 private:
 
     TraceScope trace;
-    AtImageProvider<uint8_x4>& imageProvider;
+    AtImageProvider& imageProvider;
 
 };
 
@@ -476,7 +476,7 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         TRACE_REASSEMBLE(stdTraceName);
 
@@ -530,7 +530,7 @@ class AtAsyncOverlayImpl : public AtAsyncOverlay
 
 public:
 
-    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, stdNullPars)
+    virtual stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, stdNullPars)
     {
         CRITSEC_GUARD(lock);
         TRACE_REASSEMBLE(stdTraceName);
