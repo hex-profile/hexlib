@@ -1,4 +1,4 @@
-#include "gpuImageConsoleAt.h"
+#include "gpuBaseConsoleByCpu.h"
 
 #include "copyMatrixAsArray.h"
 #include "dataAlloc/gpuMatrixMemory.h"
@@ -12,7 +12,7 @@
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
-// GpuBaseAtConsoleThunk
+// GpuBaseConsoleByCpuThunk
 //
 //----------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -20,11 +20,11 @@
 
 //================================================================
 //
-// AtProviderFromGpuImage::setImage
+// GpuBaseImageProvider::setImage
 //
 //================================================================
 
-stdbool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
+stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
 {
     Space absPitch = absv(image.memPitch());
     REQUIRE(image.sizeX() <= absPitch);
@@ -49,11 +49,11 @@ stdbool AtProviderFromGpuImage::setImage(const GpuMatrix<const uint8_x4>& image,
 
 //================================================================
 //
-// AtProviderFromGpuImage::saveImage
+// GpuBaseImageProvider::saveImage
 //
 //================================================================
 
-stdbool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullPars)
+stdbool GpuBaseImageProvider::saveImage(const Matrix<uint8_x4>& dest, stdNullPars)
 {
     GpuMatrix<const uint8_x4> src = gpuImage;
     Matrix<uint8_x4> dst = dest;
@@ -106,19 +106,19 @@ stdbool AtProviderFromGpuImage::saveImage(const Matrix<uint8_x4>& dest, stdNullP
 
 //================================================================
 //
-// GpuBaseAtConsoleThunk::addImageCopyImpl
+// GpuBaseConsoleByCpuThunk::addImageCopyImpl
 //
 //================================================================
 
 template <typename Type>
-stdbool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars)
+stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars)
 {
     if (hint.target == ImgOutputOverlay)
     {
-        AtProviderFromGpuImage imageProvider(kit);
+        GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(gpuMatrix, stdPass));
 
-        require(atVideoOverlay.setImage(gpuMatrix.size(), imageProvider, hint.desc, hint.id, textEnabled, stdPass));
+        require(baseVideoOverlay.setImage(gpuMatrix.size(), imageProvider, hint.desc, hint.id, textEnabled, stdPass));
         overlaySet = true;
     }
     else
@@ -153,7 +153,7 @@ stdbool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpu
         if (kit.dataProcessing)
         {
             stdEnter;
-            require(atImgConsole.addImage(cpuMatrix, hint, stdPass));
+            require(baseImageConsole.addImage(cpuMatrix, hint, stdPass));
         }
     }
 
@@ -162,15 +162,15 @@ stdbool GpuBaseAtConsoleThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpu
 
 //----------------------------------------------------------------
 
-INSTANTIATE_FUNC(GpuBaseAtConsoleThunk::addImageCopyImpl<uint8_x4>)
+INSTANTIATE_FUNC(GpuBaseConsoleByCpuThunk::addImageCopyImpl<uint8_x4>)
 
 //================================================================
 //
-// GpuBaseAtConsoleThunk::overlaySetImageBgr
+// GpuBaseConsoleByCpuThunk::overlaySetImageBgr
 //
 //================================================================
 
-stdbool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+stdbool GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
 {
     GPU_MATRIX_ALLOC(gpuImageMemory, uint8_x4, size);
     GpuMatrix<uint8_x4> gpuImage = flipMatrix(gpuImageMemory);
@@ -178,10 +178,10 @@ stdbool GpuBaseAtConsoleThunk::overlaySetImageBgr(const Point<Space>& size, cons
 
     ////
 
-    AtProviderFromGpuImage imageProvider(kit);
+    GpuBaseImageProvider imageProvider(kit);
     require(imageProvider.setImage(gpuImage, stdPass));
 
-    require(atVideoOverlay.setImage(size, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
+    require(baseVideoOverlay.setImage(size, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
 
     overlaySet = true;
 

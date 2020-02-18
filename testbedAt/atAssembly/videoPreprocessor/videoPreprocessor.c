@@ -1,7 +1,7 @@
 #include "videoPreprocessor.h"
 
 #include "atAssembly/floatRangesTest/floatRangesTest.h"
-#include "atAssembly/gpuImageConsoleAt/gpuImageConsoleAt.h"
+#include "gpuBaseConsoleByCpu/gpuBaseConsoleByCpu.h"
 #include "atAssembly/halfFloatTest/halfFloatTest.h"
 #include "atAssembly/videoPreprocessor/displayWaitController.h"
 #include "atAssembly/videoPreprocessor/tools/rotateImage.h"
@@ -542,7 +542,7 @@ stdbool VideoPreprocessorImpl::processTarget
     //----------------------------------------------------------------
 
     GpuBaseConsoleProhibitThunk gpuBaseConsoleProhibited(kit);
-    GpuBaseAtConsoleThunk gpuBaseConsoleAt(*atImageConsole, *atVideoOverlay, kit);
+    GpuBaseConsoleByCpuThunk gpuBaseConsoleAt(*atImageConsole, *atVideoOverlay, kit);
     GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleProhibited;
 
     if (kit.verbosity >= Verbosity::On)
@@ -667,7 +667,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
     {
         if (kit.verbosity >= Verbosity::On)
         {
-            AtProviderFromGpuImage imageProvider(kit);
+            GpuBaseImageProvider imageProvider(kit);
             require(imageProvider.setImage(inputFrame, stdPass));
 
             if (kit.dataProcessing)
@@ -830,7 +830,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 
     if (kit.verbosity >= Verbosity::On && !atOverlayMonitor.overlayIsSet)
     {
-        AtProviderFromGpuImage imageProvider(kit);
+        GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(processedFrame, stdPass));
 
         require(kit.atVideoOverlay.setImage(processedFrame.size(), imageProvider, STR("Rotated Frame"), 0, true, stdPass));
@@ -911,7 +911,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
     if (kit.verbosity >= Verbosity::On && !atOverlayMonitor.overlayIsSet)
     {
-        AtProviderFromGpuImage imageProvider(kit);
+        GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(croppedFrame, stdPass));
 
         require(kit.atVideoOverlay.setImage(croppedFrame.size(), imageProvider, STR(""), 0, false, stdPass));
