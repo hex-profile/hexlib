@@ -587,7 +587,7 @@ stdbool VideoPreprocessorImpl::processTarget
             returnFalse;
         }
 
-        require(bmpConsole.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
+        require(bmpConsole.setOutputDir(bmpConfig.outputDir->cstr(), stdPass));
 
         returnTrue;
     };

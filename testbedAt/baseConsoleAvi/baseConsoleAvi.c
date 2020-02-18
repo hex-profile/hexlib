@@ -595,7 +595,8 @@ stdbool AviWriter::writeImage
 
         ss << CT(".avi");
 
-        require(open(ss.str().c_str(), imageSize, fps, codec, stdPass));
+        auto str = ss.str();
+        require(open(str.c_str(), imageSize, fps, codec, stdPass));
     }
 
     //
@@ -822,8 +823,7 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
         ////
 
-        using MapIterator = WritersMap::iterator;
-        pair<MapIterator, bool> f = writers.insert(make_pair(FileId(basename, id), AviWriter()));
+        auto f = writers.insert(make_pair(FileId(basename, id), AviWriter()));
         AviWriter& writer = f.first->second;
         require(writer.writeImage(basename.c_str(), id, imageSize, imageProvider, currentFps, currentCodec, currentMaxSegmentFrames, tmpBuffer, stdPass));
     }
