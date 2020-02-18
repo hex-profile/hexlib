@@ -28,11 +28,11 @@
 
 //================================================================
 //
-// FrmStreamStdio::write
+// FormatStreamStdioThunk::write
 //
 //================================================================
 
-void FrmStreamStdio::write(const CharType* bufferPtr, size_t bufferSize)
+void FormatStreamStdioThunk::write(const CharType* bufferPtr, size_t bufferSize)
 {
     if_not (theOk) return;
 
@@ -45,12 +45,12 @@ void FrmStreamStdio::write(const CharType* bufferPtr, size_t bufferSize)
 
 //================================================================
 //
-// FrmStreamStdio::printIntFloat
+// FormatStreamStdioThunk::printIntFloat
 //
 //================================================================
 
 template <typename Type>
-inline void FrmStreamStdio::printIntFloat(Type value, const FormatNumberOptions& options)
+inline void FormatStreamStdioThunk::printIntFloat(Type value, const FormatNumberOptions& options)
 {
     CharType formatBuf[16];
     CharType* formatPtr = formatBuf;
@@ -130,16 +130,16 @@ inline void FrmStreamStdio::printIntFloat(Type value, const FormatNumberOptions&
 
 //================================================================
 //
-// FrmStreamStdio::write<BuiltinInt>
+// FormatStreamStdioThunk::write<BuiltinInt>
 //
 //================================================================
 
 #define TMP_MACRO(Type, o) \
     \
-    void FrmStreamStdio::write(Type value) \
+    void FormatStreamStdioThunk::write(Type value) \
         {printIntFloat(value, FormatNumberOptions());} \
     \
-    void FrmStreamStdio::write(const FormatNumber<Type>& value) \
+    void FormatStreamStdioThunk::write(const FormatNumber<Type>& value) \
         {printIntFloat(value.value, value.options);} \
 
 BUILTIN_INT_FOREACH(TMP_MACRO, o)

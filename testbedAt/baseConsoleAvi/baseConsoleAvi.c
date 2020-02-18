@@ -15,9 +15,10 @@
 #include "userOutput/printMsg.h"
 #include "dataAlloc/gpuArrayMemory.h"
 #include "flipMatrix.h"
-#include "formattedOutput/formatStreamStl.h"
+#include "formattedOutput/formatStreamStdio.h"
 #include "data/spacex.h"
 #include "baseImageConsole/imageProviderMemcpy.h"
+#include "userOutput/paramMsg.h"
 
 namespace baseConsoleAvi {
 
@@ -83,19 +84,21 @@ using String = basic_string<CharType>;
 
 //================================================================
 //
-// mapToFilename
+// fixFilename
 //
 //================================================================
 
-String mapToFilename(const String& s)
+stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst, stdPars(Kit))
 {
-    String result = s;
+    REQUIRE(equalSize(src, dst));
+    ARRAY_EXPOSE(src);
+    ARRAY_EXPOSE(dst);
 
     ////
 
-    for (String::iterator i = result.begin(); i != result.end(); ++i)
+    for (Space i = 0; i < dstSize; ++i)
     {
-        CharType c = *i;
+        CharType c = srcPtr[i];
 
         if_not
         (
@@ -106,30 +109,27 @@ String mapToFilename(const String& s)
         )
             c = '-';
 
-        *i = c;
+        dstPtr[i] = c;
     }
 
-    ////
-
-    return result;
+    returnTrue;
 }
 
 //================================================================
 //
-// formatAtomToString
+// formatAtomToBuffer
 //
 //================================================================
 
-stdbool formatAtomToString(const FormatOutputAtom& v, String& result, stdPars(ErrorLogKit))
+stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
-    std::basic_stringstream<CharType> stringStream;
-    FormatStreamStlThunk formatToStream(stringStream);
+    ARRAY_EXPOSE(result);
+    FormatStreamStdioThunk formatter(resultPtr, resultSize);
 
-    v.func(v.value, formatToStream);
-    REQUIRE(formatToStream.isOk());
-    REQUIRE(!!stringStream);
+    v.func(v.value, formatter);
+    REQUIRE(formatter.isOk());
 
-    result = stringStream.str();
+    result.resize(formatter.usedSize());
 
     returnTrue;
 }
@@ -358,10 +358,6 @@ class AviWriter
 
 public:
 
-    KIT_COMBINE3(Kit, ErrorLogKit, MsgLogsKit, MallocKit);
-
-public:
-
     AviWriter()
         :
         currentSize(point(0)),
@@ -378,7 +374,8 @@ public:
         FPS fps,
         Codec codec,
         int32 maxSegmentFrames,
-        ArrayMemory<Pixel>& buffer,
+        const Matrix<Pixel>& bufferImage,
+        const Array<Pixel>& bufferArray,
         stdPars(Kit)
     );
 
@@ -532,18 +529,22 @@ stdbool AviWriter::writeImage
     FPS fps,
     Codec codec,
     int32 maxSegmentFrames,
-    ArrayMemory<Pixel>& buffer,
+    const Matrix<Pixel>& bufferImage,
+    const Array<Pixel>& bufferArray,
     stdPars(Kit)
 )
 {
-    if_not (imageProvider.dataProcessing())
-        returnTrue;
 
     REQUIRE(maxSegmentFrames >= 0);
 
+    REQUIRE(imageProvider.dataProcessing() == kit.dataProcessing);
+    REQUIRE(kit.dataProcessing);
+
+    //----------------------------------------------------------------
     //
-    // if have already tried it and failed, don't issue duplicate errors
+    // If have already tried it and failed, don't issue duplicate errors.
     //
+    //----------------------------------------------------------------
 
     if
     (
@@ -561,9 +562,11 @@ stdbool AviWriter::writeImage
     lastCodec = codec;
     lastResult = false;
 
+    //----------------------------------------------------------------
     //
-    // reopen if neccessary
+    // Reopen if neccessary.
     //
+    //----------------------------------------------------------------
 
     if_not
     (
@@ -599,39 +602,22 @@ stdbool AviWriter::writeImage
         require(open(str.c_str(), imageSize, fps, codec, stdPass));
     }
 
+    //----------------------------------------------------------------
     //
+    // Copy image.
     //
-    //
-
-    Space alignedPitch = 0;
-    require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
-
-    //
-    // buffer
-    //
-
-    Space tmpSize = 0;
-    REQUIRE(safeMul(alignedPitch, imageSize.Y, tmpSize));
-
-    if_not (buffer.resize(tmpSize))
-        require(buffer.realloc(tmpSize, imageProvider.baseByteAlignment(), kit.malloc, stdPass));
-
-    ARRAY_EXPOSE(buffer);
-
-    Space bufferMemPitch = alignedPitch;
-
-    //
-    // copy image
-    //
-
-    Matrix<Pixel> bufferMatrix(bufferPtr, bufferMemPitch, imageSize.X, imageSize.Y);
+    //----------------------------------------------------------------
 
     REQUIRE(imageProvider.dataProcessing());
-    require(imageProvider.saveImage(flipMatrix(bufferMatrix), stdPass));
+    require(imageProvider.saveImage(flipMatrix(bufferImage), stdPass));
 
+    //----------------------------------------------------------------
     //
-    // write
+    // Write.
     //
+    //----------------------------------------------------------------
+
+    ARRAY_EXPOSE(bufferArray);
 
     REQUIRE
     (
@@ -639,17 +625,19 @@ stdbool AviWriter::writeImage
         (
             aviStreamCompressed,
             currentPosition, 1,
-            unsafePtr(bufferPtr, bufferSize),
-            bufferSize * sizeof(Pixel),
+            unsafePtr(bufferArrayPtr, bufferArraySize),
+            bufferArraySize * sizeof(Pixel),
             AVIIF_KEYFRAME,
             NULL, NULL
         )
         == 0
     );
 
+    //----------------------------------------------------------------
     //
-    // record success
+    // Record success.
     //
+    //----------------------------------------------------------------
 
     ++currentPosition;
 
@@ -692,8 +680,6 @@ inline bool operator <(const FileId& A, const FileId& B)
 class BaseConsoleAviImpl
 {
 
-    using Kit = BaseConsoleAvi::Kit;
-
 public:
 
     BaseConsoleAviImpl() {CoInitialize(0);} // for VFW
@@ -715,10 +701,6 @@ private:
 
     using WritersMap = map<FileId, AviWriter>;
     WritersMap writers;
-
-private:
-
-    ArrayMemory<Pixel> tmpBuffer;
 
 };
 
@@ -766,21 +748,11 @@ stdbool BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
 {
     try
     {
-        String s = outputDir;
-
-        if (s.length() >= 1)
+        if (currentOutputDir != outputDir)
         {
-            auto lastChar = s.substr(s.length() - 1);
-
-            if (lastChar == CT("\\") || lastChar == CT("/"))
-                s = s.substr(0, s.length() - 1);
-        }
-
-        if (currentOutputDir != s)
-        {
-            kit.fileTools.makeDirectory(s.c_str());
+            kit.fileTools.makeDirectory(outputDir);
             writers.clear();
-            currentOutputDir = s;
+            currentOutputDir = outputDir;
         }
     }
     catch (const std::exception& e)
@@ -816,16 +788,68 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 {
     try
     {
-        String descStr;
-        require(formatAtomToString(desc, descStr, stdPass));
+        //----------------------------------------------------------------
+        //
+        // Format buffer.
+        //
+        //----------------------------------------------------------------
 
-        String basename = currentOutputDir + CT("/") + mapToFilename(descStr);
+        ARRAY_ALLOC(descArray, CharType, 8192);
+        ARRAY_ALLOC(basenameArray, CharType, 8192);
+
+        //----------------------------------------------------------------
+        //
+        // Buffer image.
+        //
+        //----------------------------------------------------------------
+
+        Space alignedPitch = 0;
+        require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
+
+        Space sizeInPixels = 0;
+        REQUIRE(safeMul(alignedPitch, imageSize.Y, sizeInPixels));
+
+        ArrayMemory<Pixel> bufferArray;
+        require(bufferArray.realloc(sizeInPixels, imageProvider.baseByteAlignment(), stdPass));
+
+        ARRAY_EXPOSE(bufferArray);
+
+        Matrix<Pixel> bufferImage(bufferArrayPtr, alignedPitch, imageSize.X, imageSize.Y);
+
+        //----------------------------------------------------------------
+        //
+        // Everything is allocated, exit on counting stage.
+        //
+        //----------------------------------------------------------------
+
+        if_not (kit.dataProcessing)
+            returnTrue;
+
+        //----------------------------------------------------------------
+        //
+        // Format base name.
+        //
+        //----------------------------------------------------------------
+
+        require(formatAtomToBuffer(desc, descArray, stdPass));
+
+        require(fixFilename(descArray, descArray, stdPass));
+
+        //----------------------------------------------------------------
+        //
+        // Proceed.
+        //
+        //----------------------------------------------------------------
+
+        auto basenameMsg = paramMsg(STR("%/%"), currentOutputDir.c_str(), descArray());
+        require(formatAtomToBuffer(basenameMsg, basenameArray, stdPass));
+        String basenameStr(basenameArray.ptr(), basenameArray.size());
 
         ////
 
-        auto f = writers.insert(make_pair(FileId(basename, id), AviWriter()));
+        auto f = writers.insert(make_pair(FileId(basenameStr, id), AviWriter{}));
         AviWriter& writer = f.first->second;
-        require(writer.writeImage(basename.c_str(), id, imageSize, imageProvider, currentFps, currentCodec, currentMaxSegmentFrames, tmpBuffer, stdPass));
+        require(writer.writeImage(basenameStr.c_str(), id, imageSize, imageProvider, currentFps, currentCodec, currentMaxSegmentFrames, bufferImage, bufferArray, stdPass));
     }
     catch (const std::exception& e)
     {
@@ -851,4 +875,3 @@ stdbool BaseConsoleAviImpl::saveImage(const Matrix<const Pixel>& image, const Fo
 //----------------------------------------------------------------
 
 }
-

@@ -141,7 +141,7 @@ public:
     //
 
     BoolSwitch<false> savingActive;
-    NumericVarStatic<int32, 1, 1024, 60> outputFps;
+    NumericVarStatic<int32, 1, 1024, 30> outputFps;
     CharArray outputDirName() {return STR("Output Directory");}
     SimpleStringVar outputDir{STR("")};
     SimpleStringVar outputCodec{STR("DIB ")};

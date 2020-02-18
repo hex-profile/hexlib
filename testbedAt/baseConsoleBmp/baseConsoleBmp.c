@@ -345,20 +345,10 @@ stdbool BaseConsoleBmpImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
 {
     try
     {
-        String s = outputDir;
-
-        if (s.length() >= 1)
+        if (currentOutputDir != outputDir)
         {
-            auto lastChar = s.substr(s.length() - 1);
-
-            if (lastChar == CT("\\") || lastChar == CT("/"))
-                s = s.substr(0, s.length() - 1);
-        }
-
-        if (currentOutputDir != s)
-        {
-            kit.fileTools.makeDirectory(s.c_str());
-            currentOutputDir = s;
+            kit.fileTools.makeDirectory(outputDir);
+            currentOutputDir = outputDir;
         }
     }
     catch (const std::exception& e)
