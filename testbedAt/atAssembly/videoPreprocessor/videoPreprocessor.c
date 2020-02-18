@@ -1,5 +1,11 @@
 #include "videoPreprocessor.h"
 
+#define USE_OVERLAY_SMOOTHER 0
+
+#if USE_OVERLAY_SMOOTHER
+    #include "atAssembly/videoPreprocessor/overlaySmoother.h"
+#endif
+
 #include "atAssembly/floatRangesTest/floatRangesTest.h"
 #include "gpuBaseConsoleByCpu/gpuBaseConsoleByCpu.h"
 #include "atAssembly/halfFloatTest/halfFloatTest.h"
@@ -23,7 +29,7 @@
 #include "kits/displayParamsKit.h"
 #include "kits/userPoint.h"
 #include "mathFuncs/rotationMath.h"
-#include "outImgAvi/outImgAvi.h"
+#include "baseConsoleAvi/baseConsoleAvi.h"
 #include "randomImage/randomImage.h"
 #include "rndgen/rndgenFloat.h"
 #include "storage/classThunks.h"
@@ -32,12 +38,7 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsgEx.h"
 #include "displayParamsImpl/displayParamsImpl.h"
-
-#define USE_OVERLAY_SMOOTHER 0
-
-#if USE_OVERLAY_SMOOTHER
-    #include "atAssembly/videoPreprocessor/overlaySmoother.h"
-#endif
+#include "atInterface/atInterface.h"
 
 ////
 
@@ -311,7 +312,7 @@ private:
 private:
 
     AviOutputConfig aviConfig;
-    OutImgAvi outImgAvi;
+    BaseConsoleAvi baseConsoleAvi;
 
 private:
 
@@ -499,23 +500,23 @@ stdbool VideoPreprocessorImpl::processTarget
             returnFalse;
         }
 
-        require(outImgAvi.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
-        require(outImgAvi.setCodec(outImgAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass));
-        require(outImgAvi.setFps(aviConfig.outputFps, stdPass));
-        require(outImgAvi.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass));
+        require(baseConsoleAvi.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
+        require(baseConsoleAvi.setCodec(baseConsoleAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass));
+        require(baseConsoleAvi.setFps(aviConfig.outputFps, stdPass));
+        require(baseConsoleAvi.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass));
 
         returnTrue;
     };
 
     ////
 
-    bool outAviOk = false;
+    bool aviOk = false;
     
     if (aviConfig.savingActive)
     {
-        outAviOk = errorBlock(setAviOutput());
+        aviOk = errorBlock(setAviOutput());
 
-        if (outAviOk)
+        if (aviOk)
             printMsgL(kit, STR("AVI Saving: Files are saved to %0 (playback %1 fps, compressor '%2')"),
                 aviConfig.outputDir->cstr(), aviConfig.outputFps(), aviConfig.outputCodec->cstr());
         else
@@ -529,10 +530,10 @@ stdbool VideoPreprocessorImpl::processTarget
 
     ////
 
-    OutImgAviThunk outAviThunk(outImgAvi, *atImageConsole, *atVideoOverlay, kit);
+    BaseConsoleAviThunk baseConsoleAviThunk(baseConsoleAvi, *atImageConsole, *atVideoOverlay, kit);
 
-    if (outAviOk)
-        {atImageConsole = &outAviThunk; atVideoOverlay = &outAviThunk;}
+    if (aviOk)
+        {atImageConsole = &baseConsoleAviThunk; atVideoOverlay = &baseConsoleAviThunk;}
 
     //----------------------------------------------------------------
     //
