@@ -1,4 +1,4 @@
-#include "outImgAvi.h"
+#include "baseConsoleAvi.h"
 
 #include <string>
 #include <map>
@@ -18,7 +18,7 @@
 #include "formattedOutput/formatStreamStl.h"
 #include "data/spacex.h"
 
-namespace outImgAvi {
+namespace baseConsoleAvi {
 
 using namespace std;
 
@@ -373,7 +373,7 @@ public:
         const CharType* basename,
         uint32 id,
         const Point<Space>& imageSize,
-        AtImageProvider& imageProvider,
+        BaseImageProvider& imageProvider,
         FPS fps,
         Codec codec,
         int32 maxSegmentFrames,
@@ -527,7 +527,7 @@ stdbool AviWriter::writeImage
     const CharType* basename,
     uint32 id,
     const Point<Space>& imageSize,
-    AtImageProvider& imageProvider,
+    BaseImageProvider& imageProvider,
     FPS fps,
     Codec codec,
     int32 maxSegmentFrames,
@@ -683,21 +683,21 @@ inline bool operator <(const FileId& A, const FileId& B)
 
 //================================================================
 //
-// OutImgAviImpl
+// BaseConsoleAviImpl
 //
 //================================================================
 
-class OutImgAviImpl
+class BaseConsoleAviImpl
 {
 
-    using Kit = OutImgAvi::Kit;
+    using Kit = BaseConsoleAvi::Kit;
 
 public:
 
-    OutImgAviImpl() {CoInitialize(0);} // for VFW
+    BaseConsoleAviImpl() {CoInitialize(0);} // for VFW
 
     stdbool saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
     stdbool setFps(FPS fps, stdPars(Kit));
@@ -726,41 +726,41 @@ private:
 //
 //================================================================
 
-OutImgAvi::OutImgAvi()
+BaseConsoleAvi::BaseConsoleAvi()
     {}
 
-OutImgAvi::~OutImgAvi()
+BaseConsoleAvi::~BaseConsoleAvi()
     {}
 
 ////
 
-stdbool OutImgAvi::saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool BaseConsoleAvi::saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return instance->saveImage(img, desc, id, stdPassThru);}
 
-stdbool OutImgAvi::saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool BaseConsoleAvi::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
 
 ////
 
-stdbool OutImgAvi::setOutputDir(const CharType* outputDir, stdPars(Kit))
+stdbool BaseConsoleAvi::setOutputDir(const CharType* outputDir, stdPars(Kit))
     {return instance->setOutputDir(outputDir, stdPassThru);}
 
-stdbool OutImgAvi::setFps(const FPS& fps, stdPars(Kit))
+stdbool BaseConsoleAvi::setFps(const FPS& fps, stdPars(Kit))
     {return instance->setFps(fps, stdPassThru);}
 
-stdbool OutImgAvi::setCodec(const Codec& codec, stdPars(Kit))
+stdbool BaseConsoleAvi::setCodec(const Codec& codec, stdPars(Kit))
     {return instance->setCodec(codec, stdPassThru);}
 
-stdbool OutImgAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
+stdbool BaseConsoleAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
     {return instance->setMaxSegmentFrames(maxSegmentFrames, stdPassThru);}
 
 //================================================================
 //
-// OutImgAviImpl::setOutputDir
+// BaseConsoleAviImpl::setOutputDir
 //
 //================================================================
 
-stdbool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
+stdbool BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 {
     try
     {
@@ -778,7 +778,7 @@ stdbool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
     }
     catch (const std::exception& e)
     {
-        printMsg(kit.msgLog, STR("OutImgAvi: STL exception: %0"), e.what(), msgErr);
+        printMsg(kit.msgLog, STR("BaseConsoleAvi: STL exception: %0"), e.what(), msgErr);
         returnFalse;
     }
 
@@ -787,11 +787,11 @@ stdbool OutImgAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 
 //================================================================
 //
-// OutImgAviImpl::setOutputDir
+// BaseConsoleAviImpl::setOutputDir
 //
 //================================================================
 
-stdbool OutImgAviImpl::setFps(FPS fps, stdPars(Kit))
+stdbool BaseConsoleAviImpl::setFps(FPS fps, stdPars(Kit))
 {
     REQUIRE(fps >= 1 && fps <= 1024);
     currentFps = fps;
@@ -805,7 +805,7 @@ stdbool OutImgAviImpl::setFps(FPS fps, stdPars(Kit))
 //
 //================================================================
 
-class ImageProviderMemcpy : public AtImageProvider
+class ImageProviderMemcpy : public BaseImageProvider
 {
 
 public:
@@ -861,11 +861,11 @@ stdbool ImageProviderMemcpy::saveImage(const Matrix<Pixel>& dest, stdNullPars)
 
 //================================================================
 //
-// OutImgAviImpl::saveImage
+// BaseConsoleAviImpl::saveImage
 //
 //================================================================
 
-stdbool OutImgAviImpl::saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     try
     {
@@ -883,7 +883,7 @@ stdbool OutImgAviImpl::saveImage(const Point<Space>& imageSize, AtImageProvider&
     }
     catch (const std::exception& e)
     {
-        printMsg(kit.msgLog, STR("OutImgAvi: STL exception: %0"), e.what(), msgErr);
+        printMsg(kit.msgLog, STR("BaseConsoleAvi: STL exception: %0"), e.what(), msgErr);
         returnFalse;
     }
 
@@ -892,11 +892,11 @@ stdbool OutImgAviImpl::saveImage(const Point<Space>& imageSize, AtImageProvider&
 
 //================================================================
 //
-// OutImgAviImpl::saveImage
+// BaseConsoleAviImpl::saveImage
 //
 //================================================================
 
-stdbool OutImgAviImpl::saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool BaseConsoleAviImpl::saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     ImageProviderMemcpy imageProvider(image, kit);
     return saveImage(image.size(), imageProvider, desc, id, stdPassThru);

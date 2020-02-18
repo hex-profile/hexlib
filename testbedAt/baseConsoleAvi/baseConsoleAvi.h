@@ -1,13 +1,13 @@
 #pragma once
 
-#include "atInterface/atInterface.h"
-#include "errorLog/errorLogKit.h"
-#include "kits/msgLogsKit.h"
-#include "interfaces/fileTools.h"
 #include "allocation/mallocKit.h"
+#include "errorLog/errorLogKit.h"
+#include "interfaces/fileTools.h"
+#include "kits/msgLogsKit.h"
 #include "storage/dynamicClass.h"
+#include "baseImageConsole/baseImageConsole.h"
 
-namespace outImgAvi {
+namespace baseConsoleAvi {
 
 //================================================================
 //
@@ -37,11 +37,11 @@ using FPS = int32;
 
 //================================================================
 //
-// OutImgAvi
+// BaseConsoleAvi
 //
 //================================================================
 
-class OutImgAvi
+class BaseConsoleAvi
 {
 
 public:
@@ -50,11 +50,11 @@ public:
 
 public:
 
-    OutImgAvi();
-    ~OutImgAvi();
+    BaseConsoleAvi();
+    ~BaseConsoleAvi();
 
     stdbool saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const Point<Space>& imageSize, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
     stdbool setFps(const FPS& fps, stdPars(Kit));
@@ -63,40 +63,36 @@ public:
 
 private:
                 
-    DynamicClass<class OutImgAviImpl> instance;
+    DynamicClass<class BaseConsoleAviImpl> instance;
 
 };
 
 //================================================================
 //
-// OutImgAviThunk
+// BaseConsoleAviThunk
 //
-// Temporal thunk: adds necessary kit to OutImgAvi
+// Temporal thunk: adds necessary kit to BaseConsoleAvi
 //
 //================================================================
 
-class OutImgAviThunk
-    :
-    public AtImgConsole,
-    public AtVideoOverlay
-
+class BaseConsoleAviThunk : public BaseImageConsole, public BaseVideoOverlay
 {
 
 public:
 
-    using Kit = OutImgAvi::Kit;
+    using Kit = BaseConsoleAvi::Kit;
 
 public:
 
-    OutImgAviThunk(OutImgAvi& outAvi, AtImgConsole& baseConsole, AtVideoOverlay& baseOverlay, const Kit& kit)
-        : outAvi(outAvi), baseConsole(baseConsole), baseOverlay(baseOverlay), kit(kit) {}
+    BaseConsoleAviThunk(BaseConsoleAvi& saver, BaseImageConsole& baseConsole, BaseVideoOverlay& baseOverlay, const Kit& kit)
+        : saver(saver), baseConsole(baseConsole), baseOverlay(baseOverlay), kit(kit) {}
 
 public:
 
     stdbool addImageFunc(const Matrix<const Pixel>& img, const ImgOutputHint& hint, stdNullPars)
     {
-        bool ok1 = errorBlock(outAvi.saveImage(img, hint.desc, hint.id, stdPass));
-        bool ok2 = errorBlock(baseConsole.addImage(img, hint, stdPass));
+        bool ok1 = errorBlock(baseConsole.addImage(img, hint, stdPass));
+        bool ok2 = errorBlock(saver.saveImage(img, hint.desc, hint.id, stdPass));
         require(ok1 && ok2);
         returnTrue;
     }
@@ -113,10 +109,10 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
-        bool ok1 = errorBlock(outAvi.saveImage(size, imageProvider, desc, id, stdPass));
-        bool ok2 = errorBlock(baseOverlay.setImage(size, imageProvider, desc, id, textEnabled, stdPass));
+        bool ok1 = errorBlock(baseOverlay.setImage(size, imageProvider, desc, id, textEnabled, stdPass));
+        bool ok2 = errorBlock(saver.saveImage(size, imageProvider, desc, id, stdPass));
         require(ok1 && ok2);
         returnTrue;
     }
@@ -133,9 +129,9 @@ public:
 
 private:
 
-    OutImgAvi& outAvi;
-    AtImgConsole& baseConsole;
-    AtVideoOverlay& baseOverlay;
+    BaseConsoleAvi& saver;
+    BaseImageConsole& baseConsole;
+    BaseVideoOverlay& baseOverlay;
     Kit kit;
 
 };
@@ -144,5 +140,5 @@ private:
 
 }
 
-using outImgAvi::OutImgAvi;
-using outImgAvi::OutImgAviThunk;
+using baseConsoleAvi::BaseConsoleAvi;
+using baseConsoleAvi::BaseConsoleAviThunk;
