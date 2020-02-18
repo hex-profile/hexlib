@@ -1,6 +1,6 @@
 #pragma once
 
-#include "atInterface/atInterface.h"
+#include "baseImageConsole/baseImageConsole.h"
 #include "dataAlloc/gpuArrayMemory.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "gpuProcessKit.h"
@@ -9,16 +9,16 @@
 
 //================================================================
 //
-// AtProviderFromGpuImage
+// GpuBaseImageProvider
 //
 //================================================================
 
-class AtProviderFromGpuImage : public AtImageProvider
+class GpuBaseImageProvider : public BaseImageProvider
 {
 
 public:
 
-    AtProviderFromGpuImage(const GpuProcessKit& kit)
+    GpuBaseImageProvider(const GpuProcessKit& kit)
         : kit(kit) {}
 
     stdbool setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars);
@@ -47,16 +47,16 @@ private:
 
 //================================================================
 //
-// GpuBaseAtConsoleThunk
+// GpuBaseConsoleByCpuThunk
 //
-// Implements GpuBaseConsole using output to AtImgConsole.
+// Implements GpuBaseConsole using output to BaseImageConsole.
 // Performs copy GPU memory => CPU memory.
 //
 // The GPU images passed to these functions, should use max (sampler) alignment.
 //
 //================================================================
 
-class GpuBaseAtConsoleThunk : public GpuBaseConsole
+class GpuBaseConsoleByCpuThunk : public GpuBaseConsole
 {
 
 public:
@@ -64,7 +64,7 @@ public:
     stdbool clear(stdNullPars)
     {
         if (kit.dataProcessing) 
-            require(atImgConsole.clear(stdPassThru)); 
+            require(baseImageConsole.clear(stdPassThru)); 
 
         returnTrue;
     }
@@ -72,7 +72,7 @@ public:
     stdbool update(stdNullPars)
     {
         if (kit.dataProcessing)
-            require(atImgConsole.update(stdPassThru));
+            require(baseImageConsole.update(stdPassThru));
 
         returnTrue;
     }
@@ -89,7 +89,7 @@ public:
     stdbool overlaySetFakeImage(stdNullPars)
     {
         if (kit.dataProcessing)
-            require(atVideoOverlay.setImageFake(stdPassThru));
+            require(baseVideoOverlay.setImageFake(stdPassThru));
 
         returnTrue;
     }
@@ -97,7 +97,7 @@ public:
     stdbool overlayUpdate(stdNullPars)
     {
         if (kit.dataProcessing) 
-            require(atVideoOverlay.updateImage(stdPassThru));
+            require(baseVideoOverlay.updateImage(stdPassThru));
 
         returnTrue;
     }
@@ -119,13 +119,13 @@ public:
 
     KIT_COMBINE2(Kit, GpuProcessKit, MsgLogsKit);
 
-    inline GpuBaseAtConsoleThunk(AtImgConsole& atImgConsole, AtVideoOverlay& atVideoOverlay, const Kit& kit)
-        : atImgConsole(atImgConsole), atVideoOverlay(atVideoOverlay), kit(kit) {}
+    inline GpuBaseConsoleByCpuThunk(BaseImageConsole& baseImageConsole, BaseVideoOverlay& baseVideoOverlay, const Kit& kit)
+        : baseImageConsole(baseImageConsole), baseVideoOverlay(baseVideoOverlay), kit(kit) {}
 
 private:
 
-    AtImgConsole& atImgConsole;
-    AtVideoOverlay& atVideoOverlay;
+    BaseImageConsole& baseImageConsole;
+    BaseVideoOverlay& baseVideoOverlay;
     bool overlaySet = false;
     bool textEnabled = true;
     Kit kit;
