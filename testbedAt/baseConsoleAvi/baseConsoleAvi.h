@@ -37,16 +37,20 @@ using FPS = int32;
 
 //================================================================
 //
+//
+//
+//================================================================
+
+using Kit = KitCombine<ErrorLogKit, MsgLogsKit, FileToolsKit, MallocKit, CpuFastAllocKit, DataProcessingKit>;
+
+//================================================================
+//
 // BaseConsoleAvi
 //
 //================================================================
 
 class BaseConsoleAvi
 {
-
-public:
-
-    KIT_COMBINE4(Kit, ErrorLogKit, MsgLogsKit, FileToolsKit, MallocKit);
 
 public:
 
@@ -77,10 +81,6 @@ private:
 
 class BaseConsoleAviThunk : public BaseImageConsole, public BaseVideoOverlay
 {
-
-public:
-
-    using Kit = BaseConsoleAvi::Kit;
 
 public:
 

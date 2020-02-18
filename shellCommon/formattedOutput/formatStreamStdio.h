@@ -5,11 +5,11 @@
 
 //================================================================
 //
-// FrmStreamStdio
+// FormatStreamStdioThunk
 //
 //================================================================
 
-class FrmStreamStdio : public FormatOutputStream
+class FormatStreamStdioThunk : public FormatOutputStream
 {
 
 public:
@@ -31,7 +31,7 @@ public:
 
 public:
 
-    inline FrmStreamStdio(CharType* bufferArray, size_t bufferCapacity)
+    inline FormatStreamStdioThunk(CharType* bufferArray, size_t bufferCapacity)
         :
         theBufferArray(bufferArray),
         theBufferCapacity(bufferCapacity),
