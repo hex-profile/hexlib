@@ -287,7 +287,7 @@ class AtImgConsoleImplThunk : public AtImgConsole
 
 public:
 
-    stdbool addImageFunc(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImage(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
     {
         std::basic_stringstream<CharType> stringStream;
         FormatStreamStlThunk formatToStream(stringStream);
@@ -311,7 +311,7 @@ public:
         returnTrue;
     }
 
-    stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
     {
         MATRIX_EXPOSE(img);
 

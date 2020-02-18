@@ -13,13 +13,9 @@
 
 struct BaseImageConsole
 {
-    virtual stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
+    virtual stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
     virtual stdbool clear(stdNullPars) =0;
     virtual stdbool update(stdNullPars) =0;
-
-    template <typename Type>
-    inline stdbool addImage(const Matrix<Type>& img, const ImgOutputHint& hint, stdNullPars)
-        {return addImageFunc(makeConst(img), hint, stdNullPassThru);}
 };
 
 //================================================================

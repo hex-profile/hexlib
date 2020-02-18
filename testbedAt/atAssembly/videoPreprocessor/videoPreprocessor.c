@@ -30,6 +30,7 @@
 #include "kits/userPoint.h"
 #include "mathFuncs/rotationMath.h"
 #include "baseConsoleAvi/baseConsoleAvi.h"
+#include "baseConsoleBmp/baseConsoleBmp.h"
 #include "randomImage/randomImage.h"
 #include "rndgen/rndgenFloat.h"
 #include "storage/classThunks.h"
@@ -126,11 +127,11 @@ private:
 
 //================================================================
 //
-// AviOutputConfig
+// AviConfig
 //
 //================================================================
 
-struct AviOutputConfig
+struct AviConfig
 {
 
 public:
@@ -157,6 +158,35 @@ public:
         outputCodec.serialize(kit, STR("Compressor FourCC"), STR("Use 'DIB ' for uncompressed, 'ffds' for ffdshow"));
 
         maxSegmentFrames.serialize(kit, STR("Max Video Segment Frames"));
+    }
+
+};
+
+//================================================================
+//
+// BmpConfig
+//
+//================================================================
+
+struct BmpConfig
+{
+
+public:
+
+    //
+    // Output to AVI
+    //
+
+    BoolSwitch<false> savingActive;
+    CharArray outputDirName() {return STR("Output Directory");}
+    SimpleStringVar outputDir{STR("")};
+
+public:
+
+    void serialize(const ModuleSerializeKit& kit)
+    {
+        savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+B"));
+        outputDir.serialize(kit, outputDirName());
     }
 
 };
@@ -311,8 +341,11 @@ private:
 
 private:
 
-    AviOutputConfig aviConfig;
-    BaseConsoleAvi baseConsoleAvi;
+    AviConfig aviConfig;
+    BaseConsoleAvi aviConsole;
+
+    BmpConfig bmpConfig;
+    BaseConsoleBmp bmpConsole;
 
 private:
 
@@ -388,6 +421,11 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     {
         CFG_NAMESPACE("Saving AVI Files");
         aviConfig.serialize(kit);
+    }
+
+    {
+        CFG_NAMESPACE("Saving BMP Files");
+        bmpConfig.serialize(kit);
     }
 
     {
@@ -486,13 +524,18 @@ stdbool VideoPreprocessorImpl::processTarget
 {
     stdScopedBegin;
 
+    ////
+
+    AtImgConsole* atImageConsole = &kit.atImgConsole;
+    AtVideoOverlay* atVideoOverlay = &kit.atVideoOverlay;
+
     //----------------------------------------------------------------
     //
-    // Set AVI writer parameters
+    // AVI saving.
     //
     //----------------------------------------------------------------
 
-    auto setAviOutput = [&] () -> stdbool
+    auto aviSetOutput = [&] () -> stdbool
     {
         if_not (aviConfig.outputDir->length() != 0)
         {
@@ -500,10 +543,10 @@ stdbool VideoPreprocessorImpl::processTarget
             returnFalse;
         }
 
-        require(baseConsoleAvi.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
-        require(baseConsoleAvi.setCodec(baseConsoleAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass));
-        require(baseConsoleAvi.setFps(aviConfig.outputFps, stdPass));
-        require(baseConsoleAvi.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass));
+        require(aviConsole.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
+        require(aviConsole.setCodec(baseConsoleAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass));
+        require(aviConsole.setFps(aviConfig.outputFps, stdPass));
+        require(aviConsole.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass));
 
         returnTrue;
     };
@@ -514,7 +557,7 @@ stdbool VideoPreprocessorImpl::processTarget
     
     if (aviConfig.savingActive)
     {
-        aviOk = errorBlock(setAviOutput());
+        aviOk = errorBlock(aviSetOutput());
 
         if (aviOk)
             printMsgL(kit, STR("AVI Saving: Files are saved to %0 (playback %1 fps, compressor '%2')"),
@@ -525,15 +568,50 @@ stdbool VideoPreprocessorImpl::processTarget
 
     ////
 
-    AtImgConsole* atImageConsole = &kit.atImgConsole;
-    AtVideoOverlay* atVideoOverlay = &kit.atVideoOverlay;
-
-    ////
-
-    BaseConsoleAviThunk baseConsoleAviThunk(baseConsoleAvi, *atImageConsole, *atVideoOverlay, kit);
+    BaseConsoleAviThunk baseConsoleAviThunk(aviConsole, *atImageConsole, *atVideoOverlay, kit);
 
     if (aviOk)
         {atImageConsole = &baseConsoleAviThunk; atVideoOverlay = &baseConsoleAviThunk;}
+
+    //----------------------------------------------------------------
+    //
+    // Saving to BMP.
+    //
+    //----------------------------------------------------------------
+
+    auto bmpSetOutput = [&] () -> stdbool
+    {
+        if_not (aviConfig.outputDir->length() != 0)
+        {
+            printMsgL(kit, STR("BMP Saving: <%0> is not set (Testbed->Config->Edit)"), aviConfig.outputDirName(), msgWarn);
+            returnFalse;
+        }
+
+        require(bmpConsole.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
+
+        returnTrue;
+    };
+
+    ////
+
+    bool bmpOk = false;
+    
+    if (bmpConfig.savingActive)
+    {
+        bmpOk = errorBlock(bmpSetOutput());
+
+        if (bmpOk)
+            printMsgL(kit, STR("BMP Saving: Files are saved to %0"), bmpConfig.outputDir->cstr());
+        else
+            printMsgL(kit, STR("BMP Saving: Error happened"), msgWarn);
+    }
+
+    ////
+
+    BaseConsoleBmpThunk bmpThunk(bmpConsole, *atImageConsole, *atVideoOverlay, kit);
+
+    if (bmpOk)
+        {atImageConsole = &bmpThunk; atVideoOverlay = &bmpThunk;}
 
     //----------------------------------------------------------------
     //
@@ -544,10 +622,13 @@ stdbool VideoPreprocessorImpl::processTarget
 
     GpuBaseConsoleProhibitThunk gpuBaseConsoleProhibited(kit);
     GpuBaseConsoleByCpuThunk gpuBaseConsoleAt(*atImageConsole, *atVideoOverlay, kit);
+
     GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleProhibited;
 
     if (kit.verbosity >= Verbosity::On)
         gpuBaseConsole = &gpuBaseConsoleAt;
+
+    ////
 
     auto& dp = displayParams;
 
