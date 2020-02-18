@@ -1,13 +1,13 @@
 #pragma once
 
 #include "allocation/mallocKit.h"
+#include "baseImageConsole/baseImageConsole.h"
 #include "errorLog/errorLogKit.h"
 #include "interfaces/fileTools.h"
 #include "kits/msgLogsKit.h"
 #include "storage/dynamicClass.h"
-#include "baseImageConsole/baseImageConsole.h"
 
-namespace baseConsoleAvi {
+namespace baseConsoleBmp {
 
 //================================================================
 //
@@ -19,72 +19,51 @@ using Pixel = uint8_x4;
 
 //================================================================
 //
-// Codec
+// Kit
 //
 //================================================================
 
-using Codec = uint32;
-
-Codec codecFromStr(const CharType* s);
+using Kit = KitCombine<ErrorLogKit, MsgLogsKit, FileToolsKit, MallocKit>;
 
 //================================================================
 //
-// FPS
+// BaseConsoleBmp
 //
 //================================================================
 
-using FPS = int32;
-
-//================================================================
-//
-// BaseConsoleAvi
-//
-//================================================================
-
-class BaseConsoleAvi
+class BaseConsoleBmp
 {
 
 public:
 
-    KIT_COMBINE4(Kit, ErrorLogKit, MsgLogsKit, FileToolsKit, MallocKit);
+    BaseConsoleBmp();
+    ~BaseConsoleBmp();
 
-public:
-
-    BaseConsoleAvi();
-    ~BaseConsoleAvi();
-
-    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
     stdbool saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
-    stdbool setFps(const FPS& fps, stdPars(Kit));
-    stdbool setCodec(const Codec& codec, stdPars(Kit));
-    stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit));
 
 private:
                 
-    DynamicClass<class BaseConsoleAviImpl> instance;
+    DynamicClass<class BaseConsoleBmpImpl> instance;
 
 };
 
 //================================================================
 //
-// BaseConsoleAviThunk
+// BaseConsoleBmpThunk
 //
-// Temporal thunk: adds necessary kit to BaseConsoleAvi
+// Temporal thunk: adds necessary kit to BaseConsoleBmp
 //
 //================================================================
 
-class BaseConsoleAviThunk : public BaseImageConsole, public BaseVideoOverlay
+class BaseConsoleBmpThunk : public BaseImageConsole, public BaseVideoOverlay
 {
 
 public:
 
-    using Kit = BaseConsoleAvi::Kit;
-
-public:
-
-    BaseConsoleAviThunk(BaseConsoleAvi& saver, BaseImageConsole& baseConsole, BaseVideoOverlay& baseOverlay, const Kit& kit)
+    BaseConsoleBmpThunk(BaseConsoleBmp& saver, BaseImageConsole& baseConsole, BaseVideoOverlay& baseOverlay, const Kit& kit)
         : saver(saver), baseConsole(baseConsole), baseOverlay(baseOverlay), kit(kit) {}
 
 public:
@@ -129,7 +108,7 @@ public:
 
 private:
 
-    BaseConsoleAvi& saver;
+    BaseConsoleBmp& saver;
     BaseImageConsole& baseConsole;
     BaseVideoOverlay& baseOverlay;
     Kit kit;
@@ -140,5 +119,5 @@ private:
 
 }
 
-using baseConsoleAvi::BaseConsoleAvi;
-using baseConsoleAvi::BaseConsoleAviThunk;
+using baseConsoleBmp::BaseConsoleBmp;
+using baseConsoleBmp::BaseConsoleBmpThunk;

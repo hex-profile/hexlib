@@ -17,6 +17,7 @@
 #include "flipMatrix.h"
 #include "formattedOutput/formatStreamStl.h"
 #include "data/spacex.h"
+#include "baseImageConsole/imageProviderMemcpy.h"
 
 namespace baseConsoleAvi {
 
@@ -766,8 +767,13 @@ stdbool BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
     {
         String s = outputDir;
 
-        if (s.length() >= 1 && s.substr(s.length() - 1) == CT("\\"))
-            s = s.substr(0, s.length() - 1);
+        if (s.length() >= 1)
+        {
+            auto lastChar = s.substr(s.length() - 1);
+
+            if (lastChar == CT("\\") || lastChar == CT("/"))
+                s = s.substr(0, s.length() - 1);
+        }
 
         if (currentOutputDir != s)
         {
@@ -801,66 +807,6 @@ stdbool BaseConsoleAviImpl::setFps(FPS fps, stdPars(Kit))
 
 //================================================================
 //
-// ImageProviderMemcpy
-//
-//================================================================
-
-class ImageProviderMemcpy : public BaseImageProvider
-{
-
-public:
-
-    ImageProviderMemcpy(const Matrix<const Pixel>& source, const ErrorLogKit& kit)
-        : source(source), kit(kit) {}
-
-public:
-
-    bool dataProcessing() const
-        {return true;}
-
-    Space getPitch() const
-        {return source.memPitch();}
-
-    Space baseByteAlignment() const
-        {return cpuBaseByteAlignment;}
-
-    stdbool saveImage(const Matrix<Pixel>& dest, stdNullPars);
-
-private:
-
-    Matrix<const Pixel> source;
-    ErrorLogKit kit;
-
-};
-
-//================================================================
-//
-// ImageProviderMemcpy::saveImage
-//
-//================================================================
-
-stdbool ImageProviderMemcpy::saveImage(const Matrix<Pixel>& dest, stdNullPars)
-{
-    REQUIRE(source.size() == dest.size());
-
-    MATRIX_EXPOSE(source);
-    MATRIX_EXPOSE(dest);
-
-    auto sourceRow = sourceMemPtr;
-    auto destRow = destMemPtr;
-
-    for (Space Y = 0; Y < sourceSizeY; ++Y)
-    {
-        memcpy(unsafePtr(destRow, sourceSizeX), unsafePtr(sourceRow, sourceSizeX), sourceSizeX * sizeof(Pixel));
-        destRow += destMemPitch;
-        sourceRow += sourceMemPitch;
-    }
-
-    returnTrue;
-}
-
-//================================================================
-//
 // BaseConsoleAviImpl::saveImage
 //
 //================================================================
@@ -872,7 +818,7 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
         String descStr;
         require(formatAtomToString(desc, descStr, stdPass));
 
-        String basename = currentOutputDir + CT("\\") + mapToFilename(descStr);
+        String basename = currentOutputDir + CT("/") + mapToFilename(descStr);
 
         ////
 
