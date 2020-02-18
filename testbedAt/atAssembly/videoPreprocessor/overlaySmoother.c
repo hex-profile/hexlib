@@ -61,7 +61,7 @@ using ColorPixel = uint8_x4;
 //
 //================================================================
 
-class AtProviderFromCpuImage : public AtImageProvider<uint8_x4>
+class AtProviderFromCpuImage : public AtImageProvider
 {
 
 public:
@@ -161,7 +161,7 @@ inline void exchange(QueueImage& a, QueueImage& b)
 //================================================================
 
 template <typename Kit>
-stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider<uint8_x4>& provider, QueueImage& dst, stdPars(Kit))
+stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider& provider, QueueImage& dst, stdPars(Kit))
 {
     Space desiredPitch = provider.getPitch();
     Space memPitch = absv(desiredPitch);
@@ -617,7 +617,7 @@ public:
 
 public:
 
-    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
+    virtual stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
     virtual stdbool updateImage(stdPars(ProcessKit));
     virtual stdbool clearQueue(stdPars(ProcessKit));
     virtual stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));
@@ -804,7 +804,7 @@ void OverlaySmootherImpl::setOutputInterface(AtAsyncOverlay* output)
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
+stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
 {
     require(initialized && shared.running());
 
@@ -1125,7 +1125,7 @@ CLASSTHUNK_VOID1(OverlaySmoother, serialize, const ModuleSerializeKit&)
 CLASSTHUNK_BOOL_STD0(OverlaySmoother, init, InitKit);
 CLASSTHUNK_VOID0(OverlaySmoother, deinit);
 
-CLASSTHUNK_BOOL_STD5(OverlaySmoother, setImage, const Point<Space>&, AtImageProvider<uint8_x4>&, const FormatOutputAtom&, uint32, bool, ProcessKit);
+CLASSTHUNK_BOOL_STD5(OverlaySmoother, setImage, const Point<Space>&, AtImageProvider&, const FormatOutputAtom&, uint32, bool, ProcessKit);
 CLASSTHUNK_BOOL_STD0(OverlaySmoother, updateImage, ProcessKit);
 CLASSTHUNK_BOOL_STD0(OverlaySmoother, clearQueue, ProcessKit);
 CLASSTHUNK_BOOL_STD1(OverlaySmoother, setSmoothing, bool, ProcessKit);

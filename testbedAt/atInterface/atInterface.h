@@ -6,6 +6,7 @@
 #include "data/matrix.h"
 #include "imageConsole/imageConsole.h"
 #include "vectorTypes/vectorBase.h"
+#include "baseImageConsole/baseImageConsole.h"
 
 //================================================================
 //
@@ -21,50 +22,31 @@ struct AtVideoFrame : public Matrix<const uint8_x4>
 
 //================================================================
 //
-// AtVideoOverlay
+// AtImgConsole
 //
 //================================================================
 
-template <typename Element>
-struct AtImageProvider
-{
-    virtual bool dataProcessing() const =0;
-    virtual Space getPitch() const =0;
-    virtual Space baseByteAlignment() const =0;
-    virtual stdbool saveImage(const Matrix<Element>& dest, stdNullPars) =0;
-};
+using AtImgConsole = BaseImageConsole;
+
+//================================================================
+//
+// AtImageProvider
+// AtVideoOverlay
+// AtAsyncOverlay
+//
+//================================================================
+
+using AtImageProvider = BaseImageProvider;
 
 //----------------------------------------------------------------
 
-struct AtVideoOverlay
-{
-    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars) =0;
-    virtual stdbool setImageFake(stdNullPars) =0;
-    virtual stdbool updateImage(stdNullPars) =0;
-};
+using AtVideoOverlay = BaseVideoOverlay;
 
 //----------------------------------------------------------------
 
 struct AtAsyncOverlay
 {
-    virtual stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, stdNullPars) =0;
-};
-
-//================================================================
-//
-// AtImgConsole
-//
-//================================================================
-
-struct AtImgConsole
-{
-    virtual stdbool addImageFunc(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
-    virtual stdbool clear(stdNullPars) =0;
-    virtual stdbool update(stdNullPars) =0;
-
-    template <typename Type>
-    inline stdbool addImage(const Matrix<Type>& img, const ImgOutputHint& hint, stdNullPars)
-        {return addImageFunc(makeConst(img), hint, stdNullPassThru);}
+    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdNullPars) =0;
 };
 
 //================================================================

@@ -13,7 +13,7 @@
 //
 //================================================================
 
-class AtProviderFromGpuImage : public AtImageProvider<uint8_x4>
+class AtProviderFromGpuImage : public AtImageProvider
 {
 
 public:

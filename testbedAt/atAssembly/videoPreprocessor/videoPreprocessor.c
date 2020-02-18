@@ -17,7 +17,7 @@
 #include "dataAlloc/gpuMatrixMemory.h"
 #include "flipMatrix.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
-#include "gpuImageVisualization/gpuImageConsoleImpl.h"
+#include "gpuImageConsoleImpl/gpuImageConsoleImpl.h"
 #include "gpuMatrixSet/gpuMatrixSet.h"
 #include "history/historyObject.h"
 #include "kits/displayParamsKit.h"
@@ -99,7 +99,7 @@ class AtOverlayMonitor : public AtVideoOverlay
 
 public:
 
-    stdbool setImage(const Point<Space>& size, AtImageProvider<uint8_x4>& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
         {overlayIsSet = true; return base.setImage(size, imageProvider, desc, id, textEnabled, stdNullPassThru);}
 
     stdbool setImageFake(stdNullPars)
@@ -541,7 +541,7 @@ stdbool VideoPreprocessorImpl::processTarget
     //
     //----------------------------------------------------------------
 
-    GpuProhibitedConsoleThunk gpuBaseConsoleProhibited(kit);
+    GpuBaseConsoleProhibitThunk gpuBaseConsoleProhibited(kit);
     GpuBaseAtConsoleThunk gpuBaseConsoleAt(*atImageConsole, *atVideoOverlay, kit);
     GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleProhibited;
 

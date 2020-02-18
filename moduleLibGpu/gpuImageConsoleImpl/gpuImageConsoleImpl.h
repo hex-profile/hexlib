@@ -12,11 +12,11 @@ namespace gpuImageConsoleImpl {
 
 //================================================================
 //
-// GpuProhibitedConsoleThunk
+// GpuBaseConsoleProhibitThunk
 //
 //================================================================
 
-class GpuProhibitedConsoleThunk : public GpuBaseConsole
+class GpuBaseConsoleProhibitThunk : public GpuBaseConsole
 {
 
 public:
@@ -50,7 +50,7 @@ public:
 
 public:
 
-    GpuProhibitedConsoleThunk(const ErrorLogKit& kit) : kit(kit) {}
+    GpuBaseConsoleProhibitThunk(const ErrorLogKit& kit) : kit(kit) {}
 
 private:
 
