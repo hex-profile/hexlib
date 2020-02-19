@@ -73,7 +73,7 @@ private:
 //----------------------------------------------------------------
 
 template <typename Target>
-inline auto overlaySerializationThunk(Target& target, const OverlayTakeover& overlayTakeover = OverlayTakeoverNull{})
+inline auto overlaySerializationThunk(Target& target, const OverlayTakeover& overlayTakeover)
 {
     return OverlaySerializationThunk<Target>(target, overlayTakeover);
 }
