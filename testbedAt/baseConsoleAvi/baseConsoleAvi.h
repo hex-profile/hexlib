@@ -1,11 +1,10 @@
 #pragma once
 
-#include "allocation/mallocKit.h"
-#include "errorLog/errorLogKit.h"
-#include "interfaces/fileTools.h"
-#include "kits/msgLogsKit.h"
-#include "storage/dynamicClass.h"
 #include "baseImageConsole/baseImageConsole.h"
+#include "interfaces/fileTools.h"
+#include "storage/dynamicClass.h"
+#include "userOutput/diagnosticKit.h"
+#include "cpuFuncKit.h"
 
 namespace baseConsoleAvi {
 
@@ -41,8 +40,7 @@ using FPS = int32;
 //
 //================================================================
 
-// ```
-using Kit = KitCombine<ErrorLogKit, MsgLogsKit, FileToolsKit, MallocKit, CpuFastAllocKit, DataProcessingKit>;
+using Kit = KitCombine<DiagnosticKit, ProfilerKit, CpuFastAllocKit, DataProcessingKit, FileToolsKit>;
 
 //================================================================
 //
