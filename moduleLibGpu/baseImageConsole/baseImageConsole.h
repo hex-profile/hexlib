@@ -26,7 +26,6 @@ struct BaseImageConsole
 
 struct BaseImageProvider
 {
-    virtual bool dataProcessing() const =0; // ``` questionable
     virtual Space getPitch() const =0;
     virtual Space baseByteAlignment() const =0;
     virtual stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars) =0;
@@ -40,7 +39,7 @@ struct BaseImageProvider
 
 struct BaseVideoOverlay
 {
-    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars) =0;
+    virtual stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars) =0;
     virtual stdbool setImageFake(stdNullPars) =0;
     virtual stdbool updateImage(stdNullPars) =0;
 };

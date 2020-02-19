@@ -101,14 +101,22 @@ class AtOverlayMonitor : public AtVideoOverlay
 
 public:
 
-    stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
-        {overlayIsSet = true; return base.setImage(size, imageProvider, desc, id, textEnabled, stdNullPassThru);}
+    stdbool setImage(const Point<Space>& size, bool dataProcessing, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    {
+        overlayIsSet = true; 
+        return base.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdNullPassThru);
+    }
 
     stdbool setImageFake(stdNullPars)
-        {overlayIsSet = true; return base.setImageFake(stdNullPassThru);}
+    {
+        overlayIsSet = true; 
+        return base.setImageFake(stdNullPassThru);
+    }
 
     stdbool updateImage(stdNullPars)
-        {return base.updateImage(stdNullPassThru);}
+    {
+        return base.updateImage(stdNullPassThru);
+    }
 
 public:
 
@@ -915,7 +923,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
         GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(processedFrame, stdPass));
 
-        require(kit.atVideoOverlay.setImage(processedFrame.size(), imageProvider, STR("Rotated Frame"), 0, true, stdPass));
+        require(kit.atVideoOverlay.setImage(processedFrame.size(), kit.dataProcessing, imageProvider, STR("Rotated Frame"), 0, true, stdPass));
     }
 
     ////
@@ -996,7 +1004,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
         GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(croppedFrame, stdPass));
 
-        require(kit.atVideoOverlay.setImage(croppedFrame.size(), imageProvider, STR(""), 0, false, stdPass));
+        require(kit.atVideoOverlay.setImage(croppedFrame.size(), kit.dataProcessing, imageProvider, STR(""), 0, false, stdPass));
     }
 
     ////

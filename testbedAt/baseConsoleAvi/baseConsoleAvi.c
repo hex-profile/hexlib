@@ -537,7 +537,6 @@ stdbool AviWriter::writeImage
 
     REQUIRE(maxSegmentFrames >= 0);
 
-    REQUIRE(imageProvider.dataProcessing() == kit.dataProcessing);
     REQUIRE(kit.dataProcessing);
 
     //----------------------------------------------------------------
@@ -608,7 +607,7 @@ stdbool AviWriter::writeImage
     //
     //----------------------------------------------------------------
 
-    REQUIRE(imageProvider.dataProcessing());
+    REQUIRE(kit.dataProcessing);
     require(imageProvider.saveImage(flipMatrix(bufferImage), stdPass));
 
     //----------------------------------------------------------------

@@ -69,9 +69,6 @@ public:
     AtProviderFromCpuImage(const Matrix<ColorPixel>& cpuImage, const ErrorLogKit& kit)
         : cpuImage(cpuImage), kit(kit) {}
 
-    bool dataProcessing() const
-        {return true;}
-
     Space baseByteAlignment() const 
         {return cpuBaseByteAlignment;}
 
@@ -192,7 +189,7 @@ stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider& provider, Qu
 
     ////
 
-    REQUIRE(provider.dataProcessing());
+    REQUIRE(kit.dataProcessing);
     require(provider.saveImage(dstMatrix, stdPass));
     dst.matrix = dstMatrix;
 

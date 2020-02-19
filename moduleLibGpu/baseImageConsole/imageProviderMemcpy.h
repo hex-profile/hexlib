@@ -24,9 +24,6 @@ public:
 
 public:
 
-    bool dataProcessing() const
-        {return true;}
-
     Space getPitch() const
         {return source.memPitch();}
 

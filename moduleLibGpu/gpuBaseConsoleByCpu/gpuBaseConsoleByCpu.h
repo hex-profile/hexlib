@@ -25,9 +25,6 @@ public:
 
 public:
 
-    bool dataProcessing() const
-        {return kit.dataProcessing;}
-
     Space getPitch() const
         {return gpuImage.memPitch();}
 

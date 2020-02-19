@@ -118,7 +118,7 @@ stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& 
         GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(gpuMatrix, stdPass));
 
-        require(baseVideoOverlay.setImage(gpuMatrix.size(), imageProvider, hint.desc, hint.id, textEnabled, stdPass));
+        require(baseVideoOverlay.setImage(gpuMatrix.size(), kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
         overlaySet = true;
     }
     else
@@ -181,7 +181,7 @@ stdbool GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, c
     GpuBaseImageProvider imageProvider(kit);
     require(imageProvider.setImage(gpuImage, stdPass));
 
-    require(baseVideoOverlay.setImage(size, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
+    require(baseVideoOverlay.setImage(size, kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
 
     overlaySet = true;
 
