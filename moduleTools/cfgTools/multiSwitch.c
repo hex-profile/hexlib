@@ -51,12 +51,6 @@ public:
             if (k != 0)
                 ensure(cfgWrite(s, !block ? STR(", ") : STR("\n")));
 
-            if (prefix)
-            {
-                ensure(cfgWrite(s, k));
-                ensure(cfgWrite(s, STR(" ")));
-            }
-
             ensure(cfgWrite(s, k));
             ensure(cfgWrite(s, STR(" ")));
 
