@@ -87,9 +87,9 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
-        bool ok1 = errorBlock(baseOverlay.setImage(size, imageProvider, desc, id, textEnabled, stdPass));
+        bool ok1 = errorBlock(baseOverlay.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
         bool ok2 = errorBlock(saver.saveImage(size, imageProvider, desc, id, stdPass));
         require(ok1 && ok2);
         returnTrue;

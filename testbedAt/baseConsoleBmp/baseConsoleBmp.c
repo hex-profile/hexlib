@@ -171,16 +171,14 @@ stdbool writeImage
     stdPars(Kit)
 )
 {
-    REQUIRE(imageProvider.dataProcessing() == kit.dataProcessing);
-    REQUIRE(kit.dataProcessing);
-
     //----------------------------------------------------------------
     //
     // Copy image to the buffer.
     //
     //----------------------------------------------------------------
 
-    REQUIRE(imageProvider.dataProcessing());
+    REQUIRE(kit.dataProcessing);
+
     require(imageProvider.saveImage(flipMatrix(bufferImage), stdPass));
 
     //----------------------------------------------------------------

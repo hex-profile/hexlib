@@ -476,19 +476,21 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, bool dataProcessing, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         TRACE_REASSEMBLE(stdTraceName);
 
         AtImageProviderThunk atProvider(imageProvider, TRACE_SCOPE(stdTraceName));
 
-        if_not (imageProvider.dataProcessing())
+        if_not (dataProcessing)
         {
             require(atProvider.callbackFunc(&atProvider, nullptr, imageProvider.getPitch(), size.X, size.Y) != 0);
         }
         else
         {
-            if (textEnabled) printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
+            if (textEnabled) 
+                printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
+
             require(api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         }
 
