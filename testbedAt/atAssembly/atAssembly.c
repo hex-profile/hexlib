@@ -618,7 +618,7 @@ private:
     //
     //
 
-    uint32 overlayOwnerID = 0;
+    OverlayTakeover::ID overlayOwnerID = 0;
     StandardSignal deactivateOverlay;
 
     BoolSwitch<false> displayMemoryUsage;
@@ -1199,7 +1199,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     // Feed the signals
     //
 
-    uint32 prevOverlayID = overlayOwnerID;
+    auto prevOverlayID = overlayOwnerID;
 
     {
         FeedSignal visitor(signalHist);
