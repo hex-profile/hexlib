@@ -23,7 +23,7 @@ using Pixel = uint8_x4;
 //
 //================================================================
 
-using Kit = KitCombine<DiagnosticKit, FileToolsKit, MallocKit>;
+using Kit = KitCombine<DiagnosticKit, FileToolsKit, CpuFastAllocKit, DataProcessingKit>;
 
 //================================================================
 //

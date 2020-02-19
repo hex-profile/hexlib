@@ -26,7 +26,7 @@ struct BaseImageConsole
 
 struct BaseImageProvider
 {
-    virtual bool dataProcessing() const =0;
+    virtual bool dataProcessing() const =0; // ``` questionable
     virtual Space getPitch() const =0;
     virtual Space baseByteAlignment() const =0;
     virtual stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars) =0;
