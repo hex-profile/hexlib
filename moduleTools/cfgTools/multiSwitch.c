@@ -57,6 +57,9 @@ public:
                 ensure(cfgWrite(s, STR(" ")));
             }
 
+            ensure(cfgWrite(s, k));
+            ensure(cfgWrite(s, STR(" ")));
+
             ensure(cfgWrite(s, descPtr[k].name));
 
             const CharArray& key = descPtr[k].key;
