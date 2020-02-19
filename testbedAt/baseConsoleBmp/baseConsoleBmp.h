@@ -1,11 +1,10 @@
 #pragma once
 
-#include "allocation/mallocKit.h"
 #include "baseImageConsole/baseImageConsole.h"
 #include "interfaces/fileTools.h"
-#include "kits/msgLogsKit.h"
 #include "storage/dynamicClass.h"
 #include "userOutput/diagnosticKit.h"
+#include "cpuFuncKit.h"
 
 namespace baseConsoleBmp {
 
@@ -23,7 +22,7 @@ using Pixel = uint8_x4;
 //
 //================================================================
 
-using Kit = KitCombine<DiagnosticKit, FileToolsKit, CpuFastAllocKit, DataProcessingKit>;
+using Kit = KitCombine<DiagnosticKit, ProfilerKit, CpuFastAllocKit, DataProcessingKit, FileToolsKit>;
 
 //================================================================
 //

@@ -1,5 +1,7 @@
 #include "baseConsoleBmp.h"
 
+#include <unordered_map>
+
 #include "baseImageConsole/imageProviderMemcpy.h"
 #include "binaryFile/binaryFileImpl.h"
 #include "data/spacex.h"
@@ -11,6 +13,7 @@
 #include "userOutput/printMsg.h"
 #include "userOutput/paramMsg.h"
 #include "errorLog/foreignErrorBlock.h"
+#include "rndgen/rndgenBase.h"
 
 namespace baseConsoleBmp {
 
@@ -39,7 +42,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
             (c >= 'A' && c <= 'Z') ||
             (c >= 'a' && c <= 'z') ||
             (c >= '0' && c <= '9') ||
-            (c == '_')
+            c == '_' || c == '.' || c == '-'
         )
             c = '-';
 
@@ -238,6 +241,34 @@ stdbool writeImage
 
 //================================================================
 //
+// Counter
+//
+//================================================================
+
+using HashKey = RndgenState;
+using Counter = uint32;
+
+//================================================================
+//
+// getHash
+//
+//================================================================
+
+HashKey getHash(const CharArray& str)
+{
+    RndgenState result = 0;
+
+    for (size_t i = 0; i < str.size; ++i)
+    {
+        result += str.ptr[i];
+        rndgenNext(result);
+    }
+
+    return result;
+}
+
+//================================================================
+//
 // BaseConsoleBmpImpl
 //
 //================================================================
@@ -255,6 +286,8 @@ public:
 private:
 
     SimpleString currentOutputDir;
+    
+    unordered_map<HashKey, Counter> table;
 
 };
 
@@ -349,29 +382,53 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
     //----------------------------------------------------------------
     //
-    // Format base name.
+    // Format description.
     //
     //----------------------------------------------------------------
 
-    require(formatAtomToBuffer(desc, descArray, stdPass));
+    auto descWithID = (id == 0) ? desc : paramMsg(STR("%-%"), desc, hex(id, 8));
+
+    require(formatAtomToBuffer(descWithID, descArray, stdPass));
 
     require(fixFilename(descArray, descArray, stdPass));
 
-    ////
+    CharArray descStr(descArray.ptr(), descArray.size());
 
-    auto filenameMsg = paramMsg
-    (
-        id == 0 ? STR("%/%.bmp") : STR("%/%-%.bmp"),
-        currentOutputDir,
-        descArray(),
-        hex(id, 8)
-    );
+    //----------------------------------------------------------------
+    //
+    // Access counters.
+    //
+    //----------------------------------------------------------------
+
+    Counter frameIndex{};
+
+    auto getFrameIndex = [&]
+    {
+        auto hash = getHash(descStr);
+        auto f = table.insert(make_pair(hash, Counter{}));
+        Counter& counter = f.first->second;
+        frameIndex = counter++;
+    };
+
+    require(foreignErrorBlockVoid(getFrameIndex()));
+
+    //----------------------------------------------------------------
+    //
+    // Format file name.
+    //
+    //----------------------------------------------------------------
+
+    auto filenameMsg = paramMsg(STR("%/%-%.bmp"), currentOutputDir, descArray(), dec(frameIndex, 8));
 
     require(formatAtomToBuffer(filenameMsg, filenameArray, stdPass));
 
     CharArray filenameStr(filenameArray.ptr(), filenameArray.size());
 
-    ////
+    //----------------------------------------------------------------
+    //
+    // Write image.
+    //
+    //----------------------------------------------------------------
 
     require(writeImage(filenameStr, id, imageSize, imageProvider, bufferImage, bufferArray, stdPass));
 
