@@ -5,7 +5,6 @@
 #include "baseImageConsole/imageProviderMemcpy.h"
 #include "binaryFile/binaryFileImpl.h"
 #include "data/spacex.h"
-#include "dataAlloc/gpuArrayMemory.h"
 #include "errorLog/errorLog.h"
 #include "flipMatrix.h"
 #include "formattedOutput/formatStreamStdio.h"
@@ -14,6 +13,7 @@
 #include "userOutput/paramMsg.h"
 #include "errorLog/foreignErrorBlock.h"
 #include "rndgen/rndgenBase.h"
+#include "dataAlloc/arrayMemory.h"
 
 namespace baseConsoleBmp {
 

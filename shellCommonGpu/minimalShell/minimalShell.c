@@ -14,6 +14,7 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
 #include "displayParamsImpl/displayParamsImpl.h"
+#include "baseConsoleBmp/baseConsoleBmp.h"
 
 namespace minimalShell {
 

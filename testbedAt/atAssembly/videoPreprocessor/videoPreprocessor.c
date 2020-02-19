@@ -135,6 +135,14 @@ private:
 
 //================================================================
 //
+// outputDirName
+//
+//================================================================
+
+CharArray outputDirName() {return STR("Output Directory");}
+
+//================================================================
+//
 // AviConfig
 //
 //================================================================
@@ -150,7 +158,6 @@ public:
 
     BoolSwitch<false> savingActive;
     NumericVarStatic<int32, 1, 1024, 30> outputFps;
-    CharArray outputDirName() {return STR("Output Directory");}
     SimpleStringVar outputDir{STR("")};
     SimpleStringVar outputCodec{STR("DIB ")};
     NumericVarStatic<int32, 0, 0x7FFFFFFF, 256> maxSegmentFrames;
@@ -181,12 +188,7 @@ struct BmpConfig
 
 public:
 
-    //
-    // Output to AVI
-    //
-
     BoolSwitch<false> savingActive;
-    CharArray outputDirName() {return STR("Output Directory");}
     SimpleStringVar outputDir{STR("")};
 
 public:
@@ -547,7 +549,7 @@ stdbool VideoPreprocessorImpl::processTarget
     {
         if_not (aviConfig.outputDir->length() != 0)
         {
-            printMsgL(kit, STR("AVI Saving: <%0> is not set (Testbed->Config->Edit)"), aviConfig.outputDirName(), msgWarn);
+            printMsgL(kit, STR("AVI Saving: <%0> is not set (Testbed->Config->Edit)"), outputDirName(), msgWarn);
             returnFalse;
         }
 
@@ -591,7 +593,7 @@ stdbool VideoPreprocessorImpl::processTarget
     {
         if_not (aviConfig.outputDir->length() != 0)
         {
-            printMsgL(kit, STR("BMP Saving: <%0> is not set (Testbed->Config->Edit)"), aviConfig.outputDirName(), msgWarn);
+            printMsgL(kit, STR("BMP Saving: <%0> is not set (Testbed->Config->Edit)"), outputDirName(), msgWarn);
             returnFalse;
         }
 
