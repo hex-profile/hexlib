@@ -1,17 +1,16 @@
 #include "baseConsoleBmp.h"
 
-#include <sstream>
-#include <iomanip>
-
-#include "errorLog/errorLog.h"
-#include "storage/rememberCleanup.h"
-#include "userOutput/printMsg.h"
-#include "dataAlloc/gpuArrayMemory.h"
-#include "flipMatrix.h"
-#include "formattedOutput/formatStreamStl.h"
-#include "data/spacex.h"
 #include "baseImageConsole/imageProviderMemcpy.h"
 #include "binaryFile/binaryFileImpl.h"
+#include "data/spacex.h"
+#include "dataAlloc/gpuArrayMemory.h"
+#include "errorLog/errorLog.h"
+#include "flipMatrix.h"
+#include "formattedOutput/formatStreamStdio.h"
+#include "storage/rememberCleanup.h"
+#include "userOutput/printMsg.h"
+#include "userOutput/paramMsg.h"
+#include "errorLog/foreignErrorBlock.h"
 
 namespace baseConsoleBmp {
 
@@ -19,27 +18,21 @@ using namespace std;
 
 //================================================================
 //
-// String
+// fixFilename
 //
 //================================================================
 
-using String = basic_string<CharType>;
-
-//================================================================
-//
-// mapToFilename
-//
-//================================================================
-
-String mapToFilename(const String& s)
+stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst, stdPars(Kit))
 {
-    String result = s;
+    REQUIRE(equalSize(src, dst));
+    ARRAY_EXPOSE(src);
+    ARRAY_EXPOSE(dst);
 
     ////
 
-    for (String::iterator i = result.begin(); i != result.end(); ++i)
+    for (Space i = 0; i < dstSize; ++i)
     {
-        CharType c = *i;
+        CharType c = srcPtr[i];
 
         if_not
         (
@@ -50,30 +43,27 @@ String mapToFilename(const String& s)
         )
             c = '-';
 
-        *i = c;
+        dstPtr[i] = c;
     }
 
-    ////
-
-    return result;
+    returnTrue;
 }
 
 //================================================================
 //
-// formatAtomToString
+// formatAtomToBuffer
 //
 //================================================================
 
-stdbool formatAtomToString(const FormatOutputAtom& v, String& result, stdPars(ErrorLogKit))
+stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
-    std::basic_stringstream<CharType> stringStream;
-    FormatStreamStlThunk formatToStream(stringStream);
+    ARRAY_EXPOSE(result);
+    FormatStreamStdioThunk formatter(resultPtr, resultSize);
 
-    v.func(v.value, formatToStream);
-    REQUIRE(formatToStream.isOk());
-    REQUIRE(!!stringStream);
+    v.func(v.value, formatter);
+    REQUIRE(formatter.isOk());
 
-    result = stringStream.str();
+    result.resize(formatter.usedSize());
 
     returnTrue;
 }
@@ -169,58 +159,17 @@ COMPILE_ASSERT(alignof(BitmapFullHeader) == 1);
 
 stdbool writeImage
 (
-    const CharType* basename,
+    const CharArray& filename,
     uint32 id,
     const Point<Space>& imageSize,
     BaseImageProvider& imageProvider,
-    ArrayMemory<Pixel>& buffer,
+    const Matrix<Pixel>& bufferImage,
+    const Array<Pixel>& bufferArray,
     stdPars(Kit)
 )
 {
-    if_not (imageProvider.dataProcessing())
-        returnTrue;
-
-    //----------------------------------------------------------------
-    //
-    // File name.
-    //
-    //----------------------------------------------------------------
-
-    basic_stringstream<CharType> ss;
-
-    ss << basename;
-
-    if (id != 0)
-    {
-        ss << CT("-");
-        ss << hex << setfill('0') << setw(8) << uppercase <<  id;
-    }
-
-    ss << CT(".bmp");
-
-    auto str = ss.str();
-    auto filename = CharArray{str.data(), str.size()};
-
-    //----------------------------------------------------------------
-    //
-    // Properly align the buffer.
-    //
-    //----------------------------------------------------------------
-
-    Space alignedPitch = 0;
-    require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
-
-    ////
-
-    Space imageArea = 0;
-    REQUIRE(safeMul(alignedPitch, imageSize.Y, imageArea));
-
-    if_not (buffer.resize(imageArea))
-        require(buffer.realloc(imageArea, imageProvider.baseByteAlignment(), kit.malloc, stdPass));
-
-    ARRAY_EXPOSE(buffer);
-
-    Space bufferMemPitch = alignedPitch;
+    REQUIRE(imageProvider.dataProcessing() == kit.dataProcessing);
+    REQUIRE(kit.dataProcessing);
 
     //----------------------------------------------------------------
     //
@@ -228,10 +177,8 @@ stdbool writeImage
     //
     //----------------------------------------------------------------
 
-    Matrix<Pixel> bufferMatrix(bufferPtr, bufferMemPitch, imageSize.X, imageSize.Y);
-
     REQUIRE(imageProvider.dataProcessing());
-    require(imageProvider.saveImage(flipMatrix(bufferMatrix), stdPass));
+    require(imageProvider.saveImage(flipMatrix(bufferImage), stdPass));
 
     //----------------------------------------------------------------
     //
@@ -239,12 +186,14 @@ stdbool writeImage
     //
     //----------------------------------------------------------------
 
-    Space dataSize = bufferSize * sizeof(Pixel);
+    ARRAY_EXPOSE(bufferArray);
+
+    Space dataSizeInBytes = bufferArraySize * sizeof(Pixel);
 
     Space headerSize = sizeof(BitmapFullHeader);
 
     Space totalSize{};
-    REQUIRE(safeAdd(headerSize, dataSize, totalSize));
+    REQUIRE(safeAdd(headerSize, dataSizeInBytes, totalSize));
 
     ////
 
@@ -282,7 +231,7 @@ stdbool writeImage
     require(file.open(filename, true, true, stdPass));
 
     require(file.write(&header, sizeof(header), stdPass));
-    require(file.write(bufferPtr, dataSize, stdPass));
+    require(file.write(bufferArrayPtr, dataSizeInBytes, stdPass));
 
     returnTrue;
 }
@@ -305,8 +254,7 @@ public:
 
 private:
 
-    String currentOutputDir;
-    ArrayMemory<Pixel> tmpBuffer;
+    SimpleString currentOutputDir;
 
 };
 
@@ -343,18 +291,11 @@ stdbool BaseConsoleBmp::setOutputDir(const CharType* outputDir, stdPars(Kit))
 
 stdbool BaseConsoleBmpImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 {
-    try
+    if (currentOutputDir != outputDir)
     {
-        if (currentOutputDir != outputDir)
-        {
-            kit.fileTools.makeDirectory(outputDir);
-            currentOutputDir = outputDir;
-        }
-    }
-    catch (const std::exception& e)
-    {
-        printMsg(kit.msgLog, STR("BaseConsoleBmp: STL exception: %0"), e.what(), msgErr);
-        returnFalse;
+        kit.fileTools.makeDirectory(outputDir);
+        currentOutputDir = outputDir;
+        REQUIRE(def(currentOutputDir));
     }
 
     returnTrue;
@@ -368,22 +309,71 @@ stdbool BaseConsoleBmpImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
 
 stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
-    try
-    {
-        String descStr;
-        require(formatAtomToString(desc, descStr, stdPass));
 
-        String basename = currentOutputDir + CT("/") + mapToFilename(descStr);
+    //----------------------------------------------------------------
+    //
+    // Format buffer.
+    //
+    //----------------------------------------------------------------
 
-        ////
+    ARRAY_ALLOC(descArray, CharType, 8192);
+    ARRAY_ALLOC(filenameArray, CharType, 8192);
 
-        require(writeImage(basename.c_str(), id, imageSize, imageProvider, tmpBuffer, stdPass));
-    }
-    catch (const std::exception& e)
-    {
-        printMsg(kit.msgLog, STR("BaseConsoleBmp: STL exception: %0"), e.what(), msgErr);
-        returnFalse;
-    }
+    //----------------------------------------------------------------
+    //
+    // Buffer image.
+    //
+    //----------------------------------------------------------------
+
+    Space alignedPitch = 0;
+    require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
+
+    Space sizeInPixels = 0;
+    REQUIRE(safeMul(alignedPitch, imageSize.Y, sizeInPixels));
+
+    ArrayMemory<Pixel> bufferArray;
+    require(bufferArray.realloc(sizeInPixels, imageProvider.baseByteAlignment(), stdPass));
+
+    ARRAY_EXPOSE(bufferArray);
+
+    Matrix<Pixel> bufferImage(bufferArrayPtr, alignedPitch, imageSize.X, imageSize.Y);
+
+    //----------------------------------------------------------------
+    //
+    // Everything is allocated, exit on counting stage.
+    //
+    //----------------------------------------------------------------
+
+    if_not (kit.dataProcessing)
+        returnTrue;
+
+    //----------------------------------------------------------------
+    //
+    // Format base name.
+    //
+    //----------------------------------------------------------------
+
+    require(formatAtomToBuffer(desc, descArray, stdPass));
+
+    require(fixFilename(descArray, descArray, stdPass));
+
+    ////
+
+    auto filenameMsg = paramMsg
+    (
+        id == 0 ? STR("%/%.bmp") : STR("%/%-%.bmp"),
+        currentOutputDir,
+        descArray(),
+        hex(id, 8)
+    );
+
+    require(formatAtomToBuffer(filenameMsg, filenameArray, stdPass));
+
+    CharArray filenameStr(filenameArray.ptr(), filenameArray.size());
+
+    ////
+
+    require(writeImage(filenameStr, id, imageSize, imageProvider, bufferImage, bufferArray, stdPass));
 
     returnTrue;
 }
