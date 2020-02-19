@@ -69,29 +69,29 @@ public:
 
     stdbool addImage(const Matrix<const Pixel>& img, const ImgOutputHint& hint, stdNullPars)
     {
-        bool ok1 = errorBlock(baseConsole.addImage(img, hint, stdPass));
-        bool ok2 = errorBlock(saver.saveImage(img, hint.desc, hint.id, stdPass));
-        require(ok1 && ok2);
+        require(baseConsole.addImage(img, hint, stdPass));
+        require(saver.saveImage(img, hint.desc, hint.id, stdPass));
         returnTrue;
     }
 
     stdbool clear(stdNullPars)
     {
-        return baseConsole.clear(stdPassThru);
+        require(baseConsole.clear(stdPassThru));
+        returnTrue;
     }
 
     stdbool update(stdNullPars)
     {
-        return baseConsole.update(stdPassThru);
+        require(baseConsole.update(stdPassThru));
+        returnTrue;
     }
 
 public:
 
     stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
-        bool ok1 = errorBlock(baseOverlay.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
-        bool ok2 = errorBlock(saver.saveImage(size, imageProvider, desc, id, stdPass));
-        require(ok1 && ok2);
+        require(baseOverlay.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
+        require(saver.saveImage(size, imageProvider, desc, id, stdPass));
         returnTrue;
     }
 
@@ -102,7 +102,7 @@ public:
 
     stdbool updateImage(stdNullPars) 
     {
-        returnTrue;
+        return baseOverlay.updateImage(stdPassThru);
     }
 
 private:

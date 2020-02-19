@@ -15,10 +15,38 @@
 #include "userOutput/printMsg.h"
 #include "displayParamsImpl/displayParamsImpl.h"
 #include "baseConsoleBmp/baseConsoleBmp.h"
+#include "configFile/cfgSimpleString.h"
+#include "userOutput/printMsgEx.h"
+#include "gpuImageConsoleImpl/gpuImageConsoleImpl.h"
+#include "gpuBaseConsoleByCpu/gpuBaseConsoleByCpu.h"
 
 namespace minimalShell {
 
 using namespace gpuShell;
+
+//================================================================
+//
+// BmpConfig
+//
+//================================================================
+
+struct BmpConfig
+{
+
+public:
+
+    BoolSwitch<false> savingActive;
+    SimpleStringVar outputDir{STR("")};
+
+public:
+
+    void serialize(const CfgSerializeKit& kit)
+    {
+        savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+B"));
+        outputDir.serialize(kit, STR("Output Directory"));
+    }
+
+};
 
 //================================================================
 //
@@ -74,7 +102,7 @@ private:
 
     //----------------------------------------------------------------
     //
-    // Options.
+    // Debugging support.
     //
     //----------------------------------------------------------------
 
@@ -82,6 +110,9 @@ private:
     BoolSwitch<false> debugBreakOnErrors;
 
     DisplayParamsImpl displayParams;
+
+    BmpConfig bmpConfig;
+    BaseConsoleBmp bmpConsole;
 
 };
 
@@ -114,6 +145,11 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 
             bool unused = false;
             displayParams.serialize(kit, unused);
+        }
+
+        {
+            CFG_NAMESPACE("Saving BMP Files");
+            bmpConfig.serialize(kit);
         }
     }
 }
@@ -379,16 +415,105 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
 stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit))
 {
+    stdScopedBegin;
+
+    //----------------------------------------------------------------
+    //
+    // Disabled kits.
+    //
+    //----------------------------------------------------------------
 
     SetBusyStatusNull setBusyStatus;
     UserPoint userPoint{false, point(0), false, false};
 
+    auto oldKit = kit;
+
+    auto kit = kitCombine
+    (
+        oldKit,
+        SetBusyStatusKit{setBusyStatus},
+        UserPointKit{userPoint},
+        VerbosityKit{Verbosity::On}
+    );
+
+    //----------------------------------------------------------------
+    //
+    // Saving to BMP.
+    //
+    //----------------------------------------------------------------
+
+    auto bmpSetOutput = [&] () -> stdbool
+    {
+        if_not (bmpConfig.outputDir->length() != 0)
+        {
+            printMsgL(kit, STR("BMP Saving: Output directory is not set"), msgWarn);
+            returnFalse;
+        }
+
+        require(bmpConsole.setOutputDir(bmpConfig.outputDir->cstr(), stdPass));
+
+        returnTrue;
+    };
+
     ////
 
-    GpuImageConsoleNull gpuImageConsole;
+    bool bmpOk = false;
+    
+    if (bmpConfig.savingActive)
+    {
+        bmpOk = errorBlock(bmpSetOutput());
+
+        printMsgL(kit, bmpOk ? STR("BMP Saving: Files are saved to %") : STR("BMP Saving: Error happened"),
+            bmpConfig.outputDir->cstr(), bmpOk ? msgInfo : msgWarn);
+    }
+
+    //----------------------------------------------------------------
+    //
+    // CPU base console.
+    //
+    //----------------------------------------------------------------
+
+    BaseImageConsoleNull baseConsoleNull;
+    BaseImageConsole* baseConsole = &baseConsoleNull;
+
+    BaseVideoOverlayNull baseOverlayNull;
+    BaseVideoOverlay* baseOverlay = &baseOverlayNull;
+
+    BaseConsoleBmpThunk bmpThunk(bmpConsole, *baseConsole, *baseOverlay, kit);
+
+    if (bmpOk)
+        {baseConsole = &bmpThunk; baseOverlay = &bmpThunk;}
+
+    //----------------------------------------------------------------
+    //
+    // GPU image console.
+    //
+    //----------------------------------------------------------------
+
+    using namespace gpuImageConsoleImpl;
+
+    ////
+
+    GpuBaseConsoleProhibitThunk gpuBaseConsoleDisabled(kit);
+
+    GpuBaseConsoleByCpuThunk gpuBaseConsoleEnabled(*baseConsole, *baseOverlay, kit);
+
+    GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleDisabled;
+
+    if (kit.verbosity >= Verbosity::On)
+        gpuBaseConsole = &gpuBaseConsoleEnabled;
+
+    ////
+
+    GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, displayParams.displayMode(), displayParams.vectorMode(), kit);
+
     GpuImageConsoleKit gpuImageConsoleKit{gpuImageConsole};
 
-    ////
+    //----------------------------------------------------------------
+    //
+    // Display params and kit.
+    //
+    //----------------------------------------------------------------
 
     DisplayParamsThunk displayParamsThunk{point(1), displayParams}; // Screen size not supported well.
 
@@ -397,9 +522,6 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
     auto kitEx = kitCombine
     (
         kit,
-        SetBusyStatusKit{setBusyStatus},
-        UserPointKit{userPoint},
-        VerbosityKit{Verbosity::On},
         gpuImageConsoleKit,
         displayParamsThunk.getKit()
     );
@@ -410,7 +532,7 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 
     ////
 
-    returnTrue;
+    stdScopedEnd;
 }
 
 //----------------------------------------------------------------

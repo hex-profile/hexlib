@@ -164,7 +164,7 @@ public:
 
 public:
 
-    void serialize(const ModuleSerializeKit& kit)
+    void serialize(const CfgSerializeKit& kit)
     {
         savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+V"));
         outputFps.serialize(kit, STR("Playback FPS"), STR("Playback framerate specified in AVI header"));
@@ -193,7 +193,7 @@ public:
 
 public:
 
-    void serialize(const ModuleSerializeKit& kit)
+    void serialize(const CfgSerializeKit& kit)
     {
         savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+B"));
         outputDir.serialize(kit, outputDirName());
@@ -591,7 +591,7 @@ stdbool VideoPreprocessorImpl::processTarget
 
     auto bmpSetOutput = [&] () -> stdbool
     {
-        if_not (aviConfig.outputDir->length() != 0)
+        if_not (bmpConfig.outputDir->length() != 0)
         {
             printMsgL(kit, STR("BMP Saving: <%0> is not set (Testbed->Config->Edit)"), outputDirName(), msgWarn);
             returnFalse;
@@ -610,10 +610,8 @@ stdbool VideoPreprocessorImpl::processTarget
     {
         bmpOk = errorBlock(bmpSetOutput());
 
-        if (bmpOk)
-            printMsgL(kit, STR("BMP Saving: Files are saved to %0"), bmpConfig.outputDir->cstr());
-        else
-            printMsgL(kit, STR("BMP Saving: Error happened"), msgWarn);
+        printMsgL(kit, bmpOk ? STR("BMP Saving: Files are saved to %") : STR("BMP Saving: Error happened"),
+            bmpConfig.outputDir->cstr(), bmpOk ? msgInfo : msgWarn);
     }
 
     ////

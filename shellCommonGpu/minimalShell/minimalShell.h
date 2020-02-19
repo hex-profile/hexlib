@@ -6,6 +6,7 @@
 #include "kits/moduleHeader.h"
 #include "memController/memController.h"
 #include "storage/smartPtr.h"
+#include "interfaces/fileTools.h"
 
 namespace minimalShell {
 
@@ -61,7 +62,7 @@ public:
 
 public:
 
-    using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, ThreadManagerKit>;
+    using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, ThreadManagerKit, FileToolsKit>;
 
     virtual stdbool init(stdPars(InitKit)) =0;
 
