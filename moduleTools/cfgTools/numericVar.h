@@ -57,14 +57,21 @@ public:
 
     inline void setup(TypePar minVal, TypePar maxVal, TypePar defaultVal)
     {
-        Type fixMinVal = minVal;
+        Type fixedMinVal = minVal;
         Type fixMaxVal = clampMin(maxVal, minVal);
-        Type fixDefaultVal = clampRange(defaultVal, fixMinVal, fixMaxVal);
+        Type fixDefaultVal = clampRange(defaultVal, fixedMinVal, fixMaxVal);
 
-        this->minVal = fixMinVal;
+        this->minVal = fixedMinVal;
         this->maxVal = fixMaxVal;
         this->defaultVal = fixDefaultVal;
         this->value = fixDefaultVal;
+    }
+
+    inline void setDefaultValue(TypePar value)
+    {
+        auto fixValue = clampRange(value, minVal, maxVal);
+        this->defaultVal = fixValue;
+        this->value = fixValue;
     }
 
 public:
@@ -143,15 +150,19 @@ template <typename Type, Type compileMinVal, Type compileMaxVal, Type compileDef
 class NumericVarStatic : public NumericVar<Type>
 {
 
+    using Base = NumericVar<Type>;
     COMPILE_ASSERT(compileMinVal <= compileDefaultVal && compileDefaultVal <= compileMaxVal);
 
 public:
 
     inline NumericVarStatic()
-        : NumericVar<Type>(compileMinVal, compileMaxVal, compileDefaultVal) {}
+        : Base(compileMinVal, compileMaxVal, compileDefaultVal) {}
 
     inline NumericVarStatic& operator =(const Type& X)
-        {NumericVar<Type>::operator =(X); return *this;}
+        {Base::operator =(X); return *this;}
+
+    inline void setDefaultValue(const Type& X)
+        {Base::setDefaultValue(X);}
 
 };
 
@@ -340,10 +351,15 @@ public:
         Base::operator=(int32(value));
     }
 
-    inline BoolVarStatic<defaultBool>& operator=(bool value)
+    inline auto& operator=(bool value)
     {
         Base::operator=(int32(value));
         return *this;
+    }
+
+    inline void setDefaultValue(bool value)
+    {
+        Base::setDefaultValue(value);
     }
 
     inline bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment = STR(""), const CharArray& blockComment = STR(""))

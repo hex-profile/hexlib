@@ -82,21 +82,21 @@ public:
 template <bool defaultBool>
 bool BoolSwitch<defaultBool>::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key, const CharArray& comment)
 {
-    int32 oldValue = value;
+    int32 oldValue = base;
 
     SerializeRingSwitchSignal serializeSignal(signal, name, STR(" On-Off"), key, comment);
     kit.visitor(kit.scope, serializeSignal);
 
-    SerializeBoolSwitchVariable serializeVar(value, name, comment, key);
+    SerializeBoolSwitchVariable serializeVar(base, name, comment, key);
     kit.visitor(kit.scope, serializeVar);
 
     if (signal)
     {
-        value = (value() ^ (signal & 1)) != 0;
+        base = (base() ^ (signal & 1)) != 0;
         signal.clear();
     }
 
-    return value == oldValue;
+    return base == oldValue;
 }
 
 //----------------------------------------------------------------

@@ -16,17 +16,20 @@ class BoolSwitch
 
 public:
 
-    inline operator bool() const {return value != 0;}
-    inline bool operator() () const {return value != 0;}
+    inline operator bool() const {return base != 0;}
+    inline bool operator() () const {return base != 0;}
 
     inline BoolSwitch<defaultBool>& operator =(bool value)
-        {this->value = value; return *this;}
+        {base = value; return *this;}
+
+    inline void setDefaultValue(bool value)
+        {base.setDefaultValue(value);}
 
     bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key = STR(""), const CharArray& comment = STR(""));
 
 private:
 
-    BoolVarStatic<defaultBool> value;
+    BoolVarStatic<defaultBool> base;
     StandardSignal signal;
 
 };
