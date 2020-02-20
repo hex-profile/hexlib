@@ -36,11 +36,11 @@ struct EngineModule
 
 //================================================================
 //
-// EngineKit
+// ParamsKit
 //
 //================================================================
 
-KIT_CREATE2(EngineKit, EngineModule&, engineModule, MemController&, engineMemory);
+KIT_CREATE3(ParamsKit, EngineModule&, engineModule, MemController&, engineMemory, bool, runExecutionPhase);
 
 //================================================================
 //
@@ -70,12 +70,12 @@ public:
 
     using ProcessKit = InitKit;
 
-    stdbool process(EngineModule& engineModule, MemController& engineMemory, stdPars(ProcessKit))
-        {return processEntry(stdPassKit(kitCombine(kit, EngineKit(engineModule, engineMemory))));}
+    stdbool process(EngineModule& engineModule, MemController& engineMemory, bool runExecutionPhase, stdPars(ProcessKit))
+        {return processEntry(stdPassKit(kitCombine(kit, ParamsKit(engineModule, engineMemory, runExecutionPhase))));}
 
 public:
 
-    using ProcessEntryKit = KitCombine<ProcessKit, EngineKit>;
+    using ProcessEntryKit = KitCombine<ProcessKit, ParamsKit>;
 
     virtual stdbool processEntry(stdPars(ProcessEntryKit)) =0;
 
