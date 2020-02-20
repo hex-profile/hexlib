@@ -134,8 +134,15 @@ public:
     inline operator EnumType() const {return EnumType(value());}
     inline EnumType operator()() const {return EnumType(value());}
 
+public:
+
     void operator =(EnumType v)
-        {value = v;}
+        {value = size_t(v);}
+
+public:
+
+    void setDefaultValue(EnumType v)
+        {value.setDefaultValue(size_t(v));}
 
 public:
 
@@ -146,7 +153,7 @@ public:
 
 private:
 
-    NumericVarStatic<size_t, 0, size_t(positionCount) - 1, size_t(defaultPos)> value;
+    NumericVar<size_t> value{0, size_t(positionCount) - 1, size_t(defaultPos)};
     StandardSignal signals[positionCount];
 
 };
