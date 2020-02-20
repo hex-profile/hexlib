@@ -380,6 +380,15 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
     //----------------------------------------------------------------
     //
+    // Pure counting mode.
+    //
+    //----------------------------------------------------------------
+
+    if_not (kit.runExecutionPhase)
+        returnTrue;
+
+    //----------------------------------------------------------------
+    //
     // Execute process with memory distribution.
     //
     //----------------------------------------------------------------
