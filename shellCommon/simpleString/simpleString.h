@@ -59,22 +59,28 @@ public:
     sysinline SimpleStringEx(const SimpleStringEx<Type>& that)
         {assign(that);}
 
-    sysinline SimpleStringEx& operator =(const SimpleStringEx<Type>& that)
-        {assign(that); return *this;}
+    sysinline SimpleStringEx(const Type* cstr)
+        {assign(cstr);}
+
+    sysinline SimpleStringEx(const Type* bufPtr, size_t bufLen)
+        {assign(bufPtr, bufLen);}
+
+    sysinline SimpleStringEx(const CharArrayEx<Type>& that)
+        {assign(that.ptr, that.size);}
+
+    sysinline SimpleStringEx(Type fillValue, size_t bufSize)
+        {assign(fillValue, bufSize);}
 
 public:
 
-    template <typename That>
-    sysinline SimpleStringEx(const That& that)
-        {assign(that);}
-
-    template <typename That1, typename That2>
-    sysinline SimpleStringEx(const That1& that1, const That2& that2)
-        {assign(that1, that2);}
-
-    template <typename That>
-    sysinline SimpleStringEx& operator =(const That& that)
+    sysinline auto& operator =(const SimpleStringEx<Type>& that)
         {assign(that); return *this;}
+
+    sysinline auto& operator =(const Type* cstr)
+        {assign(cstr); return *this;}
+
+    sysinline auto& operator =(const CharArrayEx<Type>& that)
+        {assign(that.ptr, that.size); return *this;}
 
     //----------------------------------------------------------------
     //
@@ -141,17 +147,20 @@ public:
 
     //----------------------------------------------------------------
     //
-    //
+    // Assign.
     //
     //----------------------------------------------------------------
 
     void assign(const SimpleStringEx<Type>& that);
+    
     void assign(const Type* cstr);
+
     void assign(const Type* bufPtr, size_t bufLen);
-    void assign(Type fillValue, size_t bufSize);
 
     void assign(const CharArrayEx<Type>& that)
         {assign(that.ptr, that.size);}
+
+    void assign(Type fillValue, size_t bufSize);
 
     //----------------------------------------------------------------
     //
@@ -236,15 +245,27 @@ sysinline bool def(const SimpleStringEx<Type>& str)
 
 template <typename Type>
 sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const SimpleStringEx<Type>& Y)
-    {SimpleStringEx<Type> result(X); result += Y; return result;}
+{
+    SimpleStringEx<Type> result(X); 
+    result += Y; 
+    return result;
+}
 
 template <typename Type, typename Other>
 sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const Other& Y)
-    {SimpleStringEx<Type> result(X); result += Y; return result;}
+{
+    SimpleStringEx<Type> result(X); 
+    result += SimpleStringEx<Type>(Y); 
+    return result;
+}
 
 template <typename Type, typename Other>
 sysinline SimpleStringEx<Type> operator +(const Other& X, const SimpleStringEx<Type>& Y)
-    {SimpleStringEx<Type> result(X); result += Y; return result;}
+{
+    SimpleStringEx<Type> result(X); 
+    result += SimpleStringEx<Type>(Y); 
+    return result;
+}
 
 //================================================================
 //
