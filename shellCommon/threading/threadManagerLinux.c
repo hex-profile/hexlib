@@ -71,7 +71,7 @@ public:
             DEBUG_BREAK_CHECK(pthread_mutex_destroy(&mutex) == 0);
     }
 
-    bool isOk() const {return ok;}
+    bool valid() const {return ok;}
 
 private:
 
@@ -95,7 +95,7 @@ stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdP
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
 
-    REQUIRE(sectionEx.isOk());
+    REQUIRE(sectionEx.valid());
     return true;
 }
 

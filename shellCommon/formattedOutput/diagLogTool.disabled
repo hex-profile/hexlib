@@ -25,7 +25,7 @@ bool MsgLogByDiagLogStlFormatting::addMsg(const FormatOutputAtom& v, MsgKind msg
         FormatStreamStlThunk formatToStream(stringStream);
 
         v.func(v.value, formatToStream);
-        ensure(formatToStream.isOk());
+        ensure(formatToStream.valid());
         ensure(!!stringStream);
 
         const auto& str = stringStream.rdbuf()->str();

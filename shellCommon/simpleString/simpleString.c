@@ -14,7 +14,7 @@
 template <>
 void formatOutput(const SimpleStringEx<CharType>& value, FormatOutputStream& outputStream)
 {
-    outputStream.write(charArrayFromPtr(value.cstr()));
+    outputStream.write(value.charArray());
 }
 
 //================================================================
@@ -28,11 +28,8 @@ struct StringData : public std::basic_string<Type>
 {
     using Base = std::basic_string<Type>;
 
-    sysinline StringData(const Type* bufPtr, size_t bufSize)
-        : Base(bufPtr, bufSize) {}
-
-    sysinline StringData(size_t bufSize, Type fillValue)
-        : Base(bufSize, fillValue) {}
+    sysinline StringData(const Type* bufferPtr, size_t bufSize)
+        : Base(bufferPtr, bufSize) {}
 };
 
 //================================================================
@@ -58,62 +55,12 @@ void SimpleStringEx<Type>::deallocate()
 
 //================================================================
 //
-// SimpleStringEx<Type>::assign(const SimpleStringEx<Type>& that)
+// SimpleStringEx<Type>::assign(const Type* bufferPtr, size_t bufSize)
 //
 //================================================================
 
 template <typename Type>
-void SimpleStringEx<Type>::assign(const SimpleStringEx<Type>& that)
-{
-    if (this == &that)
-        return;
-
-    ////
-
-    theOk = false;
-
-    ////
-
-    if_not (that.theOk)
-        return;
-
-    ////
-
-    if_not (that.theData) // empty string
-    {
-        deallocate();
-        theOk = true;
-        return;
-    }
-
-    ////
-
-    try
-    {
-        if (theData != 0)
-            *theData = *that.theData;
-        else
-        {
-            theData = new (std::nothrow) StringData<Type>(*that.theData);
-            if_not (theData)
-                return;
-        }
-    }
-    catch (const std::exception&) {}
-
-    ////
-
-    this->theOk = true;
-}
-
-//================================================================
-//
-// SimpleStringEx<Type>::assign(const Type* bufPtr, size_t bufSize)
-//
-//================================================================
-
-template <typename Type>
-void SimpleStringEx<Type>::assign(const Type* bufPtr, size_t bufSize)
+void SimpleStringEx<Type>::assign(const Type* bufferPtr, size_t bufSize)
 {
     theOk = false;
 
@@ -131,63 +78,10 @@ void SimpleStringEx<Type>::assign(const Type* bufPtr, size_t bufSize)
     try
     {
         if (theData != 0)
-            (*theData).assign(bufPtr, bufSize);
+            (*theData).assign(bufferPtr, bufSize);
         else
         {
-            theData = new (std::nothrow) StringData<Type>(bufPtr, bufSize);
-
-            if_not (theData)
-                return;
-        }
-    }
-    catch (const std::exception&) {}
-
-    ////
-
-    theOk = true;
-}
-
-//================================================================
-//
-// SimpleStringEx<Type>::assign(const Type* cstr)
-//
-//================================================================
-
-void SimpleStringEx<char>::assign(const char* cstr)
-    {assign(cstr, strlen(cstr));}
-
-void SimpleStringEx<wchar_t>::assign(const wchar_t* cstr)
-    {assign(cstr, wcslen(cstr));}
-
-//================================================================
-//
-// SimpleStringEx<Type>::assign(Type fillValue, size_t bufSize);
-//
-//================================================================
-
-template <typename Type>
-void SimpleStringEx<Type>::assign(Type fillValue, size_t bufSize)
-{
-    theOk = false;
-
-    ////
-
-    if (bufSize == 0) // empty string
-    {
-        deallocate();
-        theOk = true;
-        return;
-    }
-
-    ////
-
-    try
-    {
-        if (theData != 0)
-            (*theData).assign(bufSize, fillValue);
-        else
-        {
-            theData = new (std::nothrow) StringData<Type>(bufSize, fillValue);
+            theData = new (std::nothrow) StringData<Type>(bufferPtr, bufSize);
 
             if_not (theData)
                 return;
@@ -221,40 +115,37 @@ const Type* SimpleStringEx<Type>::cstr() const
 
 //================================================================
 //
-// SimpleStringEx<Type>::length
+// SimpleStringEx<Type>::size
 //
 //================================================================
 
 template <typename Type>
-size_t SimpleStringEx<Type>::length() const
+size_t SimpleStringEx<Type>::size() const
 {
     size_t result = 0;
 
     if (theOk && theData)
-        result = theData->length();
+        result = theData->size();
 
     return result;
 }
 
 //================================================================
 //
-// SimpleStringEx<Type>::operator +=
+// SimpleStringEx<Type>::append
 //
 //================================================================
 
 template <typename Type>
-SimpleStringEx<Type>& SimpleStringEx<Type>::operator +=(const SimpleStringEx<Type>& that)
+void SimpleStringEx<Type>::append(const Type* thatPtr, size_t thatSize)
 {
-    if_not (this->theOk && that.theOk)
-    {
-        theOk = false;
-        return *this;
-    }
+    if_not (this->valid())
+        return; // Keep invalid.
 
     ////
 
-    if_not (that.theData)
-        return *this; // everything is done
+    if (thatSize == 0)
+        return; // Done.
 
     ////
 
@@ -262,46 +153,18 @@ SimpleStringEx<Type>& SimpleStringEx<Type>::operator +=(const SimpleStringEx<Typ
     {
         if (theData != 0)
         {
-            (*theData) += (*that.theData);
+            (*theData).append(thatPtr, thatSize);
         }
         else
         {
-            theData = new (std::nothrow) StringData<Type>(*that.theData);
-            if_not (theData) {theOk = false; return *this;}
+            theData = new (std::nothrow) StringData<Type>(thatPtr, thatSize);
+            if_not (theData) {theOk = false; return;}
         }
     }
     catch (const std::exception&)
     {
         theOk = false;
     }
-
-    ////
-
-    return *this;
-}
-
-//================================================================
-//
-// SimpleStringEx<Type>::operator ==
-//
-//================================================================
-
-template <typename Type>
-bool simpleStrEqual(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
-{
-    if_not (def(A) && def(B))
-        return false;
-
-    bool filledA = (A.length() != 0);
-    bool filledB = (B.length() != 0);
-
-    if (!filledA && !filledB)
-        return true;
-
-    if_not (filledA && filledB)
-        return false;
-
-    return (*A.theData) == (*B.theData);
 }
 
 //================================================================
@@ -312,6 +175,3 @@ bool simpleStrEqual(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B
 
 template class SimpleStringEx<char>;
 template class SimpleStringEx<wchar_t>;
-
-INSTANTIATE_FUNC(simpleStrEqual<char>)
-INSTANTIATE_FUNC(simpleStrEqual<wchar_t>)

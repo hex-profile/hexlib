@@ -737,7 +737,8 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     // Config file
     //
 
-    errorBlock(configFile.loadFile(SimpleString(engineModule->getName()) + ".cfg", stdPassKit(kitCombine(kit, fileToolsKit))));
+    SimpleString configFilename; configFilename << engineModule->getName() << CT(".cfg");
+    errorBlock(configFile.loadFile(configFilename, stdPassKit(kitCombine(kit, fileToolsKit))));
     REMEMBER_CLEANUP1_EX(configFileCleanup, configFile.unloadFile(), ConfigFile&, configFile);
 
     configFile.loadVars(*this);

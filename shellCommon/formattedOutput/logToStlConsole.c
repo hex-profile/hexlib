@@ -29,7 +29,7 @@ bool LogToStlConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         FormatStreamStlThunk formatToStream(stringStream);
 
         v.func(v.value, formatToStream);
-        ensure(formatToStream.isOk());
+        ensure(formatToStream.valid());
 
         stringStream << endl;
         ensure(!!stringStream);

@@ -212,12 +212,12 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     auto makeHtmlReport = [&] () -> stdbool
     {
 
-        SimpleString outputDir = htmlOutputDir();
+        SimpleString outputDir{htmlOutputDir()};
         REQUIRE(def(outputDir));
 
         ////
 
-        if (outputDir.length() == 0)
+        if (outputDir.size() == 0)
         {
             auto tempDir = getenv("HEX_TEMP");
 
@@ -225,14 +225,14 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
                 tempDir = getenv("TEMP");
   
             if (tempDir != 0)
-                outputDir = SimpleString(tempDir) + SimpleString("/profilerReport");
+                outputDir.clear() << tempDir << "/profilerReport";
 
             REQUIRE(def(outputDir));
         }
 
         ////
 
-        if (outputDir.length() == 0)
+        if (outputDir.size() == 0)
         {
             printMsgL(kit, STR("<%0> is not set"), htmlOutputDirName(), msgErr);
             returnFalse;
@@ -248,8 +248,8 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     
         auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
-        require(htmlReport.makeReport(MakeReportParams(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
-            cycleCount, processingThroughput, outputDir), stdPassKit(kitEx)));
+        require(htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
+            cycleCount, processingThroughput, outputDir.cstr()}, stdPassKit(kitEx)));
 
         float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
 

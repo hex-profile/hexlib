@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string.h>
-
 #include "charType/charArray.h"
 #include "charType/charType.h"
 #include "compileTools/compileTools.h"
@@ -19,32 +17,72 @@ struct StringData;
 
 //================================================================
 //
+// SStringBuffer
+//
+//================================================================
+
+template <typename Type>
+class SStringBuffer
+{
+
+public:
+
+    bool realloc(size_t newSize)
+        {return true;}
+
+    size_t size() const 
+        {return currentSize;}
+
+private:
+
+    Type* currentPtr = nullptr;
+    size_t currentSize = 0;
+
+};
+
+//================================================================
+//
 // SimpleStringEx
 //
-// String with built-in error state (like NAN for numbers).
+// A string with built-in invalid state, like NAN for float numbers.
 //
 //----------------------------------------------------------------
 //
-// If the string is in the error state:
+// If the string is invalid:
 //
+// * valid() returns false,
 // * cstr() returns empty string,
-// * isOk() returns false,
-// * length() returns 0.
+// * size() returns 0.
 //
-// At any operation, if there is not enough memory, a string sets the error state.
-// The error state is inherited when assigning another SimpleStringEx which is in the error state.
+//----------------------------------------------------------------
 //
-// The error state can be cleared in assignment, if operation is successful and assigned value is good.
+// On any operation, if there is not enough memory, the result is invalid.
 //
-// clear() resets the error state and makes the string empty.
+// Any operation involving invalid inputs results in invalid output.
 //
-// Assigning an empty string is guaranteed to reset error state.
+// Assignment operation, if fully successful, makes the string valid again.
+//
+// Clear function makes the string empty and valid.
+//
+//----------------------------------------------------------------
+//
+// Only valid strings are considered to be equal.
+// An invalid string is not equal to any other string.
+// Two invalid strings are not equal.
 //
 //================================================================
 
 template <typename Type>
 class SimpleStringEx
 {
+
+    using String = SimpleStringEx<Type>;
+
+    //----------------------------------------------------------------
+    //
+    // Construct / Destruct.
+    //
+    //----------------------------------------------------------------
 
 public:
 
@@ -54,96 +92,25 @@ public:
     sysinline ~SimpleStringEx()
         {deallocate();}
 
+    //----------------------------------------------------------------
+    //
+    // Construct from a value.
+    //
+    //----------------------------------------------------------------
+
 public:
 
-    sysinline SimpleStringEx(const SimpleStringEx<Type>& that)
+    explicit sysinline SimpleStringEx(const String& that)
         {assign(that);}
 
-    sysinline SimpleStringEx(const Type* cstr)
+    explicit sysinline SimpleStringEx(const Type* cstr)
         {assign(cstr);}
 
-    sysinline SimpleStringEx(const Type* bufPtr, size_t bufLen)
-        {assign(bufPtr, bufLen);}
+    explicit sysinline SimpleStringEx(const Type* bufferPtr, size_t bufferSize)
+        {assign(bufferPtr, bufferSize);}
 
-    sysinline SimpleStringEx(const CharArrayEx<Type>& that)
+    explicit sysinline SimpleStringEx(const CharArrayEx<Type>& that)
         {assign(that.ptr, that.size);}
-
-    sysinline SimpleStringEx(Type fillValue, size_t bufSize)
-        {assign(fillValue, bufSize);}
-
-public:
-
-    sysinline auto& operator =(const SimpleStringEx<Type>& that)
-        {assign(that); return *this;}
-
-    sysinline auto& operator =(const Type* cstr)
-        {assign(cstr); return *this;}
-
-    sysinline auto& operator =(const CharArrayEx<Type>& that)
-        {assign(that.ptr, that.size); return *this;}
-
-    //----------------------------------------------------------------
-    //
-    //
-    //
-    //----------------------------------------------------------------
-
-public:
-
-    sysinline bool isOk() const
-        {return theOk;}
-
-    size_t length() const;
-
-    sysinline size_t size() const
-        {return length();}
-
-public:
-
-    const Type* cstr() const;
-
-    sysinline operator const Type* () const 
-        {return cstr();}
-
-public:
-
-    sysinline operator CharArrayEx<Type> () const 
-        {return CharArrayEx<Type>(cstr(), length());}
-
-    sysinline CharArrayEx<Type> charArray() const
-        {return CharArrayEx<Type>(cstr(), length());}
-
-    //----------------------------------------------------------------
-    //
-    //
-    //
-    //----------------------------------------------------------------
-
-public:
-
-    sysinline void invalidate()
-        {theOk = false;}
-
-    //----------------------------------------------------------------
-    //
-    //
-    //
-    //----------------------------------------------------------------
-
-public:
-
-    SimpleStringEx& operator +=(const SimpleStringEx<Type>& that);
-
-    //----------------------------------------------------------------
-    //
-    //
-    //
-    //----------------------------------------------------------------
-
-public:
-
-    sysinline void clear()
-        {deallocate(); theOk = true;}
 
     //----------------------------------------------------------------
     //
@@ -151,46 +118,129 @@ public:
     //
     //----------------------------------------------------------------
 
-    void assign(const SimpleStringEx<Type>& that);
-    
-    void assign(const Type* cstr);
+public:
 
-    void assign(const Type* bufPtr, size_t bufLen);
+    sysinline String& operator =(const String& that)
+        {assign(that); return *this;}
 
-    void assign(const CharArrayEx<Type>& that)
+    sysinline String& operator =(const Type* cstr)
+        {assign(cstr); return *this;}
+
+    sysinline String& operator =(const CharArrayEx<Type>& that)
+        {assign(that.ptr, that.size); return *this;}
+
+    //----------------------------------------------------------------
+    //
+    // Access.
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    const Type* cstr() const;
+    size_t size() const;
+
+public:
+
+    sysinline operator CharArrayEx<Type> () const 
+        {return CharArrayEx<Type>(cstr(), size());}
+
+    sysinline CharArrayEx<Type> charArray() const
+        {return CharArrayEx<Type>(cstr(), size());}
+
+public:
+
+    sysinline bool valid() const
+        {return theOk;}
+
+    sysinline void invalidate()
+        {theOk = false;}
+
+    sysinline String& clear()
+        {deallocate(); theOk = true; return *this;}
+
+    //----------------------------------------------------------------
+    //
+    // Append.
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    void append(const Type* thatPtr, size_t thatSize);
+
+    sysinline void append(const CharArrayEx<Type>& that)
+        {append(that.ptr, that.size);}
+
+    sysinline void append(const Type* cstr)
+        {append(charArrayFromPtr(cstr));}
+
+    sysinline void append(const SimpleStringEx<Type>& that)
+        {that.valid() ? append(that.charArray()) : invalidate();}
+
+public:
+
+    template <typename That>
+    sysinline String& operator +=(const That& that)
+        {append(that); return *this;}
+
+    template <typename That>
+    sysinline String& operator <<(const That& that)
+        {append(that); return *this;}
+
+    //----------------------------------------------------------------
+    //
+    // Assign.
+    //
+    //----------------------------------------------------------------
+
+    void assign(const Type* bufferPtr, size_t bufferSize);
+
+    sysinline void assign(const CharArrayEx<Type>& that)
         {assign(that.ptr, that.size);}
 
-    void assign(Type fillValue, size_t bufSize);
+    sysinline void assign(const Type* cstr)
+        {assign(charArrayFromPtr(cstr));}
 
+    sysinline void assign(const String& that)
+        {that.valid() ? assign(that.charArray()) : invalidate();}
+    
     //----------------------------------------------------------------
     //
-    // Comparisons.
-    //
-    // Only valid strings are considered equal.
-    // NAN string is not equal to any string, even to another NAN string.
-    //
-    //----------------------------------------------------------------
-
-public:
-
-    template <typename AnyType>
-    friend bool simpleStrEqual(const SimpleStringEx<AnyType>& A, const SimpleStringEx<AnyType>& B);
-
-    sysinline friend bool operator ==(const SimpleStringEx<Type>& A, const SimpleStringEx<Type>& B)
-        {return simpleStrEqual(A, B);}
-
-    sysinline friend bool operator ==(const SimpleStringEx<Type>& A, const Type* B)
-        {return A.isOk() && strEqual(A.cstr(), B);}
-
-    //----------------------------------------------------------------
-    //
-    //
+    // Compare.
     //
     //----------------------------------------------------------------
 
 public:
 
-    friend sysinline void exchange(SimpleStringEx<Type>& A, SimpleStringEx<Type>& B)
+    friend sysinline bool operator ==(const String& a, const String& b)
+        {return a.valid() && b.valid() && strEqual(a.charArray(), b.charArray());}
+
+    ////
+
+    friend sysinline bool operator ==(const String& a, const Type* b)
+        {return a.valid() && strEqual(a.charArray(), charArrayFromPtr(b));}
+
+    friend sysinline bool operator ==(const Type* a, const String& b)
+        {return b.valid() && strEqual(charArrayFromPtr(a), b.charArray());}
+
+    ////
+
+    friend sysinline bool operator ==(const String& a, const CharArrayEx<Type>& b)
+        {return a.valid() && strEqual(a.charArray(), b);}
+
+    friend sysinline bool operator ==(const CharArrayEx<Type>& a, const String& b)
+        {return b.valid() && strEqual(a, b.charArray());}
+
+    //----------------------------------------------------------------
+    //
+    // Exchange.
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    friend sysinline void exchange(String& A, String& B)
     {
         exchange(A.theOk, B.theOk);
         exchange(A.theData, B.theData);
@@ -198,7 +248,7 @@ public:
 
     //----------------------------------------------------------------
     //
-    //
+    // Private.
     //
     //----------------------------------------------------------------
 
@@ -235,37 +285,7 @@ private:
 
 template <typename Type>
 sysinline bool def(const SimpleStringEx<Type>& str)
-    {return str.isOk();}
-
-//================================================================
-//
-// operator +
-//
-//================================================================
-
-template <typename Type>
-sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const SimpleStringEx<Type>& Y)
-{
-    SimpleStringEx<Type> result(X); 
-    result += Y; 
-    return result;
-}
-
-template <typename Type, typename Other>
-sysinline SimpleStringEx<Type> operator +(const SimpleStringEx<Type>& X, const Other& Y)
-{
-    SimpleStringEx<Type> result(X); 
-    result += SimpleStringEx<Type>(Y); 
-    return result;
-}
-
-template <typename Type, typename Other>
-sysinline SimpleStringEx<Type> operator +(const Other& X, const SimpleStringEx<Type>& Y)
-{
-    SimpleStringEx<Type> result(X); 
-    result += SimpleStringEx<Type>(Y); 
-    return result;
-}
+    {return str.valid();}
 
 //================================================================
 //

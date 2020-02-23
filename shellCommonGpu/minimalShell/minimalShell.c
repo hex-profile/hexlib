@@ -453,7 +453,7 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 
     auto bmpSetOutput = [&] () -> stdbool
     {
-        if_not (bmpConfig.outputDir->length() != 0)
+        if_not (bmpConfig.outputDir->size() != 0)
         {
             printMsgL(kit, STR("BMP Saving: Output directory is not set"), msgWarn);
             returnFalse;

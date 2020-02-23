@@ -42,7 +42,7 @@ public:
 
 public:
 
-    inline bool isOk() {return theOk;}
+    inline bool valid() {return theOk;}
     inline size_t usedSize() {return theBufferSize;}
 
 private:
