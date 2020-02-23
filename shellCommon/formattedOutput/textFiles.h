@@ -31,12 +31,12 @@ class InputTextFile
 
 public:
 
-    stdbool open(StlString filename, stdPars(TextFileKit))
+    stdbool open(const CharType* filename, stdPars(TextFileKit))
     {
         stream.close();
         stream.clear();
 
-        stream.open(filename.c_str());
+        stream.open(filename);
         REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
 
         openedFilename = filename;
@@ -218,12 +218,12 @@ public:
 
 public:
 
-    stdbool open(StlString filename, stdPars(TextFileKit))
+    stdbool open(const CharType* filename, stdPars(TextFileKit))
     {
         stream.close();
         stream.clear();
 
-        stream.open(filename.c_str());
+        stream.open(filename);
         REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
 
         openedFilename = filename;
