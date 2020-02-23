@@ -326,10 +326,10 @@ stdbool parseClArgs
 stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(CompilerKit))
 {
     InputTextFile<CharType> inputStream;
-    require(inputStream.open(inputName, stdPass));
+    require(inputStream.open(inputName.c_str(), stdPass));
 
     OutputTextFile outputStream;
-    require(outputStream.open(outputName, stdPass));
+    require(outputStream.open(outputName.c_str(), stdPass));
 
     ////
 
@@ -914,7 +914,7 @@ stdbool makeCppBinAssembly
 )
 {
     OutputTextFile outStream;
-    require(outStream.open(outPath, stdPass));
+    require(outStream.open(outPath.c_str(), stdPass));
 
     //
     // Kernel links forward declarations
@@ -1171,7 +1171,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             //system(cmdline.c_str());
 
             InputTextFile<CharType> rspFile;
-            require(rspFile.open(rspFileName, stdPass));
+            require(rspFile.open(rspFileName.c_str(), stdPass));
 
             StlString content;
             require(rspFile.readEntireFileToString(content, stdPass));
