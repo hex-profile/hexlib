@@ -1,41 +1,113 @@
 #pragma once
 
 #include "charType/charArray.h"
-#include "charType/charType.h"
-#include "compileTools/compileTools.h"
-#include "numbers/int/intType.h"
-#include "charType/strUtils.h"
+#include "storage/noncopyable.h"
+#include "numbers/interface/exchangeInterface.h"
 
 //================================================================
 //
-// StringData
+// EmptyString
 //
 //================================================================
 
 template <typename Type>
-struct StringData;
+struct EmptyString
+{
+
+public:
+
+    static sysinline Type* cstr()
+        {return &zeroElement;}
+
+private:
+
+    // Writable, but only zero value may be written.
+    static Type zeroElement;
+
+};
+
+//================================================================
+//
+// InvalidString
+//
+//================================================================
+
+template <typename Type>
+struct InvalidString
+{
+
+public:
+
+    static sysinline Type* cstr()
+        {return &zeroElement;}
+
+private:
+
+    // Writable, but only zero value may be written.
+    static Type zeroElement;
+
+};
 
 //================================================================
 //
 // SStringBuffer
 //
+// String buffer with trailing NUL character.
+//
 //================================================================
 
 template <typename Type>
-class SStringBuffer
+class SStringBuffer : public NonCopyable
 {
+    
+public:
+    
+    sysinline ~SStringBuffer()
+        {clear();}
 
 public:
 
-    bool realloc(size_t newSize)
-        {return true;}
-
-    size_t size() const 
+    sysinline size_t size() const 
         {return currentSize;}
+
+    sysinline Type* cstr() const
+        {return currentPtr;}
+
+public:
+
+    void clear();
+
+    bool realloc(size_t newSize);
+
+public:
+
+    sysinline bool valid() const 
+    {
+        return currentPtr != InvalidString<Type>::cstr();
+    }
+
+    sysinline void invalidate()
+    {
+        clear();
+
+        currentPtr = InvalidString<Type>::cstr();
+    }
+
+public:
+
+    friend sysinline void exchange(SStringBuffer<Type>& a, SStringBuffer<Type>& b)
+    {
+        exchangeByCopying(a.currentPtr, b.currentPtr);
+        exchangeByCopying(a.currentSize, b.currentSize);
+    }
 
 private:
 
-    Type* currentPtr = nullptr;
+    //
+    // If the size is zero, the pointer is NOT allocated.
+    //
+
+    Type* currentPtr = EmptyString<Type>::cstr();
     size_t currentSize = 0;
 
 };
@@ -80,7 +152,7 @@ class SimpleStringEx
 
     //----------------------------------------------------------------
     //
-    // Construct / Destruct.
+    // Construct.
     //
     //----------------------------------------------------------------
 
@@ -88,9 +160,6 @@ public:
 
     sysinline SimpleStringEx()
         {}
-
-    sysinline ~SimpleStringEx()
-        {deallocate();}
 
     //----------------------------------------------------------------
     //
@@ -110,24 +179,7 @@ public:
         {assign(bufferPtr, bufferSize);}
 
     explicit sysinline SimpleStringEx(const CharArrayEx<Type>& that)
-        {assign(that.ptr, that.size);}
-
-    //----------------------------------------------------------------
-    //
-    // Assign.
-    //
-    //----------------------------------------------------------------
-
-public:
-
-    sysinline String& operator =(const String& that)
-        {assign(that); return *this;}
-
-    sysinline String& operator =(const Type* cstr)
-        {assign(cstr); return *this;}
-
-    sysinline String& operator =(const CharArrayEx<Type>& that)
-        {assign(that.ptr, that.size); return *this;}
+        {assign(that);}
 
     //----------------------------------------------------------------
     //
@@ -137,8 +189,11 @@ public:
 
 public:
 
-    const Type* cstr() const;
-    size_t size() const;
+    sysinline const Type* cstr() const
+        {return buffer.cstr();}
+
+    sysinline size_t size() const
+        {return buffer.size();}
 
 public:
 
@@ -151,13 +206,43 @@ public:
 public:
 
     sysinline bool valid() const
-        {return theOk;}
+        {return buffer.valid();}
 
     sysinline void invalidate()
-        {theOk = false;}
+        {buffer.invalidate();}
 
     sysinline String& clear()
-        {deallocate(); theOk = true; return *this;}
+        {buffer.clear(); return *this;}
+
+    //----------------------------------------------------------------
+    //
+    // Assign.
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    void assign(const Type* bufferPtr, size_t bufferSize);
+
+    sysinline void assign(const CharArrayEx<Type>& that)
+        {assign(that.ptr, that.size);}
+
+    sysinline void assign(const Type* cstr)
+        {assign(charArrayFromPtr(cstr));}
+
+    sysinline void assign(const String& that)
+        {that.valid() ? assign(that.charArray()) : invalidate();}
+
+public:
+
+    sysinline String& operator =(const String& that)
+        {assign(that); return *this;}
+
+    sysinline String& operator =(const Type* cstr)
+        {assign(cstr); return *this;}
+
+    sysinline String& operator =(const CharArrayEx<Type>& that)
+        {assign(that); return *this;}
 
     //----------------------------------------------------------------
     //
@@ -181,30 +266,13 @@ public:
 public:
 
     template <typename That>
-    sysinline String& operator +=(const That& that)
-        {append(that); return *this;}
-
-    template <typename That>
     sysinline String& operator <<(const That& that)
         {append(that); return *this;}
 
-    //----------------------------------------------------------------
-    //
-    // Assign.
-    //
-    //----------------------------------------------------------------
+    template <typename That>
+    sysinline String& operator +=(const That& that)
+        {append(that); return *this;}
 
-    void assign(const Type* bufferPtr, size_t bufferSize);
-
-    sysinline void assign(const CharArrayEx<Type>& that)
-        {assign(that.ptr, that.size);}
-
-    sysinline void assign(const Type* cstr)
-        {assign(charArrayFromPtr(cstr));}
-
-    sysinline void assign(const String& that)
-        {that.valid() ? assign(that.charArray()) : invalidate();}
-    
     //----------------------------------------------------------------
     //
     // Compare.
@@ -240,40 +308,20 @@ public:
 
 public:
 
-    friend sysinline void exchange(String& A, String& B)
+    friend sysinline void exchange(String& a, String& b)
     {
-        exchange(A.theOk, B.theOk);
-        exchange(A.theData, B.theData);
+        exchange(a.buffer, b.buffer);
     }
 
     //----------------------------------------------------------------
     //
-    // Private.
+    // State.
     //
     //----------------------------------------------------------------
 
 private:
 
-    void deallocate();
-
-private:
-
-    //
-    // theOk == true && theData == 0:
-    // Empty string is valid.
-    //
-    // theOk == true && theData != 0:
-    // Valid string is contained in theData.
-    //
-    // theOk == false && any theData
-    // String is invalid and blank
-    //
-
-    // Content ptr
-    StringData<Type>* theData = nullptr;
-
-    // Error absense flag;
-    bool theOk = true;
+    SStringBuffer<Type> buffer;
 
 };
 
