@@ -1,133 +1,131 @@
 #include "simpleString.h"
 
-#include <string>
-#include <memory>
+#include <stdlib.h>
 
 #include "formatting/formatStream.h"
+#include "storage/rememberCleanup.h"
+#include "numbers/int/intType.h"
 
 //================================================================
 //
-// formatOutput
+// EmptyString
 //
 //================================================================
 
-template <>
-void formatOutput(const SimpleStringEx<CharType>& value, FormatOutputStream& outputStream)
+template <typename Type>
+Type EmptyString<Type>::zeroElement = 0;
+
+//================================================================
+//
+// InvalidString
+//
+//================================================================
+
+template <typename Type>
+Type InvalidString<Type>::zeroElement = 0;
+
+//================================================================
+//
+// SStringBuffer::clear
+//
+//================================================================
+
+template <typename Type>
+void SStringBuffer<Type>::clear()
 {
-    outputStream.write(value.charArray());
+    if (currentSize)
+        free(currentPtr);
+
+    currentPtr = EmptyString<Type>::cstr();
+    currentSize = 0;
 }
 
 //================================================================
 //
-// StringData
+// SStringBuffer::realloc
 //
 //================================================================
 
 template <typename Type>
-struct StringData : public std::basic_string<Type>
+bool SStringBuffer<Type>::realloc(size_t newSize)
 {
-    using Base = std::basic_string<Type>;
+    //----------------------------------------------------------------
+    //
+    // Invalidate.
+    //
+    //----------------------------------------------------------------
 
-    sysinline StringData(const Type* bufferPtr, size_t bufSize)
-        : Base(bufferPtr, bufSize) {}
-};
+    if (currentSize)
+        free(currentPtr);
 
-//================================================================
-//
-// SimpleStringEx<Type>::deallocate
-//
-//================================================================
+    currentPtr = InvalidString<Type>::cstr();
+    currentSize = 0;
 
-template <typename Type>
-void SimpleStringEx<Type>::deallocate()
-{
-    try
-    {
-        delete theData;
-    }
-    catch (const std::exception&)
-    {
-        // just in case, but only crazy STL can throw it in destructor
-    }
+    //----------------------------------------------------------------
+    //
+    // Allocate.
+    //
+    //----------------------------------------------------------------
 
-    theData = nullptr;
+    constexpr size_t maxSize = (TYPE_MAX(size_t) / sizeof(Type)) - 1;
+    ensure(newSize <= maxSize);
+
+    ////
+
+    Type* newPtr = EmptyString<Type>::cstr();
+        
+    if (newSize)
+        newPtr = (Type*) malloc((newSize + 1) * sizeof(Type));
+
+    ensure(newPtr != 0);
+
+    //----------------------------------------------------------------
+    //
+    // Record success.
+    //
+    //----------------------------------------------------------------
+
+    currentPtr = newPtr;
+    currentSize = newSize;
+
+    return true;
 }
 
 //================================================================
 //
-// SimpleStringEx<Type>::assign(const Type* bufferPtr, size_t bufSize)
+// SimpleStringEx::assign
 //
 //================================================================
 
 template <typename Type>
-void SimpleStringEx<Type>::assign(const Type* bufferPtr, size_t bufSize)
+void SimpleStringEx<Type>::assign(const Type* thatPtr, size_t thatSize)
 {
-    theOk = false;
+    REMEMBER_CLEANUP_EX(invalidateOnError, buffer.invalidate());
 
     ////
 
-    if (bufSize == 0) // empty string
-    {
-        deallocate();
-        theOk = true;
-        return;
-    }
+    buffer.clear();
 
     ////
 
-    try
+    if (thatSize != 0)
     {
-        if (theData != 0)
-            (*theData).assign(bufferPtr, bufSize);
-        else
+        ensurev(buffer.realloc(thatSize));
+
+        Type* bufferPtr = buffer.cstr();
+
+        if (thatSize)
         {
-            theData = new (std::nothrow) StringData<Type>(bufferPtr, bufSize);
-
-            if_not (theData)
-                return;
+            memcpy(bufferPtr, thatPtr, thatSize * sizeof(Type));
+            bufferPtr += thatSize;
         }
+
+        *bufferPtr = 0;
     }
-    catch (const std::exception&) {}
 
     ////
 
-    theOk = true;
-}
-
-//================================================================
-//
-// SimpleStringEx<Type>::cstr
-//
-//================================================================
-
-template <typename Type>
-const Type* SimpleStringEx<Type>::cstr() const
-{
-    static const Type emptyStr[] = {0};
-
-    const Type* result = emptyStr;
-
-    if (theOk && theData)
-        result = theData->c_str();
-
-    return result;
-}
-
-//================================================================
-//
-// SimpleStringEx<Type>::size
-//
-//================================================================
-
-template <typename Type>
-size_t SimpleStringEx<Type>::size() const
-{
-    size_t result = 0;
-
-    if (theOk && theData)
-        result = theData->size();
-
-    return result;
+    invalidateOnError.cancel();
 }
 
 //================================================================
@@ -139,32 +137,59 @@ size_t SimpleStringEx<Type>::size() const
 template <typename Type>
 void SimpleStringEx<Type>::append(const Type* thatPtr, size_t thatSize)
 {
-    if_not (this->valid())
-        return; // Keep invalid.
+    REMEMBER_CLEANUP_EX(invalidateOnError, buffer.invalidate());
 
     ////
 
-    if (thatSize == 0)
-        return; // Done.
+    ensurev(buffer.valid());
 
     ////
 
-    try
+    if (thatSize != 0)
     {
-        if (theData != 0)
+        ensurev(thatSize <= TYPE_MAX(size_t) - buffer.size()); // Subtraction is always valid.
+
+        SStringBuffer<Type> newBuffer;
+        ensurev(newBuffer.realloc(buffer.size() + thatSize));
+        Type* newPtr = newBuffer.cstr();
+
+        ////
+
+        if (buffer.size())
         {
-            (*theData).append(thatPtr, thatSize);
+            memcpy(newPtr, buffer.cstr(), buffer.size() * sizeof(Type));
+            newPtr += buffer.size();
         }
-        else
-        {
-            theData = new (std::nothrow) StringData<Type>(thatPtr, thatSize);
-            if_not (theData) {theOk = false; return;}
-        }
+
+        ////
+
+        memcpy(newPtr, thatPtr, thatSize * sizeof(Type));
+        newPtr += thatSize;
+
+        ////
+
+        *newPtr = 0;
+
+        ////
+
+        exchange(newBuffer, buffer);
     }
-    catch (const std::exception&)
-    {
-        theOk = false;
-    }
+
+    ////
+
+    invalidateOnError.cancel();
+}
+
+//================================================================
+//
+// formatOutput
+//
+//================================================================
+
+template <>
+void formatOutput(const SimpleStringEx<CharType>& value, FormatOutputStream& outputStream)
+{
+    outputStream.write(value.charArray());
 }
 
 //================================================================
