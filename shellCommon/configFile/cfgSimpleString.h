@@ -76,7 +76,7 @@ public:
 
     inline void clear()
     {
-        if_not (value.isOk() && value.size() == 0)
+        if_not (value.valid() && value.size() == 0)
         {
             value.clear();
             changed = true;
@@ -214,7 +214,7 @@ private:
 template <typename Type>
 inline bool SimpleStringVarEx<Type>::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment, const CharArray& blockComment)
 {
-    auto oldValue = value;
+    auto oldValue{value};
     SerializeSimpleStringVar<Type> serializeVar(*this, name, comment, blockComment);
     kit.visitor(kit.scope, serializeVar);
     return allv(oldValue == value);

@@ -38,7 +38,7 @@ public:
 public:
 
     void clear() {theOk = true;}
-    inline bool isOk() {return theOk;}
+    inline bool valid() {return theOk;}
 
 private:
 

@@ -547,7 +547,7 @@ stdbool VideoPreprocessorImpl::processTarget
 
     auto aviSetOutput = [&] () -> stdbool
     {
-        if_not (aviConfig.outputDir->length() != 0)
+        if_not (aviConfig.outputDir->size() != 0)
         {
             printMsgL(kit, STR("AVI Saving: <%0> is not set (Testbed->Config->Edit)"), outputDirName(), msgWarn);
             returnFalse;
@@ -591,7 +591,7 @@ stdbool VideoPreprocessorImpl::processTarget
 
     auto bmpSetOutput = [&] () -> stdbool
     {
-        if_not (bmpConfig.outputDir->length() != 0)
+        if_not (bmpConfig.outputDir->size() != 0)
         {
             printMsgL(kit, STR("BMP Saving: <%0> is not set (Testbed->Config->Edit)"), outputDirName(), msgWarn);
             returnFalse;

@@ -191,7 +191,7 @@ bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         FormatStreamStlThunk formatToStream(stringStream);
 
         v.func(v.value, formatToStream);
-        ensure(formatToStream.isOk());
+        ensure(formatToStream.valid());
         ensure(!!stringStream);
 
         ensure(func.print(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
@@ -261,7 +261,7 @@ bool SetBusyStatusByAt<AtApi>::set(const FormatOutputAtom& message)
         FormatStreamStlThunk formatToStream(stringStream);
 
         message.func(message.value, formatToStream);
-        ensure(formatToStream.isOk());
+        ensure(formatToStream.valid());
         ensure(!!stringStream);
 
         ensure(api->set_busy_status(api, stringStream.rdbuf()->str().c_str()) != 0);
@@ -293,7 +293,7 @@ public:
         FormatStreamStlThunk formatToStream(stringStream);
 
         hint.desc.func(hint.desc.value, formatToStream);
-        require(formatToStream.isOk());
+        require(formatToStream.valid());
         require(!!stringStream);
 
         ////
@@ -321,7 +321,7 @@ public:
         FormatStreamStlThunk formatToStream(stringStream);
 
         hint.desc.func(hint.desc.value, formatToStream);
-        require(formatToStream.isOk());
+        require(formatToStream.valid());
         require(!!stringStream);
         const CharType* textDesc = stringStream.rdbuf()->str().c_str();
 

@@ -191,7 +191,7 @@ public:
             FormatStreamStlThunk formatToStream(stream);
 
             v.func(v.value, formatToStream);
-            ensure(formatToStream.isOk());
+            ensure(formatToStream.valid());
 
             stream << endl;
             ensure(!!stream);

@@ -256,7 +256,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
 
     ////
 
-    if (cfgFilename.length() == 0)
+    if (cfgFilename.size() == 0)
     {
         updateFileEnabled = false;
         returnFalse;
@@ -379,7 +379,8 @@ stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
 
 stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filename, stdPars(MsgLogKit))
 {
-    SimpleString cmdLine = configEditor + CT(" \"") + filename + CT("\"");
+    SimpleString cmdLine; cmdLine << configEditor << CT(" \"") << filename << CT("\"");
+
     require(def(cmdLine));
 
     ProcessToolImplThunk processTool(kit.msgLog);
@@ -397,7 +398,7 @@ stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filen
 stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
 {
     require(updateFileEnabled);
-    REQUIRE(filename.length() != 0);
+    REQUIRE(filename.size() != 0);
 
     ////
 
@@ -407,7 +408,7 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFi
 
     if_not (errorBlock(launchEditor(configEditor, filename, stdPass)))
     {
-        require(launchEditor(CT("notepad"), filename, stdPass));
+        require(launchEditor(SimpleString{CT("notepad")}, filename, stdPass));
     }
 
     ////

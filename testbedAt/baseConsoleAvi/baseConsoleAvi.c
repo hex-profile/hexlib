@@ -127,7 +127,7 @@ stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& res
     FormatStreamStdioThunk formatter(resultPtr, resultSize);
 
     v.func(v.value, formatter);
-    REQUIRE(formatter.isOk());
+    REQUIRE(formatter.valid());
 
     result.resize(formatter.usedSize());
 

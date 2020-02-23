@@ -64,7 +64,7 @@ stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& res
     FormatStreamStdioThunk formatter(resultPtr, resultSize);
 
     v.func(v.value, formatter);
-    REQUIRE(formatter.isOk());
+    REQUIRE(formatter.valid());
 
     result.resize(formatter.usedSize());
 
@@ -322,7 +322,7 @@ stdbool BaseConsoleBmp::setOutputDir(const CharType* outputDir, stdPars(Kit))
 
 stdbool BaseConsoleBmpImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 {
-    if (currentOutputDir != outputDir)
+    if_not (currentOutputDir == outputDir)
     {
         kit.fileTools.makeDirectory(outputDir);
         currentOutputDir = outputDir;

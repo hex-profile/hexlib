@@ -56,8 +56,8 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
     # include "profiler.css"
     ;
 
-    REQUIRE(cssText.length() >= 2);
-    cssText = cssText.substr(1, cssText.length() - 2);
+    REQUIRE(cssText.size() >= 2);
+    cssText = cssText.substr(1, cssText.size() - 2);
 
     printMsg(file, STR("%0"), cssText);
 
@@ -78,8 +78,8 @@ stdbool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
     # include "profiler.js"
     ;
 
-    REQUIRE(javascriptText.length() >= 2);
-    javascriptText = javascriptText.substr(1, javascriptText.length() - 2);
+    REQUIRE(javascriptText.size() >= 2);
+    javascriptText = javascriptText.substr(1, javascriptText.size() - 2);
 
     printMsg(file, STR("%0"), javascriptText);
 
@@ -702,7 +702,7 @@ StlString translateStringToHtml(const StlString& str, size_t maxLength)
 
     ////
 
-    if (maxLength >= truncSymbolSize && s.length() > maxLength)
+    if (maxLength >= truncSymbolSize && s.size() > maxLength)
     {
         s = s.substr(0, maxLength - truncSymbolSize); // reserve 2 chars for ellipsis
         truncated = true;
@@ -711,7 +711,7 @@ StlString translateStringToHtml(const StlString& str, size_t maxLength)
     ////
 
     const CharType* strBegin = s.c_str();
-    const CharType* strEnd = strBegin + s.length();
+    const CharType* strEnd = strBegin + s.size();
 
     ////
 

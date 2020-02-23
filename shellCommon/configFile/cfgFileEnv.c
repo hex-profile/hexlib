@@ -173,7 +173,7 @@ static void saveString(const String& str, basic_ostream<CharType>& stream)
     stream << quoteBeg;
 
     const CharType* valuePtr = str.c_str();
-    String::size_type valueSize = str.length();
+    String::size_type valueSize = str.size();
 
     String::size_type nExtraChars = 0;
 
@@ -862,9 +862,9 @@ static void saveTree
 
             stream << indent << CT("{") << endl;
 
-            indent.resize(indent.length() + indentWidth, ' ');
+            indent.resize(indent.size() + indentWidth, ' ');
             saveTree(indent, tree, node, stream, false);
-            indent.resize(indent.length() - indentWidth);
+            indent.resize(indent.size() - indentWidth);
 
             stream << indent << CT("}") << endl;
             prevFlag = 2;

@@ -1298,21 +1298,21 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         StlString platformArchStr = CT("HEXLIB_CUDA_ARCH=");
 
         if (stringBeginsWith(defines[i], platformArchStr))
-            platformArch = defines[i].substr(platformArchStr.length());
+            platformArch = defines[i].substr(platformArchStr.size());
 
         ////
 
         StlString platformBitnessStr = CT("HEXLIB_GPU_BITNESS=");
 
         if (stringBeginsWith(defines[i], platformBitnessStr))
-            platformBitness = defines[i].substr(platformBitnessStr.length());
+            platformBitness = defines[i].substr(platformBitnessStr.size());
     }
 
     ////
 
     if (gpuHardwareTarget)
     {
-        REQUIRE_MSG(platformArch.length() != 0, 
+        REQUIRE_MSG(platformArch.size() != 0, 
             STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)"));
 
         REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"), 
