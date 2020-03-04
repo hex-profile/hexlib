@@ -119,7 +119,7 @@ struct DisplayParams
     Point<Space> screenSize;
 
     // User desire to see interpolated data.
-    const bool& interpolation;
+    bool const interpolation;
 
     // Abstract view index or image side.
     DisplayedRangeIndex& viewIndex;
