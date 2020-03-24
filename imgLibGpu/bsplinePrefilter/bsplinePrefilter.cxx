@@ -46,13 +46,17 @@ static devConstant float32 preFilter3[] = {0, 0, 0, FILTER_CORE15};
     \
     action(uint8, float16, float16, 1) \
     action(uint8_x2, float16_x2, float16_x2, 2) \
-    action(uint8_x4, float16_x4, float16_x4, 4)
+    action(uint8_x4, float16_x4, float16_x4, 4) \
+    \
+    action(float32, float32, float32, 1)
 
 #define FOREACH_DST_TYPE(action) \
     \
     action(float16, float16, float16, 1) \
     action(float16_x2, float16_x2, float16_x2, 2) \
     action(float16_x4, float16_x4, float16_x4, 4) \
+    \
+    action(float32, float32, float32, 1)
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
