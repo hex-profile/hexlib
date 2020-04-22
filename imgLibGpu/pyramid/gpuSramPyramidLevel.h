@@ -1,48 +1,7 @@
 #pragma once
 
 #include "data/gpuMatrix.h"
-#include "gpuSupport/parallelLoop.h"
-
-//================================================================
-//
-// parallelLoadStructureNoSync
-//
-// Loads a structure from DRAM to SRAM by GPU group.
-//
-//================================================================
-
-template <Space groupSize, typename LoadMode, typename Type>
-sysinline void parallelLoadStructureNoSync(Space groupMember, const Type& srcParam, Type& dstParam)
-{
-    using Atom = uint32;
-
-    ////
-
-    COMPILE_ASSERT(sizeof(Type) % sizeof(Atom) == 0);
-    const Space atomCount = sizeof(Type) / sizeof(Atom);
-    COMPILE_ASSERT(alignof(Type) % alignof(Atom) == 0);
-
-    ////
-
-    const Atom* srcPtr = (const Atom*) &srcParam;
-    Atom* dstPtr = (Atom*) &dstParam;
-
-    ////
-
-    srcPtr += groupMember;
-    dstPtr += groupMember;
-
-    ////
-
-    PARALLEL_LOOP_UNBASED
-    (
-        i,
-        atomCount,
-        groupMember,
-        groupSize,
-        dstPtr[i] = LoadMode::func(&srcPtr[i])
-    );
-}
+#include "gpuSupport/parallelLoad.h"
 
 //================================================================
 //
@@ -114,7 +73,7 @@ sysinline void GpuSramPyramidLevel<Type>::loadNoSync(Space groupMember, const Gp
     const GpuPyramidLevelLayout& srcLayout = src.levelData[level];
     GpuPyramidLevelLayout& dstLayout = this->layout;
 
-    parallelLoadStructureNoSync<groupSize, LoadMode, GpuPyramidLevelLayout>(groupMember, srcLayout, dstLayout);
+    parallelLoadTypeNoSync<groupSize, LoadMode, GpuPyramidLevelLayout>(groupMember, srcLayout, dstLayout);
 }
 
 #endif

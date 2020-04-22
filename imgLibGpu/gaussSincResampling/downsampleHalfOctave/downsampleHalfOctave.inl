@@ -209,7 +209,6 @@ GPUTOOL_2D_BEG_EX
         coeffsPtr[i] = devTex2D(coeffsSampler, (i + (devThreadX + 0.5f)) * coeffsTexstep.X, srcOrgFrac))
 
     devSyncThreads();
-    
 
     //----------------------------------------------------------------
     //

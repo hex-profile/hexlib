@@ -123,7 +123,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 
 stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
-    ARRAY_EXPOSE(result);
+    ARRAY_EXPOSE_UNSAFE(result);
     FormatStreamStdioThunk formatter(resultPtr, resultSize);
 
     v.func(v.value, formatter);
@@ -842,7 +842,9 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
         auto basenameMsg = paramMsg(STR("%/%"), currentOutputDir.c_str(), descArray());
         require(formatAtomToBuffer(basenameMsg, basenameArray, stdPass));
-        String basenameStr(basenameArray.ptr(), basenameArray.size());
+
+        ARRAY_EXPOSE_UNSAFE(basenameArray);
+        String basenameStr(basenameArrayPtr, basenameArraySize);
 
         ////
 
