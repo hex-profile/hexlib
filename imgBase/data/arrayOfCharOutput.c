@@ -13,7 +13,7 @@
     template <> \
     void formatOutput(const Type& value, FormatOutputStream& outputStream) \
     { \
-        ARRAY_EXPOSE(value); \
+        ARRAY_EXPOSE_UNSAFE(value); \
         outputStream.write(valuePtr, valueSize); \
     }
 

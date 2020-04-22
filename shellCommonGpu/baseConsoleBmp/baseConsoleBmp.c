@@ -60,7 +60,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 
 stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
-    ARRAY_EXPOSE(result);
+    ARRAY_EXPOSE_UNSAFE(result);
     FormatStreamStdioThunk formatter(resultPtr, resultSize);
 
     v.func(v.value, formatter);
@@ -187,7 +187,7 @@ stdbool writeImage
     //
     //----------------------------------------------------------------
 
-    ARRAY_EXPOSE(bufferArray);
+    ARRAY_EXPOSE_UNSAFE(bufferArray);
 
     Space dataSizeInBytes = bufferArraySize * sizeof(Pixel);
 
@@ -390,7 +390,8 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
     require(fixFilename(descArray, descArray, stdPass));
 
-    CharArray descStr(descArray.ptr(), descArray.size());
+    ARRAY_EXPOSE_UNSAFE(descArray);
+    CharArray descStr(descArrayPtr, descArraySize);
 
     //----------------------------------------------------------------
     //
@@ -420,7 +421,8 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
     require(formatAtomToBuffer(filenameMsg, filenameArray, stdPass));
 
-    CharArray filenameStr(filenameArray.ptr(), filenameArray.size());
+    ARRAY_EXPOSE_UNSAFE(filenameArray);
+    CharArray filenameStr(filenameArrayPtr, filenameArraySize);
 
     //----------------------------------------------------------------
     //

@@ -15,28 +15,29 @@
 #define PARALLEL_LOOP_UNBASED(iterVar, iterationCount, groupMember, groupSize, iterationBody) \
     \
     { \
-        enum {_groupSize = (groupSize)}; \
-        enum {_iterCount = (iterationCount) / (_groupSize)}; \
-        enum {_iterRem = (iterationCount) % (_groupSize)}; \
+        constexpr auto _groupSize = (groupSize); \
+        COMPILE_ASSERT(_groupSize >= 1); \
         \
-        COMPILE_ASSERT(_iterCount >= 0 && _iterRem >= 0); /* Ensure compile-time constants */ \
+        constexpr auto _iterationCount = (iterationCount); \
+        COMPILE_ASSERT(_iterationCount >= 0); \
         \
-        Space _member = (groupMember); \
+        auto _groupMember = (groupMember); \
         \
-        bool _extra = (_iterRem) && (_member < _iterRem); \
+        constexpr auto _iterCount = _iterationCount / _groupSize; \
+        constexpr auto _iterRem = _iterationCount % _groupSize; \
         \
-        /**/ \
+        bool _extra = (_iterRem) && (_groupMember < _iterRem); \
         \
         devUnrollLoop \
         \
-        for (Space _n = 0; _n < _iterCount; ++_n) \
+        for (auto _n = decltype(_iterCount){0}; _n < _iterCount; ++_n) \
         { \
-            const Space iterVar = _n * _groupSize; \
+            const auto iterVar = _n * _groupSize; \
             {iterationBody;} \
         } \
         \
         { \
-            Space iterVar = _iterCount * _groupSize; \
+            const auto iterVar = _iterCount * _groupSize; \
             \
             if (_extra) \
                 {iterationBody;} \
