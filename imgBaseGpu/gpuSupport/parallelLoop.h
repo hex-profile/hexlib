@@ -155,7 +155,7 @@
         \
         if (_iterRem && _tid < _iterRem) \
         { \
-            Space iY = SpaceU(_i) / SpaceU(_areaSizeX); /* for constant divisor, it is optimized well*/ \
+            Space iY = SpaceU(_i) / SpaceU(_areaSizeX); /* for constant divisor, it is optimized well */ \
             Space iX = _i - iY * _areaSizeX; \
             \
             {iterationBody;} \
