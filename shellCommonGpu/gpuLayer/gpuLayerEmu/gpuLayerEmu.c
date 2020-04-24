@@ -597,8 +597,9 @@ devDefineKernel(copyArrayKernel, CopyArrayParams, o)
     if (byteCount)
     {
         // performance check
-        devDebugCheck(isPtrAligned<granularity>(src));
-        devDebugCheck(isPtrAligned<granularity>(dst));
+        // ```
+        //devDebugCheck(isPtrAligned<granularity>(src));
+        //devDebugCheck(isPtrAligned<granularity>(dst));
     }
 
     ////
