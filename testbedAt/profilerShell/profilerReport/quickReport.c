@@ -164,9 +164,9 @@ public:
             STR("%0%1: %2 is %4%5, %3%% total"),
             STR(""), // indent
             userName.size ? userName : charArrayFromPtr(scope.location), // 1
-            paramMsg(deviceMode ? STR("device %0%%") : (pureTime ? STR("body") : STR("time")), fltf(deviceFraction * 1e2f, 0)), // 2
+            paramMsg(deviceMode ? STR("Device %0%%") : (pureTime ? STR("Body") : STR("Time")), fltf(deviceFraction * 1e2f, 0)), // 2
             fltf(timePercentage, 1), // 3
-            paramMsg(!perCycleCountImportant ? STR("%0 ms") : STR("%0 ms x %1 fraction"), fltf(avgTimeMs, 2), fltf(avgPerCycleCount, 1)), // 4
+            paramMsg(!perCycleCountImportant ? STR("%0 ms") : STR("%0 ms x %1 fraction"), fltf(avgTimeMs, 3), fltf(avgPerCycleCount, 1)), // 4
             paramMsg(avgElemTime == 0 ? STR("") : STR(" (%0 clocks/elem at %1 square)"), prettyNumber(fltg(avgElemTime * processingThroughput, 3)), fltf(sqrtf(avgElemCount), 0))
         );
 
