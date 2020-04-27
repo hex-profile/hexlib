@@ -13,6 +13,12 @@
 //
 //================================================================
 
+#define PREP_LIST_ELEM(i, list) \
+    PREP_SEQ_ELEM(i, list)
+
+#define PREP_LIST_SIZE(list) \
+    PREP_DEC(PREP_SEQ_SIZE(list))
+
 //================================================================
 //
 // PREP_LIST_FOREACH
