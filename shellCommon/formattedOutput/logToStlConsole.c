@@ -39,10 +39,15 @@ bool LogToStlConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 
             StlString str = stringStream.rdbuf()->str();
 
-            ostream& screenStream = (msgKind >= msgWarn) ? cerr : cout;
-            screenStream << str;
+            ostream* screenStream = &cout;
 
-            screenStream.flush();
+            if (useStdErr && msgKind >= msgWarn) 
+                screenStream = &cerr;
+
+
+            *screenStream << str;
+
+            screenStream->flush();
 
         #if defined(_WIN32)
 
