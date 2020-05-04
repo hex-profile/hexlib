@@ -15,8 +15,12 @@ class LogToStlConsole : public MsgLog
 
 public:
 
-    LogToStlConsole(bool useDebugOutput)
-        : useDebugOutput(useDebugOutput) {}
+    LogToStlConsole(bool useDebugOutput, bool useStdErr)
+        : 
+        useDebugOutput(useDebugOutput),
+        useStdErr(useStdErr)
+    {
+    }
 
     bool addMsg(const FormatOutputAtom& v, MsgKind msgKind) override;
 
@@ -40,5 +44,6 @@ private:
     std::recursive_mutex mutex;
 
     bool const useDebugOutput;
+    bool const useStdErr;
 
 };
