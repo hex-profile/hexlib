@@ -123,7 +123,7 @@ retry:
 
 //================================================================
 //
-// rndgenGaussApprox3
+// rndgenGaussApproxThree
 //
 // By sum of 3 uniformly distributed numbers.
 // (mean = 0 and variance = 1)
@@ -132,7 +132,13 @@ retry:
 //
 //================================================================
 
-sysinline float32 rndgenGaussApprox3(RndgenState& state)
+template <typename Type>
+sysinline Type rndgenGaussApproxThree(RndgenState& state);
+
+//----------------------------------------------------------------
+
+template <>
+sysinline float32 rndgenGaussApproxThree(RndgenState& state)
 {
     const float32 bias = -3 * 0.5f;
     const float32 factor = 2.f; // compensate for sigma=1
@@ -146,7 +152,7 @@ sysinline float32 rndgenGaussApprox3(RndgenState& state)
 
 //================================================================
 //
-// rndgenGaussApprox4
+// rndgenGaussApproxFour
 //
 // By sum of 4 uniformly distributed numbers.
 // (mean = 0 and variance = 1)
@@ -155,7 +161,13 @@ sysinline float32 rndgenGaussApprox3(RndgenState& state)
 //
 //================================================================
 
-sysinline float32 rndgenGaussApprox4(RndgenState& state)
+template <typename Type>
+sysinline Type rndgenGaussApproxFour(RndgenState& state);
+
+//----------------------------------------------------------------
+
+template <>
+sysinline float32 rndgenGaussApproxFour(RndgenState& state)
 {
     const float32 bias = -4 * 0.5f;
     const float32 factor = 1.73205080723775459f; // compensate for sigma=1
