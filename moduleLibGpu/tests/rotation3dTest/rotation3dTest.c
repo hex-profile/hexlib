@@ -9,6 +9,7 @@
 #include "mathFuncs/rotationMath.h"
 #include "errorLog/errorLog.h"
 #include "storage/rememberCleanup.h"
+#include "rndgen/rndgenPoint.h"
 
 //================================================================
 //
@@ -92,12 +93,12 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
 
     auto generateUnitQuat = [&] () 
     {
-        return vectorNormalize(point4D(rndgenGaussApprox4(rndgen), rndgenGaussApprox4(rndgen), rndgenGaussApprox4(rndgen), rndgenGaussApprox4(rndgen)));
+        return vectorNormalize(rndgenGaussApproxFour<Point4D<float32>>(rndgen));
     };
 
     auto generateUnitVec = [&] ()
     {
-        return vectorNormalize(point3D(rndgenGaussApprox4(rndgen), rndgenGaussApprox4(rndgen), rndgenGaussApprox4(rndgen)));
+        return vectorNormalize(rndgenGaussApproxFour<Point3D<float32>>(rndgen));
     };
 
     auto generateMapVec = [&] ()

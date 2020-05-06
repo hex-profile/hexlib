@@ -3,6 +3,8 @@
 #include "rndgen/rndgenFloat.h"
 #include "compileTools/compileTools.h"
 #include "point/pointBase.h"
+#include "point3d/point3dBase.h"
+#include "point4d/point4dBase.h"
 
 //================================================================
 //
@@ -19,21 +21,33 @@ sysinline void rndgenUniform(RndgenState& state, Point<Type>& result)
 
 //================================================================
 //
-// rndgenPointGaussApprox3
-// rndgenPointGaussApprox4
+// rndgenGaussApproxFour<Point<float32>>
 //
 //================================================================
 
-sysinline Point<float32> rndgenPointGaussApprox3(RndgenState& state)
+template <>
+sysinline Point<float32> rndgenGaussApproxFour(RndgenState& state)
 {
-    float32 rX = rndgenGaussApprox3(state);
-    float32 rY = rndgenGaussApprox3(state);
+    auto rX = rndgenGaussApproxFour<float32>(state);
+    auto rY = rndgenGaussApproxFour<float32>(state);
     return point(rX, rY);
 }
 
-sysinline Point<float32> rndgenPointGaussApprox4(RndgenState& state)
+template <>
+sysinline Point3D<float32> rndgenGaussApproxFour(RndgenState& state)
 {
-    float32 rX = rndgenGaussApprox4(state);
-    float32 rY = rndgenGaussApprox4(state);
-    return point(rX, rY);
+    auto rX = rndgenGaussApproxFour<float32>(state);
+    auto rY = rndgenGaussApproxFour<float32>(state);
+    auto rZ = rndgenGaussApproxFour<float32>(state);
+    return point3D(rX, rY, rZ);
+}
+
+template <>
+sysinline Point4D<float32> rndgenGaussApproxFour(RndgenState& state)
+{
+    auto rX = rndgenGaussApproxFour<float32>(state);
+    auto rY = rndgenGaussApproxFour<float32>(state);
+    auto rZ = rndgenGaussApproxFour<float32>(state);
+    auto rW = rndgenGaussApproxFour<float32>(state);
+    return point4D(rX, rY, rZ, rW);
 }
