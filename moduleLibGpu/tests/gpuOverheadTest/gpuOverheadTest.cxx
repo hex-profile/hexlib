@@ -181,7 +181,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
     ////
 
-    for (Space i = 0; i < testCount; ++i)
+    for_count (i, testCount)
     {
         Space warpCountBits = convertNearest<Space>(linerp<float32>(rndgenUniformFloat(r), minWarpCountBits, maxWarpCountBits));
         Space groupSizeBits = warpCountBits + warpSizeBits;
@@ -241,7 +241,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
     if (kit.dataProcessing)
     {
-        for (Space i = 0; i < testCount; ++i)
+        for_count (i, testCount)
         {
             deviceTimeCombinedPtr[i] = 0;
             hostTimePtr[i] = 0;
@@ -250,7 +250,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
     ////
 
-    for (Space i = 0; i < testCount; ++i)
+    for_count (i, testCount)
     {
         //
         // Combined mega-call
@@ -264,7 +264,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
             TimeMoment t1 = kit.timer.moment();
             REQUIRE(cuEventRecord(cuStartEvent, stream) == CUDA_SUCCESS);
 
-            for (Space k = 0; k < reliabilityFactor; ++k)
+            for_count (k, reliabilityFactor)
             {
                 const GpuKernelLink* emptyKernel = emptyKernelArray[rndgen16(r) % KERNEL_COUNT];
                 require(kit.gpuKernelCalling.callKernel(groupCountPtr[i], groupSizePtr[i], 0, *emptyKernel, EmptyKernelParams(), kit.gpuCurrentStream, stdPass));
@@ -296,28 +296,28 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
         if (kit.dataProcessing)
         {
-            for (Space i = 0; i < testCount; ++i)
+            for_count (i, testCount)
                 deviceTimeAccumulatedPtr[i] = 0;
         }
 
         ////
 
-        for (Space t = 0; t < reliabilityFactor; ++t)
+        for_count (t, reliabilityFactor)
         {
             ALLOCATE_TEST_ARRAY(order, Space);
 
             if (kit.dataProcessing)
             {
-                for (Space i = 0; i < testCount; ++i)
+                for_count (i, testCount)
                     orderPtr[i] = i;
 
-                for (Space i = 0; i < testCount; ++i)
+                for_count (i, testCount)
                 {
                     Space j = rndgen16(r) % testCount;
                     exchange(orderPtr[i], orderPtr[j]);
                 }
 
-                for (Space q = 0; q < testCount; ++q)
+                for_count (q, testCount)
                 {
                     Space i = orderPtr[q];
 
@@ -352,7 +352,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
     if (kit.dataProcessing)
     {
-        for (Space i = 0; i < testCount; ++i)
+        for_count (i, testCount)
             measurementTimePtr[i] = deviceTimeCombinedPtr[i];
     }
 
@@ -372,7 +372,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
         REQUIRE(f != 0);
         REMEMBER_CLEANUP1(fclose(f), FILE*, f);
 
-        for (Space i = 0; i < testCount; ++i)
+        for_count (i, testCount)
         {
             Point<Space> groupSize = groupSizePtr[i];
             Point<Space> groupCount = groupCountPtr[i];

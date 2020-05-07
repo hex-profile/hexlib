@@ -148,7 +148,7 @@ void prepareSignalHistogram(AtSignalTest& at, const Array<int32>& histogram, boo
     // Zero array
     //
 
-    for (Space i = 0; i < histogramSize; ++i)
+    for_count (i, histogramSize)
         histogramPtr[i] = 0;
 
     //
@@ -157,7 +157,7 @@ void prepareSignalHistogram(AtSignalTest& at, const Array<int32>& histogram, boo
 
     int32 actionCount = at.actionCount();
 
-    for (int32 i = 0; i < actionCount; ++i)
+    for_count (i, actionCount)
     {
         AtActionId id = 0;
 

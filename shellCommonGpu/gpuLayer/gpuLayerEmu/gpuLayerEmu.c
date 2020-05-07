@@ -700,7 +700,7 @@ devDefineKernel(copyMatrixKernel, CopyMatrixParams, o)
     Space rowStart = partition.nthOrg(devGroupY);
     Space rowCount = partition.nthSize(devGroupY);
 
-    for (Space k = 0; k < rowCount; ++k)
+    for_count (k, rowCount)
     {
         Space Y = rowStart + k;
 

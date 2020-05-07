@@ -177,7 +177,7 @@ static void saveString(const String& str, basic_ostream<CharType>& stream)
 
     String::size_type nExtraChars = 0;
 
-    for (String::size_type i = 0; i < valueSize; ++i)
+    for_count (i, valueSize)
     {
         if (valuePtr[i] == quoteBeg || valuePtr[i] == quoteEnd || valuePtr[i] == '\\')
             ++nExtraChars;
@@ -192,7 +192,7 @@ static void saveString(const String& str, basic_ostream<CharType>& stream)
     if (encodedVector.size() > 0)
         encodedPtr = &encodedVector[0];
 
-    for (String::size_type i = 0; i < valueSize; ++i)
+    for_count (i, valueSize)
     {
         if (valuePtr[i] == quoteBeg || valuePtr[i] == quoteEnd || valuePtr[i] == '\\')
             *encodedPtr++ = '\\';
@@ -231,7 +231,7 @@ static bool parseNameId(const CharType*& p, NameID& result)
 
     ////
 
-    for (size_t I = 0; I < nameIdHexDigs; ++I)
+    for_count (I, nameIdHexDigs)
     {
         CharType c = *p;
         int32 digit = 0;
@@ -266,7 +266,7 @@ static void saveNameId(const NameID& id, basic_ostream<CharType>& stream)
 
     uint32 V = id;
 
-    for (int32 I = 0; I < 8; ++I)
+    for_count (I, 8)
     {
         buffer[I] = "0123456789ABCDEF"[(V >> (32 - 4)) & 0x0F];
         V <<= 4;
@@ -633,7 +633,7 @@ static void treeAdd(Tree& container, const NameContainer& name, const Record& re
 
     ////
 
-    for (NameContainer::size_type i = 0; i < name.size() - 1; ++i)
+    for_count (i, name.size() - 1)
     {
         const NamePart& curName = name[i];
 

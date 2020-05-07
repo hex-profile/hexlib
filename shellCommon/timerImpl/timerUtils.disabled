@@ -27,7 +27,7 @@ inline Int power10(int digits)
 {
     Int result = 1;
 
-    for (int i = 0; i < digits; ++i)
+    for_count (i, digits)
         result *= 10;
 
     return result;
@@ -54,7 +54,7 @@ bool formatUint(Uint value, int digits, StrOutput& result)
     char tmpBuffer[maxDigits];
     char* end = tmpBuffer + digits - 1;
 
-    for (int i = 0; i < digits; ++i)
+    for_count (i, digits)
     {
         Uint valueDiv10 = value / 10;
         Uint digit = value - valueDiv10 * 10;

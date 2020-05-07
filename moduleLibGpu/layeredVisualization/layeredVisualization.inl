@@ -340,7 +340,7 @@ stdbool visualizeLayeredVector
 
         float32 totalPresence = 0;
 
-        for (Space r = 0; r < layers; ++r)
+        for_count (r, layers)
         {
             PresenceType presence = zeroOf<PresenceType>();
 
@@ -387,7 +387,7 @@ stdbool visualizeLayeredVector
     Point<Space> size = vectorValue.size();
     GPU_LAYERED_MATRIX_ALLOC(vectorPresence, float16, layers, size);
 
-    for (Space r = 0; r < layers; ++r)
+    for_count (r, layers)
         require(gpuMatrixSet(vectorPresence.getLayer(r), convertNearest<float16>(1.f / layers), stdPass));
 
     require((visualizeLayeredVector<VectorType, float16>(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, upsampleInterpolation, hint, stdPass)));

@@ -79,7 +79,7 @@ inline bool equalSizePyramid(const GpuPyramid<T1>& p1, const GpuPyramid<T2>& p2)
 
     Space levels = p1.levels();
 
-    for (Space k = 0; k < levels; ++k)
+    for_count (k, levels)
         ensure(equalSize(p1.levelSize(k), p2.levelSize(k)));
 
     return true;

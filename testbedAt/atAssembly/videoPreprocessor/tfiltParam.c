@@ -75,7 +75,7 @@ bool TfiltParam<Type, n>::add(const Type& value, const TempoScale& periodUp, con
 template <typename Type, Space n>
 void TfiltParam<Type, n>::operator =(const TfiltParam<Type, n>& that)
 {
-    for (Space i = 0; i < n; ++i)
+    for_count (i, n)
         this->memory[i] = that.memory[i];
 }
 

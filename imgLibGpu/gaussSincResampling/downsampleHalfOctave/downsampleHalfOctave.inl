@@ -149,7 +149,7 @@ GPUTOOL_2D_BEG_EX
     ////
 
     devUnrollLoop
-    for (Space i = 0; i < downHoFilterLength; ++i)
+    for_count (i, downHoFilterLength)
     {
         auto value = tex2D(srcSampler, srcPos);
 
@@ -222,7 +222,7 @@ GPUTOOL_2D_BEG_EX
     ////
 
     devUnrollLoop
-    for (Space i = 0; i < downHoFilterLength; ++i)
+    for_count (i, downHoFilterLength)
     {
         auto value = tex2D(srcSampler, srcPos);
 

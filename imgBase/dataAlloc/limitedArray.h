@@ -37,7 +37,7 @@ public:
     {
         currentSize = that.currentSize;
 
-        for (Space i = 0; i < that.currentSize; ++i)
+        for_count (i, that.currentSize)
             storage[i] = that.storage[i];
 
         updateBaseArray();

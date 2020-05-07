@@ -81,7 +81,7 @@ bool frameNameEqual(const Array<const CharType>& a, const Array<const CharType>&
 
     uint32 orMask = 0;
 
-    for (Space i = 0; i < size; ++i)
+    for_count (i, size)
         orMask |= (aPtr[i] ^ bPtr[i]);
 
     ensure(orMask == 0);

@@ -53,7 +53,7 @@ public:
 
         dealloc();
 
-        for (Space i = 0; i < newSize; ++i)
+        for_count (i, newSize)
             constructDefault(data[i]);
 
         currentSize = newSize;

@@ -82,7 +82,7 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
     ////
 
-    for (Space k = 0; k < modrefCount; ++k)
+    for_count (k, modrefCount)
     {
         modrefToKernelIndexPtr[k] = kernelCount;
         modrefToSamplerIndexPtr[k] = samplerCount;
@@ -137,7 +137,7 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
     ////
 
-    for (Space k = 0; k < modrefCount; ++k)
+    for_count (k, modrefCount)
     {
 
         if (modrefPtr[k] != 0) // (Microsoft expands the section and fills with zeroes, on GCC we also have one NULL element)
@@ -166,7 +166,7 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
             // Load kernels
             //
 
-            for (Space k = 0; k < modDesc.kernelCount; ++k)
+            for_count (k, modDesc.kernelCount)
             {
                 REQUIRE(kernelIdx < kernelCount);
 
@@ -190,7 +190,7 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
             // Load samplers
             //
 
-            for (Space k = 0; k < modDesc.samplerCount; ++k)
+            for_count (k, modDesc.samplerCount)
             {
                 REQUIRE(samplerIdx < samplerCount);
 

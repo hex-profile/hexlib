@@ -56,7 +56,7 @@ public:
         layout.levels = levels;
         layout.layers = baseLayout.layers;
 
-        for (Space level = 0; level < levels; ++level)
+        for_count (level, levels)
         {
             Space baseLevel = startLevel + level * decimationFactor;
             layout.levelData[level] = baseLayout.levelData[baseLevel];

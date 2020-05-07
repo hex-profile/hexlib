@@ -96,7 +96,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 
     ////
 
-    for (Space i = 0; i < dstSize; ++i)
+    for_count (i, dstSize)
     {
         CharType c = srcPtr[i];
 
@@ -219,7 +219,7 @@ stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, st
     //
     //
 
-    for (int32 i = 0; i < 256; ++i)
+    for_count (i, 256)
     {
         result.bmiColors[i].rgbRed = i;
         result.bmiColors[i].rgbGreen = i;

@@ -914,7 +914,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider&
 
         Space count = shared.varActualDelays.size();
 
-        for (Space i = 0; i < count; ++i)
+        for_count (i, count)
         {
             float32 value = *shared.varActualDelays[i];
             minActualDelay = minv(minActualDelay, value);
@@ -941,7 +941,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider&
 
         Space count = shared.varRenderDelays.size();
 
-        for (Space i = 0; i < count; ++i)
+        for_count (i, count)
         {
             float32 value = *shared.varRenderDelays[i];
             minRenderDelay = minv(minRenderDelay, value);

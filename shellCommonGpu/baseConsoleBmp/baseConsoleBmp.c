@@ -33,7 +33,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 
     ////
 
-    for (Space i = 0; i < dstSize; ++i)
+    for_count (i, dstSize)
     {
         CharType c = srcPtr[i];
 
@@ -256,7 +256,7 @@ HashKey getHash(const CharArray& str)
 {
     RndgenState result = 0;
 
-    for (size_t i = 0; i < str.size; ++i)
+    for_count (i, str.size)
     {
         result += str.ptr[i];
         rndgenNext(result);

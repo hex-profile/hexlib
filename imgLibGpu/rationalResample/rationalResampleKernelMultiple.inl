@@ -119,7 +119,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
     auto cacheReadPtr = cacheMemPtr + cacheReadPos.X + cacheReadPos.Y * cacheMemPitch;
 
     devUnrollLoop
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         FloatType value = *cacheReadPtr;
 

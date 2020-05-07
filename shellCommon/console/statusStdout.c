@@ -15,7 +15,7 @@ bool StatusStdout::clear()
 
     ensure(fputs(CT("\r"), stdout) >= 0);
 
-    for (int i = 0; i < clearSize; ++i)
+    for_count (i, clearSize)
         buffer[i] = ' ';
 
     buffer[clearSize] = 0;

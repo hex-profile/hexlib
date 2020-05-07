@@ -151,7 +151,7 @@ devDecl void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParam
     ////
 
     devUnrollLoop
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         FloatType value = cacheReadPtr[i * DIR(1, cacheMemPitch)];
 
@@ -329,7 +329,7 @@ devDecl inline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const Final
         devSyncThreads(); \
         \
         devUnrollLoop \
-        for (Space i = 0; i < filterSize; ++i) \
+        for_count (i, filterSize) \
         { \
             FloatType value = cacheReadPtr[i * DIR(1, cacheMemPitch)]; \
             result##k += FILTER(k)[i] * value; \

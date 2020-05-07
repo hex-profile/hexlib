@@ -485,7 +485,7 @@ stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
 
     ////
 
-    for (Space k = 0; k < frameHistoryCapacity; ++k)
+    for_count (k, frameHistoryCapacity())
     {
         FrameSnapshot* f = frameHistory.add();
         require(f->frameMemory.realloc(desiredFrameSize, stdPass));

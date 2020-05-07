@@ -91,7 +91,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         float32 totalTime = 0;
         Space totalCount = 0;
 
-        for (Space k = 0; k < frameTimeCount; ++k)
+        for_count (k, frameTimeCount)
         {
             float32* t = frameTimeHist[k];
             if (t == 0) break;

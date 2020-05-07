@@ -25,10 +25,10 @@ bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharAr
 
     if (controlType == RangeValueLinear)
     {
-        for (int32 i = 0; i < signalInc; ++i)
+        for_count (i, signalInc())
             value = value + increment;
 
-        for (int32 i = 0; i < signalDec; ++i)
+        for_count (i, signalDec())
             value = value - increment;
     }
 
@@ -38,10 +38,10 @@ bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharAr
     {
         Type tmpValue = value;
 
-        for (int32 i = 0; i < signalInc; ++i)
+        for_count (i, signalInc())
             tmpValue += increment;
 
-        for (int32 i = 0; i < signalDec; ++i)
+        for_count (i, signalDec())
             tmpValue -= increment;
 
         Type period = value.maxValue() - value.minValue();
@@ -64,10 +64,10 @@ bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharAr
             Type incFactor = increment;
             Type decFactor = 1 / increment;
 
-            for (int32 i = 0; i < signalInc; ++i)
+            for_count (i, signalInc())
                 value = value * incFactor;
 
-            for (int32 i = 0; i < signalDec; ++i)
+            for_count (i, signalDec())
                 value = value * decFactor;
         }
     }

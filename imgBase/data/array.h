@@ -52,7 +52,7 @@ REQUIRE(exampleSize != 0);
 // Example element loop for a decomposed array:
 uint32 sum = 0;
 
-for (Space i = 0; i < exampleSize; ++i)
+for_count (i, exampleSize)
     sum += examplePtr[i];
 
 // Save element range [10, 30) as a new array using

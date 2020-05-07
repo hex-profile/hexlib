@@ -299,10 +299,10 @@ sysinline void historyForEach(const HistoryRanges<Type>& historyRanges, const Ac
     ARRAY_EXPOSE_PREFIX(historyRanges.a, a);
     ARRAY_EXPOSE_PREFIX(historyRanges.b, b);
 
-    for (Space i = 0; i < aSize; ++i)
+    for_count (i, aSize)
         action(aPtr[i]);
 
-    for (Space i = 0; i < bSize; ++i)
+    for_count (i, bSize)
         action(bPtr[i]);
 }
 

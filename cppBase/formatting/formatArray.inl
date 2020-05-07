@@ -11,7 +11,7 @@
 template <typename Type>
 void formatOutputArray(const FormatArray<Type>& value, FormatOutputStream& outputStream)
 {
-    for (size_t i = 0; i < value.arraySize; ++i)
+    for_count (i, value.arraySize)
     {
         formatOutput(value.arrayPtr[i], outputStream);
 

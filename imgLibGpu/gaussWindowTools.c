@@ -43,7 +43,7 @@ GaussWindowParams makeGaussWindowParams(float32 sigma)
 
     ////
 
-    for (int i = 0; i < COMPILE_ARRAY_SIZE(maxSigmaForSlidingGaussWith8bitAccuracy); ++i)
+    for_count (i, COMPILE_ARRAY_SIZE(maxSigmaForSlidingGaussWith8bitAccuracy))
     {
         if (sigma <= maxSigmaForSlidingGaussWith8bitAccuracy[i])
             {taps = i; break;}

@@ -7,7 +7,7 @@
 
     if (0)
     {
-        for (int t = 0; t < 10000; ++t)
+        for_count_ex (t, 10000)
         {
             vector<StlString> testArgs;
 
@@ -15,13 +15,13 @@
 
             int nargs = randRange() % 20;
 
-            for (int k = 0; k < nargs; ++k)
+            for_count (k, nargs)
             {
                 int arglen = randRange() % 6;
 
                 StlString s;
 
-                for (int i = 0; i < arglen; ++i)
+                for_count (i, arglen)
                 {
                     int r = randRange() % 4;
 
@@ -42,7 +42,7 @@
 
             StlString cmdline;
 
-            for (size_t i = 0; i < testArgs.size(); ++i)
+            for_count (i, testArgs.size())
             {
                 cmdLine::convertToArg(testArgs[i], cmdline);
                 cmdline += CHARTEXT(" ");

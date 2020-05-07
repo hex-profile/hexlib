@@ -69,8 +69,8 @@ int value = MATRIX_ELEMENT(example, 0, 0);
 // Example element loop (not optimized):
 uint32 sum = 0;
 
-for (Space Y = 0; Y < exampleSizeY; ++Y)
-    for (Space X = 0; X < exampleSizeX; ++X)
+for_count (Y, exampleSizeY)
+    for_count (X, exampleSizeX)
         sum += exampleMemPtr[X + Y * exampleMemPitch];
 
 // Save rectangular area [10, 30) as a new matrix using

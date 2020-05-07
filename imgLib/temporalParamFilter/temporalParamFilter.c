@@ -79,7 +79,7 @@ TemporalFactor::TemporalFactor(float32 halfLife, Space stageCount)
 template <typename Type, int n>
 void TemporalFilter<Type, n>::initialize(const Type& value)
 {
-    for (Space i = 0; i < stageCount; ++i)
+    for_count (i, stageCount)
         memory[i] = value;
 }
 
@@ -96,7 +96,7 @@ void TemporalFilter<Type, n>::add(const Type& value, const TemporalFactor& facto
 
     float32 beta = factor.beta;
 
-    for (Space i = 0; i < stageCount; ++i)
+    for_count (i, stageCount)
     {
         Type& accum = memory[i];
         accum = accum + (input - accum) * beta;

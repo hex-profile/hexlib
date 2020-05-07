@@ -11,7 +11,7 @@
 template <typename Type>
 sysinline void outputNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options, FormatOutputStream& outputStream)
 {
-    for (size_t i = 0; i < arraySize; ++i)
+    for_count (i, arraySize)
     {
         outputStream.write(FormatNumber<Type>(arrayPtr[i], options));
         if (i != arraySize-1) outputStream.write(STR(", "));

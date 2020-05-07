@@ -115,7 +115,7 @@ GPUTOOL_2D_BEG
 
     float32 sum = 0;
 
-    for (Space i = 0; i < vGlobSize.Y; ++i)
+    for_count (i, vGlobSize.Y)
         sum += downsampleKernel((filterBaseOfs + i) * (1.f / DOWNSAMPLE_HALF_OCTAVE_FACTOR));
 
     ////
@@ -151,7 +151,7 @@ GPUTOOL_2D_BEG
 
     float32 sum = 0;
 
-    for (Space i = 0; i < vGlobSize.X; ++i)
+    for_count (i, vGlobSize.X)
         sum += downsampleKernel((filterBaseOfs + i) * (1.f / DOWNSAMPLE_HALF_OCTAVE_FACTOR));
 
     ////

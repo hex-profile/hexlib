@@ -143,7 +143,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    for (Space s = 0; s < scaleLevels; ++s)
+    for_count (s, scaleLevels)
     {
         float32 scaleRadius = 0.5f * scaleLevels;
         float32 scaleCenter = 0.5f * scaleLevels;
@@ -155,7 +155,7 @@ GPUTOOL_2D_BEG
 
         Space totalOrientations = 2 * orientCount;
 
-        for (Space k = 0; k < totalOrientations; ++k)
+        for_count (k, totalOrientations)
         {
             float32 currentOrient = (k + orientOfs) / totalOrientations;
             float32 dist = circularDistance(orientCenter, currentOrient);
@@ -266,7 +266,7 @@ GPUTOOL_2D_BEG
 
     if (horizontal)
     {
-        for (Space i = 0; i < vGlobSize.X; ++i)
+        for_count (i, vGlobSize.X)
         {
             float32 fX = (i + 0.5f) * divFreqSize.X - 0.5f;
             float32 coeff = fourierBlurGauss(fX - centerFreq.X, sigma);
@@ -276,7 +276,7 @@ GPUTOOL_2D_BEG
     }
     else
     {
-        for (Space i = 0; i < vGlobSize.Y; ++i)
+        for_count (i, vGlobSize.Y)
         {
             float32 fY = (i + 0.5f) * divFreqSize.Y - 0.5f;
             float32 coeff = fourierBlurGauss(fY - centerFreq.Y, sigma);
@@ -388,11 +388,11 @@ stdbool normalizeFreqResponse(const Matrix<float32_x2>& dst, stdPars(CpuFuncKit)
 
     float32 maxFreq2 = 0;
 
-    for (Space Y = 0; Y < dstSizeY; ++Y)
+    for_count (Y, dstSizeY)
     {
         auto dst = MATRIX_POINTER(dst, 0, Y);
 
-        for (Space X = 0; X < dstSizeX; ++X, ++dst)
+        for_count_ex (X, dstSizeX, ++dst)
             maxFreq2 = maxv(maxFreq2, vectorLengthSq(*dst));
     }
 
@@ -402,11 +402,11 @@ stdbool normalizeFreqResponse(const Matrix<float32_x2>& dst, stdPars(CpuFuncKit)
 
     ////
 
-    for (Space Y = 0; Y < dstSizeY; ++Y)
+    for_count (Y, dstSizeY)
     {
         auto dst = MATRIX_POINTER(dst, 0, Y);
 
-        for (Space X = 0; X < dstSizeX; ++X, ++dst)
+        for_count_ex (X, dstSizeX, ++dst)
             *dst *= divMaxFreq;
     }
 
@@ -634,7 +634,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
         ////
 
-        for (Space k = 0; k < orientationCount; ++k)
+        for_count (k, orientationCount())
         {
             GPU_MATRIX_ALLOC(filterFreq, float32_x2, fourierSize);
 
@@ -755,7 +755,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
         ////
 
-        for (Space k = 0; k < orientationCount; ++k)
+        for_count (k, orientationCount())
         {
 
             GPU_ARRAY_ALLOC(filterFreqX, float32_x2, fourierSize.X);
@@ -862,14 +862,14 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                     float32 spaceSigma = 1.f / ((2 * pi32) * gaborSigma());
 
-                    for (Space i = 0; i < filterSize.X; ++i)
+                    for_count (i, filterSize.X)
                     {
                         float32 t = (i + 0.5f) - 0.5f * filterSize.X;
                         float32 shape = gauss1(t / spaceSigma) / spaceSigma;
                         filterXPtr[i] = shape * complexConjugate(circleCcw(freq.X * t));
                     }
 
-                    for (Space i = 0; i < filterSize.Y; ++i)
+                    for_count (i, filterSize.Y)
                     {
                         float32 t = (i + 0.5f) - 0.5f * filterSize.Y;
                         float32 shape = gauss1(t / spaceSigma) / spaceSigma;
@@ -883,7 +883,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
                 {
                     fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, ShapeX)[%d] = { ", filterSize.X);
 
-                    for (Space i = 0; i < filterSize.X; ++i)
+                    for_count (i, filterSize.X)
                         fprintf(outputFile, "%+.9ff, ", vectorLength(filterXPtr[i]));
 
                     fprintf(outputFile, "};\n");
@@ -892,7 +892,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                     fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, ShapeY)[%d] = { ", filterSize.Y);
 
-                    for (Space i = 0; i < filterSize.Y; ++i)
+                    for_count (i, filterSize.Y)
                         fprintf(outputFile, "%+.9ff, ", vectorLength(filterYPtr[i]));
 
                     fprintf(outputFile, "};\n\n");
@@ -903,7 +903,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
                 fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, Freq%d) = {%+.9ff, %+.9ff};\n", k, freq.X, freq.Y);
                 fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, DataX%d)[%d] = { ", k, filterSize.X);
 
-                for (Space i = 0; i < filterSize.X; ++i)
+                for_count (i, filterSize.X)
                     fprintf(outputFile, "{%+.9ff, %+.9ff}, ", filterXPtr[i].x, filterXPtr[i].y);
 
                 fprintf(outputFile, "};\n");
@@ -912,7 +912,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, DataY%d)[%d] = { ", k, filterSize.Y);
 
-                for (Space i = 0; i < filterSize.Y; ++i)
+                for_count (i, filterSize.Y)
                     fprintf(outputFile, "{%+.9ff, %+.9ff}, ", filterYPtr[i].x, filterYPtr[i].y);
 
                 fprintf(outputFile, "};\n\n");

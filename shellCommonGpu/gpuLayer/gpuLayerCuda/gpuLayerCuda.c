@@ -1032,7 +1032,7 @@ sysinline stdbool flushCoverageRecord(CoverageRecord& r, bool& syncFlagLatch, Pr
 
     float32 minTimeMs = typeMax<float32>();
 
-    for (Space k = 0; k < coverageMultiplier; ++k)
+    for_count (k, coverageMultiplier)
     {
         CUevent startEvent = uncast(r.events[k].startEvent);
         CUevent stopEvent = uncast(r.events[k].stopEvent);
@@ -1197,12 +1197,12 @@ stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& c
 
     ////
 
-    for (Space i = 0; i < coverageQueueCapacity; ++i)
+    for_count (i, coverageQueueCapacity)
     {
         CoverageRecord* r = history.add();
         REQUIRE(r != 0);
 
-        for (Space k = 0; k < coverageMultiplier; ++k)
+        for_count (k, coverageMultiplier)
         {
             require(gpuEventAlloc.createEvent(context, true, r->events[k].startEvent, stdPass));
             require(gpuEventAlloc.createEvent(context, true, r->events[k].stopEvent, stdPass));
@@ -1624,7 +1624,7 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
         \
         Space coverageIterations = coverageActive ? coverageMultiplier : 1; \
         \
-        for (Space coverageIdx = 0; coverageIdx < coverageIterations; ++coverageIdx) \
+        for_count (coverageIdx, coverageIterations) \
         { \
             Space coveragePreTraps = coverageTotalTrapCount / 2; \
             \
@@ -1633,7 +1633,7 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
             \
             if (coverageActive) \
             { \
-                for (Space t = 0; t < coveragePreTraps; ++t) \
+                for_count (t, coveragePreTraps) \
                     REQUIRE_CUDA(cuEventRecord(uncast(coverageRec->trapEvent), streamEx.cuStream)); \
                 \
                 REQUIRE_CUDA(cuEventRecord(uncast(coverageRec->events[coverageIdx].startEvent), streamEx.cuStream)); \
@@ -1648,7 +1648,7 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
                 \
                 Space coveragePostTraps = coverageTotalTrapCount - coveragePreTraps; \
                 \
-                for (Space t = 0; t < coveragePostTraps; ++t) \
+                for_count (t, coveragePostTraps) \
                     REQUIRE_CUDA(cuEventRecord(uncast(coverageRec->trapEvent), streamEx.cuStream)); \
             } \
         } \

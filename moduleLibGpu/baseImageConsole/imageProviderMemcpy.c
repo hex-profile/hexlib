@@ -18,7 +18,7 @@ stdbool ImageProviderMemcpy::saveImage(const Matrix<Pixel>& dest, stdNullPars)
     auto sourceRow = sourceMemPtr;
     auto destRow = destMemPtr;
 
-    for (Space Y = 0; Y < sourceSizeY; ++Y)
+    for_count (Y, sourceSizeY)
     {
         memcpy(unsafePtr(destRow, sourceSizeX), unsafePtr(sourceRow, sourceSizeX), sourceSizeX * sizeof(Pixel));
         destRow += destMemPitch;

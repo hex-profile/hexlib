@@ -115,7 +115,7 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
 
     Space testCount = 1024;
 
-    for (Space i = 0; i < testCount; ++i)
+    for_count (i, testCount)
     {
 
         //----------------------------------------------------------------

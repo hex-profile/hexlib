@@ -218,13 +218,13 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < imgSizeY; ++Y)
+    for_count (Y, imgSizeY)
     {
         auto ptr = MATRIX_POINTER(img, 0, Y);
         float32 SW = 0;
         float32 SWV = 0;
 
-        for (Space X = 0; X < imgSizeX; ++X, ++ptr)
+        for_count_ex (X, imgSizeX, ++ptr)
         {
             Point<float32> pos = (point(X + 0.5f, Y + 0.5f) * divImgSize) - 0.5f;
             float32 posLen = sqrtf(square(pos.X) + square(pos.Y));
@@ -267,11 +267,11 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < imgSizeY; ++Y)
+    for_count (Y, imgSizeY)
     {
         auto ptr = MATRIX_POINTER(img, 0, Y);
 
-        for (Space X = 0; X < imgSizeX; ++X, ++ptr)
+        for_count_ex (X, imgSizeX, ++ptr)
         {
             Point<float32> pos = (point(X + 0.5f, Y + 0.5f) * divImgSize) - 0.5f;
             float32 posLen = sqrtf(square(pos.X) + square(pos.Y));
@@ -367,11 +367,11 @@ stdbool findMax(const Matrix<const float32>& src, float32& maxValue, stdPars(Cpu
 
     MATRIX_EXPOSE(src);
 
-    for (Space Y = 0; Y < srcSizeY; ++Y)
+    for_count (Y, srcSizeY)
     {
         auto ptr = MATRIX_POINTER(src, 0, Y);
 
-        for (Space X = 0; X < srcSizeX; ++X, ++ptr)
+        for_count_ex (X, srcSizeX, ++ptr)
         {
             float32 value = *ptr;
       
@@ -436,12 +436,12 @@ stdbool processFreqProd
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < size.Y; ++Y)
+    for_count (Y, size.Y)
     {
         auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
         auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
 
-        for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr)
+        for_count_ex (X, size.X, (++oldPtr, ++newPtr))
         {
             float32 Xs = X + 0.5f;
             float32 Ys = Y + 0.5f;
@@ -468,14 +468,14 @@ stdbool processFreqProd
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < size.Y; ++Y)
+    for_count (Y, size.Y)
     {
         auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
         auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
 
         float32 maxHarmonic = 0;
 
-        for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr)
+        for_count_ex (X, size.X, (++oldPtr, ++newPtr))
         {
             float32 magnitude = minv(vectorLength(*oldPtr), vectorLength(*newPtr));
             maxHarmonic = maxv(maxHarmonic, magnitude);
@@ -503,12 +503,12 @@ stdbool processFreqProd
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < size.Y; ++Y)
+    for_count (Y, size.Y)
     {
         auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
         auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
 
-        for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr)
+        for_count_ex (X, size.X, (++oldPtr, ++newPtr))
         {
             auto oldVal = helpRead(*oldPtr);
             auto newVal = helpRead(*newPtr);
@@ -555,7 +555,7 @@ stdbool processFreqProd
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < size.Y; ++Y)
+    for_count (Y, size.Y)
     {
         auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
         auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
@@ -563,7 +563,7 @@ stdbool processFreqProd
         float32 oldSum2 = 0;
         float32 newSum2 = 0;
 
-        for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr)
+        for_count_ex (X, size.X, (++oldPtr, ++newPtr))
         {
             oldSum2 += vectorLengthSq(*oldPtr);
             newSum2 += vectorLengthSq(*newPtr);
@@ -593,7 +593,7 @@ stdbool processFreqProd
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < size.Y; ++Y)
+    for_count (Y, size.Y)
     {
         auto oldPtr = MATRIX_POINTER(oldFourier, 0, Y);
         auto newPtr = MATRIX_POINTER(newFourier, 0, Y);
@@ -601,7 +601,7 @@ stdbool processFreqProd
 
         float32 localScalarProd = 0;
 
-        for (Space X = 0; X < size.X; ++X, ++oldPtr, ++newPtr, ++resultPtr)
+        for_count_ex (X, size.X, (++oldPtr, ++newPtr, ++resultPtr))
         {
             auto prod = divOldLen * divNewLen * complexMul(*newPtr, complexConjugate(*oldPtr));
             *resultPtr = prod;

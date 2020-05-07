@@ -23,11 +23,11 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < errorSizeY; ++Y)
+    for_count (Y, errorSizeY)
     {
         float32 locSumErr2 = 0;
 
-        for (Space X = 0; X < errorSizeX; ++X)
+        for_count (X, errorSizeX)
         {
             float32 value = MATRIX_ELEMENT(error, X, Y);
             locSumErr2 += square(value);
@@ -69,11 +69,11 @@ stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanErr
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < errorSizeY; ++Y)
+    for_count (Y, errorSizeY)
     {
         float32 locSumErr = 0;
 
-        for (Space X = 0; X < errorSizeX; ++X)
+        for_count (X, errorSizeX)
         {
             float32 value = MATRIX_ELEMENT(error, X, Y);
             locSumErr += absv(value);
@@ -116,12 +116,12 @@ stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAv
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < dataSizeY; ++Y)
+    for_count (Y, dataSizeY)
     {
         float32 locSumValue = 0;
         float32 locSumValueSq = 0;
 
-        for (Space X = 0; X < dataSizeX; ++X)
+        for_count (X, dataSizeX)
         {
             float32 value = MATRIX_ELEMENT(data, X, Y);
             locSumValue += value;
@@ -174,11 +174,11 @@ stdbool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsEr
 
     #pragma omp parallel for
 
-    for (Space Y = 0; Y < errorSizeY; ++Y)
+    for_count (Y, errorSizeY)
     {
         float32 locMaxError = 0;
 
-        for (Space X = 0; X < errorSizeX; ++X)
+        for_count (X, errorSizeX)
         {
             float32 errorValue = MATRIX_ELEMENT(error, X, Y);
             locMaxError = maxv(locMaxError, absv(errorValue));
