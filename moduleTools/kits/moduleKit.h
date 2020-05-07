@@ -24,6 +24,8 @@ static const Space maxRollbackCount = 8;
 //
 // PipeControl
 //
+// @@@ Bad interface, remake it as a separate function.
+//
 //================================================================
 
 KIT_CREATE2(

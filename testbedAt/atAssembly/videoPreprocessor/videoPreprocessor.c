@@ -962,10 +962,12 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
     GpuMatrix<const uint8_x4> croppedFrame = inputFrame;
 
-    GPU_MATRIX_ALLOC(croppedFrameMemory, uint8_x4, cropSize);
+    GpuMatrixMemory<uint8_x4> croppedFrameMemory;
 
     if_not (allv(cropSize == frameSize))
     {
+        require(croppedFrameMemory.realloc(cropSize, stdPass));
+
         GpuMatrix<uint8_x4> dstFrame = flipMatrix(croppedFrameMemory);
         croppedFrame = dstFrame;
         require(copyImageRect(inputFrame, cropOfs, dstFrame, stdPass));
@@ -1086,7 +1088,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
     {
         frameHistory.rollback(kit.pipeControl.rollbackFrames);
 
-        FrameSnapshot* f = frameHistory.add();
+        FrameSnapshot* f = frameHistory.addLocation();
 
         if (cpuFrame.memPitch() >= 0)
         {
@@ -1098,6 +1100,8 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
             require(copyMatrixAsArray(flipMatrix(cpuFrame), f->frameMemory, cpuFrameSender, stdPass));
             f->frame = flipMatrix(f->frameMemory);
         }
+
+        frameHistory.addAdvance();
     }
 
     //----------------------------------------------------------------
