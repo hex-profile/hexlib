@@ -117,9 +117,9 @@ GPUTOOL_2D_BEG
     float32 sumSpatialWeight = 0;
     float32 sumSpatialWeightPresence = 0;
 
-    for (Space iY = 0; iY < taps; ++iY)
+    for_count (iY, taps)
     {
-        for (Space iX = 0; iX < taps; ++iX)
+        for_count (iX, taps)
         {
             Point<float32> srcReadPos = point(filterOrg.X + iX, filterOrg.Y + iY);
             auto value = tex2D(srcSampler, srcReadPos * srcTexstep);
@@ -180,9 +180,9 @@ GPUTOOL_2D_BEG
     float32 sumWeight = 0;
 
 
-    for (Space iY = 0; iY < taps; ++iY)
+    for_count (iY, taps)
     {
-        for (Space iX = 0; iX < taps; ++iX)
+        for_count (iX, taps)
         {
             Point<float32> srcReadPos = point(filterOrg.X + iX, filterOrg.Y + iY);
             auto value = tex2D(srcSampler, srcReadPos * srcTexstep);

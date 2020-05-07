@@ -49,7 +49,7 @@ GPUTOOL_2D_BEG
 
     auto sum = zeroOf<float32_x2>();
 
-    for (Space i = 0; i < srcSize; ++i)
+    for_count (i, srcSize)
     {
         auto value = devTex2D(srcSampler, (iX + 0.5f) * srcTexstep.X, (iY + 0.5f) * srcTexstep.Y);
 
@@ -151,7 +151,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    for (Space f = 0; f < srcSize; ++f)
+    for_count (f, srcSize)
     {
         auto value = devTex2D(srcSampler, (iX + 0.5f) * srcTexstep.X, (iY + 0.5f) * srcTexstep.Y);
 
@@ -241,9 +241,9 @@ GPUTOOL_2D_BEG
 
     auto sum = zeroOf<float32_x2>();
 
-    for (Space iY = 0; iY < srcSize.Y; ++iY)
+    for_count (iY, srcSize.Y)
     {
-        for (Space iX = 0; iX < srcSize.X; ++iX)
+        for_count (iX, srcSize.X)
         {
             float32 srcX = iX + 0.5f;
             float32 srcY = iY + 0.5f;
@@ -317,13 +317,13 @@ GPUTOOL_2D_BEG
 
     auto sum = zeroOf<float32_x2>();
 
-    for (Space iY = 0; iY < freqSize.Y; ++iY)
+    for_count (iY, freqSize.Y)
     {
         float32 orientAngle = (iY + 0.5f) * divOrientCount; // (0, 1)
         auto orientBackRotate = complexConjugate(devTex2D(circleTableSampler, 0.5f * orientAngle, 0)); // (0, 1/2)
         auto pos = complexMul(make_float32_x2(Xs, Ys) - dstCenter, orientBackRotate);
 
-        for (Space iX = 0; iX < freqSize.X; ++iX)
+        for_count (iX, freqSize.X)
         {
             float32 frX = iX + 0.5f;
             float32 frY = iY + 0.5f;

@@ -74,7 +74,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
 
     ARRAY_EXPOSE(pyramidArray);
 
-    for (Space i = 0; i < newLevels; ++i)
+    for_count (i, newLevels)
     {
         Point<Space> size = scaleFunc(newBaseSize, baseScaleFactor * scale(-i + baseScaleLevels)) + extraEdge;
         require(pyramidArrayPtr[i].reallocEx(newLayers, size, baseByteAlignment, rowByteAlignment, allocator, stdPass));
@@ -192,7 +192,7 @@ bool GpuPyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidL
 
     ////
 
-    for (Space l = 0; l < levels; ++l)
+    for_count (l, levels)
     {
         ImageStorage& storage = pyramidArrayPtr[l];
 

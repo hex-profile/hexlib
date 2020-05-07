@@ -44,13 +44,13 @@ public:
 
     sysinline InitializedArray()
     {
-        for (size_t i = 0; i < size; ++i)
+        for_count (i, size)
             constructDefaultInit(data[i]);
     }
 
     sysinline InitializedArray(const Type& value)
     {
-        for (size_t i = 0; i < size; ++i)
+        for_count (i, size)
             constructCopy(data[i], value);
     }
 

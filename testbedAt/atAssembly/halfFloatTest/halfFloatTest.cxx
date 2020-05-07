@@ -120,7 +120,7 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
 
     #pragma omp parallel for
 
-    for (Space i = 0; i < size; ++i)
+    for_count (i, size)
     {
         dstPtr[i] = packFloat16(srcPtr[i]);
     }
@@ -151,7 +151,7 @@ stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& ds
 
     #pragma omp parallel for
 
-    for (Space i = 0; i < size; ++i)
+    for_count (i, size)
     {
         (float32&) dstPtr[i] = unpackFloat16(srcPtr[i]);
     }
@@ -207,7 +207,7 @@ stdbool checkEqualResults(const Array<const Type>& ref, const Array<const Type>&
 
     #pragma omp parallel for
 
-    for (Space i = 0; i < size; ++i)
+    for_count (i, size)
     {
         if_not (refPtr[i] == tstPtr[i])
         {
@@ -494,7 +494,7 @@ stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
     }
     else
     {
-        for (int32 k = 0; k < 16; ++k)
+        for_count (k, 16)
             require(testPacking(stdPass));
 
         printMsgL(kit, STR("Half-float pack test: %0%%"), fltf(float32(packTestPass) / float32(0x10000) * 100, 1), msgInfo);

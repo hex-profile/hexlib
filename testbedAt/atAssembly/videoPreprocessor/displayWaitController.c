@@ -65,7 +65,7 @@ stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
 
         #pragma omp parallel
         {
-            for (int i = 0; i < 8192; ++i)
+            for_count (i, 8192)
                 value = sqrtf(value + 1);
         }
     }

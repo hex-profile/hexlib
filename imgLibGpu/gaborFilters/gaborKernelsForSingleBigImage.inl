@@ -181,7 +181,7 @@ GPUTOOL_2D_BEG
     ////
 
     devUnrollLoop
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         Point<Space> ofs = point(0);
         ofs.DIR(X, Y) = i;
@@ -337,7 +337,7 @@ GPUTOOL_2D_BEG_EX
     ////
 
     devUnrollLoop
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         float32 value = *cachePtr;
         cachePtr += DIR(1, cacheMemPitch);
@@ -418,7 +418,7 @@ GPUTOOL_2D_BEG
         auto sum##k = zeroOf<float32_x2>(); \
         \
         devUnrollLoop \
-        for (Space i = 0; i < filterSize; ++i) \
+        for_count (i, filterSize) \
         { \
             Point<Space> ofs = point(0); \
             ofs.DIR(X, Y) = i; \
@@ -585,7 +585,7 @@ GPUTOOL_2D_BEG_EX
         devSyncThreads(); \
         \
         devUnrollLoop \
-        for (Space i = 0; i < filterSize; ++i) \
+        for_count (i, filterSize) \
         { \
             auto value = cacheStartPtr[i * DIR(1, cacheMemPitch)]; \
             sum##k = complexMad(sum##k, PREP_PASTE3(GABOR_BANK, DIR(DataX, DataY), k)[i], value); \
@@ -952,7 +952,7 @@ GPUTOOL_2D_BEG_EX
     ValueType filteredValue = convertNearest<ValueType>(0);
 
     devUnrollLoop
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         auto value = valueCachePtr[i * DIR(1, valueCacheMemPitch)];
         auto shape = PREP_PASTE(GABOR_BANK, DIR(ShapeX, ShapeY))[i];
@@ -1068,7 +1068,7 @@ GPUTOOL_2D_BEG_EX
     ValueType filteredValue = convertNearest<ValueType>(0);
 
     devUnrollLoop
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         ValueType value = cacheStartPtr[i * DIR(1, cacheMemPitch)];
         float32 shape = PREP_PASTE(GABOR_BANK, DIR(ShapeX, ShapeY))[i];

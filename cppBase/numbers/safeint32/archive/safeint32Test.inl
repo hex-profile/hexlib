@@ -26,7 +26,7 @@ stdbool typeTest1
     stdPars(ErrorLogKit)
 )
 {
-    for (int32 i = 0; i < N; ++i)
+    for_count (i, N)
     {
         REQUIRE(bool(Perk::equal(Perk::opStd(sample[i]), Perk::opTest(sample[i]))));
     }
@@ -52,9 +52,9 @@ stdbool typeTest2
     stdPars(ErrorLogKit)
 )
 {
-    for (int32 iA = 0; iA < countA; ++iA)
+    for_count (iA, countA)
     {
-        for (int32 iB = 0; iB < countB; ++iB)
+        for_count (iB, countB)
         {
             REQUIRE
             (
@@ -306,7 +306,7 @@ stdbool testUnaryPlusMinus
 {
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 128];
 
-    for (int32 i = 0; i < COMPILE_ARRAY_SIZE(specialCases); ++i)
+    for_count (i, COMPILE_ARRAY_SIZE(specialCases))
         allCases[i] = specialCases[i];
 
     for (int32 i = COMPILE_ARRAY_SIZE(specialCases); i < COMPILE_ARRAY_SIZE(allCases); ++i)
@@ -368,7 +368,7 @@ stdbool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit
 {
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 64];
 
-    for (int32 i = 0; i < COMPILE_ARRAY_SIZE(specialCases); ++i)
+    for_count (i, COMPILE_ARRAY_SIZE(specialCases))
         allCases[i] = specialCases[i];
 
     for (int32 i = COMPILE_ARRAY_SIZE(specialCases); i < COMPILE_ARRAY_SIZE(allCases); ++i)
@@ -412,7 +412,7 @@ stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
     // Special test near overflow edge
     //
 
-    for (int32 i = 0; i < 8192; ++i)
+    for_count (i, 8192)
     {
         uint32 X = randRange(rndgen, uint32(0x00000000UL), uint32(0x7FFFFFFFUL));
 
@@ -694,7 +694,7 @@ stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 64];
 
-    for (int32 i = 0; i < COMPILE_ARRAY_SIZE(specialCases); ++i)
+    for_count (i, COMPILE_ARRAY_SIZE(specialCases))
         allCases[i] = specialCases[i];
 
     for (int32 i = COMPILE_ARRAY_SIZE(specialCases); i < COMPILE_ARRAY_SIZE(allCases); ++i)

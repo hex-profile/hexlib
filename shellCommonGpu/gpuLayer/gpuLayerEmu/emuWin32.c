@@ -157,7 +157,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     REMEMBER_CLEANUP1_EX(fibersCleanup, fibers.dealloc(), ArrayObjectMemory<FiberOwner>&, fibers);
     ARRAY_EXPOSE(fibers);
 
-    for (Space i = 0; i < fibersSize; ++i) // can be interrupted in the middle by error
+    for_count (i, fibersSize) // can be interrupted in the middle by error
         REQUIRE(fibersPtr[i].create(fiberFunc, &fiberTasksPtr[i]));
 
     //
@@ -274,9 +274,9 @@ EmuError EmuWin32::launchKernel
 
     CHECK_RETURN(threadConverter.created());
 
-    for (Space Y = 0; Y < threadCount.Y; ++Y)
+    for_count (Y, threadCount.Y)
     {
-        for (Space X = 0; X < threadCount.X; ++X)
+        for_count (X, threadCount.X)
         {
             Space i = X + Y * threadCount.X;
 
@@ -306,7 +306,7 @@ EmuError EmuWin32::launchKernel
 
     ////
 
-    for (GroupSpace k = 0; k < groupSegmentSize; ++k)
+    for_count (k, groupSegmentSize)
     {
         sharedParams.groupIdx = point3D(Space(groupX), Space(groupY), Space(groupZ));
 
@@ -322,7 +322,7 @@ EmuError EmuWin32::launchKernel
 
         ////
 
-        for (Space i = 0; i < threadCountArea; ++i)
+        for_count (i, threadCountArea)
         {
             FiberTask& task = fiberTasksPtr[i];
             task.emuParams.sramAllocator.setup(CpuAddrU(sramHolderPtr), sramHolderSize, 1);

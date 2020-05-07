@@ -299,9 +299,9 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
     intermParams.srcTexstep = computeTexstep(srcSize);
     intermParams.dstSize = intermSize;
 
-    for (Space t = 0; t < TASK_COUNT; ++t)
+    for_count (t, TASK_COUNT)
     {
-        for (Space k = 0; k < FILTER_COUNT; ++k)
+        for_count (k, FILTER_COUNT)
             intermParams.dst[t][k] = interm.getLayer(k + t * FILTER_COUNT);
     }
 
@@ -360,7 +360,7 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
 
 #else
 
-    for (Space k = 0; k < FILTER_COUNT; ++k)
+    for_count (k, FILTER_COUNT)
         finalParams.filterMixCoeffs[k] = filterMixCoeffs[k];
 
     #define TMP_MACRO(t, _) \

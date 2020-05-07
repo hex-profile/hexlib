@@ -77,7 +77,7 @@ sysinline bool isEqualLayout(const GpuPyramidLayout& a, const GpuPyramidLayout& 
 
     Space levels = a.levels;
 
-    for (Space i = 0; i < levels; ++i)
+    for_count (i, levels)
         ensure(a.levelData[i] == b.levelData[i]);
 
     return true;

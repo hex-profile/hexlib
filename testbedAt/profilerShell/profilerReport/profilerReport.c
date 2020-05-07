@@ -1069,7 +1069,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
     ////
 
-    for (Space i = 0; i < childrenCount; ++i)
+    for_count (i, childrenCount)
     {
 
         ProfilerNode* node = children[i];
@@ -1251,7 +1251,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
                 ////
 
-                for (size_t i = 0; i < thisInfo.stack.size(); ++i)
+                for_count (i, thisInfo.stack.size())
                     printMsg(file, STR("%0"), thisInfo.stack[i]);
 
                 printMsg(file, STR(""));
@@ -1293,7 +1293,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         float32 totalChildrenTime = 0;
 
-        for (Space i = 0; i < childrenCount; ++i)
+        for_count (i, childrenCount)
             totalChildrenTime += nodeInfo[i].timing.totalTime;
 
         float32 thisNodeBodyTime = clampMin(thisInfo.timing.totalTime - totalChildrenTime, 0.f);
@@ -1339,7 +1339,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         vector<Space> displayOrder(childrenCount);
 
-        for (Space i = 0; i < childrenCount; ++i)
+        for_count (i, childrenCount)
             displayOrder[i] = i;
 
         if (childrenCount)
@@ -1351,7 +1351,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         //
         //----------------------------------------------------------------
 
-        for (Space j = 0; j < childrenCount; ++j)
+        for_count (j, childrenCount)
         {
             Space i = displayOrder[j];
 
@@ -1534,7 +1534,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
     //
     //----------------------------------------------------------------
 
-    for (Space i = 0; i < childrenCount; ++i)
+    for_count (i, childrenCount)
     {
         const ProfilerNode& node = *children[i];
         const NodeInfo& info = nodeInfo[i];

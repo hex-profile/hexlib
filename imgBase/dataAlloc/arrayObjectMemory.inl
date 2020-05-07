@@ -24,7 +24,7 @@ stdbool ArrayObjectMemory<Type>::realloc(Space size, Space byteAlignment, Alloca
 
     if (dataProcessing)
     {
-        for (Space i = 0; i < allocSize; ++i)
+        for_count (i, allocSize)
             constructDefault(allocPtr[i]); // (exceptions are forbidden!)
 
         constructed = true;

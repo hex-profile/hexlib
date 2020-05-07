@@ -294,7 +294,7 @@ stdbool FUNCNAME
     intermParams.srcTexstep = computeTexstep(srcSize);
     intermParams.dstSize = intermSize;
 
-    for (Space k = 0; k < FILTER_COUNT; ++k)
+    for_count (k, FILTER_COUNT)
         intermParams.dst[k] = interm.getLayer(k);
 
     ////
@@ -356,7 +356,7 @@ stdbool FUNCNAME
 
 #else
 
-    for (Space k = 0; k < FILTER_COUNT; ++k)
+    for_count (k, FILTER_COUNT)
         finalParams.filterMixCoeffs[k] = filterMixCoeffs[k];
 
     finalParams.dstMixImage = dstMixImage;

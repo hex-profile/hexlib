@@ -138,7 +138,7 @@ public:
 
         size_t validCount = 0;
 
-        for (size_t k = 0; k < inputSize; ++k)
+        for_count (k, inputSize)
             if (uint32(inputPtr[k]) < 0x80)
                 ++validCount;
 
@@ -147,7 +147,7 @@ public:
         result.resize(validCount);
         StlString::iterator outputPtr = result.begin();
 
-        for (size_t k = 0; k < inputSize; ++k)
+        for_count (k, inputSize)
         {
             uint32 value = inputPtr[k];
 

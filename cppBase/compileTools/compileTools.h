@@ -74,6 +74,18 @@ sysinline bool anyv(const void* value)
 
 //================================================================
 //
+// for_count
+//
+//================================================================
+
+#define for_count(i, count) \
+    for (auto i = TYPE_CLEANSE(decltype(count)){0}; i < (count); ++i)
+
+#define for_count_ex(i, count, extra) \
+    for (auto i = TYPE_CLEANSE(decltype(count)){0}; i < (count); ++i, extra)
+
+//================================================================
+//
 // check_flag
 //
 // If the condition is not satisfied, clears the flag.

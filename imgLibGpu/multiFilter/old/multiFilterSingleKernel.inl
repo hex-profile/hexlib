@@ -134,7 +134,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
     ////
 
     devUnrollLoop
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         FloatType value = cacheReadPtr[i * DIR(1, cacheMemPitch)];
 
@@ -286,7 +286,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
         LOAD_SRC_BLOCK(PREP_PASTE5(FUNCNAME, intermSampler, k, _x, RANK)) \
         \
         devUnrollLoop \
-        for (Space i = 0; i < filterSize; ++i) \
+        for_count (i, filterSize) \
         { \
             FloatType value = cacheReadPtr[i * DIR(1, cacheMemPitch)]; \
             result##k += FILTER(k)[i] * value; \

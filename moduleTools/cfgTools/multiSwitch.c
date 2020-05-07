@@ -22,7 +22,7 @@ public:
     {
         size_t length = 0;
 
-        for (size_t k = 0; k < positionCount; ++k)
+        for_count (k, positionCount)
         {
             if (k != 0)
                 length += 2; // separator ", "
@@ -46,7 +46,7 @@ public:
 
     bool getComment(bool block, CfgWriteStream& s) const
     {
-        for (size_t k = 0; k < positionCount; ++k)
+        for_count (k, positionCount)
         {
             if (k != 0)
                 ensure(cfgWrite(s, !block ? STR(", ") : STR("\n")));
@@ -149,7 +149,7 @@ bool serializeMultiSwitch
     SerializeMultiSwitchIntVariable serializeVar(value, name, positionCount, descPtr, cfgValuePrefix);
     kit.visitor(kit.scope, serializeVar);
 
-    for (size_t k = 0; k < positionCount; ++k)
+    for_count (k, positionCount)
     {
         if (signalPrefix)
         {
@@ -162,7 +162,7 @@ bool serializeMultiSwitch
         }
     }
 
-    for (size_t k = 0; k < positionCount; ++k)
+    for_count (k, positionCount)
     {
         if (signals[k])
             value = k;

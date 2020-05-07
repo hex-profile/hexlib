@@ -47,7 +47,7 @@ sysinline auto simpleConvolutionSeparable
 
     devUnrollLoop
 
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         auto value = tex2D(srcSampler, texPos);
 
@@ -131,7 +131,7 @@ sysinline void simpleConvolutionValueAndSquare
 
     devUnrollLoop
 
-    for (Space i = 0; i < filterSize; ++i)
+    for_count (i, filterSize)
     {
         auto value = tex2D(srcSampler, texPos);
 

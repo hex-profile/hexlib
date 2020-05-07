@@ -349,7 +349,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
 
     ARRAY_EXPOSE(serverArray);
 
-    for (Space i = 0; i < streamCount; ++i)
+    for_count (i, streamCount)
         require(serverArrayPtr[i].create(stdPass));
 
     //
@@ -410,7 +410,7 @@ stdbool EmuMultiWin32::launchKernel
 
     ////
 
-    for (GroupSpace k = 0; k < GroupSpace(streamCount); ++k)
+    for_count (k, GroupSpace(streamCount))
     {
         ServerKeeper& srv = serverArrayPtr[k];
 
@@ -434,7 +434,7 @@ stdbool EmuMultiWin32::launchKernel
 
     EmuError recordedError = 0;
 
-    for (Space k = 0; k < streamCount; ++k)
+    for_count (k, streamCount)
     {
         ServerKeeper& srv = serverArrayPtr[k];
         srv.waitFinishEvent();

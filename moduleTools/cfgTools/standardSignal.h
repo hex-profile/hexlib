@@ -18,6 +18,11 @@ public:
     inline operator int32() const
         {return impulseCount;}
 
+    inline int32 operator() () const
+        {return impulseCount;}
+
+public:
+
     inline void clear() {impulseCount = 0;}
 
 public:

@@ -73,7 +73,7 @@ public:
 
     void initialize(const Type& value)
     {
-        for (Space i = 0; i < n; ++i)
+        for_count (i, n)
             memory[i] = value;
     }
 
@@ -88,7 +88,7 @@ public:
         Type currentValue = operator () ();
         float32 beta = (input >= currentValue) ? tfiltSpeed.betaUp : tfiltSpeed.betaDn;
 
-        for (Space i = 0; i < n; ++i)
+        for_count (i, n)
         {
             Type& accum = memory[i];
             accum = accum + (input - accum) * beta;

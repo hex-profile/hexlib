@@ -46,7 +46,7 @@ stdbool getTotalPyramidTileCount
 
     Space totalTileCount = 0;
 
-    for (Space l = 0; l < levels; ++l)
+    for_count (l, levels)
     {
         Point<Space> size = pyramid.levelSize(l);
         REQUIRE(size >= 0);
@@ -101,7 +101,7 @@ stdbool getTotalPyramidTileCount
 
     Space totalTileCount = 0;
 
-    for (Space l = 0; l < levels; ++l)
+    for_count (l, levels)
     {
         Point<Space> size = layout.levelData[l].size;
         REQUIRE(size >= 0);
@@ -249,7 +249,7 @@ stdbool prepareGuidingArray
 
     Space totalTileCount = 0;
 
-    for (Space l = 0; l < levels; ++l)
+    for_count (l, levels)
     {
         Point<Space> size = pyramid.levelSize(l);
         Point<Space> tileCount = divUpNonneg(size, tileSize);

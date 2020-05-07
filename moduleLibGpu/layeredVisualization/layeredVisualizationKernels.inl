@@ -168,13 +168,13 @@ GPUTOOL_2D_BEG
         Point<float32> srcFilterStartPos = computeFilterStartPos(srcPos, taps);
 
         devUnrollLoop
-        for (Space iY = 0; iY < taps; ++iY)
+        for_count (iY, taps)
         {
             float32 readY = srcFilterStartPos.Y + iY;
             float32 dY = readY - srcPos.Y;
 
             devUnrollLoop
-            for (Space iX = 0; iX < taps; ++iX)
+            for_count (iX, taps)
             {
                 float32 readX = srcFilterStartPos.X + iX;
                 float32 dX = readX - srcPos.X;
@@ -298,7 +298,7 @@ GPUTOOL_2D_BEG
 
 #else
 
-    for (int k = 0; k < 32; ++k)
+    for_count (k, 32)
     {
         #define TMP_MACRO_INNER(j, i) \
             currentResult##i += p##i##j * currentPresence##j;

@@ -11,7 +11,7 @@
 //
 // Consider a loop like this one:
 //
-// for (int i = 0; i < count; ++i)
+// for_count (i, count)
 //   doSomething(i, extra);
 //
 // To change it into compile-time loop, write a code like this:

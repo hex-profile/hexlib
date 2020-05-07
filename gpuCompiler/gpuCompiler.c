@@ -197,7 +197,7 @@ stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 {
     StlString cmdline;
 
-    for (size_t i = 0; i < args.size(); ++i)
+    for_count (i, args.size())
     {
         cmdLine::convertToArg(args[i], cmdline);
         cmdline += CT(" ");
@@ -241,7 +241,7 @@ stdbool parseClArgs
 
     ////
 
-    for (size_t i = 0; i < args.size(); ++i)
+    for_count (i, args.size())
     {
         const StlString& s = args[i];
 
@@ -756,13 +756,13 @@ stdbool compileDevicePartToBin
 
         nvccArgs.push_back(CT("-E"));
 
-        for (size_t i = 0; i < includes.size(); ++i)
+        for_count (i, includes.size())
         {
             nvccArgs.push_back(CT("-I"));
             nvccArgs.push_back(includes[i]);
         }
 
-        for (size_t i = 0; i < defines.size(); ++i)
+        for_count (i, defines.size())
         {
             nvccArgs.push_back(CT("-D"));
             nvccArgs.push_back(defines[i]);
@@ -783,7 +783,7 @@ stdbool compileDevicePartToBin
 
         if (0)
         {
-            for (size_t i = 0; i < nvccArgs.size(); ++i)
+            for_count (i, nvccArgs.size())
                 printMsg(kit.msgLog, STR("[NVCC %0] %1"), dec(i, 2), nvccArgs[i]);
         }
 
@@ -928,13 +928,13 @@ stdbool makeCppBinAssembly
     printMsg(outStream, STR("namespace {"));
     printMsg(outStream, STR(""));
 
-    for (size_t i = 0; i < kernelNames.size(); ++i)
+    for_count (i, kernelNames.size())
         printMsg(outStream, STR("extern const GpuKernelLink %0;"), kernelNames[i]);
 
     if (kernelNames.size())
         printMsg(outStream, STR(""));
 
-    for (size_t i = 0; i < samplerNames.size(); ++i)
+    for_count (i, samplerNames.size())
         printMsg(outStream, STR("extern const GpuSamplerLink %0;"), samplerNames[i]);
 
     if (samplerNames.size())
@@ -991,7 +991,7 @@ stdbool makeCppBinAssembly
     {
         StlString row;
 
-        for (int i = 0; i < 16; ++i)
+        for_count (i, 16)
         {
             uint8 value;
             binStream.read(&value, 1);
@@ -1022,7 +1022,7 @@ stdbool makeCppBinAssembly
         printMsg(outStream, STR("const char* const moduleKernels[] = "));
         printMsg(outStream, STR("{"));
 
-        for (size_t i = 0; i < kernelNames.size(); ++i)
+        for_count (i, kernelNames.size())
             printMsg(outStream, STR("  \"%0\", "), kernelNames[i]);
 
         printMsg(outStream, STR("};"));
@@ -1038,7 +1038,7 @@ stdbool makeCppBinAssembly
         printMsg(outStream, STR("const char* const moduleSamplers[] = "));
         printMsg(outStream, STR("{"));
 
-        for (size_t i = 0; i < samplerNames.size(); ++i)
+        for_count (i, samplerNames.size())
             printMsg(outStream, STR("  \"%0\", "), samplerNames[i]);
 
         printMsg(outStream, STR("};"));
@@ -1077,13 +1077,13 @@ stdbool makeCppBinAssembly
     // Kernel and sampler links
     //
 
-    for (size_t i = 0; i < kernelNames.size(); ++i)
+    for_count (i, kernelNames.size())
     {
         printMsg(outStream, STR("const GpuKernelLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
             kernelNames[i], i);
     }
 
-    for (size_t i = 0; i < samplerNames.size(); ++i)
+    for_count (i, samplerNames.size())
     {
         printMsg(outStream, STR("const GpuSamplerLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
             samplerNames[i], i);
@@ -1114,7 +1114,7 @@ bool importUnicodeString(StlString::const_iterator ptr, StlString::const_iterato
     size_t len = (end - ptr) >> 1;
     result.resize(len);
 
-    for (size_t i = 0; i < len; ++i)
+    for_count (i, len)
     {
         CharType c0 = *ptr++;
         CharType c1 = *ptr++;
@@ -1147,7 +1147,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
     if (0)
     {
-        for (size_t i = 0; i < cmdArgs.size(); ++i)
+        for_count (i, cmdArgs.size())
             printMsg(kit.msgLog, STR("%1"), i, cmdArgs[i]);
     }
 
@@ -1159,7 +1159,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
     vector<StlString> args;
 
-    for (size_t i = 0; i < cmdArgs.size(); ++i)
+    for_count (i, cmdArgs.size())
     {
         if_not (cmdArgs[i].substr(0, 1) == CT("@"))
             args.push_back(cmdArgs[i]);
@@ -1223,7 +1223,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     {
         printMsg(kit.msgLog, STR("Arguments:"));
 
-        for (size_t i = 0; i < args.size(); ++i)
+        for_count (i, args.size())
             printMsg(kit.msgLog, STR("[%0] %1"), i, args[i]);
     }
 
@@ -1273,7 +1273,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     {
         printMsg(kit.msgLog, STR("Defines:"));
 
-        for (size_t i = 0; i < defines.size(); ++i)
+        for_count (i, defines.size())
             printMsg(kit.msgLog, STR("[%0] %1"), i, defines[i]);
     }
 
@@ -1288,7 +1288,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     StlString platformArch;
     StlString platformBitness;
 
-    for (size_t i = 0; i < defines.size(); ++i)
+    for_count (i, defines.size())
     {
         if (stringBeginsWith(defines[i], CT("HEXLIB_PLATFORM=1")))
             gpuHardwareTarget = true;
@@ -1339,13 +1339,13 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
         clArgs.push_back(CT("cl.exe"));
 
-        for (size_t i = 0; i < includes.size(); ++i)
+        for_count (i, includes.size())
         {
             clArgs.push_back(CT("-I"));
             clArgs.push_back(includes[i]);
         }
 
-        for (size_t i = 0; i < defines.size(); ++i)
+        for_count (i, defines.size())
         {
             clArgs.push_back(CT("-D"));
             clArgs.push_back(defines[i]);
@@ -1370,13 +1370,13 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
         clArgs.push_back(CT("cl.exe"));
 
-        for (size_t i = 0; i < includes.size(); ++i)
+        for_count (i, includes.size())
         {
             clArgs.push_back(CT("-I"));
             clArgs.push_back(includes[i]);
         }
 
-        for (size_t i = 0; i < defines.size(); ++i)
+        for_count (i, defines.size())
         {
             clArgs.push_back(CT("-D"));
             clArgs.push_back(defines[i]);
@@ -1404,7 +1404,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     if (cudaFiles.size() && gpuHardwareTarget)
     {
 
-        for (size_t i = 0; i < cudaFiles.size(); ++i)
+        for_count (i, cudaFiles.size())
         {
 
             StlString inputPath = cudaFiles[i];
@@ -1429,7 +1429,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
             if (0)
             {
-                for (size_t i = 0; i < samplerNames.size(); ++i)
+                for_count (i, samplerNames.size())
                     printMsg(kit.msgLog, STR("Sampler: %0"), samplerNames[i], msgErr);
             }
 
@@ -1450,7 +1450,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
                 clArgs.push_back(CT("cl.exe"));
 
-                for (size_t i = 0; i < includes.size(); ++i)
+                for_count (i, includes.size())
                 {
                     clArgs.push_back(CT("-I"));
                     clArgs.push_back(includes[i]);
@@ -1459,7 +1459,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
                 clArgs.push_back(CT("-I"));
                 clArgs.push_back(CT("."));
 
-                for (size_t i = 0; i < defines.size(); ++i)
+                for_count (i, defines.size())
                 {
                     clArgs.push_back(CT("-D"));
                     clArgs.push_back(defines[i]);
@@ -1502,9 +1502,9 @@ int main(int argCount, const CharType* argStr[])
     //----------------------------------------------------------------
 
 #ifdef _DEBUG
-    LogToStlConsole msgLog(true);
+    LogToStlConsole msgLog(true, false);
 #else
-    LogToStlConsole msgLog(false);
+    LogToStlConsole msgLog(false, false);
 #endif
 
     ErrorLogByMsgLog errorLog(msgLog);
