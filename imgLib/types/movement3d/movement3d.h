@@ -66,11 +66,11 @@ sysinline Point3D<Float> operator %(const Movement3D<Float>& movement, const Poi
 //================================================================
 
 template <typename Float>
-sysinline Movement3D<Float> operator %(const Movement3D<Float>& B, const Movement3D<Float>& A)
+sysinline Movement3D<Float> operator %(const Movement3D<Float>& A, const Movement3D<Float>& B)
 {
     Movement3D<Float> result;
-    result.rotation = B.rotation % A.rotation;
-    result.translation = B.rotation % A.translation + B.translation;
+    result.rotation = A.rotation % B.rotation;
+    result.translation = A.rotation % B.translation + A.translation;
     return result;
 }
 
