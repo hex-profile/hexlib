@@ -75,6 +75,11 @@ sysinline bool anyv(const void* value)
 //================================================================
 //
 // for_count
+// for_range
+//
+// These "for" macros automatically determine the loop variable type.
+//
+// In the range variant, the loop variable takes type of the "end" expression.
 //
 //================================================================
 
@@ -83,6 +88,12 @@ sysinline bool anyv(const void* value)
 
 #define for_count_ex(i, count, extra) \
     for (auto i = TYPE_CLEANSE(decltype(count)){0}; i < (count); ++i, extra)
+
+#define for_range(i, org, end) \
+    for (auto i = TYPE_CLEANSE(decltype(end)){org}; i < (end); ++i)
+
+#define for_range_ex(i, org, end, extra) \
+    for (auto i = TYPE_CLEANSE(decltype(end)){org}; i < (end); ++i, extra)
 
 //================================================================
 //
