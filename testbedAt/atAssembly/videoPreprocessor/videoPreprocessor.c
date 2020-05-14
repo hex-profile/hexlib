@@ -339,6 +339,7 @@ private:
 private:
 
     DisplayParamsImpl displayParams;
+    BoolSwitch<false> alternativeVersionPrintAlways;
 
 private:
 
@@ -376,6 +377,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         CFG_NAMESPACE("Display Params");
 
         displayParams.serialize(kit, prepParamsSteady);
+        alternativeVersionPrintAlways.serialize(kit, STR("Alternative Version: Print Always"));
     }
 
     {
@@ -1033,8 +1035,15 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     ////
 
-    if (displayParams.alternativeVersion())
-        printMsgL(kit, STR("Alternative Version!"), msgWarn);
+    bool alternativeVersion = displayParams.alternativeVersion();
+
+    if (alternativeVersionPrintAlways)
+        printMsgL(kit, STR("Alternative Version: %"), alternativeVersion, alternativeVersion ? msgWarn : msgInfo);
+    else
+    {
+        if (alternativeVersion)
+            printMsgL(kit, STR("Alternative Version!"), alternativeVersion, msgWarn);
+    }
 
     //----------------------------------------------------------------
     //
