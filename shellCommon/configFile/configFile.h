@@ -37,7 +37,7 @@ public:
     {
         TimeMoment currentTime = timer.moment();
 
-        if (updateFileTimeInitialized && timer.diff(updateFileTime, currentTime) < 2.0f)
+        if (updateFileTimeInitialized && timer.diff(updateFileTime, currentTime) < updatePeriod)
             return false; // time is not passed, do not update
 
         updateFileTimeInitialized = true;
@@ -46,7 +46,14 @@ public:
         return true;
     }
 
+    void setPeriod(float32 period)
+    {
+        updatePeriod = period;
+    }
+
 private:
+
+    float32 updatePeriod = 2.f;
 
     bool updateFileTimeInitialized = false;
     TimeMoment updateFileTime;
