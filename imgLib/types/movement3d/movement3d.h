@@ -98,6 +98,19 @@ sysinline Point3D<Float> applyInverse(const Movement3D<Float>& movement, const P
     return ~movement.rotation % (vec - movement.translation);
 }
 
+//----------------------------------------------------------------
+
+template <typename Float>
+sysinline Movement3D<Float> invertIf(bool condition, const Movement3D<Float>& movement)
+{
+    auto result = movement;
+
+    if (condition)
+        result = ~movement;
+
+    return result;
+}
+
 //================================================================
 //
 // normalize
