@@ -103,7 +103,7 @@ private:
     //
     // Creation stage
     //
-    // If creation fails, the other methods should NOT called (except destructor).
+    // If creation fails, the other methods should NOT be called (except the destructor).
     // The class doesn't check it.
     //
     //----------------------------------------------------------------
@@ -113,7 +113,6 @@ public:
     stdbool create(const GpuProperties& gpuProperties, stdPars(CreateKit))
     {
         Space cpuCount = emuMultiProc::getCpuCount();
-
 
         require(emulator.create(cpuCount, stdPassThru));
         REMEMBER_CLEANUP1_EX(emulatorCleanup, emulator.destroy(), emuMultiProc::EmuMultiProc&, emulator);
@@ -591,15 +590,6 @@ devDefineKernel(copyArrayKernel, CopyArrayParams, o)
 
     auto src = o.srcPtr + byteStart;
     auto dst = o.dstPtr + byteStart;
-
-    ////
-
-    if (byteCount)
-    {
-        // performance check
-        devDebugCheck(isPtrAligned<granularity>(src));
-        devDebugCheck(isPtrAligned<granularity>(dst));
-    }
 
     ////
 
