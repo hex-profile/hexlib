@@ -169,7 +169,9 @@ sysinline Point3D<Float> operator %(const MovementUnpacked3D<Float>& movement, c
 
 //================================================================
 //
-// importMovementWithRotationBase
+// fromCenteredSystem
+//
+// Imports a movement from center-based coordinate system to zero-based coordinate system.
 //
 // Input movement:
 // (1) Rotate it around the given center by the given rotation.
@@ -178,7 +180,7 @@ sysinline Point3D<Float> operator %(const MovementUnpacked3D<Float>& movement, c
 //================================================================
 
 template <typename Float>
-sysinline Movement3D<Float> importMovementWithRotationBase(const Movement3D<Float>& movement, const Point3D<Float>& center)
+sysinline Movement3D<Float> fromCenteredSystem(const Movement3D<Float>& movement, const Point3D<Float>& center)
 {
     return movement3D
     (
@@ -189,17 +191,19 @@ sysinline Movement3D<Float> importMovementWithRotationBase(const Movement3D<Floa
 
 //================================================================
 //
-// exportMovementWithRotationBase
+// toCenteredSystem
+//
+// Exports a movement from zero-based coordinate system to center-based coordinate system.
 //
 //================================================================
 
 template <typename Float>
-sysinline Movement3D<Float> exportMovementWithRotationBase(const Movement3D<Float>& movement, const Point3D<Float>& center)
+sysinline Movement3D<Float> toCenteredSystem(const Movement3D<Float>& movement, const Point3D<Float>& center)
 {
     return movement3D
     (
         movement.rotation,
-        movement.translation + (movement.rotation % center) - center
+        movement.translation - center + (movement.rotation % center)
     );
 }
 
