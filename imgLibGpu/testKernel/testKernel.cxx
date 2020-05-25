@@ -13,14 +13,7 @@
 
 __global__ void testKernel1(float32* value)
 {
-    *value = fastSqrt(*value);
-}
-
-////
-
-__global__ void testKernel2(float32* value)
-{
-    *value = sqrtf(*value);
+    *value = __fdividef(1, *value);
 }
 
 ////
