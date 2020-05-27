@@ -42,7 +42,7 @@ public:
 public:
 
     Space maxSize() const 
-        {return data.size();}
+        {return Space(data.size());}
 
 public:
 
