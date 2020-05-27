@@ -66,7 +66,8 @@ stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& res
     v.func(v.value, formatter);
     REQUIRE(formatter.valid());
 
-    result.resize(formatter.usedSize());
+    REQUIRE(formatter.usedSize() <= size_t{spaceMax});
+    result.resize(Space(formatter.usedSize()));
 
     returnTrue;
 }
