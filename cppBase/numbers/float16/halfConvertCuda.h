@@ -14,10 +14,15 @@
 //
 //================================================================
 
+COMPILE_ASSERT(sizeof(__half) == sizeof(float16));
+COMPILE_ASSERT(alignof(__half) == alignof(float16));
+
+//----------------------------------------------------------------
+
 sysinline float16 packFloat16(float32 value)
 {
     float16 tmp;
-    tmp.data = __float2half_rn(value);
+    * (__half*) &tmp.data = __float2half(value);
     return tmp;
 }
 
@@ -25,7 +30,7 @@ sysinline float16 packFloat16(float32 value)
 
 sysinline float32 unpackFloat16(const float16& value)
 {
-    return __half2float(value.data);
+    return __half2float(* (const __half*) &value.data);
 }
 
 //----------------------------------------------------------------

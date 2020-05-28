@@ -124,6 +124,44 @@ sysinline float32_x4 loadNormCore(const int8_x4* src)
 //================================================================
 
 template <typename LoadElement>
+sysinline float32 loadNormCore(const uint16* src)
+{
+    return (LoadElement::func(src)) * (1.f / 0xFFFF);
+}
+
+template <typename LoadElement>
+sysinline float32_x2 loadNormCore(const uint16_x2* src)
+{
+    uint16_x2 value = LoadElement::func(src);
+
+    return make_float32_x2
+    (
+        value.x * (1.f / 0xFFFF),
+        value.y * (1.f / 0xFFFF)
+    );
+}
+
+template <typename LoadElement>
+sysinline float32_x4 loadNormCore(const uint16_x4* src)
+{
+    uint16_x4 value = LoadElement::func(src);
+
+    return make_float32_x4
+    (
+        value.x * (1.f / 0xFFFF),
+        value.y * (1.f / 0xFFFF),
+        value.z * (1.f / 0xFFFF),
+        value.w * (1.f / 0xFFFF)
+    );
+}
+
+//================================================================
+//
+// loadNormCore<int16>
+//
+//================================================================
+
+template <typename LoadElement>
 sysinline float32 loadNormCore(const int16* src)
 {
     return (LoadElement::func(src)) * (1.f / 0x7FFF);
