@@ -91,7 +91,7 @@ struct GpuPlanarYuv
     GpuMatrix<ChromaType> U;
     GpuMatrix<ChromaType> V;
 
-    sysinline GpuPlanarYuv() =default;
+    sysinline GpuPlanarYuv() {}
 
     sysinline operator GpuPlanarYuv<const LumaType> () const
         {return GpuPlanarYuv<const LumaType>{Y, U, V};}
