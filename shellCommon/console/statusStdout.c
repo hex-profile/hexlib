@@ -4,6 +4,26 @@
 
 //================================================================
 //
+// VSNPRINTF
+//
+//================================================================
+
+#if defined(_MSC_VER)
+
+    #define VSNPRINTF CHARTYPE_SELECT(_snprintf, _snwprintf)
+
+#elif defined(__GNUC__)
+
+    #define VSNPRINTF CHARTYPE_SELECT(vsnprintf, vsnwprintf)
+
+#else
+
+    #error Implementation required
+
+#endif
+
+//================================================================
+//
 // StatusStdout::clear
 //
 //================================================================
@@ -51,7 +71,7 @@ bool StatusStdout::vprintf(const TimerKit& kit, const CharType* format, va_list 
 
     CharType buffer[maxMsgSize+1];
     buffer[0] = 0;
-    _vsnprintf(buffer, maxMsgSize, format, args);
+    VSNPRINTF(buffer, maxMsgSize, format, args);
     buffer[maxMsgSize] = 0;
 
     ////

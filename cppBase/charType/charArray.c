@@ -1,6 +1,7 @@
 #include "charArray.h"
 
 #include <string.h>
+#include <wchar.h>
 
 //================================================================
 //

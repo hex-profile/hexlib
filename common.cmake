@@ -41,8 +41,8 @@ endfunction()
 
 function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects requiresGpuCompiler folderName)
 
-    cmake_minimum_required(VERSION 3.12.1 FATAL_ERROR)
-
+    cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+    
     #----------------------------------------------------------------
     #
     # Target

@@ -281,11 +281,11 @@ sysinline void nativeCosSin(Float angle, Float& rX, Float& rY);
 #elif defined(__GNUC__)
 
     template <>
-    sysinline Point<float32> nativeCosSin(float32 angle, float32& rX, float32& rY)
+    sysinline void nativeCosSin(float32 angle, float32& rX, float32& rY)
         {sincosf(angle, &rY, &rX);}
 
     template <>
-    sysinline Point<float64> nativeCosSin(float64 angle, float64& rX, float64& rY)
+    sysinline void nativeCosSin(float64 angle, float64& rX, float64& rY)
         {sincos(angle, &rY, &rX);}
 
 #else

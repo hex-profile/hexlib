@@ -3,7 +3,7 @@
 #include "numbers/interface/exchangeInterface.h"
 #include "numbers/interface/numberInterface.h"
 #include "point/point.h"
-#include "point4D/point4D.h"
+#include "point4d/point4d.h"
 #include "numbers/float16/float16Type.h"
 #include "vectorTypes/vectorBase.h"
 

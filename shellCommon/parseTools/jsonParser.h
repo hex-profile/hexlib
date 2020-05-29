@@ -1,5 +1,7 @@
 #pragma once
 
+#include "compileTools/compileTools.h"
+
 namespace jsonParser {
 
 //================================================================
@@ -110,7 +112,7 @@ inline bool operator ==(const Range<Iterator>& A, const Range<Iterator>& B)
     auto ptrA = A.ptr;
     auto ptrB = B.ptr;
 
-    for (size_t i = 0; i != sizeA; ++i)
+    for_count (i, sizeA)
     {
         ensure(*ptrA == *ptrB);
         ++ptrA; ++ptrB;

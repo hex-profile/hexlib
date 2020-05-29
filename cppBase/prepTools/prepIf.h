@@ -297,3 +297,15 @@
 
 #define PREP_IF_0(trueValue)
 #define PREP_IF_1(trueValue) trueValue
+
+//================================================================
+//
+// PREP_IF_COMMA
+//
+//================================================================
+
+#define PREP_IF_COMMA(cond) \
+    PREP_PASTE(PREP_IF_COMMA_, PREP_BOOL(cond))()
+
+#define PREP_IF_COMMA_0()
+#define PREP_IF_COMMA_1() ,
