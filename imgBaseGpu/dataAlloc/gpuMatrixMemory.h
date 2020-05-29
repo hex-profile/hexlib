@@ -39,6 +39,30 @@ private:
 
 public:
 
+    //
+    // Export cast (no code generated, reinterpret 'this')
+    //
+
+    sysinline operator const GpuMatrix<Type>& () const
+    {
+        const GpuMatrix<Type>* baseMatrix = this;
+        return *baseMatrix;
+    }
+
+    sysinline operator const GpuMatrix<const Type>& () const
+    {
+        const GpuMatrix<Type>* baseMatrix = this;
+        return recastEqualLayout<const GpuMatrix<const Type>>(*baseMatrix);
+    }
+
+    sysinline const GpuMatrix<Type>& operator()() const
+    {
+        const GpuMatrix<Type>* baseMatrix = this;
+        return *baseMatrix;
+    }
+
+public:
+
     stdbool reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////

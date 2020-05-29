@@ -13,6 +13,7 @@
 
 #include "storage/rememberCleanup.h"
 #include "stlString/stlString.h"
+#include "compileTools/errorHandling.h"
 
 //================================================================
 //

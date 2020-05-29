@@ -25,7 +25,7 @@
     PREP_ENUM__ITER(i, PREP_ARG2_0 params, PREP_ARG2_1 params)
 
 #define PREP_ENUM__ITER(i, macro, args) \
-    PREP_SELECT(i, PREP_COMMA, PREP_EMPTY) \
+    PREP_IF_COMMA(i) \
     macro(i, args)
 
 //----------------------------------------------------------------
@@ -77,7 +77,7 @@
     PREP_FOR(n, PREP_ENUM_LR__ITER, (prefix, postfix)) \
 
 #define PREP_ENUM_LR__ITER(i, args) \
-    PREP_SELECT(i, PREP_COMMA, PREP_EMPTY) \
+    PREP_IF_COMMA(i) \
     PREP_ENUM_LR__TEXT(i, PREP_ARG2_0 args, PREP_ARG2_1 args)
 
 #define PREP_ENUM_LR__TEXT(i, prefix, postfix) \
@@ -108,7 +108,7 @@
     PREP_FOR(n, PREP_ENUM_INDEXED_PAIR__ITER, (prefix1, prefix2)) \
 
 #define PREP_ENUM_INDEXED_PAIR__ITER(i, args) \
-    PREP_SELECT(i, PREP_COMMA, PREP_EMPTY) \
+    PREP_IF_COMMA(i) \
     PREP_PASTE(PREP_ARG2_0 args, i) PREP_PASTE(PREP_ARG2_1 args, i)
 
 //----------------------------------------------------------------

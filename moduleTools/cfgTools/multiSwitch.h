@@ -154,7 +154,7 @@ public:
 private:
 
     NumericVar<size_t> value{0, size_t(positionCount) - 1, size_t(defaultPos)};
-    StandardSignal signals[positionCount];
+    StandardSignal signals[size_t(positionCount)];
 
 };
 

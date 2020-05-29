@@ -16,7 +16,7 @@
     GPT_INDEXED_NAME_FUNC2(k, PREP_ARG2_0 args, PREP_ARG2_1 args)
 
 #define GPT_INDEXED_NAME_FUNC2(k, Type, name) \
-    ((Type, name##k))
+    ((Type, PREP_PASTE(name, k)))
 
 //----------------------------------------------------------------
 
@@ -27,4 +27,4 @@
     GPT_INDEXED_SAMPLER_FUNC2(k, PREP_ARG4_0 args, PREP_ARG4_1 args, PREP_ARG4_2 args, PREP_ARG4_3 args)
 
 #define GPT_INDEXED_SAMPLER_FUNC2(k, Type, name, interpMode, borderMode) \
-    ((Type, name##k, interpMode, borderMode))
+    ((Type, PREP_PASTE(name, k), interpMode, borderMode))
