@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+
 #include <float.h>
 #include <stdlib.h>
 
@@ -743,17 +744,25 @@ sysinline typename ConvertResult<Src, float32>::T convertFloat32(const Src& src)
 //================================================================
 //
 // absv
+// floorv
+// ceilv
 //
 //================================================================
 
-#define TMP_MACRO(Type, baseFunc) \
+#define TMP_MACRO(func, Type, baseFunc) \
     \
     template <> \
-    sysinline Type absv(const Type& value) \
+    sysinline Type func(const Type& value) \
         {return baseFunc(value);}
 
-TMP_MACRO(float, fabsf)
-TMP_MACRO(double, fabs)
+TMP_MACRO(absv, float, fabsf)
+TMP_MACRO(absv, double, fabs)
+
+TMP_MACRO(floorv, float, floorf)
+TMP_MACRO(floorv, double, floor)
+
+TMP_MACRO(ceilv, float, ceilf)
+TMP_MACRO(ceilv, double, ceil)
 
 #undef TMP_MACRO
 

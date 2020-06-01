@@ -64,12 +64,12 @@ void floatIntConvTest(CharArray name, MsgLog& msgLog)
                 
 
                 Int ref = 
-                    rounding == RoundDown ? Int(floor(testVald)) :
-                    rounding == RoundUp ? Int(ceil(testVald)) :
-                    rounding == RoundNearest ? Int(floor(testVald + 0.5)) :
+                    rounding == RoundDown ? Int(floorv(testVald)) :
+                    rounding == RoundUp ? Int(ceilv(testVald)) :
+                    rounding == RoundNearest ? Int(floorv(testVald + 0.5)) :
                     0;
 
-                bool refOk = def(float32(testVal)) && (fabs(ref - testVald) <= 1);
+                bool refOk = def(float32(testVal)) && (absv(ref - testVald) <= 1);
 
                 //////
 
@@ -85,7 +85,7 @@ void floatIntConvTest(CharArray name, MsgLog& msgLog)
                     if_not (test == ref)
                     {
                         if (rounding == RoundNearest)
-                            check_flag(floor(testVald) + 0.5f == testVald, locOk);
+                            check_flag(floorv(testVald) + 0.5f == testVald, locOk);
                         else
                             locOk = false;
                     }

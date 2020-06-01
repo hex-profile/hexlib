@@ -374,15 +374,15 @@ POINT4D_DEFINE_FUNC3(clampRange)
 
 //================================================================
 //
+// absv
 // floor
 // ceil
-// absv
 //
 //================================================================
 
-POINT4D_DEFINE_FUNC1(floorf)
-POINT4D_DEFINE_FUNC1(ceilf)
 POINT4D_DEFINE_FUNC1(absv)
+POINT4D_DEFINE_FUNC1(floorv)
+POINT4D_DEFINE_FUNC1(ceilv)
 
 //================================================================
 //

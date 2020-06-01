@@ -1473,7 +1473,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
             if_not (factorIsEqual(repetitionFactor, 1, factorTolerance))
             {
                 float32 nestingFactor = timing.repetitionFactor / parentFactor;
-                int32 nestingFactorDigits = factorIsEqual(floorf(nestingFactor + 0.5f), nestingFactor, factorTolerance) ? 0 : factorDigits;
+                int32 nestingFactorDigits = factorIsEqual(floorv(nestingFactor + 0.5f), nestingFactor, factorTolerance) ? 0 : factorDigits;
 
                 repetitionMsg = sprintMsg
                 (

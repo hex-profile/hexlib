@@ -427,7 +427,7 @@ stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
 
             double Mdiv = M / A;
 
-            double B0 = Mdiv >= 0 ? floor(Mdiv) : ceil(Mdiv);
+            double B0 = Mdiv >= 0 ? floorv(Mdiv) : ceilv(Mdiv);
             double B1 = B0 + (B0 >= 0 ? +1 : -1);
 
             uint32 A32u = fromDbl(A);
@@ -472,7 +472,7 @@ struct Division : StdTest<Perk>
             if (toDbl(B) != 0)
             {
                 double r = toDbl(A) / toDbl(B);
-                r = (r >= 0) ? floor(r) : ceil(r);
+                r = (r >= 0) ? floovr(r) : ceilv(r);
                 result = fromDbl(r);
             }
         }
@@ -527,7 +527,7 @@ struct Remainder : StdTest<Perk>
             if (toDbl(B) != 0)
             {
                 double r = toDbl(A) / toDbl(B);
-                r = (r >= 0) ? floor(r) : ceil(r);
+                r = (r >= 0) ? floorv(r) : ceilv(r);
                 double rem = toDbl(A) - r * toDbl(B);
                 result = fromDbl(rem);
             }
@@ -621,7 +621,7 @@ struct ShiftRight : StdTest<Perk>
             if (Bd >= 0 && Bd <= 31)
             {
                 double tmp = ldexp(toDbl(A), -int(Bd)); // @ccfix
-                result = fromDbl(floor(tmp));
+                result = fromDbl(floorv(tmp));
             }
         }
 
@@ -663,7 +663,7 @@ struct ShiftLeft : StdTest<Perk>
             if (Bd >= 0 && Bd <= 31)
             {
                 double tmp = ldexp(toDbl(A), +int(Bd)); // @ccfix
-                result = fromDbl(floor(tmp)); 
+                result = fromDbl(floorv(tmp)); 
             }
         }
 

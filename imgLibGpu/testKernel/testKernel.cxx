@@ -11,9 +11,17 @@
 
 #if __CUDA_ARCH__
 
-__global__ void testKernel1(float32* value)
+__global__ void testKernel1(float32* ptr)
 {
-    *value = __fdividef(1, *value);
+    auto value = *ptr;
+
+    value = fmaxf(value, __shfl_down_sync(0xFFFFFFFF, value, 16));
+    value = fmaxf(value, __shfl_down_sync(0xFFFFFFFF, value, 8));
+    value = fmaxf(value, __shfl_down_sync(0xFFFFFFFF, value, 4));
+    value = fmaxf(value, __shfl_down_sync(0xFFFFFFFF, value, 2));
+    value = fmaxf(value, __shfl_down_sync(0xFFFFFFFF, value, 1));
+
+    *ptr = value;
 }
 
 ////

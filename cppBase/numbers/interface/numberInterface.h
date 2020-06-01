@@ -971,6 +971,21 @@ sysinline Type absv(const Type& value)
 
 //================================================================
 //
+// floorv
+// ceilv
+//
+//================================================================
+
+template <typename Type>
+sysinline Type floorv(const Type& value)
+    MISSING_FUNCTION_BODY;
+
+template <typename Type>
+sysinline Type ceilv(const Type& value)
+    MISSING_FUNCTION_BODY;
+
+//================================================================
+//
 // isPower2
 //
 // Returns true if the value is a power of 2,
@@ -993,6 +1008,25 @@ sysinline Type square(const Type& value)
 {
     return value * value;
 }
+
+//================================================================
+//
+// recipSqrt
+//
+// Should give ALMOST full precision.
+//
+// fastSqrt
+//
+// Does not handle +inf.
+// Should give ALMOST full precision.
+//
+//================================================================
+
+template <typename Type>
+sysinline Type recipSqrt(const Type& value);
+
+template <typename Type>
+sysinline Type fastSqrt(const Type& value);
 
 //================================================================
 //

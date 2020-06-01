@@ -48,7 +48,7 @@ sysinline Value linearIf(const Selector& alpha, const Value& trueValue, const Va
 //
 // nativeRecip
 //
-// Should give ALMOST full precision
+// Should give ALMOST full precision.
 //
 //================================================================
 
@@ -83,6 +83,7 @@ Type nativeRecip(const Type& value);
 //
 // nativeRecipZero
 //
+// Should give ALMOST full precision.
 // In case of zero input, returns zero.
 //
 //================================================================
@@ -125,25 +126,6 @@ Type nativeDivide(const Type& A, const Type& B);
     #error
 
 #endif
-
-//================================================================
-//
-// recipSqrt
-//
-// Should give ALMOST full precision.
-//
-// fastSqrt
-//
-// Does not handle +inf.
-// Should give ALMOST full precision.
-//
-//================================================================
-
-template <typename Type>
-sysinline Type recipSqrt(const Type& value);
-
-template <typename Type>
-sysinline Type fastSqrt(const Type& value);
 
 //================================================================
 //

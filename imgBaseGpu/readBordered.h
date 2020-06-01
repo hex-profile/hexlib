@@ -38,10 +38,10 @@ sysinline float32 modulo2(float32 x)
     // Divide by 2, take fractional part, multiply by 2
     //
     // float32 value = 0.5f * x;
-    // 2 * (value - floorf(value));
+    // 2 * (value - floorv(value));
     //
 
-    return x - 2.f * floorf(0.5f * x); // optimized
+    return x - 2.f * floorv(0.5f * x); // optimized
 }
 
 //================================================================
