@@ -59,7 +59,7 @@ namespace layeredVisualization {
 //================================================================
 
 #define PREP_ITER_DIMS 1
-#define PREP_ITER_ARGS_0 (1, VISUALIZATION_MAX_LAYERS, "layeredVisualizationKernels.inl")
+#define PREP_ITER_ARGS_0 (1, VISUALIZATION_MAX_LAYERS, "layeredVisualization/layeredVisualizationKernels.inl")
 
 # include PREP_ITERATE_ND
 

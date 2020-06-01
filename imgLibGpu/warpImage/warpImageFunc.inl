@@ -20,8 +20,8 @@
 //
 //================================================================
 
-#define SRC_PIXEL PREP_ARG2_0 PIXELS
-#define DST_PIXEL PREP_ARG2_1 PIXELS
+#define SRC_PIXEL PREP_PASS(PREP_ARG2_0 PIXELS)
+#define DST_PIXEL PREP_PASS(PREP_ARG2_1 PIXELS)
 
 //================================================================
 //
