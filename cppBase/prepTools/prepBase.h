@@ -101,11 +101,14 @@
 //
 //================================================================
 
-#define PREP_PASS2(X0, X1) \
-      X0, X1
+#define PREP_PASS(v) \
+    v
 
-#define PREP_PASS3(X0, X1, X2) \
-      X0, X1, X2
+#define PREP_PASS2(v0, v1) \
+    v0, v1
 
-#define PREP_PASS4(X0, X1, X2, X3) \
-      X0, X1, X2, X3
+#define PREP_PASS3(v0, v1, v2) \
+    v0, v1, v2
+
+#define PREP_PASS4(v0, v1, v2, v3) \
+    v0, v1, v2, v3
