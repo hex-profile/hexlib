@@ -26,6 +26,9 @@
 #include "errorLog/foreignErrorBlock.h"
 #include "formattedOutput/requireMsg.h"
 
+// ```
+#include "osErrors/errorLinux.h"
+
 using namespace std;
 
 //================================================================
@@ -1133,6 +1136,15 @@ bool importUnicodeString(StlString::const_iterator ptr, StlString::const_iterato
 
 stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 {
+
+#if defined(__linux__)
+
+    // ```
+    FILE* f = fopen("*BADFILE", "r");
+    printMsg(kit.msgLog, STR("Cannot open file: %0"), ErrorLinux(errno));
+    returnFalse;
+
+#endif
 
     //----------------------------------------------------------------
     //
