@@ -14,7 +14,7 @@
 #include "formatting/formatModifiers.h"
 #include "userOutput/errorLogEx.h"
 #include "numbers/int/intType.h"
-#include "win32/errorWin32.h"
+#include "osErrors/errorWin32.h"
 
 //================================================================
 //

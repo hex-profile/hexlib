@@ -13,7 +13,7 @@
 
 #include <mutex>
 
-#include "win32/errorWin32.h"
+#include "osErrors/errorWin32.h"
 #include "storage/rememberCleanup.h"
 #include "errorLog/debugBreak.h"
 #include "numbers/int/intType.h"
