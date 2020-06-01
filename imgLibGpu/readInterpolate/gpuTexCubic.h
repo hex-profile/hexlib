@@ -37,8 +37,8 @@ sysinline Tex2DCubicPreparation tex2DCubicPrepare(const Point<float32>& pos, con
     float32 X = pos.X - 0.5f;
     float32 Y = pos.Y - 0.5f;
 
-    float32 bX = floorf(X);
-    float32 bY = floorf(Y);
+    float32 bX = floorv(X);
+    float32 bY = floorv(Y);
 
     float32 dX = X - bX;
     float32 dY = Y - bY;
@@ -121,8 +121,8 @@ sysinline auto tex2DCubicGeneric(SamplerType sampler, const Point<float32>& pos,
     float32 X = pos.X - 0.5f;
     float32 Y = pos.Y - 0.5f;
 
-    float32 bX = floorf(X);
-    float32 bY = floorf(Y);
+    float32 bX = floorv(X);
+    float32 bY = floorv(Y);
 
     float32 dX = X - bX;
     float32 dY = Y - bY;
@@ -242,7 +242,7 @@ sysinline auto tex2DCubicBsplineFastPrepare(const Point<float32>& pos, const Poi
 
     Point<float32> posGrid = pos - 0.5f;
 
-    Point<float32> base = floorf(posGrid);
+    Point<float32> base = floorv(posGrid);
     Point<float32> frac = posGrid - base;
 
     ////

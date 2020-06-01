@@ -375,6 +375,30 @@ GPUTOOL_2D_END_EX
 //
 //================================================================
 
+#if HOSTCODE
+
+typedef GPUTOOL_2D_PROTO
+(
+    PREP_PASTE(FUNCNAME, ProcessFinalProto),
+
+    GPUTOOL_INDEXED_SAMPLER(GABOR_ORIENT_COUNT, const GABOR_COMPLEX_PIXEL, src, INTERP_NONE, GABOR_BORDER_MODE)
+    ((const float32_x2, circleTable, INTERP_LINEAR, BORDER_WRAP)),
+
+    PREP_LIST_FOREACH_PAIR(GABOR_POSTPROCESS_IMAGES (o), GABOR_DECLARE_MATRIX, _)
+    GPUTOOL_INDEXED_NAME(GABOR_ORIENT_COUNT, GABOR_COMPLEX_PIXEL, dst),
+
+    ((bool, demodulateOutput))
+    ((GABOR_PARAMS, params))
+);
+
+#endif
+
+//================================================================
+//
+// gaborProcessFinalSimple
+//
+//================================================================
+
 GPUTOOL_2D_BEG
 (
     PREP_PASTE3(FUNCNAME, ProcessFinalSimple, DIR(Hor, Ver)),
@@ -650,13 +674,27 @@ GPUTOOL_2D_END_EX
 
 //================================================================
 //
+// gaborProcessFull: Used prototypes.
+//
+//================================================================
+
+#if HOSTCODE
+
+PREP_PASTE(FUNCNAME, ProcessFinalProto) PREP_PASTE(FUNCNAME, ProcessFinalSimpleHor);
+PREP_PASTE(FUNCNAME, ProcessFinalProto) PREP_PASTE(FUNCNAME, ProcessFinalSimpleVer);
+PREP_PASTE(FUNCNAME, ProcessFinalProto) PREP_PASTE(FUNCNAME, ProcessFinalCachedHor);
+PREP_PASTE(FUNCNAME, ProcessFinalProto) PREP_PASTE(FUNCNAME, ProcessFinalCachedVer);
+
+#endif
+
+//================================================================
+//
 // gaborProcessFull
 //
 //================================================================
 
 #if HOSTCODE
 
-template <int=0>
 stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 (
     const GpuMatrix<const GABOR_INPUT_PIXEL>& src, 
@@ -968,6 +1006,24 @@ GPUTOOL_2D_END_EX
 
 //================================================================
 //
+// EnvelopeFinalProto
+//
+//================================================================
+
+#if HOSTCODE
+
+typedef GPUTOOL_2D_PROTO
+(
+    PREP_PASTE(FUNCNAME, EnvelopeFinalProto),
+    ((const ENVELOPE_INTERM_PIXEL, src, INTERP_NONE, ENVELOPE_BORDER_MODE)),
+    PREP_LIST_FOREACH_PAIR(ENVELOPE_OUTPUT_IMAGES (o), ENVELOPE_DECLARE_MATRIX, _),
+    ((ENVELOPE_PARAMS, params))
+);
+
+#endif
+
+//================================================================
+//
 // gaborEnvelopeFinalCached
 //
 //================================================================
@@ -1089,13 +1145,25 @@ GPUTOOL_2D_END_EX
 
 //================================================================
 //
+// gaborEnvelopeFull: Used prototypes.
+//
+//================================================================
+
+#if HOSTCODE
+
+PREP_PASTE(FUNCNAME, EnvelopeFinalProto) PREP_PASTE(FUNCNAME, EnvelopeFinalCachedHor);
+PREP_PASTE(FUNCNAME, EnvelopeFinalProto) PREP_PASTE(FUNCNAME, EnvelopeFinalCachedVer);
+
+#endif
+
+//================================================================
+//
 // gaborEnvelopeFull
 //
 //================================================================
 
 #if HOSTCODE
 
-template <int=0>
 GPUTOOL_2D_PROTO
 (
     PREP_PASTE3(FUNCNAME, EnvelopeFull, DIR(Hor, Ver)),

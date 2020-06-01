@@ -97,7 +97,7 @@ stdbool gaborExampleFunc
 {
     require
     (
-        (horizontallyFirst ? gaborExampleProcessFullHor<> : gaborExampleProcessFullVer<>)
+        (horizontallyFirst ? gaborExampleProcessFullHor : gaborExampleProcessFullVer)
         (
             src, 
             circleTable, 

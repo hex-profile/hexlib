@@ -368,15 +368,15 @@ POINT3D_DEFINE_FUNC3(clampRange)
 
 //================================================================
 //
+// absv
 // floor
 // ceil
-// absv
 //
 //================================================================
 
-POINT3D_DEFINE_FUNC1(floorf)
-POINT3D_DEFINE_FUNC1(ceilf)
 POINT3D_DEFINE_FUNC1(absv)
+POINT3D_DEFINE_FUNC1(floorv)
+POINT3D_DEFINE_FUNC1(ceilv)
 
 //================================================================
 //
