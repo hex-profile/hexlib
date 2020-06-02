@@ -66,6 +66,8 @@ struct FileTruncation
 // The open function doesn't truncate existing file, even if 'create' flag is specified.
 // Call 'truncate' explicitly if needed.
 //
+// If open fails, the file becomes closed.
+//
 //================================================================
 
 struct FileOpening

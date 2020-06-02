@@ -1,231 +1,244 @@
-//#if defined(__linux__)
+#if defined(__linux__)
+
+#define _FILE_OFFSET_BITS 64
+
+#include "binaryFileLinux.h"
+
+#include <errno.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+#include "errorLog/debugBreak.h"
+#include "errorLog/errorLog.h"
+#include "formatting/formatModifiers.h"
+#include "numbers/int/intType.h"
+#include "osErrors/errorLinux.h"
+#include "storage/rememberCleanup.h"
+#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsg.h"
+#include "numbers/int/intCompare.h"
+
+//================================================================
 //
-//#include "binaryFileLinux.h"
+// off_t
 //
-//#include "compileTools/classContext.h"
-//#include "errorLog/debugBreak.h"
-//#include "errorLog/errorLog.h"
-//#include "formatting/formatModifiers.h"
-//#include "numbers/int/intType.h"
-//#include "storage/rememberCleanup.h"
-//#include "userOutput/errorLogEx.h"
-//#include "userOutput/errorLogEx.h"
-//#include "userOutput/printMsg.h"
+//================================================================
+
+COMPILE_ASSERT(sizeof(off_t) * CHAR_BIT == 64);
+COMPILE_ASSERT(TYPE_IS_SIGNED(off_t));
+
+COMPILE_ASSERT(sizeof(off_t) <= sizeof(uint64));
+COMPILE_ASSERT(TYPE_MAX(off_t) <= TYPE_MAX(uint64));
+
+//================================================================
 //
-////================================================================
-////
-//// getLastError
-////
-////================================================================
+// getLastError
 //
-//inline ErrorLinux getLastError() {return ErrorLinux(GetLastError());}
+//================================================================
+
+inline ErrorLinux getLastError() {return ErrorLinux(errno);}
+
+//================================================================
 //
-////================================================================
-////
-//// BinaryFileLinux::close
-////
-////================================================================
+// BinaryFileLinux::close
 //
-//void BinaryFileLinux::close()
-//{
-//    if (handle != 0)
-//    {
-//        DEBUG_BREAK_CHECK(CloseHandle(handle) != 0);
-//        handle = 0;
-//        currentFilename.clear();
-//        currentSize = 0;
-//        currentPosition = 0;
-//    }
-//}
+//================================================================
+
+void BinaryFileLinux::close()
+{
+    if (currentHandle != 0)
+    {
+        DEBUG_BREAK_CHECK(::close(currentHandle) == 0);
+        currentHandle = -1;
+        currentFilename.clear();
+        currentSize = 0;
+        currentPosition = 0;
+    }
+}
+
+//================================================================
 //
-////================================================================
-////
-//// BinaryFileLinux::open
-////
-////================================================================
+// BinaryFileLinux::open
 //
-//stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
-//{
-//    REQUIRE(filename.size >= 0);
-//    SimpleString newFilename(filename.ptr, filename.size);
+//================================================================
+
+stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
+{
+    close();
+    
+    ////
+
+    REQUIRE(filename.size >= 0);
+    SimpleString newFilename(filename.ptr, filename.size);
+
+    REQUIRE_TRACE0(def(newFilename), STR("Not enough memory."));
+
+    ////
+
+    int flags = writeAccess ? O_RDWR : O_RDONLY;
+
+    if (createIfNotExists)
+        flags |= O_CREAT;
+
+    ////
+
+    int newHandle = ::open(newFilename.cstr(), flags);
+
+    REQUIRE_TRACE2(newHandle >= 0, STR("Cannot open file %0: %1."), filename, getLastError());
+
+    REMEMBER_CLEANUP_EX(newHandleCleanup, DEBUG_BREAK_CHECK(::close(newHandle) == 0));
+
+    ////
+
+    auto newSize = lseek(newHandle, 0, SEEK_END);
+    REQUIRE_TRACE2(newSize >= 0, STR("Cannot get file size %0: %1."), filename, getLastError());
+
+    REQUIRE_TRACE2(lseek(newHandle, 0, SEEK_SET) >= 0, STR("Cannot seek to zero %0: %1."), filename, getLastError());
+
+    ////
+
+    newHandleCleanup.cancel();
+
+    currentHandle = newHandle;
+    exchange(currentFilename, newFilename);
+    currentSize = newSize;
+    currentPosition = 0;
+
+    returnTrue;
+}
+
+//================================================================
 //
-//    REQUIRE_TRACE0(def(newFilename), STR("Not enough memory"));
+// BinaryFileLinux::truncate
 //
-//    ////
+//================================================================
+
+stdbool BinaryFileLinux::truncate(stdPars(FileDiagKit))
+{
+    REQUIRE(currentHandle != -1);
+
+    auto result = ftruncate(currentHandle, currentPosition);
+    REQUIRE_TRACE3(result == 0, STR("Cannot truncate file %0 at offset %1: %2"), currentFilename, currentPosition, getLastError());
+
+    currentSize = currentPosition;
+
+    returnTrue;
+}
+
+//================================================================
 //
-//    HANDLE newHandle = CreateFile
-//    (
-//        newFilename.cstr(),
-//        !writeAccess ? GENERIC_READ : (GENERIC_READ | GENERIC_WRITE),
-//        !writeAccess ? FILE_SHARE_READ : FILE_SHARE_READ,
-//        NULL,
-//        createIfNotExists ? OPEN_ALWAYS : OPEN_EXISTING,
-//        0,
-//        NULL
-//    );
+// BinaryFileLinux::setPosition
 //
-//    REQUIRE_TRACE2(newHandle != INVALID_HANDLE_VALUE, STR("Cannot open file %0: %1"), filename, getLastError());
+//================================================================
+
+stdbool BinaryFileLinux::setPosition(uint64 pos, stdPars(FileDiagKit))
+{
+    REQUIRE(currentHandle != -1);
+    REQUIRE(pos <= currentSize);
+
+    ////
+
+    REQUIRE(pos <= TYPE_MAX(off_t));
+    auto result = lseek(currentHandle, pos, SEEK_SET);
+
+    REQUIRE_TRACE3(intEqual(result, pos), STR("Cannot seek to offset %0 in file %1: %2"), pos, currentFilename, getLastError());
+
+    ////
+
+    currentPosition = pos;
+
+    returnTrue;
+}
+
+//================================================================
 //
-//    ////
+// BinaryFileLinux::read
 //
-//    LARGE_INTEGER tmpSize;
-//    REQUIRE(GetFileSizeEx(newHandle, &tmpSize) != 0);
-//    REQUIRE(tmpSize.QuadPart >= 0);
-//    uint64 newSize = tmpSize.QuadPart;
+//================================================================
+
+stdbool BinaryFileLinux::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+{
+    REQUIRE(currentHandle != -1);
+
+    ////
+
+    REQUIRE(dataSize <= currentSize - currentPosition);
+
+    ////
+
+    REMEMBER_CLEANUP_EX
+    (
+        restorePositionCleanup,
+        {
+            auto result = lseek(currentHandle, currentPosition, SEEK_SET);
+            DEBUG_BREAK_CHECK(intEqual(result, currentPosition));
+        }
+    );
+
+    ////
+
+    COMPILE_ASSERT(sizeof(CpuAddrU) <= sizeof(size_t));
+    auto result = ::read(currentHandle, dataPtr, size_t{dataSize});
+
+    ////
+
+    CharArray errorMsg = STR("Cannot read %0 bytes at offset %1 from file %2: %3");
+    REQUIRE_TRACE4(intEqual(result, dataSize), errorMsg, dataSize, currentPosition, currentFilename, getLastError());
+
+    ////
+
+    restorePositionCleanup.cancel();
+
+    currentPosition += dataSize;
+
+    returnTrue;
+}
+
+//================================================================
 //
-//    ////
+// BinaryFileLinux::write
 //
-//    close();
-//    handle = newHandle;
-//    exchange(currentFilename, newFilename);
-//    currentSize = newSize;
-//    currentPosition = 0;
-//
-//    returnTrue;
-//}
-//
-////================================================================
-////
-//// BinaryFileLinux::truncate
-////
-////================================================================
-//
-//stdbool BinaryFileLinux::truncate(stdPars(FileDiagKit))
-//{
-//    REQUIRE(handle);
-//
-//    BOOL result = SetEndOfFile(handle);
-//    REQUIRE_TRACE3(result != 0, STR("Cannot truncate file %0 at offset %1: %2"), currentFilename, currentPosition, getLastError());
-//
-//    currentSize = currentPosition;
-//
-//    returnTrue;
-//}
-//
-////================================================================
-////
-//// BinaryFileLinux::setPosition
-////
-////================================================================
-//
-//stdbool BinaryFileLinux::setPosition(uint64 pos, stdPars(FileDiagKit))
-//{
-//    REQUIRE(handle);
-//    REQUIRE(pos <= currentSize);
-//
-//    ////
-//
-//    LARGE_INTEGER largePos;
-//    largePos.QuadPart = pos;
-//
-//    BOOL result = SetFilePointerEx(handle, largePos, 0, FILE_BEGIN);
-//    REQUIRE_TRACE3(result != 0, STR("Cannot seek to offset %0 in file %1: %2"), pos, currentFilename, getLastError());
-//
-//    ////
-//
-//    currentPosition = pos;
-//
-//    returnTrue;
-//}
-//
-////================================================================
-////
-//// BinaryFileLinux::read
-////
-////================================================================
-//
-//stdbool BinaryFileLinux::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
-//{
-//    REQUIRE(handle != 0);
-//
-//    ////
-//
-//    REQUIRE(dataSize <= typeMax<DWORD>());
-//    REQUIRE(dataSize <= currentSize - currentPosition);
-//
-//    ////
-//
-//    REMEMBER_CLEANUP2_EX
-//    (
-//        restorePositionCleanup,
-//        {
-//            LARGE_INTEGER restorePos;
-//            restorePos.QuadPart = currentPosition;
-//            DEBUG_BREAK_CHECK(SetFilePointerEx(handle, restorePos, 0, FILE_BEGIN) != 0);
-//        },
-//        HANDLE, handle, uint64, currentPosition
-//    );
-//
-//    ////
-//
-//    DWORD actualBytes = 0;
-//
-//    DWORD dataSizeOS = 0;
-//    REQUIRE(convertExact(dataSize, dataSizeOS));
-//    BOOL result = ReadFile(handle, dataPtr, dataSizeOS, &actualBytes, NULL);
-//
-//    CharArray errorMsg = STR("Cannot read %0 bytes at offset %1 from file %2: %3");
-//    REQUIRE_TRACE4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
-//    REQUIRE_TRACE4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorLinux(ERROR_HANDLE_EOF));
-//
-//    ////
-//
-//    currentPosition += actualBytes;
-//
-//    restorePositionCleanup.cancel();
-//
-//    returnTrue;
-//}
-//
-////================================================================
-////
-//// BinaryFileLinux::write
-////
-////================================================================
-//
-//stdbool BinaryFileLinux::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
-//{
-//    REQUIRE(handle != 0);
-//
-//    ////
-//
-//    REQUIRE(dataSize <= typeMax<DWORD>());
-//    REQUIRE(dataSize <= typeMax<uint64>() - currentSize);
-//
-//    ////
-//
-//    REMEMBER_CLEANUP2_EX
-//    (
-//        restorePositionCleanup,
-//        {
-//            LARGE_INTEGER restorePos;
-//            restorePos.QuadPart = currentPosition;
-//            DEBUG_BREAK_CHECK(SetFilePointerEx(handle, restorePos, 0, FILE_BEGIN) != 0);
-//        },
-//        HANDLE, handle, uint64, currentPosition
-//    );
-//
-//    ////
-//
-//    DWORD actualBytes = 0;
-//    DWORD dataSizeOS = 0;
-//    REQUIRE(convertExact(dataSize, dataSizeOS));
-//    BOOL result = WriteFile(handle, dataPtr, dataSizeOS, &actualBytes, NULL);
-//
-//    CharArray errorMsg = STR("Cannot write %0 bytes at offset %1 to file %2: %3");
-//    REQUIRE_TRACE4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
-//    REQUIRE_TRACE4(actualBytes == dataSize, errorMsg, dataSize, currentPosition, currentFilename, ErrorLinux(ERROR_HANDLE_EOF));
-//
-//    ////
-//
-//    currentPosition += actualBytes;
-//    currentSize = maxv(currentSize, currentPosition);
-//
-//    restorePositionCleanup.cancel();
-//
-//    returnTrue;
-//}
-//
-////----------------------------------------------------------------
-//
-//#endif
+//================================================================
+
+stdbool BinaryFileLinux::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+{
+    REQUIRE(currentHandle != -1);
+
+    ////
+
+    REQUIRE(dataSize <= typeMax<uint64>() - currentSize);
+
+    ////
+
+    REMEMBER_CLEANUP_EX
+    (
+        restorePositionCleanup,
+        {
+            auto result = lseek(currentHandle, currentPosition, SEEK_SET);
+            DEBUG_BREAK_CHECK(intEqual(result, currentPosition));
+        }
+    );
+
+    ////
+
+    COMPILE_ASSERT(sizeof(CpuAddrU) <= sizeof(size_t));
+    auto result = ::write(currentHandle, dataPtr, size_t{dataSize});
+
+    CharArray errorMsg = STR("Cannot write %0 bytes at offset %1 to file %2: %3");
+    REQUIRE_TRACE4(intEqual(result, dataSize), errorMsg, dataSize, currentPosition, currentFilename, getLastError());
+
+    ////
+
+    restorePositionCleanup.cancel();
+
+    currentPosition += dataSize;
+    currentSize = maxv(currentSize, currentPosition);
+
+    returnTrue;
+}
+
+//----------------------------------------------------------------
+
+#endif

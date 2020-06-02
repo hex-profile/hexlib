@@ -75,8 +75,8 @@ struct LessTemplate<true, false>
         {
             // If the signed argument is negative, result is true;
             // otherwise we can compare in unsigned types
-            typename TYPE_MAKE_UNSIGNED(TA) UA = A;
-            typename TYPE_MAKE_UNSIGNED(TB) UB = B;
+            TYPE_MAKE_UNSIGNED(TA) UA = A;
+            TYPE_MAKE_UNSIGNED(TB) UB = B;
 
             return (A < 0) || (UA < UB);
         }
@@ -95,8 +95,8 @@ struct LessTemplate<false, true>
         {
             // The signed argument should be non-negative (otherwise result is false);
             // after checking this we can compare in unsigned types
-            typename TYPE_MAKE_UNSIGNED(TA) UA = A;
-            typename TYPE_MAKE_UNSIGNED(TB) UB = B;
+            TYPE_MAKE_UNSIGNED(TA) UA = A;
+            TYPE_MAKE_UNSIGNED(TB) UB = B;
 
             return (B >= 0) && (UA < UB);
         }
@@ -159,8 +159,8 @@ struct EqualTemplate<true, false>
             // comparing signed and unsigned:
             // to be equal, the signed value should be non-negative
 
-            typename TYPE_MAKE_UNSIGNED(TA) UA = A;
-            typename TYPE_MAKE_UNSIGNED(TB) UB = B;
+            TYPE_MAKE_UNSIGNED(TA) UA = A;
+            TYPE_MAKE_UNSIGNED(TB) UB = B;
 
             return (A >= 0) && (UA == UB);
         }
@@ -180,8 +180,8 @@ struct EqualTemplate<false, true>
             // comparing signed and unsigned:
             // to be equal, the signed value should be non-negative
 
-            typename TYPE_MAKE_UNSIGNED(TA) UA = A;
-            typename TYPE_MAKE_UNSIGNED(TB) UB = B;
+            TYPE_MAKE_UNSIGNED(TA) UA = A;
+            TYPE_MAKE_UNSIGNED(TB) UB = B;
 
             return (B >= 0) && (UA == UB);
         }
@@ -219,7 +219,7 @@ struct Equal
 //================================================================
 
 template <typename TA, typename TB>
-inline bool less(TA A, TB B)
+inline bool intLess(TA A, TB B)
 {
     return Less<TA, TB>::Code::_(A, B);
 }
@@ -227,7 +227,7 @@ inline bool less(TA A, TB B)
 //----------------------------------------------------------------
 
 template <typename TA, typename TB>
-inline bool greater(TA A, TB B)
+inline bool intGreater(TA A, TB B)
 {
     return Less<TB, TA>::Code::_(B, A);
 }
@@ -235,7 +235,7 @@ inline bool greater(TA A, TB B)
 //----------------------------------------------------------------
 
 template <typename TA, typename TB>
-inline bool equal(TA A, TB B)
+inline bool intEqual(TA A, TB B)
 {
     return Equal<TA, TB>::Code::_(A, B);
 }
@@ -243,7 +243,7 @@ inline bool equal(TA A, TB B)
 //----------------------------------------------------------------
 
 template <typename TA, typename TB>
-inline bool notEqual(TA A, TB B)
+inline bool intNotEqual(TA A, TB B)
 {
     return !Equal<TA, TB>::Code::_(A, B);
 }
@@ -251,7 +251,7 @@ inline bool notEqual(TA A, TB B)
 //----------------------------------------------------------------
 
 template <typename TA, typename TB>
-inline bool lessEq(TA A, TB B)
+inline bool intLessEq(TA A, TB B)
 {
     return !Less<TB, TA>::Code::_(B, A);
 }
@@ -259,7 +259,7 @@ inline bool lessEq(TA A, TB B)
 //----------------------------------------------------------------
 
 template <typename TA, typename TB>
-inline bool greaterEq(TA A, TB B)
+inline bool intGreaterEq(TA A, TB B)
 {
     return !Less<TA, TB>::Code::_(A, B);
 }
@@ -267,7 +267,7 @@ inline bool greaterEq(TA A, TB B)
 //----------------------------------------------------------------
 
 template <typename T1, typename T2, typename T3>
-inline bool inRange(T1 X, T2 minVal, T3 maxVal)
+inline bool intInRange(T1 X, T2 minVal, T3 maxVal)
 {
     return greaterEq(X, minVal) && lessEq(X, maxVal);
 }
@@ -275,3 +275,11 @@ inline bool inRange(T1 X, T2 minVal, T3 maxVal)
 //----------------------------------------------------------------
 
 }
+
+using intCompare::intLess;
+using intCompare::intGreater;
+using intCompare::intEqual;
+using intCompare::intNotEqual;
+using intCompare::intLessEq;
+using intCompare::intGreaterEq;
+using intCompare::intInRange;

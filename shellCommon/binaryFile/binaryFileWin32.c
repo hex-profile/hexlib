@@ -32,10 +32,10 @@ inline ErrorWin32 getLastError() {return ErrorWin32(GetLastError());}
 
 void BinaryFileWin32::close()
 {
-    if (handle != 0)
+    if (currentHandle != 0)
     {
-        DEBUG_BREAK_CHECK(CloseHandle(handle) != 0);
-        handle = 0;
+        DEBUG_BREAK_CHECK(CloseHandle(currentHandle) != 0);
+        currentHandle = 0;
         currentFilename.clear();
         currentSize = 0;
         currentPosition = 0;
@@ -50,6 +50,10 @@ void BinaryFileWin32::close()
 
 stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
 {
+    close();
+
+    ////
+
     REQUIRE(filename.size >= 0);
     SimpleString newFilename(filename.ptr, filename.size);
 
@@ -70,6 +74,8 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
 
     REQUIRE_TRACE2(newHandle != INVALID_HANDLE_VALUE, STR("Cannot open file %0: %1"), filename, getLastError());
 
+    REMEMBER_CLEANUP_EX(newHandleCleanup, DEBUG_BREAK_CHECK(CloseHandle(newHandle) != 0));
+
     ////
 
     LARGE_INTEGER tmpSize;
@@ -79,8 +85,9 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
 
     ////
 
-    close();
-    handle = newHandle;
+    newHandleCleanup.cancel();
+
+    currentHandle = newHandle;
     exchange(currentFilename, newFilename);
     currentSize = newSize;
     currentPosition = 0;
@@ -96,9 +103,9 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
 
 stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 {
-    REQUIRE(handle);
+    REQUIRE(currentHandle != 0);
 
-    BOOL result = SetEndOfFile(handle);
+    BOOL result = SetEndOfFile(currentHandle);
     REQUIRE_TRACE3(result != 0, STR("Cannot truncate file %0 at offset %1: %2"), currentFilename, currentPosition, getLastError());
 
     currentSize = currentPosition;
@@ -114,7 +121,7 @@ stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 
 stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 {
-    REQUIRE(handle);
+    REQUIRE(currentHandle != 0);
     REQUIRE(pos <= currentSize);
 
     ////
@@ -122,7 +129,7 @@ stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
     LARGE_INTEGER largePos;
     largePos.QuadPart = pos;
 
-    BOOL result = SetFilePointerEx(handle, largePos, 0, FILE_BEGIN);
+    BOOL result = SetFilePointerEx(currentHandle, largePos, 0, FILE_BEGIN);
     REQUIRE_TRACE3(result != 0, STR("Cannot seek to offset %0 in file %1: %2"), pos, currentFilename, getLastError());
 
     ////
@@ -140,7 +147,7 @@ stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 
 stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
-    REQUIRE(handle != 0);
+    REQUIRE(currentHandle != 0);
 
     ////
 
@@ -149,15 +156,14 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 
     ////
 
-    REMEMBER_CLEANUP2_EX
+    REMEMBER_CLEANUP_EX
     (
         restorePositionCleanup,
         {
             LARGE_INTEGER restorePos;
             restorePos.QuadPart = currentPosition;
-            DEBUG_BREAK_CHECK(SetFilePointerEx(handle, restorePos, 0, FILE_BEGIN) != 0);
-        },
-        HANDLE, handle, uint64, currentPosition
+            DEBUG_BREAK_CHECK(SetFilePointerEx(currentHandle, restorePos, 0, FILE_BEGIN) != 0);
+        }
     );
 
     ////
@@ -166,7 +172,7 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 
     DWORD dataSizeOS = 0;
     REQUIRE(convertExact(dataSize, dataSizeOS));
-    BOOL result = ReadFile(handle, dataPtr, dataSizeOS, &actualBytes, NULL);
+    BOOL result = ReadFile(currentHandle, dataPtr, dataSizeOS, &actualBytes, NULL);
 
     CharArray errorMsg = STR("Cannot read %0 bytes at offset %1 from file %2: %3");
     REQUIRE_TRACE4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
@@ -189,7 +195,7 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 
 stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
-    REQUIRE(handle != 0);
+    REQUIRE(currentHandle != 0);
 
     ////
 
@@ -198,15 +204,14 @@ stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(F
 
     ////
 
-    REMEMBER_CLEANUP2_EX
+    REMEMBER_CLEANUP_EX
     (
         restorePositionCleanup,
         {
             LARGE_INTEGER restorePos;
             restorePos.QuadPart = currentPosition;
-            DEBUG_BREAK_CHECK(SetFilePointerEx(handle, restorePos, 0, FILE_BEGIN) != 0);
-        },
-        HANDLE, handle, uint64, currentPosition
+            DEBUG_BREAK_CHECK(SetFilePointerEx(currentHandle, restorePos, 0, FILE_BEGIN) != 0);
+        }
     );
 
     ////
@@ -214,7 +219,7 @@ stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(F
     DWORD actualBytes = 0;
     DWORD dataSizeOS = 0;
     REQUIRE(convertExact(dataSize, dataSizeOS));
-    BOOL result = WriteFile(handle, dataPtr, dataSizeOS, &actualBytes, NULL);
+    BOOL result = WriteFile(currentHandle, dataPtr, dataSizeOS, &actualBytes, NULL);
 
     CharArray errorMsg = STR("Cannot write %0 bytes at offset %1 to file %2: %3");
     REQUIRE_TRACE4(result != 0, errorMsg, dataSize, currentPosition, currentFilename, getLastError());
