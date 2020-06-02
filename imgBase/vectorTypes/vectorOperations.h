@@ -485,9 +485,11 @@ sysinline auto circleCcw(Float v)
 //
 //================================================================
 
+template <>
 sysinline float32 vectorLengthSq(const float32_x2& vec)
     {return square(vec.x) + square(vec.y);}
 
+template <>
 sysinline float32 vectorLengthSq(const float32_x4& vec)
     {return square(vec.x) + square(vec.y) + square(vec.z) + square(vec.w);}
 

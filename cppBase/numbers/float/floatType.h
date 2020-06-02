@@ -772,8 +772,10 @@ TMP_MACRO(ceilv, double, ceil)
 //
 //================================================================
 
+template <>
 sysinline float32 vectorLengthSq(const float32& vec)
     {return square(vec);}
 
+template <>
 sysinline float64 vectorLengthSq(const float64& vec)
     {return square(vec);}

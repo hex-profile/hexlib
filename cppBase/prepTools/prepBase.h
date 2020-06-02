@@ -7,9 +7,9 @@
 //================================================================
 
 #define PREP_PASTE(X, Y) \
-    PREP_PASTE_HELPER(X, Y)
+    PREP_PASTE_AUX(X, Y)
 
-#define PREP_PASTE_HELPER(X, Y) \
+#define PREP_PASTE_AUX(X, Y) \
     X##Y
 
 //================================================================
@@ -19,19 +19,42 @@
 //================================================================
 
 #define PREP_PASTE2(v0, v1) \
-    PREP_PASTE(v0, v1)
+    PREP_PASTE2_AUX(v0, v1)
+
+#define PREP_PASTE2_AUX(v0, v1) \
+    v0##v1
+
+//----------------------------------------------------------------
 
 #define PREP_PASTE3(v0, v1, v2) \
-    PREP_PASTE(v0, PREP_PASTE2(v1, v2))
+    PREP_PASTE3_AUX(v0, v1, v2)
+
+#define PREP_PASTE3_AUX(v0, v1, v2) \
+    v0##v1##v2
+
+//----------------------------------------------------------------
 
 #define PREP_PASTE4(v0, v1, v2, v3) \
-    PREP_PASTE(v0, PREP_PASTE3(v1, v2, v3))
+    PREP_PASTE4_AUX(v0, v1, v2, v3)
+
+#define PREP_PASTE4_AUX(v0, v1, v2, v3) \
+    v0##v1##v2##v3
+
+//----------------------------------------------------------------
 
 #define PREP_PASTE5(v0, v1, v2, v3, v4) \
-    PREP_PASTE(v0, PREP_PASTE4(v1, v2, v3, v4))
+    PREP_PASTE5_AUX(v0, v1, v2, v3, v4)
+
+#define PREP_PASTE5_AUX(v0, v1, v2, v3, v4) \
+    v0##v1##v2##v3##v4
+
+//----------------------------------------------------------------
 
 #define PREP_PASTE6(v0, v1, v2, v3, v4, v5) \
-    PREP_PASTE(v0, PREP_PASTE5(v1, v2, v3, v4, v5))
+    PREP_PASTE6_AUX(v0, v1, v2, v3, v4, v5)
+
+#define PREP_PASTE6_AUX(v0, v1, v2, v3, v4, v5) \
+    v0##v1##v2##v3##v4##v5
 
 //================================================================
 //
