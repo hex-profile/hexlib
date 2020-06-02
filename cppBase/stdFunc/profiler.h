@@ -157,19 +157,25 @@ private:
 //
 //================================================================
 
-using ProfilerFalseType = char;
-struct ProfilerTrueType {char data[2];};
-COMPILE_ASSERT(sizeof(ProfilerFalseType) != sizeof(ProfilerTrueType));
+template <typename Kit>
+struct ProfilerKitPresent
+{
+    using FalseType = char;
+    struct TrueType {char data[2];};
+    COMPILE_ASSERT(sizeof(FalseType) != sizeof(TrueType));
 
-////
+    static Kit getKit;
 
-ProfilerFalseType profilerDetectKit(...);
-ProfilerTrueType profilerDetectKit(const ProfilerKit*);
+    static FalseType detectProfiler(...);
+    static TrueType detectProfiler(const ProfilerKit*);
+
+    static constexpr bool value = sizeof(detectProfiler(&getKit)) == sizeof(TrueType);
+};
 
 ////
 
 #define PROFILER__KIT_PRESENT(kit) \
-    (sizeof(profilerDetectKit(&kit)) == sizeof(ProfilerTrueType))
+    ProfilerKitPresent<decltype(kit)>::value
 
 ////
 
