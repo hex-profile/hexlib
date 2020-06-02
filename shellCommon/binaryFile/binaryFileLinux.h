@@ -16,7 +16,7 @@ public:
 
     inline ~BinaryFileLinux() {close();}
 
-    inline bool isOpened() const {return handle != 0;}
+    inline bool isOpened() const {return currentHandle != 0;}
 
     void close();
     stdbool open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit));
@@ -42,7 +42,7 @@ public:
 
     friend inline void exchange(BinaryFileLinux& A, BinaryFileLinux& B)
     {
-        exchange(A.handle, B.handle);
+        exchange(A.currentHandle, B.currentHandle);
         exchange(A.currentFilename, B.currentFilename);
         exchange(A.currentSize, B.currentSize);
         exchange(A.currentPosition, B.currentPosition);
@@ -50,7 +50,7 @@ public:
 
 private:
 
-    void* handle = 0;
+    int currentHandle = -1;
     SimpleString currentFilename;
 
     uint64 currentSize = 0;

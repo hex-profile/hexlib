@@ -198,5 +198,8 @@ void formatOutput(const SimpleStringEx<CharType>& value, FormatOutputStream& out
 //
 //================================================================
 
+template class SStringBuffer<char>;
+template class SStringBuffer<wchar_t>;
+
 template class SimpleStringEx<char>;
 template class SimpleStringEx<wchar_t>;
