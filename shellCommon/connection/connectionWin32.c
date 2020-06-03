@@ -402,32 +402,6 @@ stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& receive
     returnTrue;
 }
 
-//================================================================
-//
-// ConnectionWin32::shutdown
-//
-//================================================================
-
-stdbool ConnectionWin32::shutdown(bool sending, bool receiving, stdPars(Kit))
-{
-    REQUIRE(theStatus == Status::Connected);
-
-    ////
-
-    if (sending && receiving)
-        REQUIRE(::shutdown(theSocket, SD_BOTH) == 0);
-    else if (sending)
-        REQUIRE(::shutdown(theSocket, SD_SEND) == 0);
-    else if (receiving)
-        REQUIRE(::shutdown(theSocket, SD_RECEIVE) == 0);
-    else
-        REQUIRE(false);
-
-    ////
-
-    returnTrue;
-}
-
 //----------------------------------------------------------------
 
 }

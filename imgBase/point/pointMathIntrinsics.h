@@ -76,7 +76,6 @@ POINT_DEFINE_FUNC2(nativeDivide)
 
 POINT_DEFINE_FUNC1(fastSqrt)
 POINT_DEFINE_FUNC1(recipSqrt)
-POINT_DEFINE_FUNC1(sqrtf)
 
 //================================================================
 //

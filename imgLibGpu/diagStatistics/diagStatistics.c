@@ -1,6 +1,7 @@
 #include "diagStatistics.h"
 
 #include "numbers/float/floatType.h"
+#include "numbers/mathIntrinsics.h"
 
 //================================================================
 //
@@ -41,7 +42,7 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
     ////
 
     float64 avgError = globSumErr2 / areaOf(error);
-    meanSquareError = float32(sqrt(avgError));
+    meanSquareError = float32(fastSqrt(avgError));
 
     ////
 
@@ -141,7 +142,7 @@ stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAv
     float64 avgValue = divArea * globSumValue;
     float64 avgValueSq = divArea * globSumValueSq;
 
-    float64 avgStdev = sqrt(clampMin(avgValueSq - square(avgValue), 0.0));
+    float64 avgStdev = fastSqrt(clampMin(avgValueSq - square(avgValue), 0.0));
 
     ////
 
