@@ -1,6 +1,5 @@
 #pragma once
 
-#include "prepTools/prepArg.h"
 #include "prepTools/prepFor.h"
 #include "prepTools/prepIncDec.h"
 #include "prepTools/prepIf.h"
@@ -85,6 +84,26 @@
 
 //----------------------------------------------------------------
 
+#define PREP_ENUM_LR_NOPASTE(n, prefix, postfix) \
+    PREP_FOR(n, PREP_ENUM_LR_NOPASTE__ITER, (prefix, postfix)) \
+
+#define PREP_ENUM_LR_NOPASTE__ITER(i, args) \
+    PREP_IF_COMMA(i) \
+    PREP_ENUM_LR_NOPASTE__TEXT(i, PREP_ARG2_0 args, PREP_ARG2_1 args)
+
+#define PREP_ENUM_LR_NOPASTE__TEXT(i, prefix, postfix) \
+    prefix i postfix
+
+//================================================================
+//
+// PREP_ENUMERATE_LR
+//
+// Generates a comma-separated list of enumerated tokens:
+//
+// pre0post, pre1post, pre2post,
+//
+//================================================================
+
 #define PREP_ENUMERATE_LR(n, prefix, postfix) \
     PREP_FOR(n, PREP_ENUMERATE_LR__ITER, (prefix, postfix)) \
 
@@ -93,6 +112,17 @@
 
 #define PREP_ENUMERATE_LR__TEXT(i, prefix, postfix) \
     PREP_PASTE3(prefix, i, postfix),
+
+//----------------------------------------------------------------
+
+#define PREP_ENUMERATE_LR_NOPASTE(n, prefix, postfix) \
+    PREP_FOR(n, PREP_ENUMERATE_LR_NOPASTE__ITER, (prefix, postfix)) \
+
+#define PREP_ENUMERATE_LR_NOPASTE__ITER(i, args) \
+    PREP_ENUMERATE_LR_NOPASTE__TEXT(i, PREP_ARG2_0 args, PREP_ARG2_1 args)
+
+#define PREP_ENUMERATE_LR_NOPASTE__TEXT(i, prefix, postfix) \
+    prefix i postfix,
 
 //================================================================
 //

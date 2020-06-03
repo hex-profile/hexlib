@@ -6,6 +6,7 @@
 #include "data/array.h"
 #include "data/pointerInterface.h"
 #include "numbers/int/intType.h"
+#include "data/commonFuncs.h"
 
 //================================================================
 //
