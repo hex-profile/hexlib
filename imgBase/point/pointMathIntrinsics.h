@@ -5,29 +5,29 @@
 
 //================================================================
 //
-// ldexp
+// ldexpv
 //
 //================================================================
 
 template <typename Type>
-sysinline Point<Type> ldexp(const Point<Type>& A, const Point<int>& B)
+sysinline Point<Type> ldexpv(const Point<Type>& A, const Point<int>& B)
 {
     using namespace std;
-    return point(ldexp(A.X, B.X), ldexp(A.Y, B.Y));
+    return point(ldexpv(A.X, B.X), ldexpv(A.Y, B.Y));
 }
 
 template <typename Type>
-sysinline Point<Type> ldexp(const Type& A, const Point<int>& B)
+sysinline Point<Type> ldexpv(const Type& A, const Point<int>& B)
 {
     using namespace std;
-    return point(ldexp(A, B.X), ldexp(A, B.Y));
+    return point(ldexpv(A, B.X), ldexpv(A, B.Y));
 }
 
 template <typename Type>
-sysinline Point<Type> ldexp(const Point<Type>& A, const int& B)
+sysinline Point<Type> ldexpv(const Point<Type>& A, const int& B)
 {
     using namespace std;
-    return point(ldexp(A.X, B), ldexp(A.Y, B));
+    return point(ldexpv(A.X, B), ldexpv(A.Y, B));
 }
 
 //================================================================

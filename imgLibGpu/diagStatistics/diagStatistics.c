@@ -1,7 +1,5 @@
 #include "diagStatistics.h"
 
-#include <cmath>
-
 #include "numbers/float/floatType.h"
 
 //================================================================

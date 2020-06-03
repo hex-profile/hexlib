@@ -620,7 +620,7 @@ struct ShiftRight : StdTest<Perk>
 
             if (Bd >= 0 && Bd <= 31)
             {
-                double tmp = ldexp(toDbl(A), -int(Bd)); // @ccfix
+                double tmp = ldexpv(toDbl(A), -int(Bd)); // @ccfix
                 result = fromDbl(floorv(tmp));
             }
         }
@@ -662,7 +662,7 @@ struct ShiftLeft : StdTest<Perk>
 
             if (Bd >= 0 && Bd <= 31)
             {
-                double tmp = ldexp(toDbl(A), +int(Bd)); // @ccfix
+                double tmp = ldexpv(toDbl(A), +int(Bd)); // @ccfix
                 result = fromDbl(floorv(tmp)); 
             }
         }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-
 #include "numbers/float/floatType.h"
 #include "data/space.h"
 

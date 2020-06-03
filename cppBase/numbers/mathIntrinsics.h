@@ -300,3 +300,20 @@ sysinline float32 nativeAtan2(float32 rY, float32 rX)
 template <>
 sysinline float64 nativeAtan2(float64 rY, float64 rX)
     {return atan2(rY, rX);}
+
+//================================================================
+//
+// ldexpv
+//
+//================================================================
+
+template <typename Float>
+sysinline Float ldexpv(Float value, int exp);
+
+template <>
+sysinline float32 ldexpv(float32 value, int exp)
+    {return ldexpf(value, exp);}
+
+template <>
+sysinline float64 ldexpv(float64 value, int exp)
+    {return ldexp(value, exp);}

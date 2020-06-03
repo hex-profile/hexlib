@@ -1,6 +1,7 @@
 #pragma once
 
 #include "userOutput/printMsg.h"
+#include "numbers/mathIntrinsics.h"
 
 //================================================================
 //
@@ -35,10 +36,10 @@ inline bool memoryUsageReport
         kit.localLog,
         STR("%: GPU %M / %M, CPU %M / %M"),
         name,
-        fltf(ldexp(float32(stateUsage.gpuMemSize), -20), 1),
-        fltf(ldexp(float32(tempUsage.gpuMemSize), -20), 1),
-        fltf(ldexp(float32(stateUsage.cpuMemSize), -20), 1),
-        fltf(ldexp(float32(tempUsage.cpuMemSize), -20), 1),
+        fltf(ldexpv(float32(stateUsage.gpuMemSize), -20), 1),
+        fltf(ldexpv(float32(tempUsage.gpuMemSize), -20), 1),
+        fltf(ldexpv(float32(stateUsage.cpuMemSize), -20), 1),
+        fltf(ldexpv(float32(tempUsage.cpuMemSize), -20), 1),
 
         (stateActivity.sysAllocCount || tempActivity.sysAllocCount) ? msgErr :
         (stateActivity.fastAllocCount) ? msgWarn : msgInfo
