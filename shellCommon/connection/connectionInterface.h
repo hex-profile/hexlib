@@ -112,7 +112,6 @@ struct Opening
 
 struct Connection : public Opening, public Sending, public Receiving
 {
-    virtual stdbool shutdown(bool sending, bool receiving, stdPars(Kit)) =0;
 };
 
 //----------------------------------------------------------------

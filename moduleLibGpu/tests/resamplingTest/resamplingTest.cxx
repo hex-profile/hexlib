@@ -318,7 +318,7 @@ private:
     enum DisplayType {DisplayNothing, DisplaySource, DisplayDestination, DisplayError, DisplayCount};
     ExclusiveMultiSwitch<DisplayType, DisplayCount, 0x57296E2F> displaySwitch;
     NumericVarStatic<Space, 0, 1024, 0> errorSpatialMargin;
-    NumericVar<float32> variableUpsampleFactor{1/16.f, 16.f, sqrt(2.f)};
+    NumericVar<float32> variableUpsampleFactor{1/16.f, 16.f, fastSqrt(2.f)};
 
 };
 
