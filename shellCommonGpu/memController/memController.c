@@ -1,12 +1,11 @@
 #include "memController.h"
 
-#include <cmath>
-
 #include "memController/fastSpaceAllocator/fastSpaceAllocator.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "userOutput/errorLogEx.h"
 #include "userOutput/printMsg.h"
 #include "allocation/flatToSpaceAllocatorThunk.h"
+#include "numbers/mathIntrinsics.h"
 
 namespace memController {
 
@@ -102,7 +101,7 @@ inline bool memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignm
     (
         kit.localLog, STR("%0: Failed to alloc %1 Mb"),
         name,
-        fltf(ldexp(float32(memSize), -20), 1), memAlignment,
+        fltf(ldexpv(float32(memSize), -20), 1), memAlignment,
         msgErr
     );
 }

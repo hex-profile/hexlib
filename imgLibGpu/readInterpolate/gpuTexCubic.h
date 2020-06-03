@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-
 #include "vectorTypes/vectorType.h"
 #include "gpuDevice/devSampler/devSampler.h"
 #include "readInterpolate/cubicCoeffs.h"

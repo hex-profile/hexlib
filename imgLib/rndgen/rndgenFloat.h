@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-
 #include "rndgen/rndgenBase.h"
 #include "numbers/float/floatBase.h"
 #include "point/pointBase.h"
