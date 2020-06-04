@@ -8,8 +8,6 @@ include(${HEXLIB_CMAKE_DIR}/common.cmake)
 
 hexlibProjectTemplate(gpuCompiler EXECUTABLE . "cppBase;shellCommon" FALSE hexlib)
 
-set_target_properties(gpuCompiler PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
 #----------------------------------------------------------------
 #
 # Interface headers.
@@ -17,4 +15,5 @@ set_target_properties(gpuCompiler PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BI
 #----------------------------------------------------------------
 
 add_library(gpuCompilerInterface INTERFACE)
+
 target_include_directories(gpuCompilerInterface INTERFACE .)

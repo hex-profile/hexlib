@@ -1,19 +1,27 @@
-#if defined(_WIN32)
-
-#include "connectionWin32.h"
+#include "connectionImpl.h"
 
 ////
 
-#define WIN32_LEAN_AND_MEAN
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#pragma comment(lib, "Ws2_32.lib")
+#ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #pragma comment(lib, "Ws2_32.lib")
+#endif
+
+#ifdef __linux__
+    #include <unistd.h>
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netdb.h>
+#endif
 
 ////
 
 #include <mutex>
 
 #include "osErrors/errorWin32.h"
+#include "osErrors/errorLinux.h"
 #include "storage/rememberCleanup.h"
 #include "errorLog/debugBreak.h"
 #include "numbers/int/intType.h"
@@ -33,8 +41,55 @@ using namespace std;
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
+#ifdef _WIN32
+
 COMPILE_ASSERT(TYPE_EQUAL(Socket, SOCKET));
 COMPILE_ASSERT(invalidSocket == INVALID_SOCKET);
+
+#endif
+
+//================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
+//
+// Common funcs.
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
+// getSocketError
+//
+//================================================================
+
+#if defined(_WIN32)
+
+    inline auto getSocketError() {return ErrorWin32(WSAGetLastError());}
+
+#elif defined(__linux__)
+
+    inline auto getSocketError() {return ErrorLinux(errno);}
+
+#else
+
+    #error
+
+#endif
+
+//================================================================
+//
+// closesocket
+//
+//================================================================
+
+#ifdef __linux__
+
+inline int closesocket(int handle)
+    {return close(handle);}
+
+#endif
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -56,8 +111,12 @@ public:
 
 private:
 
+#ifdef _WIN32
+
     mutex lock;
     uint32 refCount = 0;
+
+#endif
 
 };
 
@@ -69,6 +128,9 @@ private:
 
 stdbool WinSockLib::open(stdPars(Kit))
 {
+
+#ifdef _WIN32
+
     lock_guard<mutex> guard(lock);
 
     ////
@@ -92,6 +154,9 @@ stdbool WinSockLib::open(stdPars(Kit))
 
     wsaCleanup.cancel();
     ++refCount;
+
+#endif
+
     returnTrue;
 }
 
@@ -103,6 +168,9 @@ stdbool WinSockLib::open(stdPars(Kit))
 
 void WinSockLib::close()
 {
+
+#ifdef _WIN32
+
     lock_guard<mutex> guard(lock);
 
     if_not (refCount >= 1)
@@ -112,6 +180,9 @@ void WinSockLib::close()
 
     if (refCount == 0)
         DEBUG_BREAK_CHECK(WSACleanup() == 0);
+
+#endif
+
 }
 
 //================================================================
@@ -126,13 +197,13 @@ WinSockLib winSockLib;
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
-// ConnectionWin32
+// ConnectionImpl
 //
 //----------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-State ConnectionWin32::state() const
+State ConnectionImpl::state() const
 {
     State result = State::None;
 
@@ -147,11 +218,11 @@ State ConnectionWin32::state() const
 
 //================================================================
 //
-// ConnectionWin32::reopen
+// ConnectionImpl::reopen
 //
 //================================================================
 
-stdbool ConnectionWin32::reopen(const Address& address, stdPars(Kit))
+stdbool ConnectionImpl::reopen(const Address& address, stdPars(Kit))
 {
     //----------------------------------------------------------------
     //
@@ -205,7 +276,8 @@ stdbool ConnectionWin32::reopen(const Address& address, stdPars(Kit))
     //----------------------------------------------------------------
 
     addrinfo hints;
-    ZeroMemory(&hints, sizeof(hints));
+    memset(&hints, 0, sizeof(hints));
+
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -213,7 +285,7 @@ stdbool ConnectionWin32::reopen(const Address& address, stdPars(Kit))
     addrinfo* ai = nullptr;
 
     REQUIRE_TRACE3(getaddrinfo(address.host, portStr, &hints, &ai) == 0,
-        STR("Connection: Get address info failed for %0:%1. %2"), address.host, address.port, ErrorWin32(WSAGetLastError()));
+        STR("Connection: Get address info failed for %0:%1. %2"), address.host, address.port, getSocketError());
 
     ////
 
@@ -226,11 +298,11 @@ stdbool ConnectionWin32::reopen(const Address& address, stdPars(Kit))
 
 //================================================================
 //
-// ConnectionWin32::close
+// ConnectionImpl::close
 //
 //================================================================
 
-void ConnectionWin32::close()
+void ConnectionImpl::close()
 {
     disconnect();
 
@@ -257,11 +329,11 @@ void ConnectionWin32::close()
 
 //================================================================
 //
-// ConnectionWin32::reconnect
+// ConnectionImpl::reconnect
 //
 //================================================================
 
-stdbool ConnectionWin32::reconnect(stdPars(Kit))
+stdbool ConnectionImpl::reconnect(stdPars(Kit))
 {
     REQUIRE(theStatus >= Status::Resolved);
 
@@ -274,7 +346,7 @@ stdbool ConnectionWin32::reconnect(stdPars(Kit))
     //----------------------------------------------------------------
 
     theSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    REQUIRE_TRACE1(theSocket != invalidSocket, STR("Connection: Cannot create socket: %0"), ErrorWin32(WSAGetLastError()));
+    REQUIRE_TRACE1(theSocket != invalidSocket, STR("Connection: Cannot create socket: %0"), getSocketError());
     REMEMBER_CLEANUP_EX(closeSocketCleanup, {DEBUG_BREAK_CHECK(closesocket(theSocket) == 0); theSocket = invalidSocket;});
 
     //----------------------------------------------------------------
@@ -297,7 +369,7 @@ stdbool ConnectionWin32::reconnect(stdPars(Kit))
     auto ai = (addrinfo*) theAddrInfo;
 
     REQUIRE_TRACE3(connect(theSocket, ai->ai_addr, int(ai->ai_addrlen)) == 0, 
-        STR("Connection: Cannot connect to %0:%1. %2"), theHost.cstr(), thePort, ErrorWin32(WSAGetLastError()));
+        STR("Connection: Cannot connect to %0:%1. %2"), theHost.cstr(), thePort, getSocketError());
 
     //----------------------------------------------------------------
     //
@@ -313,11 +385,11 @@ stdbool ConnectionWin32::reconnect(stdPars(Kit))
 
 //================================================================
 //
-// ConnectionWin32::disconnect
+// ConnectionImpl::disconnect
 //
 //================================================================
 
-void ConnectionWin32::disconnect()
+void ConnectionImpl::disconnect()
 {
     if (theStatus == Status::Connected)
     {
@@ -330,11 +402,11 @@ void ConnectionWin32::disconnect()
 
 //================================================================
 //
-// ConnectionWin32::~ConnectionWin32
+// ConnectionImpl::~ConnectionImpl
 //
 //================================================================
 
-ConnectionWin32::~ConnectionWin32()
+ConnectionImpl::~ConnectionImpl()
 {
     // Close everything.
     close();
@@ -349,11 +421,11 @@ ConnectionWin32::~ConnectionWin32()
 
 //================================================================
 //
-// ConnectionWin32::send
+// ConnectionImpl::send
 //
 //================================================================
 
-stdbool ConnectionWin32::send(const void* dataPtr, size_t dataSize, stdPars(Kit))
+stdbool ConnectionImpl::send(const void* dataPtr, size_t dataSize, stdPars(Kit))
 {
     REQUIRE(theStatus == Status::Connected);
 
@@ -374,7 +446,7 @@ stdbool ConnectionWin32::send(const void* dataPtr, size_t dataSize, stdPars(Kit)
         int requestSize = int(clampMax(currentSize, maxRequestSize));
         int actualSize = ::send(theSocket, currentPtr, requestSize, 0);
 
-        REQUIRE_TRACE1(actualSize >= 0, STR("Connection: Cannot send data. %0"), ErrorWin32(WSAGetLastError()));
+        REQUIRE_TRACE1(actualSize >= 0, STR("Connection: Cannot send data. %0"), getSocketError());
 
         REQUIRE(actualSize <= requestSize);
         currentSize -= size_t(actualSize);
@@ -386,17 +458,17 @@ stdbool ConnectionWin32::send(const void* dataPtr, size_t dataSize, stdPars(Kit)
 
 //================================================================
 //
-// ConnectionWin32::receive
+// ConnectionImpl::receive
 //
 //================================================================
 
-stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit))
+stdbool ConnectionImpl::receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit))
 {
     REQUIRE(theStatus == Status::Connected);
 
     REQUIRE(dataSize <= size_t(INT_MAX));
     int actualSize = ::recv(theSocket, (char*) dataPtr, int(dataSize), 0);
-    REQUIRE_TRACE1(actualSize >= 0, STR("Connection: Cannot receive data. %0"), ErrorWin32(WSAGetLastError()));
+    REQUIRE_TRACE1(actualSize >= 0, STR("Connection: Cannot receive data. %0"), getSocketError());
 
     receivedSize = size_t(actualSize);
     returnTrue;
@@ -405,5 +477,3 @@ stdbool ConnectionWin32::receive(void* dataPtr, size_t dataSize, size_t& receive
 //----------------------------------------------------------------
 
 }
-
-#endif

@@ -89,9 +89,6 @@ sysinline const GpuLayeredMatrix<const Type>& makeConst(const GpuLayeredMatrix<T
 template <typename Type>
 GET_SIZE_DEFINE(GpuLayeredMatrix<Type>, value.size())
 
-sysinline Space getLayers(Space layers)
-    {return layers;}
-
 template <typename Type>
 sysinline Space getLayers(const GpuLayeredMatrix<Type>& matrix)
     {return matrix.layers();}
