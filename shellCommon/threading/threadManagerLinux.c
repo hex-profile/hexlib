@@ -2,9 +2,7 @@
 
 #include "threadManagerLinux.h"
 
-#include <unistd.h>
-#include <pthread.h>
-#include <stdlib.h>
+#include <mutex>
 
 #include "storage/constructDestruct.h"
 #include "errorLog/errorLog.h"
@@ -40,43 +38,35 @@ public:
 
     void enter()
     {
-        DEBUG_BREAK_CHECK(pthread_mutex_lock(&mutex) == 0);
+        mutex.lock();
     }
 
     void leave()
     {
-        DEBUG_BREAK_CHECK(pthread_mutex_unlock(&mutex) == 0);
+        mutex.unlock();
     }
 
     bool tryEnter()
     {
-        return pthread_mutex_trylock(&mutex) == 0;
+        return mutex.try_lock();
     }
 
 public:
 
     inline CriticalSectionLinux()
     {
-        ok = true;
-
-        if_not (pthread_mutex_init(&mutex, nullptr) == 0)
-            ok = false;
     }
 
 public:
 
     inline ~CriticalSectionLinux()
     {
-        if (ok)
-            DEBUG_BREAK_CHECK(pthread_mutex_destroy(&mutex) == 0);
     }
-
-    bool valid() const {return ok;}
 
 private:
 
     bool ok = false;
-    pthread_mutex_t mutex;
+    std::mutex mutex;
 
 };
 
@@ -95,7 +85,6 @@ stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdP
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
 
-    REQUIRE(sectionEx.valid());
     return true;
 }
 

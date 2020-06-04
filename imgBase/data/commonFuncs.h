@@ -50,7 +50,11 @@ sysinline bool equalSize(const T0& v0, const Types&... values)
 //================================================================
 
 template <typename Type>
-Space getLayers(const Type& value);
+sysinline Space getLayers(const Type& value);
+
+template <>
+sysinline Space getLayers(const Space& layers)
+    {return layers;}
 
 //================================================================
 //
