@@ -248,6 +248,11 @@ public:
         returnTrue;
     }
 
+    void write(const CharType* ptr, size_t size)
+    {
+        stream.write(ptr, size);
+    }
+
 private:
 
     StlString openedFilename;
