@@ -3,6 +3,7 @@
 #include "gpuDevice/devSampler/devSampler.h"
 #include "numbers/float/floatBase.h"
 #include "point/pointBase.h"
+#include "data/commonFuncs.h"
 
 //================================================================
 //

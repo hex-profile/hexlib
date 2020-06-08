@@ -1,8 +1,3 @@
-#if defined(_WIN32)
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
@@ -25,8 +20,33 @@
 #include "fileToolsImpl/fileToolsImpl.h"
 #include "errorLog/foreignErrorBlock.h"
 #include "formattedOutput/requireMsg.h"
+#include "runProcess/runProcess.h"
+#include "binaryFile/binaryFileImpl.h"
+#include "numbers/int/intCompare.h"
 
 using namespace std;
+
+//================================================================
+//
+// OS_CHOICE
+//
+//================================================================
+
+#if defined(_WIN32)
+
+    #define OS_CHOICE(windows, linux) \
+        windows
+
+#elif defined(__linux__)
+
+    #define OS_CHOICE(windows, linux) \
+        linux
+
+#else
+
+    #error
+
+#endif
 
 //================================================================
 //
@@ -125,70 +145,6 @@ inline StlString filenameToCString(const StlString& str)
 
 //================================================================
 //
-// runProcess (Linux)
-//
-//================================================================
-
-#if defined(__linux__)
-
-stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
-{
-    int status = system(cmdLine.c_str());
-
-    if_not (status == 0)
-    {
-        printMsg(kit.msgLog, STR("Cannot launch %0"), cmdLine, msgErr);
-        return false;
-    }
-
-    returnTrue;
-}
-
-#endif
-
-//================================================================
-//
-// runProcess (Windows)
-//
-//================================================================
-
-#if defined(_WIN32)
-
-stdbool runProcess(StlString cmdLine, stdPars(CompilerKit))
-{
-    STARTUPINFO si;
-    ZeroMemory(&si, sizeof(si));
-    si.cb = sizeof(si);
-
-    PROCESS_INFORMATION pi;
-    ZeroMemory(&pi, sizeof(pi));
-
-    // printMsg(kit.msgLog, STR("Run: %0"), cmdLine, msgErr);
-
-    bool createOk = CreateProcess(NULL, const_cast<char*>(cmdLine.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi) != 0;
-
-    if_not (createOk)
-    {
-        printMsg(kit.msgLog, STR("Cannot launch %0"), cmdLine, msgErr);
-        returnFalse;
-    }
-
-    WaitForSingleObject(pi.hProcess, INFINITE);
-
-    DWORD exitCode = 0;
-    REQUIRE(GetExitCodeProcess(pi.hProcess, &exitCode) != 0);
-    require(exitCode == 0); // success?
-
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-
-    returnTrue;
-}
-
-#endif
-
-//================================================================
-//
 // runProcess
 //
 //================================================================
@@ -218,11 +174,23 @@ stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 
 //================================================================
 //
-// parseClArgs
+// compilerName
 //
 //================================================================
 
-stdbool parseClArgs
+constexpr auto compilerName = OS_CHOICE(CT("cl.exe"), CT("gcc"));
+constexpr auto nvccName = OS_CHOICE(CT("nvcc.exe"), CT("nvcc"));
+
+constexpr auto outputOption = OS_CHOICE(CT("Fo"), CT("o"));
+constexpr int outputOptionLen = OS_CHOICE(2, 1);
+
+//================================================================
+//
+// parseCompilerArgs
+//
+//================================================================
+
+stdbool parseCompilerArgs
 (
     const vector<StlString>& args,
     vector<StlString>& includes,
@@ -235,9 +203,27 @@ stdbool parseClArgs
     stdPars(CompilerKit)
 )
 {
-    int prevOption = 0; // 0, 'I', 'D'
+    int prevOption = 0;
     outputDir = CT("");
     outputFile = CT("");
+
+    ////
+
+    auto handleOutputOption = [&] (const StlString& body, stdPars(CompilerKit))
+    {
+        if (body.size())
+        {
+            StlString tmpDir, tmpName, tmpExt;
+            splitPath(body, tmpDir, tmpName, tmpExt);
+
+            REQUIRE_MSG1(tmpExt.size(), STR("Output file '%0' looks like a directory."), body);
+
+            outputDir = tmpDir;
+            outputFile = body;
+        }
+
+        returnTrue;
+    };
 
     ////
 
@@ -260,8 +246,8 @@ stdbool parseClArgs
 
                 if (body.size())
                 {
-                    includes.push_back(body);
                     prevOption = 0;
+                    includes.push_back(body);
                 }
             }
             else if (option.substr(0, 1) == CT("D"))
@@ -272,22 +258,21 @@ stdbool parseClArgs
 
                 if (body.size())
                 {
-                    // printMsg(kit.msgLog, STR("Found define %0"), body);
-                    defines.push_back(body);
                     prevOption = 0;
+                    defines.push_back(body);
                 }
             }
-            else if (option.substr(0, 2) == CT("Fo"))
+            else if (option.substr(0, outputOptionLen) == outputOption)
             {
-                StlString outputOption = option.substr(2);
+                prevOption = 'O';
 
-                StlString tmpDir, tmpName, tmpExt;
-                splitPath(outputOption, tmpDir, tmpName, tmpExt);
+                StlString body = option.substr(outputOptionLen);
 
-                if (tmpExt.size())
-                    {outputDir = tmpDir; outputFile = outputOption;}
-                else
-                    {outputDir = outputOption; outputFile = CT("");}
+                if (body.size())
+                {
+                    prevOption = 0;
+                    require(handleOutputOption(body, stdPass));
+                }
             }
             else
             {
@@ -301,6 +286,8 @@ stdbool parseClArgs
                 includes.push_back(s);
             else if (prevOption == 'D')
                 defines.push_back(s);
+            else if (prevOption == 'O')
+                require(handleOutputOption(s, stdPass));
             else if (stringEndsWith(s, CT(".cxx")))
                 cudaFiles.push_back(s);
             else if (stringEndsWith(s, CT(".c")) || stringEndsWith(s, CT(".cpp")))
@@ -750,7 +737,7 @@ stdbool compileDevicePartToBin
     {
         vector<StlString> nvccArgs;
 
-        nvccArgs.push_back(CT("nvcc.exe"));
+        nvccArgs.push_back(nvccName);
 
         nvccArgs.push_back(CT("-m") + platformBitness);
 
@@ -792,24 +779,40 @@ stdbool compileDevicePartToBin
 
     //----------------------------------------------------------------
     //
+    // readCharFile
+    //
+    //----------------------------------------------------------------
+
+    auto readCharFile = [] (const StlString& filename, vector<CharType>& result, stdPars(CompilerKit))
+    {
+        BinaryFileImpl file;
+        require(file.open(charArrayFromPtr(filename.c_str()), false, false, stdPass));
+        auto fileSizeInBytes = file.getSize();
+
+        REQUIRE(intLessEq(fileSizeInBytes, typeMax<size_t>()));
+        auto fileSize = size_t(fileSizeInBytes) / sizeof(CharType);
+        REQUIRE(intEqual(fileSize * sizeof(CharType), fileSizeInBytes));
+
+        result.resize(fileSize);
+
+        require(file.read(result.data(), fileSize * sizeof(CharType), stdPass));
+        returnTrue;
+    };
+
+    //----------------------------------------------------------------
+    //
     // Read new preprocessed file
     //
     //----------------------------------------------------------------
 
-    basic_ifstream<CharType> cupFile(cupPath.c_str(), ios_base::in | ios_base::binary | ios_base::ate );
-    REQUIRE(!!cupFile); // for tellg
-    size_t cupSize = (size_t) cupFile.tellg();
-    cupFile.seekg(0, ios_base::beg);
-    vector<CharType> cupData(clampMin<size_t>(cupSize, 1));
-    cupFile.read(&cupData[0], cupSize);
-    REQUIRE(!!cupFile);
-    cupFile.close();
+    vector<CharType> cupData;
+    require(readCharFile(cupPath, cupData, stdPass));
 
     //
     // Extract kernel and sampler names
     //
 
-    extractKernelAndSamplerNames(&cupData[0], cupSize, kernelNames, samplerNames);
+    extractKernelAndSamplerNames(cupData.data(), cupData.size(), kernelNames, samplerNames);
 
     //----------------------------------------------------------------
     //
@@ -829,18 +832,12 @@ stdbool compileDevicePartToBin
         // Read old preprocessed file
         //
 
-        basic_ifstream<CharType> oldFile(cachedPath.c_str(), ios_base::in | ios_base::binary | ios_base::ate );
-        REQUIRE(!!oldFile); // for tellg
-        size_t oldSize = (size_t) oldFile.tellg();
-        oldFile.seekg(0, ios_base::beg);
-        vector<CharType> oldData(clampMin<size_t>(oldSize, 1));
-        oldFile.read(&oldData[0], oldSize);
-        REQUIRE(!!oldFile);
-        oldFile.close();
+        vector<CharType> oldData;
+        require(readCharFile(cachedPath, oldData, stdPass));
 
         ////
 
-        if (sourcesAreIdentical(&oldData[0], oldSize, &cupData[0], cupSize))
+        if (sourcesAreIdentical(oldData.data(), oldData.size(), cupData.data(), cupData.size()))
         {
             remove(cupPath.c_str());
             returnTrue;
@@ -859,7 +856,7 @@ stdbool compileDevicePartToBin
 
         vector<StlString> nvccArgs;
 
-        nvccArgs.push_back(CT("nvcc.exe"));
+        nvccArgs.push_back(nvccName);
 
         nvccArgs.push_back(CT("-m" + platformBitness));
 
@@ -954,6 +951,7 @@ stdbool makeCppBinAssembly
     //
     //
 
+    // ```
     basic_ifstream<uint8> binStream(binPath.c_str(), ios::in | ios::binary);
     REQUIRE_MSG1(!!binStream, STR("Cannot open %0"), binPath);
 
@@ -1002,7 +1000,7 @@ stdbool makeCppBinAssembly
             row += sprintMsg(STR("0x%0, "), hex(value, 2));
         }
 
-        printMsg(outStream, STR("  %0"), row);
+        printMsg(outStream, STR("    %0"), row);
 
         if (!binStream)
             break;
@@ -1023,7 +1021,7 @@ stdbool makeCppBinAssembly
         printMsg(outStream, STR("{"));
 
         for_count (i, kernelNames.size())
-            printMsg(outStream, STR("  \"%0\", "), kernelNames[i]);
+            printMsg(outStream, STR("    \"%0\", "), kernelNames[i]);
 
         printMsg(outStream, STR("};"));
         printMsg(outStream, STR(""));
@@ -1039,7 +1037,7 @@ stdbool makeCppBinAssembly
         printMsg(outStream, STR("{"));
 
         for_count (i, samplerNames.size())
-            printMsg(outStream, STR("  \"%0\", "), samplerNames[i]);
+            printMsg(outStream, STR("    \"%0\", "), samplerNames[i]);
 
         printMsg(outStream, STR("};"));
         printMsg(outStream, STR(""));
@@ -1052,20 +1050,26 @@ stdbool makeCppBinAssembly
     printMsg(outStream, STR("const GpuModuleDesc moduleDesc ="));
     printMsg(outStream, STR("{"));
 
-    printMsg(outStream, STR("  %0, %1,"), STR("moduleData"), STR("sizeof(moduleData) / sizeof(moduleData[0])"));
-    printMsg(outStream, STR("  %0, %1,"), kernelNames.size() ? STR("moduleKernels") : STR("0"), kernelNames.size());
-    printMsg(outStream, STR("  %0, %1"), samplerNames.size() ? STR("moduleSamplers") : STR("0"), samplerNames.size());
+    printMsg(outStream, STR("    %0, %1,"), STR("moduleData"), STR("sizeof(moduleData) / sizeof(moduleData[0])"));
+    printMsg(outStream, STR("    %0, %1,"), kernelNames.size() ? STR("moduleKernels") : STR("0"), kernelNames.size());
+    printMsg(outStream, STR("    %0, %1"), samplerNames.size() ? STR("moduleSamplers") : STR("0"), samplerNames.size());
 
     printMsg(outStream, STR("};"));
     printMsg(outStream, STR(""));
 
-#if defined(_MSC_VER)
+#if defined(_WIN32)
+
     printMsg(outStream, STR("#pragma section(\"gpu_section$m\", read)"));
     printMsg(outStream, STR("__declspec(allocate(\"gpu_section$m\")) const GpuModuleDesc* moduleRef = &moduleDesc;"));
-#elif defined(__GNUC__)
+
+#elif defined(__linux__)
+
     printMsg(outStream, STR("const GpuModuleDesc* moduleRef __attribute__((section(\"gpu_section\"))) = &moduleDesc;"));
+
 #else
+
     #error
+
 #endif
 
     printMsg(outStream, STR(""));
@@ -1241,9 +1245,11 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     StlString outputFile;
     vector<StlString> otherArgs;
 
-    require(parseClArgs(args, includes, defines, cppFiles, cudaFiles, outputDir, outputFile, otherArgs, stdPass));
+    require(parseCompilerArgs(args, includes, defines, cppFiles, cudaFiles, outputDir, outputFile, otherArgs, stdPass));
 
     bool gpuDetected = cudaFiles.size() > 0;
+
+    // printMsg(kit.msgLog, STR("CUDA files: %"), cudaFiles.size()); // ```
 
     //----------------------------------------------------------------
     //
@@ -1255,7 +1261,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     {
         vector<StlString> clArgs;
 
-        clArgs.push_back(CT("cl.exe"));
+        clArgs.push_back(compilerName);
         clArgs.insert(clArgs.end(), cmdArgs.begin(), cmdArgs.end());
 
         require(runProcess(clArgs, stdPass));
@@ -1337,7 +1343,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     {
         vector<StlString> clArgs;
 
-        clArgs.push_back(CT("cl.exe"));
+        clArgs.push_back(compilerName);
 
         for_count (i, includes.size())
         {
@@ -1352,7 +1358,8 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         }
 
         clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
-        clArgs.push_back(sprintMsg(STR("/Fo%0"), outputFile.size() ? outputFile : outputDir));
+        // ```
+        clArgs.push_back(sprintMsg(STR("-Fo%0"), outputFile.size() ? outputFile : outputDir));
         clArgs.insert(clArgs.end(), cppFiles.begin(), cppFiles.end());
 
         require(runProcess(clArgs, stdPass));
@@ -1368,7 +1375,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     {
         vector<StlString> clArgs;
 
-        clArgs.push_back(CT("cl.exe"));
+        clArgs.push_back(compilerName);
 
         for_count (i, includes.size())
         {
@@ -1389,7 +1396,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         clArgs.push_back(CT("DEVCODE=1"));
 
         clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
-        clArgs.push_back(sprintMsg(STR("/Fo%0"), outputFile.size() ? outputFile : outputDir));
+        clArgs.push_back(sprintMsg(STR("-Fo%0"), outputFile.size() ? outputFile : outputDir));
         clArgs.insert(clArgs.end(), cudaFiles.begin(), cudaFiles.end());
 
         require(runProcess(clArgs, stdPass));
@@ -1438,6 +1445,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             //
 
             StlString cppAssemblyPath = sprintMsg(STR("%0/%1.assembly.cpp"), inputDir, inputName);
+            // ```
             REMEMBER_CLEANUP1(remove(cppAssemblyPath.c_str()), const StlString&, cppAssemblyPath);
             require(makeCppBinAssembly(inputPath, binPath, cppAssemblyPath, kernelNames, samplerNames, stdPass));
 
@@ -1448,7 +1456,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             {
                 vector<StlString> clArgs;
 
-                clArgs.push_back(CT("cl.exe"));
+                clArgs.push_back(compilerName);
 
                 for_count (i, includes.size())
                 {
@@ -1472,7 +1480,9 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
                 clArgs.push_back(CT("DEVCODE=0"));
 
                 clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
-                clArgs.push_back(sprintMsg(STR("/Fo%0"), outputFile.size() ? outputFile : outputDir));
+
+                // ```
+                clArgs.push_back(sprintMsg(STR("-Fo%0"), outputFile.size() ? outputFile : outputDir));
                 clArgs.push_back(cppAssemblyPath);
 
                 require(runProcess(clArgs, stdPass));
