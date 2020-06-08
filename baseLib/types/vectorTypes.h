@@ -45,17 +45,8 @@
 //
 //================================================================
 
-#if defined(__CUDA_ARCH__)
-
-    #define TMP_STRUCT_WITH_ALIGNMENT(name, byteAlignment) \
-        __declspec(align(byteAlignment)) struct name
-
-#else
-
-    #define TMP_STRUCT_WITH_ALIGNMENT(name, byteAlignment) \
-        struct alignas(byteAlignment) name
-
-#endif
+#define TMP_STRUCT_WITH_ALIGNMENT(name, byteAlignment) \
+    struct alignas(byteAlignment) name
 
 //================================================================
 //

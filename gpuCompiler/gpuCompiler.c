@@ -233,10 +233,9 @@ stdbool parseCompilerArgs
 
         ////
 
-        if (s.substr(0, 1) == CT("/") || s.substr(0, 1) == CT("-"))
+        if (OS_CHOICE(s.substr(0, 1) == CT("/"), false) || s.substr(0, 1) == CT("-"))
         {
             StlString option = s.substr(1);
-            // printMsg(kit.msgLog, STR("Found option %0"), option);
 
             if (option.substr(0, 1) == CT("I"))
             {
@@ -288,12 +287,15 @@ stdbool parseCompilerArgs
                 defines.push_back(s);
             else if (prevOption == 'O')
                 require(handleOutputOption(s, stdPass));
-            else if (stringEndsWith(s, CT(".cxx")))
-                cudaFiles.push_back(s);
-            else if (stringEndsWith(s, CT(".c")) || stringEndsWith(s, CT(".cpp")))
-                cppFiles.push_back(s);
             else
-                otherArgs.push_back(s);
+            {
+                if (stringEndsWith(s, CT(".cxx")))
+                    cudaFiles.push_back(s);
+                else if (stringEndsWith(s, CT(".c")) || stringEndsWith(s, CT(".cpp")))
+                    cppFiles.push_back(s);
+                else
+                    otherArgs.push_back(s);
+            }
 
             prevOption = 0;
         }
@@ -862,7 +864,8 @@ stdbool compileDevicePartToBin
 
         nvccArgs.push_back(CT("--ptxas-options=-v"));
 
-        nvccArgs.push_back(CT("-fatbin"));
+        nvccArgs.push_back(CT("-cubin"));
+
         nvccArgs.push_back(CT("-o"));
         nvccArgs.push_back(binPath);
 
@@ -880,10 +883,21 @@ stdbool compileDevicePartToBin
     // After /C switch, the whole command line should be enclosed in another pair of quotes.
     //
 
-    StlString dumpSass = sprintMsg(STR("\"cuobjdump\" --dump-sass \"%0\" >\"%1\""), // --dump-elf
-        binPath, asmPath);
+    StlString dumpSass = sprintMsg(STR("\"nvdisasm\" --print-code \"%0\" >\"%1\""), binPath, asmPath);
+
+#if defined(_WIN32)
 
     require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
+
+#elif defined(__linux__)
+
+    require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
+
+#else
+
+    #error
+
+#endif
 
     //
     // Sucessful, rename .cup to .src
@@ -1288,8 +1302,6 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
     bool gpuDetected = cudaFiles.size() > 0;
 
-    // printMsg(kit.msgLog, STR("CUDA files: %"), cudaFiles.size()); // ```
-
     //----------------------------------------------------------------
     //
     // Direct pass-thru (no .CXX files).
@@ -1397,8 +1409,8 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         }
 
         clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
-        // ```
-        clArgs.push_back(sprintMsg(STR("-Fo%0"), outputFile.size() ? outputFile : outputDir));
+        
+        clArgs.push_back(sprintMsg(STR("-%0%1"), outputOption, outputFile));
         clArgs.insert(clArgs.end(), cppFiles.begin(), cppFiles.end());
 
         require(runProcess(clArgs, stdPass));
@@ -1484,8 +1496,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             //
 
             StlString cppAssemblyPath = sprintMsg(STR("%0/%1.assembly.cpp"), inputDir, inputName);
-            // ```
-            // REMEMBER_CLEANUP1(remove(cppAssemblyPath.c_str()), const StlString&, cppAssemblyPath);
+            REMEMBER_CLEANUP1(remove(cppAssemblyPath.c_str()), const StlString&, cppAssemblyPath);
             require(makeCppBinAssembly(inputPath, binPath, cppAssemblyPath, kernelNames, samplerNames, stdPass));
 
             //
@@ -1520,8 +1531,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
                 clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
 
-                // ```
-                clArgs.push_back(sprintMsg(STR("-Fo%0"), outputFile.size() ? outputFile : outputDir));
+                clArgs.push_back(sprintMsg(STR("-%0%1"), outputOption, outputFile));
                 clArgs.push_back(cppAssemblyPath);
 
                 require(runProcess(clArgs, stdPass));

@@ -123,13 +123,13 @@ TYPE_MIN_MAX_IMPL_RUNTIME(double, -DBL_MAX, +DBL_MAX)
 //----------------------------------------------------------------
 
 COMPILE_ASSERT_EQUAL_LAYOUT(float32, uint32);
-static const uint32 ieeeFloat32Nan = 0xFFC00000UL;
+static const int32 ieeeFloat32Nan = 0xFFC00000UL;
 
 template <>
 sysinline float32 nanOfImpl<float32>()
 {
 #if defined(__CUDA_ARCH__)
-    return __int_as_float(0xFFC00000);
+    return __int_as_float(ieeeFloat32Nan);
 #else
     return * (const float32*) &ieeeFloat32Nan;
 #endif
@@ -143,7 +143,7 @@ sysinline float32 float32Nan()
 //----------------------------------------------------------------
 
 COMPILE_ASSERT_EQUAL_LAYOUT(float64, uint64);
-static const uint64 ieeeFloat64Nan = 0xFFF8000000000000ULL;
+static const int64 ieeeFloat64Nan = 0xFFF8000000000000ULL;
 
 //----------------------------------------------------------------
 
