@@ -948,12 +948,25 @@ stdbool makeCppBinAssembly
     printMsg(outStream, STR(""));
 
     //
-    //
+    // Read module data.
     //
 
-    // ```
-    basic_ifstream<uint8> binStream(binPath.c_str(), ios::in | ios::binary);
-    REQUIRE_MSG1(!!binStream, STR("Cannot open %0"), binPath);
+    auto readBinFile = [] (const StlString& filename, vector<Byte>& result, stdPars(CompilerKit))
+    {
+        BinaryFileImpl file;
+        require(file.open(charArrayFromPtr(filename.c_str()), false, false, stdPass));
+
+        auto fileSize = size_t{0};
+        REQUIRE(convertExact(file.getSize(), fileSize));
+
+        result.resize(fileSize);
+
+        require(file.read(result.data(), fileSize, stdPass));
+        returnTrue;
+    };
+
+    vector<Byte> binData;
+    require(readBinFile(binPath, binData, stdPass));
 
     //
     // Neccessary definitions
@@ -985,28 +998,54 @@ stdbool makeCppBinAssembly
     printMsg(outStream, STR("const unsigned char moduleData[] = "));
     printMsg(outStream, STR("{"));
 
+    ////
+
+    auto binPtr = binData.data();
+    auto binEnd = binData.data() + binData.size();
+
+    ////
+
+    constexpr int bytesInRow = 16;
+    vector<CharType> row(4 + 6 * bytesInRow + 1);
+    auto hexDigits = "0123456789ABCDEF";
+
+    ////
+
     for (;;)
     {
-        StlString row;
+        CharType* rowStart = &row[0];
+        CharType* rowPtr = rowStart;
 
-        for_count (i, 16)
+        *rowPtr++ = ' ';
+        *rowPtr++ = ' ';
+        *rowPtr++ = ' ';
+        *rowPtr++ = ' ';
+
+        for_count (i, bytesInRow)
         {
-            uint8 value;
-            binStream.read(&value, 1);
-
-            if (!binStream)
+            if (binPtr == binEnd)
                 break;
 
-            row += sprintMsg(STR("0x%0, "), hex(value, 2));
+            uint8 value = *binPtr++;
+
+            *rowPtr++ = '0';
+            *rowPtr++ = 'x';
+            *rowPtr++ = hexDigits[(value >> 4) & 0xF];
+            *rowPtr++ = hexDigits[(value >> 0) & 0xF];
+            *rowPtr++ = ',';
+            *rowPtr++ = ' ';
         }
 
-        printMsg(outStream, STR("    %0"), row);
+        *rowPtr++ = '\n';
 
-        if (!binStream)
+        auto rowSize = size_t(rowPtr - rowStart);
+        REQUIRE(rowSize <= row.size());
+
+        outStream.write(rowStart, rowSize);
+
+        if (binPtr == binEnd)
             break;
     }
-
-    REQUIRE(binStream.eof());
 
     printMsg(outStream, STR("};"));
     printMsg(outStream, STR(""));
@@ -1446,7 +1485,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
             StlString cppAssemblyPath = sprintMsg(STR("%0/%1.assembly.cpp"), inputDir, inputName);
             // ```
-            REMEMBER_CLEANUP1(remove(cppAssemblyPath.c_str()), const StlString&, cppAssemblyPath);
+            // REMEMBER_CLEANUP1(remove(cppAssemblyPath.c_str()), const StlString&, cppAssemblyPath);
             require(makeCppBinAssembly(inputPath, binPath, cppAssemblyPath, kernelNames, samplerNames, stdPass));
 
             //
