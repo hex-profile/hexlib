@@ -53,6 +53,8 @@ sysinline Point<Space> verThreadCount() {return point(verThreadCountX, verThread
 //
 //================================================================
 
+#if DEVCODE
+
 devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler_x1), DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler_x2), DevSampler2D, DevSamplerFloat, 2)
 
@@ -65,6 +67,8 @@ devDefineSampler(PREP_PASTE(FUNCNAME, srcSampler_x2), DevSampler2D, DevSamplerFl
 PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
 #undef TMP_MACRO
+
+#endif
 
 //================================================================
 //

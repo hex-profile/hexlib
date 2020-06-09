@@ -78,9 +78,13 @@ struct VisualizeScalar
 //
 //================================================================
 
+#if DEVCODE
+
 devDefineSampler(visualizeScalarSampler1, DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(visualizeScalarSampler2, DevSampler2D, DevSamplerFloat, 2)
 devDefineSampler(visualizeScalarSampler4, DevSampler2D, DevSamplerFloat, 4)
+
+#endif
 
 //================================================================
 //
@@ -309,9 +313,13 @@ struct UpconvertValue
 //
 //================================================================
 
+#if DEVCODE
+
 devDefineSampler(upconvertValueSampler1, DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(upconvertValueSampler2, DevSampler2D, DevSamplerFloat, 2)
 devDefineSampler(upconvertValueSampler4, DevSampler2D, DevSamplerFloat, 4)
+
+#endif
 
 //================================================================
 //

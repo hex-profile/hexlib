@@ -71,6 +71,8 @@ sysinline Point<Space> verThreadCount() {return point(verThreadCountX, verThread
 //
 //================================================================
 
+#if DEVCODE
+
 #define TMP_MACRO(t, _) \
     devDefineSampler(PREP_PASTE3(SIGNATURE, srcSampler, t), DevSampler2D, DevSamplerFloat, RANK) \
 
@@ -86,6 +88,8 @@ PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
 
 #undef TMP_MACRO
+
+#endif
 
 //================================================================
 //

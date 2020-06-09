@@ -26,7 +26,7 @@ struct CopyRectKernel
 
 //----------------------------------------------------------------
 
-devDefineSampler(srcSamplerBgra, DevSampler2D, DevSamplerUint, 1)
+DEV_ONLY(devDefineSampler(srcSamplerBgra, DevSampler2D, DevSamplerUint, 1))
 
 //================================================================
 //

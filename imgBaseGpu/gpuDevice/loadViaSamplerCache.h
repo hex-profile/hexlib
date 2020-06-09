@@ -54,7 +54,7 @@ sysinline Type loadViaSamplerCache(const Type* ptr);
     sysinline Type loadViaSamplerCache(const Type* ptr)
     {
         Type result;
-        LoadViaSamplerCacheAux<sizeof(Type)>::Inner<Type>::func(ptr, result);
+        LoadViaSamplerCacheAux<sizeof(Type)>::template Inner<Type>::func(ptr, result);
         return result;
     }
 

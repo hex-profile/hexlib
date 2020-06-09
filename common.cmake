@@ -117,6 +117,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #----------------------------------------------------------------
     #
     # HEXLIB_GPU_BITNESS
+    # HEXLIB_CUDA_ARCH
     #
     #----------------------------------------------------------------
 
@@ -126,15 +127,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
             message(FATAL_ERROR "For GPU hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)")
         endif()
 
-    endif()
-
-    #----------------------------------------------------------------
-    #
-    # HEXLIB_CUDA_ARCH
-    #
-    #----------------------------------------------------------------
-
-    if (${HEXLIB_PLATFORM} EQUAL 1)
+        ###
 
         if (NOT DEFINED HEXLIB_CUDA_ARCH)
             set(HEXLIB_CUDA_ARCH $ENV{HEXLIB_CUDA_ARCH})
@@ -143,6 +136,13 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         if ((NOT DEFINED HEXLIB_CUDA_ARCH) OR (HEXLIB_CUDA_ARCH STREQUAL ""))
             message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)")
         endif()
+
+        ###
+
+        # ```
+        # if (NOT DEFINED HEXLIB_CUDA_ROOT)
+        #    message(FATAL_ERROR "For GPU hardware target, HEXLIB_CUDA_ROOT should be specified")
+        # endif()
 
     endif()
 
@@ -180,10 +180,10 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         elseif(${HEXLIB_PLATFORM} EQUAL 1)
 
             target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
-           
-            ###
 
-            target_link_libraries(${projectName} PUBLIC cuda.lib)
+            # ``` target_include_directories(${projectName} PRIVATE ${HEXLIB_CUDA_ROOT}/include)
+           
+            target_link_libraries(${projectName} PUBLIC cuda)
 
             set(CMAKE_CXX_COMPILER "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompiler" PARENT_SCOPE)
 

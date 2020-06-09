@@ -70,7 +70,11 @@ struct ConvertBgrYuv420Params
 //
 //================================================================
 
+#if DEVCODE
+
 devDefineSampler(srcSampler, DevSampler2D, DevSamplerFloat, 4)
+
+#endif
 
 //================================================================
 //

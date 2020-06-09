@@ -80,14 +80,10 @@ TMP_MACRO(DevSamplerUint, 4, uint32_x4)
 //
 //================================================================
 
-#undef devDefineSampler
-
 #define devDefineSampler(sampler, samplerType, readMode, rank) \
     extern "C" {texture<CudaSamplerDeclType<readMode, rank>::T, CudaSamplerType<samplerType>::val, CudaReadMode<readMode>::val> sampler;}
 
 //----------------------------------------------------------------
-
-#undef devSamplerParamType
 
 #define devSamplerParamType(samplerType, readMode, rank) \
     texture<CudaSamplerDeclType<readMode, rank>::T, CudaSamplerType<samplerType>::val, CudaReadMode<readMode>::val>
@@ -120,8 +116,6 @@ struct DevSamplerResult<texture<DeclType, dim, texReadMode>>
 //
 //================================================================
 
-#undef devTex2D
-
 #define devTex2D(sampler, X, Y) \
     tex2D(sampler, X, Y)
 
@@ -130,8 +124,6 @@ struct DevSamplerResult<texture<DeclType, dim, texReadMode>>
 // devTex1Dfetch
 //
 //================================================================
-
-#undef devTex1Dfetch
 
 #define devTex1Dfetch(sampler, offset) \
     tex1Dfetch(sampler, offset)
