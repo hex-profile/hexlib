@@ -73,9 +73,9 @@ struct DevSamplerResult
 //
 //================================================================
 
-#define devDefineSampler(sampler, samplerType, readMode, rank)
+// #define devDefineSampler(sampler, samplerType, readMode, rank)
 
-#define devSamplerParamType(samplerType, readMode, rank)
+// #define devSamplerParamType(samplerType, readMode, rank)
 
 //================================================================
 //
@@ -86,7 +86,7 @@ struct DevSamplerResult
 //
 //================================================================
 
-#define devTex2D(sampler, X, Y)
+// #define devTex2D(sampler, X, Y)
 
 //================================================================
 //
@@ -97,4 +97,4 @@ struct DevSamplerResult
 //
 //================================================================
 
-#define devTex1Dfetch(sampler, X)
+// #define devTex1Dfetch(sampler, X)

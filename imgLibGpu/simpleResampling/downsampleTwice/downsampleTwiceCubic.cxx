@@ -55,9 +55,13 @@ static const Space threadCountY = 8;
 //
 //================================================================
 
+#if DEVCODE
+
 devDefineSampler(srcSampler1, DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(srcSampler2, DevSampler2D, DevSamplerFloat, 2)
 devDefineSampler(srcSampler4, DevSampler2D, DevSamplerFloat, 4)
+
+#endif
 
 //================================================================
 //

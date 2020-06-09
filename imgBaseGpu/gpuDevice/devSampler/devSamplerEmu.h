@@ -92,16 +92,12 @@ struct EmuSampler
 //
 //================================================================
 
-#undef devDefineSampler
-
 #define devDefineSampler(sampler, samplerType, readMode, rank) \
     \
     static EmuSamplerState PREP_PASTE2(sampler, State) = {0, 0}; \
     static const EmuSampler<samplerType, readMode, rank> sampler = {&PREP_PASTE2(sampler, State)};
 
 //----------------------------------------------------------------
-
-#undef devSamplerParamType
 
 #define devSamplerParamType(samplerType, readMode, rank) \
     const EmuSampler<samplerType, readMode, rank>&
@@ -138,8 +134,6 @@ inline typename DevSamplerReturnType<readMode, rank>::T emuTex2D(const EmuSample
 //
 //================================================================
 
-#undef devTex2D
-
 #define devTex2D(sampler, X, Y) \
     emuTex2D(sampler, X, Y)
 
@@ -162,8 +156,6 @@ inline typename DevSamplerReturnType<readMode, rank>::T emuTex1Dfetch(const EmuS
 // devTex1Dfetch
 //
 //================================================================
-
-#undef devTex1Dfetch
 
 #define devTex1Dfetch(sampler, offset) \
     emuTex1Dfetch(sampler, offset)

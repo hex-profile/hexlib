@@ -72,11 +72,14 @@ struct ConvertParamsYuvBgr
 //
 //================================================================
 
-devDefineSampler(lumaSampler, DevSampler2D, DevSamplerFloat, 1)
+#if DEVCODE
 
+devDefineSampler(lumaSampler, DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(chromaSamplerPacked, DevSampler2D, DevSamplerFloat, 2)
 devDefineSampler(chromaSamplerU, DevSampler2D, DevSamplerFloat, 1)
 devDefineSampler(chromaSamplerV, DevSampler2D, DevSamplerFloat, 1)
+
+#endif
 
 //================================================================
 //
