@@ -267,7 +267,15 @@ struct GpuSramPitchFor2dAccess
 //
 //================================================================
 
-#define devUnrollLoop __pragma(unroll)
+#if defined(__linux__)
+
+    #define devUnrollLoop _Pragma("unroll")
+
+#else
+
+    #define devUnrollLoop __pragma(unroll)
+
+#endif
 
 //================================================================
 //

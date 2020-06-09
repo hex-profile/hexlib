@@ -18,6 +18,8 @@
 
 stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
 {
+    // printMsg(kit.msgLog, STR("Launching %0"), cmdLine, msgInfo);
+
     int status = system(cmdLine.c_str());
 
     if_not (status == 0)
@@ -41,14 +43,14 @@ stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
 
 stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
 {
+    // printMsg(kit.msgLog, STR("Launching %0"), cmdLine, msgInfo);
+
     STARTUPINFO si;
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
 
     PROCESS_INFORMATION pi;
     ZeroMemory(&pi, sizeof(pi));
-
-    // printMsg(kit.msgLog, STR("Run: %0"), cmdLine, msgErr);
 
     bool createOk = CreateProcess(NULL, const_cast<char*>(cmdLine.c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi) != 0;
 
