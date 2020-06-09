@@ -24,7 +24,7 @@ function (addSourcesRecursive result dirs)
 
     ###
 
-    SET_SOURCE_FILES_PROPERTIES(${internalSources} PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(${internalSources} PROPERTIES LANGUAGE CXX)
 
     ###
 
@@ -73,17 +73,16 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         set(cppStd 17)
     endif()
 
-    if (WIN32)
-        target_compile_options(${projectName} PRIVATE "/std:c++${cppStd}") 
-    else()
-        target_compile_options(${projectName} PRIVATE "-std=c++${cppStd}") 
-    endif()
+    ###
+
+    set_target_properties(${projectName} PROPERTIES CXX_STANDARD ${cppStd})
 
     ###
 
     if (MSVC)
         target_compile_options(${projectName} PRIVATE "/wd5040")
         target_compile_options(${projectName} PRIVATE "/we4239")
+        target_compile_definitions(${projectName} PRIVATE _CRT_SECURE_NO_WARNINGS=1)
     endif()
 
     #----------------------------------------------------------------
@@ -169,12 +168,6 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM} HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
-
-    ###
-
-    if (MSVC)
-        target_compile_definitions(${projectName} PRIVATE _CRT_SECURE_NO_WARNINGS=1)
-    endif()
 
     ###
 

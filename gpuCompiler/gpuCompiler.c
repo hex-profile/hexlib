@@ -178,7 +178,7 @@ stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 //
 //================================================================
 
-constexpr auto compilerName = OS_CHOICE(CT("cl.exe"), CT("gcc"));
+constexpr auto compilerName = OS_CHOICE(CT("cl.exe"), CT("g++"));
 constexpr auto nvccName = OS_CHOICE(CT("nvcc.exe"), CT("nvcc"));
 
 constexpr auto outputOption = OS_CHOICE(CT("Fo"), CT("o"));
@@ -496,20 +496,59 @@ void extractKernelNames(const CharType* ptr, const CharType* end, vector<StlStri
 
         breakBlock_
         {
+            //
+            // extern "C" __declspec(__global__) void __declspec(launch_bounds(groupSizeArea, 24*32/groupSizeArea)) testProjectKernel(TestParams o)
+            // extern "C" __attribute__((global)) void __attribute__((launch_bounds(groupSizeArea, 24*32/groupSizeArea))) testProjectKernel(TestParams o)
+            //
+
+        #if defined(_WIN32)
+
             breakRequire(skipTextThenSpaceTab(ptr, end, STR("_declspec")));
             breakRequire(skipTextThenSpaceTab(ptr, end, STR("(")));
             breakRequire(skipTextThenSpaceTab(ptr, end, STR("__global__")));
             breakRequire(skipTextThenSpaceTab(ptr, end, STR(")")));
             breakRequire(skipTextThenSpaceTab(ptr, end, STR("void")));
 
+        #elif defined(__linux__)
+
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("_attribute__")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("(")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("(")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("global")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR(")")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR(")")));
+            breakRequire(skipTextThenSpaceTab(ptr, end, STR("void")));
+
+        #else
+
+            #error
+
+        #endif
+
             ////
 
             const CharType* launchBoundsPlace = ptr;
+
+        #if defined(_WIN32)
 
             bool launchBoundsDetected =
                 skipTextThenSpaceTab(ptr, end, STR("__declspec")) &&
                 skipTextThenSpaceTab(ptr, end, STR("(")) &&
                 skipTextThenSpaceTab(ptr, end, STR("launch_bounds"));
+
+        #elif defined(__linux__)
+
+            bool launchBoundsDetected =
+                skipTextThenSpaceTab(ptr, end, STR("__attribute__")) &&
+                skipTextThenSpaceTab(ptr, end, STR("(")) &&
+                skipTextThenSpaceTab(ptr, end, STR("(")) &&
+                skipTextThenSpaceTab(ptr, end, STR("launch_bounds"));
+
+        #else
+
+            #error
+
+        #endif
 
             if_not (launchBoundsDetected)
                 ptr = launchBoundsPlace;
@@ -517,7 +556,7 @@ void extractKernelNames(const CharType* ptr, const CharType* end, vector<StlStri
             {
                 breakRequire(skipTextThenSpaceTab(ptr, end, STR("(")));
 
-                int32 scopeLevel = 2;
+                int32 scopeLevel = OS_CHOICE(2, 3);
 
                 for (;;)
                 {
@@ -1447,7 +1486,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         clArgs.push_back(CT("DEVCODE=1"));
 
         clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
-        clArgs.push_back(sprintMsg(STR("-Fo%0"), outputFile.size() ? outputFile : outputDir));
+        clArgs.push_back(sprintMsg(STR("-%0%1"), outputOption, outputFile));
         clArgs.insert(clArgs.end(), cudaFiles.begin(), cudaFiles.end());
 
         require(runProcess(clArgs, stdPass));
