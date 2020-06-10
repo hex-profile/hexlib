@@ -40,6 +40,42 @@
 
 //================================================================
 //
+// GpuModuleKeeper::getStatistics
+//
+//================================================================
+
+stdbool GpuModuleKeeper::getStatistics(int32& moduleCount, int32& kernelCount, int32& samplerCount, stdPars(ErrorLogKit))
+{
+    const GpuModuleDesc* const* modrefPtr = &gpuSectionStart;
+    ptrdiff_t modrefCountEx = &gpuSectionEnd - &gpuSectionStart;
+
+    Space modrefCount = 0;
+    REQUIRE(convertExact(modrefCountEx, modrefCount));
+    REQUIRE(modrefCount >= 0);
+
+    ////
+
+    moduleCount = 0;
+    kernelCount = 0;
+    samplerCount = 0;
+
+    ////
+
+    for_count (k, modrefCount)
+    {
+        if (modrefPtr[k] != 0) // Because Microsoft expands the section and fills with zeroes.
+        {
+            kernelCount += modrefPtr[k]->kernelCount;
+            samplerCount += modrefPtr[k]->samplerCount;
+            ++moduleCount;
+        }
+    }
+
+    returnTrue;
+}
+
+//================================================================
+//
 // GpuModuleKeeper::create
 //
 //================================================================
@@ -87,7 +123,7 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
         modrefToKernelIndexPtr[k] = kernelCount;
         modrefToSamplerIndexPtr[k] = samplerCount;
 
-        if (modrefPtr[k] != 0) // Because Microsoft expands the section and fills with zeroes
+        if (modrefPtr[k] != 0) // Because Microsoft expands the section and fills with zeroes.
         {
             kernelCount += modrefPtr[k]->kernelCount;
             samplerCount += modrefPtr[k]->samplerCount;
