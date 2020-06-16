@@ -219,7 +219,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
         if (outputDir.size() == 0)
         {
-            auto tempDir = getenv("HEX_TEMP");
+            auto tempDir = getenv("HEXLIB_OUTPUT");
 
             if_not (tempDir)
                 tempDir = getenv("TEMP");

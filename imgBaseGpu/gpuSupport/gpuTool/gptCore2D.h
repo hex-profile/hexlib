@@ -145,8 +145,8 @@
 #define GPT_MAIN_2D_BEG(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskCount, keepAllThreads) \
     GPT_DECLARE_PARAMS(prefix, Point<Space>, samplerList, matrixList, paramList) \
     DEV_ONLY(GPT_DEFINE_SAMPLERS(prefix, samplerList)) \
-    DEV_ONLY(GPT_MAKE_KERNEL_2D_BEG(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskCount, keepAllThreads)) \
-    HOST_ONLY(GPT_MAKE_CALLER_2D(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskCount))
+    HOST_ONLY(GPT_MAKE_CALLER_2D(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskCount)) \
+    DEV_ONLY(GPT_MAKE_KERNEL_2D_BEG(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskCount, keepAllThreads))
 
 #define GPT_MAIN_2D_END \
     DEV_ONLY(GPT_MAKE_KERNEL_2D_END)
