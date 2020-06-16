@@ -114,8 +114,8 @@
 #define GPT_FLAT_MAIN_BEG(prefix, samplerList, paramList, groupSizeX, groupSizeY) \
     GPT_DECLARE_PARAMS(prefix, Space, samplerList, (o), paramList) \
     DEV_ONLY(GPT_DEFINE_SAMPLERS(prefix, samplerList)) \
-    DEV_ONLY(GPT_FLAT_MAKE_KERNEL_BEG(prefix, samplerList, paramList, groupSizeX, groupSizeY)) \
-    HOST_ONLY(GPT_FLAT_MAKE_CALLER(prefix, samplerList, paramList, groupSizeX, groupSizeY))
+    HOST_ONLY(GPT_FLAT_MAKE_CALLER(prefix, samplerList, paramList, groupSizeX, groupSizeY)) \
+    DEV_ONLY(GPT_FLAT_MAKE_KERNEL_BEG(prefix, samplerList, paramList, groupSizeX, groupSizeY))
 
 #define GPT_FLAT_MAIN_END \
     DEV_ONLY(GPT_FLAT_MAKE_KERNEL_END)

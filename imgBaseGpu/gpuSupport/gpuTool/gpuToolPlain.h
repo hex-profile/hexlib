@@ -125,8 +125,8 @@
 #define GPT_PLAIN_MAIN_BEG(prefix, samplerList, paramList, chunkSize, keepAllThreads) \
     GPT_DECLARE_PARAMS(prefix, Space, samplerList, (o), paramList) \
     DEV_ONLY(GPT_DEFINE_SAMPLERS(prefix, samplerList)) \
-    DEV_ONLY(GPT_PLAIN_MAKE_KERNEL_BEG(prefix, samplerList, paramList, chunkSize, keepAllThreads)) \
-    HOST_ONLY(GPT_PLAIN_MAKE_CALLER(prefix, samplerList, paramList, chunkSize))
+    HOST_ONLY(GPT_PLAIN_MAKE_CALLER(prefix, samplerList, paramList, chunkSize)) \
+    DEV_ONLY(GPT_PLAIN_MAKE_KERNEL_BEG(prefix, samplerList, paramList, chunkSize, keepAllThreads))
 
 #define GPT_PLAIN_MAIN_END \
     DEV_ONLY(GPT_PLAIN_MAKE_KERNEL_END)
