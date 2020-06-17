@@ -394,11 +394,13 @@ struct ParamType<Type&> {using T = Type&;};
     INSTANTIATE_FUNC_EX3(PREP_PASTE3(compileInst_, line, extraResolver), expr)
 
 #define INSTANTIATE_FUNC_EX3(name, expr) \
-    namespace {void name(int n) {compileConvertAddr_(&expr);}}
+    const char name = instantiateFuncUser(&expr);
+
+char instantiateFuncExternal(const void* ptr);
 
 template <typename Type>
-static void compileConvertAddr_(Type value)
-    {return (void) value;}
+inline char instantiateFuncUser(const Type& value)
+    {return instantiateFuncExternal(&value);}
 
 //================================================================
 //
