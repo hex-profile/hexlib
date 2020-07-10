@@ -19,6 +19,7 @@
 #include "userOutput/printMsgEx.h"
 #include "gpuImageConsoleImpl/gpuImageConsoleImpl.h"
 #include "gpuBaseConsoleByCpu/gpuBaseConsoleByCpu.h"
+#include "profilerShell/profilerShell.h"
 
 namespace minimalShell {
 
@@ -67,13 +68,36 @@ public:
 
 public:
 
-    using ProcessEnrichedKit = KitCombine<ProcessEntryKit, ProfilerKit>;
-
     stdbool processEntry(stdPars(ProcessEntryKit));
+
+public:
+
+    bool profilingActive() const 
+    {
+        return profilerShell.profilingActive();
+    }
+
+    stdbool profilingReport(stdPars(ReportKit))
+    {
+        REQUIRE(initialized);
+        return profilerShell.makeReport(gpuProperties.totalThroughput, stdPass);
+    }
+
+    //----------------------------------------------------------------
+    //
+    //
+    //
+    //----------------------------------------------------------------
 
 private:
 
-    using ProcessWithGpuKit = KitCombine<ProcessEnrichedKit, GpuShellKit>;
+    using ProcessWithProfilerKit = KitCombine<ProcessEntryKit, ProfilerKit>;
+
+    stdbool processWithProfiler(stdPars(ProcessWithProfilerKit));
+
+private:
+
+    using ProcessWithGpuKit = KitCombine<ProcessWithProfilerKit, GpuShellKit>;
 
     stdbool processWithGpu(stdPars(ProcessWithGpuKit));
 
@@ -86,6 +110,14 @@ private:
 private:
 
     bool initialized = false;
+
+    //----------------------------------------------------------------
+    //
+    // Profiler.
+    //
+    //----------------------------------------------------------------
+
+    ProfilerShell profilerShell;
 
     //----------------------------------------------------------------
     //
@@ -134,6 +166,8 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
     {
         CFG_NAMESPACE("~Shell");
 
+        profilerShell.serialize(kit);
+
         gpuShell.serialize(kit);
         gpuContextHelper.serialize(kit);
 
@@ -165,6 +199,13 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
     initialized = false;
 
     //
+    // Profiler
+    //
+
+    require(profilerShell.init(stdPass));
+    REMEMBER_CLEANUP_EX(profilerCleanup, profilerShell.deinit());
+
+    //
     // GPU init
     //
 
@@ -187,6 +228,7 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
     //
 
     gpuContextCleanup.cancel();
+    profilerCleanup.cancel();
     initialized = true;
 
     returnTrue;
@@ -219,22 +261,65 @@ stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
     ErrorLogExBreakShell errorLogEx(kit.errorLogEx, debugBreakOnErrors);
     ErrorLogExKit errorLogExKit(errorLogEx);
 
-    auto errorBreakKit = kitReplace(kit, kitCombine(msgLogKit, errorLogKit, errorLogExKit));
+    auto originalKit = kit;
+    auto kit = kitReplace(originalKit, kitCombine(msgLogKit, errorLogKit, errorLogExKit));
 
     //----------------------------------------------------------------
     //
-    // Profiler.
+    // ProfilerTargetThunk
     //
     //----------------------------------------------------------------
 
-    ProfilerKit profilerKit(nullptr);
-    auto baseKit = kitCombine(errorBreakKit, profilerKit);
+    class ProfilerTargetThunk : public ProfilerTarget
+    {
+
+    public:
+
+        stdbool process(stdPars(ProfilerKit))
+            {return base.processWithProfiler(stdPassThruKit(kitCombine(kit, baseKit)));}
+
+        inline ProfilerTargetThunk(MinimalShellImpl& base, const ProcessEntryKit& baseKit)
+            : base(base), baseKit(baseKit) {}
+
+    private:
+
+        MinimalShellImpl& base;
+        ProcessEntryKit baseKit;
+
+    };
 
     //----------------------------------------------------------------
     //
-    // Proceed
+    // Profiler shell.
     //
     //----------------------------------------------------------------
+
+    ProfilerTargetThunk profilerTarget(*this, kit);
+    require(profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass));
+
+    ////
+
+    stdScopedEnd;
+}
+
+//================================================================
+//
+// MinimalShellImpl::processWithProfiler
+//
+//================================================================
+
+stdbool MinimalShellImpl::processWithProfiler(stdPars(ProcessWithProfilerKit))
+{
+
+    //----------------------------------------------------------------
+    //
+    // GPU shell.
+    //
+    //----------------------------------------------------------------
+
+    auto baseKit = kit;
+
+    ////
 
     auto gpuShellExec = [this, &baseKit] (stdPars(GpuShellKit))
     {
@@ -257,9 +342,7 @@ stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
 
     require(gpuShell.execCyclicShellLambda(gpuShellExec, stdPassKit(kitEx)));
 
-    ////
-
-    stdScopedEnd;
+    returnTrue;
 }
 
 //================================================================
@@ -270,6 +353,16 @@ stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
 
 stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 {
+
+    //----------------------------------------------------------------
+    //
+    // Give GPU control to the profiler.
+    //
+    //----------------------------------------------------------------
+
+    ProfilerDeviceKit profilerDeviceKit = kit;
+    profilerShell.setDeviceControl(&profilerDeviceKit);
+    REMEMBER_CLEANUP(profilerShell.setDeviceControl(nullptr));
 
     //----------------------------------------------------------------
     //

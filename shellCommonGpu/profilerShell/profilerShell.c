@@ -16,7 +16,7 @@
 //
 //================================================================
 
-void ProfilerShell::serialize(const ModuleSerializeKit& kit)
+void ProfilerShell::serialize(const CfgSerializeKit& kit)
 {
     {
         CFG_NAMESPACE("Profiling");
@@ -70,6 +70,90 @@ void ProfilerShell::deinit()
 
 //================================================================
 //
+// ProfilerShell::makeHtmlReport
+//
+//================================================================
+
+stdbool ProfilerShell::makeHtmlReport(float32 processingThroughput, stdPars(ReportKit))
+{
+    SimpleString outputDir{htmlOutputDir()};
+    REQUIRE(def(outputDir));
+
+    ////
+
+    if (outputDir.size() == 0)
+    {
+        auto tempDir = getenv("HEXLIB_OUTPUT");
+
+        if_not (tempDir)
+            tempDir = getenv("TEMP");
+  
+        if (tempDir != 0)
+            outputDir.clear() << tempDir << "/profilerReport";
+
+        REQUIRE(def(outputDir));
+    }
+
+    ////
+
+    if (outputDir.size() == 0)
+    {
+        printMsgL(kit, STR("<%0> is not set"), htmlOutputDirName(), msgErr);
+        returnFalse;
+    }
+
+    ////
+
+    using namespace profilerReport;
+
+    require(CHECK(profilerImpl.checkResetScope()));
+
+    TimeMoment reportBegin = kit.timer.moment();
+    
+    auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
+
+    require(htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
+        cycleCount, processingThroughput, outputDir.cstr()}, stdPassKit(kitEx)));
+
+    float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
+
+    printMsg(kit.localLog, STR("Profiler report saved to %0 (%1 ms)"), outputDir, fltf(reportTime * 1e3f, 2), msgWarn);
+
+    returnTrue;
+}
+
+//================================================================
+//
+// ProfilerShell::enterExternalScope
+// ProfilerShell::leaveExternalScope
+//
+//================================================================
+
+void ProfilerShell::enterExternalScope()
+{
+    if_not (externalScopeIsEntered)
+    {
+        ProfilerThunk profilerThunk(profilerImpl);
+        externalScope.profiler = 0;
+        profilerThunk.enterFunc(profilerThunk, externalScope, TRACE_AUTO_LOCATION_MSG("Profiler External Scope"));
+        externalScopeIsEntered = true;
+    }
+}
+
+//----------------------------------------------------------------
+
+void ProfilerShell::leaveExternalScope()
+{
+    if (externalScopeIsEntered)
+    {
+        ProfilerThunk profilerThunk(profilerImpl);
+        profilerThunk.leaveFunc(profilerThunk, externalScope);
+        externalScopeIsEntered = false;
+    }
+}
+
+//================================================================
+//
 // ProfilerShell::process
 //
 //================================================================
@@ -115,7 +199,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
     //----------------------------------------------------------------
     //
-    // Profiler switched?
+    // Profiling toggled?
     //
     //----------------------------------------------------------------
 
@@ -157,13 +241,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     //
     //----------------------------------------------------------------
 
-    if (externalScopeIsEntered)
-    {
-        ProfilerThunk profilerThunk(profilerImpl);
-        profilerThunk.leaveFunc(profilerThunk, externalScope);
-    }
-
-    externalScopeIsEntered = false;
+    leaveExternalScope();
 
     //----------------------------------------------------------------
     //
@@ -209,59 +287,8 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     //
     //----------------------------------------------------------------
 
-    auto makeHtmlReport = [&] () -> stdbool
-    {
-
-        SimpleString outputDir{htmlOutputDir()};
-        REQUIRE(def(outputDir));
-
-        ////
-
-        if (outputDir.size() == 0)
-        {
-            auto tempDir = getenv("HEXLIB_OUTPUT");
-
-            if_not (tempDir)
-                tempDir = getenv("TEMP");
-  
-            if (tempDir != 0)
-                outputDir.clear() << tempDir << "/profilerReport";
-
-            REQUIRE(def(outputDir));
-        }
-
-        ////
-
-        if (outputDir.size() == 0)
-        {
-            printMsgL(kit, STR("<%0> is not set"), htmlOutputDirName(), msgErr);
-            returnFalse;
-        }
-
-        ////
-
-        using namespace profilerReport;
-
-        require(CHECK(profilerImpl.checkResetScope()));
-
-        TimeMoment reportBegin = kit.timer.moment();
-    
-        auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
-
-        require(htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
-            cycleCount, processingThroughput, outputDir.cstr()}, stdPassKit(kitEx)));
-
-        float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
-
-        printMsg(kit.localLog, STR("Profiler report saved to %0 (%1 ms)"), outputDir, fltf(reportTime * 1e3f, 2), msgWarn);
-
-        returnTrue;
-    };
-
-    ////
-
     if (htmlReportSignal != 0)
-        errorBlock(makeHtmlReport());
+        errorBlock(makeHtmlReport(processingThroughput, stdPass));
 
     //----------------------------------------------------------------
     //
@@ -269,15 +296,24 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     //
     //----------------------------------------------------------------
 
-    if (monitorExternalScope)
-    {
-        ProfilerThunk profilerThunk(profilerImpl);
-        externalScope.profiler = 0;
-        profilerThunk.enterFunc(profilerThunk, externalScope, TRACE_AUTO_LOCATION_MSG("Profiler Outer Scope"));
-        externalScopeIsEntered = true;
-    }
+    enterExternalScope();
+
+    ////
 
     require(processOk);
 
     returnTrue;
+}
+
+//================================================================
+//
+// ProfilerShell::makeReport
+//
+//================================================================
+
+stdbool ProfilerShell::makeReport(float32 processingThroughput, stdPars(ReportKit))
+{
+    leaveExternalScope();
+    REMEMBER_CLEANUP(enterExternalScope());
+    return makeHtmlReport(processingThroughput, stdPass);
 }

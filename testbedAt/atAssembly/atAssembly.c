@@ -759,7 +759,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     //
 
     require(profilerShell.init(stdPass));
-    REMEMBER_CLEANUP1_EX(profilerCleanup, profilerShell.deinit(), ProfilerShell&, profilerShell);
+    REMEMBER_CLEANUP_EX(profilerCleanup, profilerShell.deinit());
 
     //
     // GPU init
@@ -838,7 +838,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     ProfilerDeviceKit profilerDeviceKit = kit;
     profilerShell.setDeviceControl(&profilerDeviceKit);
-    REMEMBER_CLEANUP1(profilerShell.setDeviceControl(0), ProfilerShell&, profilerShell);
+    REMEMBER_CLEANUP(profilerShell.setDeviceControl(nullptr));
 
     //----------------------------------------------------------------
     //

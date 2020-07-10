@@ -1,9 +1,17 @@
 #pragma once
 
-#ifdef _WIN32
+//----------------------------------------------------------------
+
+#if defined(_WIN32)
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
+#elif defined(__linux__)
+    #include <time.h>
+#else
+    #error
 #endif
+
+//----------------------------------------------------------------
 
 #include "profilerShell/profiler/profilerStruct.h"
 #include "numbers/interface/numberInterface.h"
@@ -51,10 +59,23 @@ sysinline ProfilerTimer::ProfilerTimer()
     freq = 0;
     divFreq = 0;
 
+#if defined(_WIN32)
+
     LARGE_INTEGER f = {0};
     if (!QueryPerformanceFrequency(&f)) return;
-
     freq = float32(f.QuadPart);
+
+#elif defined(__linux__)
+
+    freq = 1e9f;
+
+#else
+
+    #error
+
+#endif
+
+
     divFreq = 1 / freq;
 }
 
@@ -66,24 +87,29 @@ sysinline ProfilerTimer::ProfilerTimer()
 //
 //================================================================
 
-#ifdef _WIN32
-
 sysinline ProfilerMoment ProfilerTimer::moment()
 {
+
+#if defined(_WIN32)
+
     LARGE_INTEGER moment = {0};
     QueryPerformanceCounter(&moment);
     return moment.QuadPart;
-}
+
+#elif defined(__linux__)
+
+    struct timespec time;
+    clock_gettime(CLOCK_REALTIME, &time);
+    return ProfilerMoment(time.tv_sec) * ProfilerMoment(1000000000) + time.tv_nsec;
+
+#else
+
+    #error
 
 #endif
 
-//================================================================
-//
-//
-//
-//================================================================
-
-
+    return 0;
+}
 
 //================================================================
 //

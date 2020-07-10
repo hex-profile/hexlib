@@ -63,7 +63,6 @@ public:
 public:
 
     using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, ThreadManagerKit, FileToolsKit>;
-
     virtual stdbool init(stdPars(InitKit)) =0;
 
 public:
@@ -78,6 +77,14 @@ public:
     using ProcessEntryKit = KitCombine<ProcessKit, ParamsKit>;
 
     virtual stdbool processEntry(stdPars(ProcessEntryKit)) =0;
+
+public:
+
+    virtual bool profilingActive() const =0;
+
+    using ReportKit = InitKit;
+
+    virtual stdbool profilingReport(stdPars(ReportKit)) =0;
 
 };
 
