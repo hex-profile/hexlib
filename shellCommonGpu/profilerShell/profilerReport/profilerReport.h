@@ -48,7 +48,7 @@ public:
 
 public:
 
-    void serialize(const ModuleSerializeKit& kit);
+    void serialize(const CfgSerializeKit& kit);
     stdbool makeReport(const MakeReportParams& o, stdPars(ReportFileKit));
 
 private:

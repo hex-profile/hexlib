@@ -1680,7 +1680,7 @@ class HtmlReportImpl
 public:
 
     HtmlReportImpl();
-    void serialize(const ModuleSerializeKit& kit);
+    void serialize(const CfgSerializeKit& kit);
     stdbool makeReport(const MakeReportParams& o, stdPars(ReportFileKit));
 
 private:
@@ -1706,7 +1706,7 @@ private:
 //----------------------------------------------------------------
 
 CLASSTHUNK_CONSTRUCT_DESTRUCT(HtmlReport)
-CLASSTHUNK_VOID1(HtmlReport, serialize, const ModuleSerializeKit&);
+CLASSTHUNK_VOID1(HtmlReport, serialize, const CfgSerializeKit&);
 CLASSTHUNK_BOOL_STD1(HtmlReport, makeReport, const MakeReportParams&, ReportFileKit);
 
 //================================================================
@@ -1727,7 +1727,7 @@ HtmlReportImpl::HtmlReportImpl()
 //
 //================================================================
 
-void HtmlReportImpl::serialize(const ModuleSerializeKit& kit)
+void HtmlReportImpl::serialize(const CfgSerializeKit& kit)
 {
     simpleMaxRows.serialize(kit, STR("Simple Cut: Max Rows"));
     smartMaxRows.serialize(kit, STR("Smart Cut: Max Rows"));
@@ -1827,7 +1827,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
 
         ////
 
-        StlString outputDirPrefix = StlString(o.outputDir) + CT("\\");
+        StlString outputDirPrefix = StlString(o.outputDir) + CT("/");
         require(writeStylesheet(outputDirPrefix, stdPass));
 
         CodeBlockParams codeBlockParams((simpleMaxRows | 1) / 2, smartMaxScanRows, smartMaxRows);

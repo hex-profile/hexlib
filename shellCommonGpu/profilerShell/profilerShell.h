@@ -1,14 +1,14 @@
 #pragma once
 
-#include "profilerShell/profiler/profilerImpl.h"
-#include "profilerShell/profilerTarget.h"
 #include "cfgTools/boolSwitch.h"
-#include "timer/timer.h"
-#include "history/historyObject.h"
-#include "kits/moduleKit.h"
 #include "configFile/cfgSimpleString.h"
+#include "history/historyObject.h"
 #include "interfaces/fileTools.h"
+#include "kits/moduleKit.h"
+#include "profilerShell/profiler/profilerImpl.h"
 #include "profilerShell/profilerReport/profilerReport.h"
+#include "profilerShell/profilerTarget.h"
+#include "timer/timer.h"
 
 //================================================================
 //
@@ -26,13 +26,14 @@ class ProfilerShell
 
 public:
 
-    KIT_COMBINE2(InitKit, ProfilerImpl::AllocKit, MsgLogKit);
-    KIT_COMBINE2(DeinitKit, ErrorLogKit, MsgLogKit);
-    KIT_COMBINE5(ProcessKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit, FileToolsKit);
+    using InitKit = KitCombine<ProfilerImpl::AllocKit, MsgLogKit>;
+    using DeinitKit = KitCombine<ErrorLogKit, MsgLogKit>;
+    using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit, FileToolsKit>;
+    using ReportKit = ProcessKit;
 
 public:
 
-    void serialize(const ModuleSerializeKit& kit);
+    void serialize(const CfgSerializeKit& kit);
 
     stdbool init(stdPars(InitKit));
     void deinit();
@@ -44,7 +45,21 @@ public:
 
 public:
 
+    bool profilingActive() const {return profilerActive;}
+
     stdbool process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit));
+
+
+    stdbool makeReport(float32 processingThroughput, stdPars(ReportKit));
+
+private:
+
+    stdbool makeHtmlReport(float32 processingThroughput, stdPars(ReportKit));
+
+private:
+
+    void enterExternalScope();
+    void leaveExternalScope();
 
 private:
 
@@ -70,7 +85,6 @@ private:
 
     ProfilerScope externalScope;
     bool externalScopeIsEntered = false;
-    bool monitorExternalScope = true;
 
     ////
 
