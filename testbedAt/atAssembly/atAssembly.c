@@ -1027,20 +1027,6 @@ private:
 
 //================================================================
 //
-// profilerGpuFlush
-//
-//================================================================
-
-template <typename Kit>
-void profilerGpuFlush(void* context)
-{
-    const Kit& kit = * (const Kit*) context;
-    TRACE_ROOT_STD;
-    DEBUG_BREAK_CHECK(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPassThru));
-}
-
-//================================================================
-//
 // AtAssemblyImpl::processWithProfiler
 //
 //================================================================
