@@ -172,6 +172,8 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
         elseif(${HEXLIB_PLATFORM} EQUAL 1)
 
+            add_dependencies(${projectName} makeGpuCompiler)
+
             target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
 
             target_link_libraries(${projectName} PUBLIC cuda)
