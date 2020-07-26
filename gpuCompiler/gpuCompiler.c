@@ -1534,18 +1534,19 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             // Translate to C module
             //
 
-            StlString cppAssemblyPath = sprintMsg(STR("%0/%1.assembly.cpp"), inputDir, inputName);
-            REMEMBER_CLEANUP1(remove(cppAssemblyPath.c_str()), const StlString&, cppAssemblyPath);
+            StlString cppAssemblyPath = sprintMsg(STR("%0/%1.assembled.cpp"), outputDir, inputName);
             require(makeCppBinAssembly(inputPath, binPath, cppAssemblyPath, kernelNames, samplerNames, stdPass));
 
             //
-            // Compile combined CPP
+            // Compile the assembled CPP
             //
 
             {
                 vector<StlString> clArgs;
 
                 clArgs.push_back(compilerName);
+
+                ////
 
                 for_count (i, includes.size())
                 {
