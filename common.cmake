@@ -55,7 +55,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     ###
 
-    if (${libType} STREQUAL "EXECUTABLE")
+    if (libType STREQUAL "EXECUTABLE")
         add_executable(${projectName} ${sources})
     else()
         add_library(${projectName} ${libType} ${sources})
@@ -67,7 +67,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #
     #----------------------------------------------------------------
 
-    if (${HEXLIB_PLATFORM} EQUAL 1)
+    if (HEXLIB_PLATFORM EQUAL 1)
         set(cppStd 14)
     else()
         set(cppStd 17)
@@ -96,9 +96,9 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     if (NOT DEFINED HEXLIB_PLATFORM)
         message(FATAL_ERROR "HEXLIB_PLATFORM needs to be defined, use HEXLIB_PLATFORM=0 for CPU emulation.")
-    elseif (${HEXLIB_PLATFORM} EQUAL 0)
+    elseif (HEXLIB_PLATFORM EQUAL 0)
         # CPU emulation
-    elseif (${HEXLIB_PLATFORM} EQUAL 1)
+    elseif (HEXLIB_PLATFORM EQUAL 1)
         # CUDA Driver API
     else()
         message(FATAL_ERROR "HEXLIB_PLATFORM=${HEXLIB_PLATFORM} is not valid.")
@@ -111,7 +111,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #----------------------------------------------------------------
 
     if (NOT DEFINED HEXLIB_GUARDED_MEMORY)
-        set(HEXLIB_GUARDED_MEMORY 0)
+        message(FATAL_ERROR "HEXLIB_GUARDED_MEMORY needs to be defined, use HEXLIB_GUARDED_MEMORY=0 for normal compilation.")
     endif()
 
     #----------------------------------------------------------------
@@ -121,7 +121,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #
     #----------------------------------------------------------------
 
-    if(${HEXLIB_PLATFORM} EQUAL 1)
+    if(HEXLIB_PLATFORM EQUAL 1)
 
         if (NOT DEFINED HEXLIB_GPU_BITNESS)
             message(FATAL_ERROR "For GPU hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64).")
@@ -130,10 +130,6 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         ###
 
         if (NOT DEFINED HEXLIB_CUDA_ARCH)
-            set(HEXLIB_CUDA_ARCH $ENV{HEXLIB_CUDA_ARCH})
-        endif()
-
-        if ((NOT DEFINED HEXLIB_CUDA_ARCH) OR (HEXLIB_CUDA_ARCH STREQUAL ""))
             message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...).")
         endif()
 
@@ -166,11 +162,11 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     if (${requiresGpuCompiler})
 
-        if (${HEXLIB_PLATFORM} EQUAL 0)
+        if (HEXLIB_PLATFORM EQUAL 0)
 
             target_compile_definitions(${projectName} PRIVATE HOSTCODE=1 DEVCODE=1)
 
-        elseif(${HEXLIB_PLATFORM} EQUAL 1)
+        elseif(HEXLIB_PLATFORM EQUAL 1)
 
             add_dependencies(${projectName} makeGpuCompiler)
 

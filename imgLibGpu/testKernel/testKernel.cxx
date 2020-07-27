@@ -13,7 +13,7 @@
 
 __global__ void testKernel1(float32* ptr)
 {
-    auto value = *ptr;
+    auto value = *ptr + 0;
     *ptr = value;
 }
 
