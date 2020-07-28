@@ -174,7 +174,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
             target_link_libraries(${projectName} PUBLIC cuda)
 
-            set(CMAKE_CXX_COMPILER "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompiler" PARENT_SCOPE)
+            set(CMAKE_CXX_COMPILER "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler" PARENT_SCOPE)
 
         else()
 

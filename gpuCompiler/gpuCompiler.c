@@ -216,7 +216,7 @@ stdbool parseCompilerArgs
             StlString tmpDir, tmpName, tmpExt;
             splitPath(body, tmpDir, tmpName, tmpExt);
 
-            REQUIRE_MSG1(tmpExt.size(), STR("Output file '%0' looks like a directory."), body);
+            REQUIRE_MSG1(tmpExt.size() != 0, STR("Output file '%0' looks like a directory."), body);
 
             outputDir = tmpDir;
             outputFile = body;
