@@ -263,7 +263,7 @@ stdbool ConnectionImpl::reopen(const Address& address, stdPars(Kit))
     //----------------------------------------------------------------
 
     REQUIRE(address.port >= 0 && address.port <= 0xFFFF); 
-    const size_t maxDigits = 5; // at most 5 decimal digits.
+    constexpr int maxDigits = 5; // at most 5 decimal digits.
 
     char portStr[maxDigits + 1];
     int n = sprintf(portStr, "%d", int(address.port));

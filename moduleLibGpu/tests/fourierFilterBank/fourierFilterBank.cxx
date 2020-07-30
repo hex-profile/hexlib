@@ -315,9 +315,9 @@ GPUTOOL_2D_BEG
 {
     auto response = helpRead(*src);
 
-    if (allv(vGlobSize == COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd)))
+    if (allv(vGlobSize == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqOdd)))
         response = response / conservativeFilterFreqOdd[X] / conservativeFilterFreqOdd[Y];
-    else if (allv(vGlobSize == COMPILE_ARRAY_SIZE(conservativeFilterFreqEven)))
+    else if (allv(vGlobSize == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqEven)))
         response = response / conservativeFilterFreqEven[X] / conservativeFilterFreqEven[Y];
     else
         response = zeroOf<float32_x2>();
@@ -341,9 +341,9 @@ GPUTOOL_2D_BEG
 {
     auto response = helpRead(*src);
 
-    if (vGlobSize.X == COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd))
+    if (vGlobSize.X == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqOdd))
         response = response / conservativeFilterFreqOdd[X];
-    else if (vGlobSize.X == COMPILE_ARRAY_SIZE(conservativeFilterFreqEven))
+    else if (vGlobSize.X == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqEven))
         response = response / conservativeFilterFreqEven[X];
     else
         response = zeroOf<float32_x2>();
@@ -612,7 +612,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
         printMsgL(kit, STR("Pyramid filter compensation is disabled"), msgWarn);
     else
     {
-        if_not (fourierAreaSize() == COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd) || fourierAreaSize() == COMPILE_ARRAY_SIZE(conservativeFilterFreqEven))
+        if_not (fourierAreaSize() == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqOdd) || fourierAreaSize() == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqEven))
             printMsgL(kit, STR("Pyramid filter compensation: Fourier size should be %0 or %1"), COMPILE_ARRAY_SIZE(conservativeFilterFreqOdd), COMPILE_ARRAY_SIZE(conservativeFilterFreqEven), msgErr);
     }
 

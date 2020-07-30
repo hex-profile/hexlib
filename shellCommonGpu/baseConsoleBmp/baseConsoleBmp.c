@@ -78,7 +78,7 @@ stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& res
 //
 //================================================================
 
-static const size_t bmpAlignmentMask = 3;
+static const Space bmpAlignmentMask = 3;
 
 //================================================================
 //

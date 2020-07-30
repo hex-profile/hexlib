@@ -45,7 +45,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     
     #----------------------------------------------------------------
     #
-    # Target
+    # Define the target.
     #
     #----------------------------------------------------------------
 
@@ -63,21 +63,9 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     #----------------------------------------------------------------
     #
-    # Compiler
+    # Compiler specifics.
     #
     #----------------------------------------------------------------
-
-    if (HEXLIB_PLATFORM EQUAL 1)
-        set(cppStd 14)
-    else()
-        set(cppStd 17)
-    endif()
-
-    ###
-
-    set_target_properties(${projectName} PROPERTIES CXX_STANDARD ${cppStd})
-
-    ###
 
     if (MSVC)
         target_compile_options(${projectName} PRIVATE "/wd5040")
@@ -121,7 +109,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #
     #----------------------------------------------------------------
 
-    if(HEXLIB_PLATFORM EQUAL 1)
+    if (HEXLIB_PLATFORM EQUAL 1)
 
         if (NOT DEFINED HEXLIB_GPU_BITNESS)
             message(FATAL_ERROR "For GPU hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64).")
@@ -155,7 +143,8 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     ###
 
-    target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM} HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
+    target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
+    target_compile_definitions(${projectName} PRIVATE HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
 
     ###
