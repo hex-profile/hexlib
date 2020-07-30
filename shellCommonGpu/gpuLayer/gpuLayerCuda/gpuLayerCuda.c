@@ -33,72 +33,6 @@ constexpr bool reportAllocatedBlocks = false;
 
 //================================================================
 //
-// CUDA_DRVAPI_ERROR_LIST
-//
-//================================================================
-
-#define CUDA_DRVAPI_ERROR_LIST(action) \
-    action(CUDA_SUCCESS) \
-    action(CUDA_ERROR_INVALID_VALUE) \
-    action(CUDA_ERROR_OUT_OF_MEMORY) \
-    action(CUDA_ERROR_NOT_INITIALIZED) \
-    action(CUDA_ERROR_DEINITIALIZED) \
-    action(CUDA_ERROR_PROFILER_DISABLED) \
-    action(CUDA_ERROR_PROFILER_NOT_INITIALIZED) \
-    action(CUDA_ERROR_PROFILER_ALREADY_STARTED) \
-    action(CUDA_ERROR_PROFILER_ALREADY_STOPPED) \
-    action(CUDA_ERROR_NO_DEVICE) \
-    action(CUDA_ERROR_INVALID_DEVICE) \
-    action(CUDA_ERROR_INVALID_IMAGE) \
-    action(CUDA_ERROR_INVALID_CONTEXT) \
-    action(CUDA_ERROR_CONTEXT_ALREADY_CURRENT) \
-    action(CUDA_ERROR_MAP_FAILED) \
-    action(CUDA_ERROR_UNMAP_FAILED) \
-    action(CUDA_ERROR_ARRAY_IS_MAPPED) \
-    action(CUDA_ERROR_ALREADY_MAPPED) \
-    action(CUDA_ERROR_NO_BINARY_FOR_GPU) \
-    action(CUDA_ERROR_ALREADY_ACQUIRED) \
-    action(CUDA_ERROR_NOT_MAPPED) \
-    action(CUDA_ERROR_NOT_MAPPED_AS_ARRAY) \
-    action(CUDA_ERROR_NOT_MAPPED_AS_POINTER) \
-    action(CUDA_ERROR_ECC_UNCORRECTABLE) \
-    action(CUDA_ERROR_UNSUPPORTED_LIMIT) \
-    action(CUDA_ERROR_CONTEXT_ALREADY_IN_USE) \
-    action(CUDA_ERROR_PEER_ACCESS_UNSUPPORTED) \
-    action(CUDA_ERROR_INVALID_PTX) \
-    /*action(CUDA_ERROR_INVALID_GRAPHICS_CONTEXT) */ \
-    action(CUDA_ERROR_INVALID_SOURCE) \
-    action(CUDA_ERROR_FILE_NOT_FOUND) \
-    action(CUDA_ERROR_SHARED_OBJECT_SYMBOL_NOT_FOUND) \
-    action(CUDA_ERROR_SHARED_OBJECT_INIT_FAILED) \
-    action(CUDA_ERROR_OPERATING_SYSTEM) \
-    action(CUDA_ERROR_INVALID_HANDLE) \
-    action(CUDA_ERROR_NOT_FOUND) \
-    action(CUDA_ERROR_NOT_READY) \
-    action(CUDA_ERROR_ILLEGAL_ADDRESS) \
-    action(CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES) \
-    action(CUDA_ERROR_LAUNCH_TIMEOUT) \
-    action(CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING) \
-    action(CUDA_ERROR_PEER_ACCESS_ALREADY_ENABLED) \
-    action(CUDA_ERROR_PEER_ACCESS_NOT_ENABLED) \
-    action(CUDA_ERROR_PRIMARY_CONTEXT_ACTIVE) \
-    action(CUDA_ERROR_CONTEXT_IS_DESTROYED) \
-    action(CUDA_ERROR_ASSERT) \
-    action(CUDA_ERROR_TOO_MANY_PEERS) \
-    action(CUDA_ERROR_HOST_MEMORY_ALREADY_REGISTERED) \
-    action(CUDA_ERROR_HOST_MEMORY_NOT_REGISTERED) \
-    action(CUDA_ERROR_HARDWARE_STACK_ERROR) \
-    action(CUDA_ERROR_ILLEGAL_INSTRUCTION) \
-    action(CUDA_ERROR_MISALIGNED_ADDRESS) \
-    action(CUDA_ERROR_INVALID_ADDRESS_SPACE) \
-    action(CUDA_ERROR_INVALID_PC) \
-    action(CUDA_ERROR_LAUNCH_FAILED) \
-    action(CUDA_ERROR_NOT_PERMITTED) \
-    action(CUDA_ERROR_NOT_SUPPORTED) \
-    action(CUDA_ERROR_UNKNOWN)
-
-//================================================================
-//
 // formatOutput<CUresult>
 //
 //================================================================
@@ -106,19 +40,12 @@ constexpr bool reportAllocatedBlocks = false;
 template <>
 void formatOutput(const CUresult& value, FormatOutputStream& outputStream)
 {
-    const CharType* textDesc = 0;
+    const CharType* textDesc = nullptr;
 
     ////
 
-    #define TMP_MACRO(err) \
-        case err: textDesc = PREP_STRINGIZE(err); break;
-
-    switch (value)
-    {
-        CUDA_DRVAPI_ERROR_LIST(TMP_MACRO)
-    };
-
-    #undef TMP_MACRO
+    if_not (cuGetErrorString(value, &textDesc) == CUDA_SUCCESS)
+        textDesc = nullptr;
 
     ////
 
@@ -207,6 +134,7 @@ inline bool cudaChannelFormat(GpuChannelType chanType, CUarray_format& result)
 stdbool CudaInitApiThunk::initialize(stdNullPars)
 {
     REQUIRE_CUDA(cuInit(0));
+
     returnTrue;
 }
 
