@@ -189,6 +189,9 @@ sysinline Dst soft_cast(Src&& src)
 #define COMPILE_ARRAY_SIZE(X) \
     (sizeof(X) / sizeof((X)[0]))
 
+#define COMPILE_ARRAY_SIZE_S(X) \
+    ptrdiff_t{sizeof(X) / sizeof((X)[0])}
+
 //================================================================
 //
 // COMPILE_ASSERT_EQUAL_LAYOUT

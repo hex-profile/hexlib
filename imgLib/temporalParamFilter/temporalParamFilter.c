@@ -44,7 +44,7 @@ static const float32 halfLifePoints[] =
 
 bool getMultiStageAlpha(float32 desiredHalfLife, Space stageCount, float32& result)
 {
-    ensure(stageCount >= 0 && stageCount < COMPILE_ARRAY_SIZE(halfLifePoints));
+    ensure(stageCount >= 0 && stageCount < COMPILE_ARRAY_SIZE_S(halfLifePoints));
     float32 unscaledHalfLifePoint = halfLifePoints[stageCount];
 
     ////

@@ -30,7 +30,9 @@ add_subdirectory(imgLibGpu)
 add_subdirectory(moduleLibGpu)
 add_subdirectory(shellCommonGpu)
 
-add_subdirectory(testbedAt)
+if (WIN32)
+    add_subdirectory(testbedAt)
+endif()
 
 if ($ENV{HEXLIB_ARCHIVE_PROJECTS})
     add_subdirectory(archive)
