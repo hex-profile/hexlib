@@ -18,7 +18,7 @@ inline bool checkCudaHelper(CUresult cudaErr, const CharType* statement, stdPars
     if (cudaErr == CUDA_SUCCESS)
         return true;
 
-    printMsgTrace(kit.errorLogEx, STR("CUDA error: %0 returned %1."), statement, cudaErr, msgErr, stdPassThru);
+    printMsgTrace(kit.errorLogEx, STR("CUDA error: %0: %1."), statement, cudaErr, msgErr, stdPassThru);
     return false;
 }
 
