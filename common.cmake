@@ -1,44 +1,160 @@
-include_guard(GLOBAL)
-
 #================================================================
 #
-# Make GPU compiler.
+# checkDefs
 #
 #================================================================
 
-if (WIN32)
-    set(scriptExt .cmd)
-else()
-    set(scriptExt .sh)
-endif()
+function (checkDefs)
 
-###
+    #----------------------------------------------------------------
+    #
+    # HEXLIB_PLATFORM
+    #
+    # 0: CPU emulation backend (slow for GPU functions).
+    # 1: CUDA Driver API backend.
+    #
+    #----------------------------------------------------------------
 
-if (WIN32)
-    set(binaryExt .exe)
-else()
-    set(binaryExt "")
-endif()
+    if (NOT DEFINED HEXLIB_PLATFORM)
+        message(FATAL_ERROR "HEXLIB_PLATFORM needs to be defined, use HEXLIB_PLATFORM=0 for CPU emulation.")
+    elseif (HEXLIB_PLATFORM EQUAL 0)
+        # CPU emulation
+    elseif (HEXLIB_PLATFORM EQUAL 1)
+        # CUDA Driver API
+    else()
+        message(FATAL_ERROR "HEXLIB_PLATFORM=${HEXLIB_PLATFORM} is not valid.")
+    endif()
 
-###
+    #----------------------------------------------------------------
+    #
+    # HEXLIB_GUARDED_MEMORY
+    #
+    #----------------------------------------------------------------
 
-set(commonCmakeDir ${CMAKE_CURRENT_LIST_DIR}) 
+    if (NOT DEFINED HEXLIB_GUARDED_MEMORY)
+        message(FATAL_ERROR "HEXLIB_GUARDED_MEMORY needs to be defined, use HEXLIB_GUARDED_MEMORY=0 for normal compilation.")
+    endif()
 
-###
+    #----------------------------------------------------------------
+    #
+    # HEXLIB_GPU_BITNESS
+    # HEXLIB_CUDA_ARCH
+    #
+    #----------------------------------------------------------------
 
-add_custom_command(
-    OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt}"
+    if (HEXLIB_PLATFORM EQUAL 1)
 
-    COMMAND "${commonCmakeDir}/gpuCompiler/makeGpuCompiler${scriptExt}"
-        "${CMAKE_SOURCE_DIR}"
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
-        "${CMAKE_GENERATOR}"
-)
+        if (NOT DEFINED HEXLIB_GPU_BITNESS)
+            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64).")
+        endif()
 
-###
+        ###
 
-add_custom_target(makeGpuCompiler DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt})
+        if (NOT DEFINED HEXLIB_CUDA_ARCH)
+            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...).")
+        endif()
+
+    endif()
+
+endfunction()
+
+#================================================================
+#
+# setupCuda
+#
+#================================================================
+
+function (setupCuda)
+
+    checkDefs()
+
+    ###
+
+    if (HEXLIB_PLATFORM EQUAL 1)
+
+        find_program(NVCC_PATH nvcc)
+        get_filename_component(cudaRoot "${NVCC_PATH}/../.." ABSOLUTE)
+
+        math(EXPR hostBitness "8*${CMAKE_SIZEOF_VOID_P}")
+
+        if (WIN32)
+            if (hostBitness EQUAL 32)
+                set(cudaLib ${cudaRoot}/lib/Win32)
+            elseif (hostBitness EQUAL 64)
+                set(cudaLib ${cudaRoot}/lib/x64)
+            endif()
+        else()
+            if (hostBitness EQUAL 32)
+                set(cudaLib ${cudaRoot}/lib)
+            elseif (hostBitness EQUAL 64)
+                set(cudaLib ${cudaRoot}/lib64)
+            endif()
+        endif()
+
+        ###
+
+        if (NOT EXISTS "${cudaRoot}/include/cuda.h")
+            message(FATAL_ERROR "Problem with cudaRoot path.")
+        endif()
+
+        include_directories("${cudaRoot}/include")
+
+        ###
+
+        if (NOT (EXISTS "${cudaLib}/cuda.lib" OR EXISTS "${cudaLib}/libcuda.so" OR EXISTS "${cudaLib}/stubs/libcuda.so"))
+            message(FATAL_ERROR "Problem with cudaLib path.")
+        endif()
+
+        link_directories(${cudaLib})
+        link_directories(${cudaLib}/stubs)
+
+    endif()
+
+endfunction()
+
+#================================================================
+#
+# "Make GPU compiler" target.
+#
+#================================================================
+
+function (defineMakeGpuCompiler)
+
+    checkDefs()
+
+    if (NOT TARGET makeGpuCompiler)
+
+        if (WIN32)
+            set(scriptExt .cmd)
+            set(binaryExt .exe)
+        else()
+            set(scriptExt .sh)
+            set(binaryExt "")
+        endif()
+
+        ###
+
+        set(commonCmakeDir ${CMAKE_CURRENT_LIST_DIR}) 
+
+        ###
+
+        add_custom_command(
+            OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt}"
+
+            COMMAND "${commonCmakeDir}/gpuCompiler/makeGpuCompiler${scriptExt}"
+                "${CMAKE_SOURCE_DIR}"
+                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
+                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
+                "${CMAKE_GENERATOR}"
+        )
+
+        ###
+
+        add_custom_target(makeGpuCompiler DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt})
+
+    endif()
+
+endfunction()
 
 #================================================================
 #
@@ -82,9 +198,9 @@ endfunction()
 #================================================================
 
 function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects requiresGpuCompiler folderName)
-
-    cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
     
+    checkDefs()
+
     #----------------------------------------------------------------
     #
     # Define the target.
@@ -113,56 +229,6 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         target_compile_options(${projectName} PRIVATE "/wd5040")
         target_compile_options(${projectName} PRIVATE "/we4239")
         target_compile_definitions(${projectName} PRIVATE _CRT_SECURE_NO_WARNINGS=1)
-    endif()
-
-    #----------------------------------------------------------------
-    #
-    # HEXLIB_PLATFORM
-    #
-    # 0: CPU emulation backend (slow for GPU functions).
-    # 1: CUDA Driver API backend.
-    #
-    #----------------------------------------------------------------
-
-    if (NOT DEFINED HEXLIB_PLATFORM)
-        message(FATAL_ERROR "HEXLIB_PLATFORM needs to be defined, use HEXLIB_PLATFORM=0 for CPU emulation.")
-    elseif (HEXLIB_PLATFORM EQUAL 0)
-        # CPU emulation
-    elseif (HEXLIB_PLATFORM EQUAL 1)
-        # CUDA Driver API
-    else()
-        message(FATAL_ERROR "HEXLIB_PLATFORM=${HEXLIB_PLATFORM} is not valid.")
-    endif()
-
-    #----------------------------------------------------------------
-    #
-    # HEXLIB_GUARDED_MEMORY
-    #
-    #----------------------------------------------------------------
-
-    if (NOT DEFINED HEXLIB_GUARDED_MEMORY)
-        message(FATAL_ERROR "HEXLIB_GUARDED_MEMORY needs to be defined, use HEXLIB_GUARDED_MEMORY=0 for normal compilation.")
-    endif()
-
-    #----------------------------------------------------------------
-    #
-    # HEXLIB_GPU_BITNESS
-    # HEXLIB_CUDA_ARCH
-    #
-    #----------------------------------------------------------------
-
-    if (HEXLIB_PLATFORM EQUAL 1)
-
-        if (NOT DEFINED HEXLIB_GPU_BITNESS)
-            message(FATAL_ERROR "For GPU hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64).")
-        endif()
-
-        ###
-
-        if (NOT DEFINED HEXLIB_CUDA_ARCH)
-            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...).")
-        endif()
-
     endif()
 
     #----------------------------------------------------------------
@@ -203,7 +269,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
             target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
 
-            target_link_libraries(${projectName} PUBLIC cuda)
+            target_link_libraries(${projectName} PRIVATE cuda)
 
             set(CMAKE_CXX_COMPILER "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler" PARENT_SCOPE)
 
@@ -216,3 +282,12 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     endif()
 
 endfunction()
+
+#================================================================
+#
+# main
+#
+#================================================================
+
+setupCuda()
+defineMakeGpuCompiler()
