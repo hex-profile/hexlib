@@ -968,6 +968,10 @@ class FileEnvSTLImpl : public FileEnv
 
 public:
 
+    virtual ~FileEnvSTLImpl() {}
+
+public:
+
     stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
         {return loadFile(filename, memory, fileTools, stdPassThru);}
 

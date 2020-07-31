@@ -216,7 +216,7 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
     float64 gxSW = 0;
     float64 gxSWV = 0;
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, imgSizeY)
     {
@@ -236,7 +236,7 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
             SWV += w*v;
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             gxSW += SW;
             gxSWV += SWV;
@@ -265,7 +265,7 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
     //
     //----------------------------------------------------------------
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, imgSizeY)
     {
@@ -434,7 +434,7 @@ stdbool processFreqProd
     //
     //----------------------------------------------------------------
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, size.Y)
     {
@@ -466,7 +466,7 @@ stdbool processFreqProd
   
     ////
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, size.Y)
     {
@@ -481,7 +481,7 @@ stdbool processFreqProd
             maxHarmonic = maxv(maxHarmonic, magnitude);
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             xMaxHarmonic = maxv(xMaxHarmonic, maxHarmonic);
         }
@@ -501,7 +501,7 @@ stdbool processFreqProd
     //
     //----------------------------------------------------------------
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, size.Y)
     {
@@ -553,7 +553,7 @@ stdbool processFreqProd
   
     ////
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, size.Y)
     {
@@ -569,7 +569,7 @@ stdbool processFreqProd
             newSum2 += vectorLengthSq(*newPtr);
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             xOldSum2 += oldSum2;
             xNewSum2 += newSum2;
@@ -591,7 +591,7 @@ stdbool processFreqProd
 
     ////
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, size.Y)
     {
@@ -608,7 +608,7 @@ stdbool processFreqProd
             localScalarProd += prod.x;
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             xScalarProd += localScalarProd;
         }

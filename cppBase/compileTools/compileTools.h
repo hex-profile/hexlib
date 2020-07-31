@@ -479,3 +479,23 @@ struct GetNthType<N, T0, Types...>
 {
     using T = typename GetNthType<N-1, Types...>::T;
 };
+
+//================================================================
+//
+// pragmaOmp
+//
+//================================================================
+
+#if !defined(_OPENMP)
+
+    #define pragmaOmp(value)
+
+#else
+
+    #if defined(_MSC_VER)
+        #define pragmaOmp(value) __pragma(omp value)
+    #else
+        #error Need to define it.
+    #endif
+
+#endif
