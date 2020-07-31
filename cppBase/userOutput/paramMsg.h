@@ -38,7 +38,7 @@ inline ParamMsg0 paramMsg(const CharArray& format)
     const T##k v##k;
 
 #define PARAMMSG__COPY_VALUE(k, o) \
-    v##k(v##k),
+    v##k(v##k)
 
 #define PARAMMSG__SET_ATOM(k, o) \
     params[k].setup(v##k);
@@ -59,8 +59,8 @@ inline ParamMsg0 paramMsg(const CharArray& format)
             PREP_ENUM_INDEXED_PAIR(n, const T, &v) \
         ) \
             : \
-            PREP_FOR(n, PARAMMSG__COPY_VALUE, o) \
-            ParamMsg(format, params, n) \
+            ParamMsg(format, params, n), \
+            PREP_ENUM(n, PARAMMSG__COPY_VALUE, o) \
         { \
             PREP_FOR(n, PARAMMSG__SET_ATOM, o) \
         } \

@@ -16,7 +16,13 @@ class SerializeMultiSwitchIntVariable : public SerializeNumericVar<size_t>
 public:
 
     inline SerializeMultiSwitchIntVariable(NumericVar<size_t>& targetVar, const CharArray& nameDesc, size_t positionCount, const NameKeyCommentStruct descPtr[], bool prefix)
-        : SerializeNumericVar(targetVar, nameDesc, STR(""), STR("")), descPtr(descPtr), prefix(prefix), positionCount(positionCount) {}
+        : 
+        SerializeNumericVar(targetVar, nameDesc, STR(""), STR("")),
+        positionCount(positionCount),
+        descPtr(descPtr),
+        prefix(prefix)
+    {
+    }
 
     size_t estimateApproxLength() const
     {

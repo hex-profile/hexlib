@@ -25,7 +25,7 @@ public:
 
 private:
 
-    bool const enabled;
     LogBufferWriting& baseBuffer;
+    bool const enabled;
 
 };

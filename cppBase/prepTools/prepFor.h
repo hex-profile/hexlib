@@ -12,8 +12,7 @@
 //
 // Example:
 //
-// #define ITERATION(i, extra) \
-//   doSomething(i, extra)
+// #define ITERATION(i, extra) doSomething(i, extra)
 //
 // PREP_FOR(4, ITERATION, extra)
 //
