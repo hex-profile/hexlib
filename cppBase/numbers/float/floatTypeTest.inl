@@ -37,7 +37,7 @@ void floatIntConvTest(CharArray name, MsgLog& msgLog)
 
     ////
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for (int32 hi = 0; hi <= 0xFFFF; ++hi)
     {
@@ -101,7 +101,7 @@ void floatIntConvTest(CharArray name, MsgLog& msgLog)
 
             if_not (locOk)
             {
-                #pragma omp critical
+                pragmaOmp(critical)
                 {
                     if (globOk)
                     {

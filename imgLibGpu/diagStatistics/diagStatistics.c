@@ -20,7 +20,7 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
 
     float64 globSumErr2 = 0;
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, errorSizeY)
     {
@@ -32,7 +32,7 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
             locSumErr2 += square(value);
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             globSumErr2 += locSumErr2;
         }
@@ -66,7 +66,7 @@ stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanErr
 
     float64 globSumErr = 0;
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, errorSizeY)
     {
@@ -78,7 +78,7 @@ stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanErr
             locSumErr += absv(value);
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             globSumErr += locSumErr;
         }
@@ -113,7 +113,7 @@ stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAv
     float64 globSumValue = 0;
     float64 globSumValueSq = 0;
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, dataSizeY)
     {
@@ -127,7 +127,7 @@ stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAv
             locSumValueSq += square(value);
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             globSumValue += locSumValue;
             globSumValueSq += locSumValueSq;
@@ -171,7 +171,7 @@ stdbool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsEr
 
     float32 globMaxError = 0;
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (Y, errorSizeY)
     {
@@ -183,7 +183,7 @@ stdbool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsEr
             locMaxError = maxv(locMaxError, absv(errorValue));
         }
 
-        #pragma omp critical
+        pragmaOmp(critical)
         {
             globMaxError = maxv(globMaxError, locMaxError);
         }

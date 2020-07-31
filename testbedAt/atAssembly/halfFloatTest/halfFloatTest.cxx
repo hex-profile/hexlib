@@ -118,7 +118,7 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
     ARRAY_EXPOSE(src);
     ARRAY_EXPOSE(dst);
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (i, size)
     {
@@ -149,7 +149,7 @@ stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& ds
     ARRAY_EXPOSE(src);
     ARRAY_EXPOSE(dst);
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (i, size)
     {
@@ -205,13 +205,13 @@ stdbool checkEqualResults(const Array<const Type>& ref, const Array<const Type>&
 
     Space badIdx = TYPE_MAX(Space);
 
-    #pragma omp parallel for
+    pragmaOmp(parallel for)
 
     for_count (i, size)
     {
         if_not (refPtr[i] == tstPtr[i])
         {
-            #pragma omp critical
+            pragmaOmp(critical)
             {
                 badIdx = minv(badIdx, i);
             }

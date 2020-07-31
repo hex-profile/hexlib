@@ -1688,7 +1688,7 @@ private:
     SourceCacheImpl sourceCache;
 
     NumericVarStatic<int32, 0, 256, 7> simpleMaxRows;
-    static const int32 smartMaxScanRows = 64;
+    static constexpr int32 smartMaxScanRows = 64;
     NumericVarStatic<int32, 1, 256, 6> smartMaxRows;
 
     NumericVarStaticEx<float32, int32, 0, 100, 0> timeThresholdParentFractionInPercents;

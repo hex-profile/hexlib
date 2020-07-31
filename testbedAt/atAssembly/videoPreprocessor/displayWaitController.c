@@ -63,7 +63,7 @@ stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
 
         volatile float32 value = 3.14f;
 
-        #pragma omp parallel
+        pragmaOmp(parallel)
         {
             for_count (i, 8192)
                 value = sqrtf(value + 1);
