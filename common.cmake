@@ -1,3 +1,45 @@
+include_guard(GLOBAL)
+
+#================================================================
+#
+# Make GPU compiler.
+#
+#================================================================
+
+if (WIN32)
+    set(scriptExt .cmd)
+else()
+    set(scriptExt .sh)
+endif()
+
+###
+
+if (WIN32)
+    set(binaryExt .exe)
+else()
+    set(binaryExt "")
+endif()
+
+###
+
+set(commonCmakeDir ${CMAKE_CURRENT_LIST_DIR}) 
+
+###
+
+add_custom_command(
+    OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt}"
+
+    COMMAND "${commonCmakeDir}/gpuCompiler/makeGpuCompiler${scriptExt}"
+        "${CMAKE_SOURCE_DIR}"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
+        "${CMAKE_GENERATOR}"
+)
+
+###
+
+add_custom_target(makeGpuCompiler DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt})
+
 #================================================================
 #
 # addSourcesRecursive
