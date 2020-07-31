@@ -139,18 +139,18 @@ function (defineMakeGpuCompiler)
         ###
 
         add_custom_command(
-            OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt}"
+            OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild/gpuCC${binaryExt}"
 
-            COMMAND "${commonCmakeDir}/gpuCompiler/makeGpuCompiler${scriptExt}"
-                "${CMAKE_SOURCE_DIR}"
-                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
-                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir"
+            COMMAND 
+                "${commonCmakeDir}/gpuCompiler/makeGpuCompiler${scriptExt}"
+                "${CMAKE_CURRENT_SOURCE_DIR}"
+                "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild"
                 "${CMAKE_GENERATOR}"
         )
 
         ###
 
-        add_custom_target(makeGpuCompiler DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler${binaryExt})
+        add_custom_target(makeGpuCompiler DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild/gpuCC${binaryExt})
 
     endif()
 
@@ -271,7 +271,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
             target_link_libraries(${projectName} PRIVATE cuda)
 
-            set(CMAKE_CXX_COMPILER "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerDir/gpuCompiler" PARENT_SCOPE)
+            set(CMAKE_CXX_COMPILER "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild/gpuCC" PARENT_SCOPE)
 
         else()
 

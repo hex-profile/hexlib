@@ -782,7 +782,7 @@ stdbool compileDevicePartToBin
 
         nvccArgs.push_back(CT("-m") + platformBitness);
 
-        nvccArgs.push_back(CT("-E"));
+        nvccArgs.push_back(CT("--preprocess"));
 
         for_count (i, includes.size())
         {
@@ -901,9 +901,9 @@ stdbool compileDevicePartToBin
 
         nvccArgs.push_back(CT("-m" + platformBitness));
 
-        nvccArgs.push_back(CT("--ptxas-options=-v"));
+        // nvccArgs.push_back(CT("--ptxas-options=-v"));
 
-        nvccArgs.push_back(CT("-cubin"));
+        nvccArgs.push_back(CT("--cubin"));
 
         nvccArgs.push_back(CT("-o"));
         nvccArgs.push_back(binPath);
