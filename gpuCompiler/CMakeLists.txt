@@ -5,6 +5,7 @@
 #----------------------------------------------------------------
 
 hexlibProjectTemplate(gpuCompiler EXECUTABLE . "cppBase;shellCommon" FALSE hexlib)
+set_target_properties(gpuCompiler PROPERTIES OUTPUT_NAME "gpuCC")
 
 #----------------------------------------------------------------
 #

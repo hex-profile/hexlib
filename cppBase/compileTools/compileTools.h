@@ -494,6 +494,8 @@ struct GetNthType<N, T0, Types...>
 
     #if defined(_MSC_VER)
         #define pragmaOmp(value) __pragma(omp value)
+    #elif defined(__GNUC__)
+        #define pragmaOmp(value) _Pragma(PREP_STRINGIZE(omp value))
     #else
         #error Need to define it.
     #endif

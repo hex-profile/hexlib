@@ -9,12 +9,11 @@ set -o pipefail
 #================================================================
 
 sourceDir=$1
-intermDir=$2
-resultDir=$3
-generatorName=$4
+resultDir=$2
+generatorName=$3
 
-if [[ $# -ne 4 ]] ; then
-    echo 'Arguments are required: sourceDir intermDir resultDir generatorName'
+if [[ $# -ne 3 ]] ; then
+    echo 'Arguments are required: sourceDir resultDir generatorName'
     exit 1
 fi
 
@@ -27,8 +26,7 @@ fi
 echo "Building GPU compiler..."
 
 mkdir -p "$resultDir"
-mkdir -p "$intermDir"
-cd "$intermDir"
+cd "$resultDir"
 
 cmake \
     -DCMAKE_BUILD_TYPE=Release \
