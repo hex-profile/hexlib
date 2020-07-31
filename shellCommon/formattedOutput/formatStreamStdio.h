@@ -33,10 +33,10 @@ public:
 
     inline FormatStreamStdioThunk(CharType* bufferArray, size_t bufferCapacity)
         :
+        theOk(true),
         theBufferArray(bufferArray),
         theBufferCapacity(bufferCapacity),
-        theBufferSize(0),
-        theOk(true)
+        theBufferSize(0)
     {
     }
 

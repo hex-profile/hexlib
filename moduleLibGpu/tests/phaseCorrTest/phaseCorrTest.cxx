@@ -674,10 +674,10 @@ private:
     BoolSwitch<false> dataWeightType;
     BoolSwitch<false> freqWeightType;
 
+    NumericVar<float32> corrDisplayedHardMax;
     NumericVar<Space> cfgTestSize;
     NumericVar<Space> cfgFreqCount;
     NumericVar<Space> displayUpsampleFactor;
-    NumericVar<float32> corrDisplayedHardMax;
     NumericVar<float32> cfgMinPeriod;
 
 };
