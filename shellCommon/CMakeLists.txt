@@ -1,5 +1,3 @@
-include(${HEXLIB_CMAKE_DIR}/common.cmake)
-
 #================================================================
 #
 # Common app implementations:

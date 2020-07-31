@@ -1,5 +1,3 @@
-include(${HEXLIB_CMAKE_DIR}/common.cmake)
-
 #----------------------------------------------------------------
 #
 # Compiler binary
