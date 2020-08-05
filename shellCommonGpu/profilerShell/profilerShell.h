@@ -3,7 +3,7 @@
 #include "cfgTools/boolSwitch.h"
 #include "configFile/cfgSimpleString.h"
 #include "history/historyObject.h"
-#include "interfaces/fileTools.h"
+#include "interfaces/fileToolsKit.h"
 #include "kits/moduleKit.h"
 #include "profilerShell/profiler/profilerImpl.h"
 #include "profilerShell/profilerReport/profilerReport.h"

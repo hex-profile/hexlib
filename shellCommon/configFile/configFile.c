@@ -14,6 +14,7 @@
 #include "userOutput/printMsg.h"
 #include "errorLog/errorLog.h"
 #include "userOutput/printMsgEx.h"
+#include "interfaces/fileTools.h"
 
 namespace cfgVarsImpl {
 

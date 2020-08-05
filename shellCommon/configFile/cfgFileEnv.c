@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "errorLog/errorLog.h"
+#include "interfaces/fileTools.h"
 
 namespace cfgVarsImpl {
 

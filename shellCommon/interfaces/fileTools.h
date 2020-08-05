@@ -65,11 +65,3 @@ struct FileTools
     // Make directory
     virtual bool makeDirectory(const CharType* filename) =0;
 };
-
-//================================================================
-//
-// FileToolsKit
-//
-//================================================================
-
-KIT_CREATE1(FileToolsKit, FileTools&, fileTools);

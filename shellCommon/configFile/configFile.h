@@ -7,7 +7,7 @@
 #include "timer/timer.h"
 #include "simpleString/simpleString.h"
 #include "configFile/cfgSerialization.h"
-#include "interfaces/fileTools.h"
+#include "interfaces/fileToolsKit.h"
 #include "storage/dynamicClass.h"
 
 namespace cfgVarsImpl {
