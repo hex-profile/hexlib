@@ -1,7 +1,7 @@
 #pragma once
 
 #include "profilerShell/profiler/profilerStruct.h"
-#include "interfaces/fileTools.h"
+#include "interfaces/fileToolsKit.h"
 #include "kits/moduleHeader.h"
 #include "userOutput/diagnosticKit.h"
 

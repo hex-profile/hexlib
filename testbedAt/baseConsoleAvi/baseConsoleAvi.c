@@ -19,6 +19,7 @@
 #include "data/spacex.h"
 #include "baseImageConsole/imageProviderMemcpy.h"
 #include "userOutput/paramMsg.h"
+#include "interfaces/fileTools.h"
 
 namespace baseConsoleAvi {
 

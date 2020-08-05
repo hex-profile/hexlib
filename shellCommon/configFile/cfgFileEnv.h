@@ -1,7 +1,7 @@
 #pragma once
 
 #include "configFile/cfgStringEnv.h"
-#include "interfaces/fileTools.h"
+#include "interfaces/fileToolsKit.h"
 #include "stdFunc/stdFunc.h"
 #include "errorLog/errorLogKit.h"
 

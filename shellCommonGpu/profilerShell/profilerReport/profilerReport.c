@@ -9,6 +9,7 @@
 #include "formattedOutput/sprintMsg.h"
 #include "formattedOutput/textFiles.h"
 #include "formatting/prettyNumber.h"
+#include "interfaces/fileTools.h"
 #include "numbers/float/floatType.h"
 #include "numbers/mathIntrinsics.h"
 #include "profilerShell/profiler/profilerTimer.h"

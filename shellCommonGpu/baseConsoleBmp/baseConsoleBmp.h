@@ -1,7 +1,7 @@
 #pragma once
 
 #include "baseImageConsole/baseImageConsole.h"
-#include "interfaces/fileTools.h"
+#include "interfaces/fileToolsKit.h"
 #include "storage/dynamicClass.h"
 #include "userOutput/diagnosticKit.h"
 #include "cpuFuncKit.h"

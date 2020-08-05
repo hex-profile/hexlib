@@ -6,7 +6,7 @@
 #include "kits/moduleHeader.h"
 #include "memController/memController.h"
 #include "storage/smartPtr.h"
-#include "interfaces/fileTools.h"
+#include "interfaces/fileToolsKit.h"
 
 namespace minimalShell {
 
