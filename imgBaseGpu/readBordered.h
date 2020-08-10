@@ -171,7 +171,6 @@ struct ReadBordered<BORDER_MIRROR>
         if (valid) result = LoadElement::func(&helpRead(*ptr));
 
         return result;
-
     }
 };
 

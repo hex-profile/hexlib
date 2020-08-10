@@ -37,12 +37,12 @@ sysinline Movement3D<Float> movement3D(const Point3D<Float>& translation)
 
 //================================================================
 //
-// operator ==
+// completelyEqual
 //
 //================================================================
  
 template <typename Float>
-sysinline bool operator ==(const Movement3D<Float>& A, const Movement3D<Float>& B)
+sysinline bool completelyEqual(const Movement3D<Float>& A, const Movement3D<Float>& B)
 {
     return allv(A.rotation == B.rotation) && allv(A.translation == B.translation);
 }
@@ -251,12 +251,12 @@ struct ConvertImpl<Movement3DFamily, Movement3DFamily, check, rounding, hint>
 
 //================================================================
 //
-// fullyDefined
+// completelyDefined
 //
 //================================================================
 
 template <typename Float>
-inline bool fullyDefined(const Movement3D<Float>& movement)
+inline bool completelyDefined(const Movement3D<Float>& movement)
 {
     return allv(def(movement.rotation) && allv(def(movement.translation)));
 }
