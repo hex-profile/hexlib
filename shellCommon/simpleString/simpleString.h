@@ -169,7 +169,7 @@ public:
 
 public:
 
-    explicit sysinline SimpleStringEx(const String& that)
+    sysinline SimpleStringEx(const String& that)
         {assign(that);}
 
     explicit sysinline SimpleStringEx(const Type* cstr)
