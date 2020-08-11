@@ -37,7 +37,24 @@ struct BmpConfig
 public:
 
     BoolSwitch<false> savingActive;
-    SimpleStringVar outputDir{STR("")};
+    SimpleStringVar outputDir{getDefaultDir()};
+
+public:
+
+    static SimpleString getDefaultDir()
+    {
+        auto tempDir = getenv("HEXLIB_OUTPUT");
+
+        if_not (tempDir)
+            tempDir = getenv("TEMP");
+
+        SimpleString dir; dir << tempDir << "/imageConsole";
+
+        if_not (def(dir))
+            dir.clear();
+
+        return dir;
+    }
 
 public:
 
