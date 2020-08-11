@@ -84,7 +84,11 @@ stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool 
 
     ////
 
-    int newHandle = ::open(newFilename.cstr(), flags);
+    int mode = 0644;
+
+    ////
+
+    int newHandle = ::open(newFilename.cstr(), flags, mode);
 
     REQUIRE_TRACE2(newHandle >= 0, STR("Cannot open file %0: %1."), filename, getLastError());
 
