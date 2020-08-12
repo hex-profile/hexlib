@@ -40,7 +40,7 @@ struct EngineModule
 //
 //================================================================
 
-KIT_CREATE3(ParamsKit, EngineModule&, engineModule, MemController&, engineMemory, bool, runExecutionPhase);
+KIT_CREATE4(ParamsKit, EngineModule&, engineModule, MemController&, engineMemory, bool, runExecutionPhase, bool&, reallocHappened);
 
 //================================================================
 //
@@ -69,8 +69,8 @@ public:
 
     using ProcessKit = InitKit;
 
-    stdbool process(EngineModule& engineModule, MemController& engineMemory, bool runExecutionPhase, stdPars(ProcessKit))
-        {return processEntry(stdPassKit(kitCombine(kit, ParamsKit(engineModule, engineMemory, runExecutionPhase))));}
+    stdbool process(EngineModule& engineModule, MemController& engineMemory, bool runExecutionPhase, bool& reallocHappened, stdPars(ProcessKit))
+        {return processEntry(stdPassKit(kitCombine(kit, ParamsKit(engineModule, engineMemory, runExecutionPhase, reallocHappened))));}
 
 public:
 

@@ -11,7 +11,10 @@
 
 inline bool uncommonActivity(const ReallocActivity& stateActivity, const ReallocActivity& tempActivity)
 {
-    return stateActivity.sysAllocCount || tempActivity.sysAllocCount || stateActivity.fastAllocCount;
+    return 
+        stateActivity.sysAllocCount ||
+        tempActivity.sysAllocCount ||
+        stateActivity.fastAllocCount; // Report even fast realloc of the state.
 }
 
 //================================================================
