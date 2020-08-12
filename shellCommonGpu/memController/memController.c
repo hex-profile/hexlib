@@ -514,10 +514,10 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
 
     ////
 
-    if_not (cpuFastResize && gpuFastResize)
-        ++tempActivity.sysAllocCount;
-    else
+    if (cpuFastResize && gpuFastResize)
         ++tempActivity.fastAllocCount;
+    else
+        ++tempActivity.sysAllocCount;
 
     ////
 
