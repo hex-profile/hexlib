@@ -32,21 +32,6 @@ private:
 
 //================================================================
 //
-// OverlayTakeoverNull
-//
-//================================================================
-
-class OverlayTakeoverNull : public OverlayTakeover
-{
-    void setActiveID(const ID& id) const
-        {}
-
-    ID getActiveID() const
-        {return 0;}
-};
-
-//================================================================
-//
 // OverlaySerializationThunk
 //
 //================================================================
@@ -60,20 +45,20 @@ public:
     virtual void serialize(const CfgSerializeKit& kit)
         {target.serialize(kitCombine(kit, OverlayTakeoverKit{overlayTakeover}));}
 
-    OverlaySerializationThunk(Target& target, const OverlayTakeover& overlayTakeover)
-        : target(target), overlayTakeover(overlayTakeover) {}
+    OverlaySerializationThunk(Target& target, OverlayTakeover::ID& overlayOwnerID)
+        : target(target), overlayTakeover(overlayOwnerID) {}
 
 private:
 
     Target& target;
-    const OverlayTakeover& overlayTakeover;
+    OverlayTakeoverThunk overlayTakeover;
 
 };
 
 //----------------------------------------------------------------
 
 template <typename Target>
-inline auto overlaySerializationThunk(Target& target, const OverlayTakeover& overlayTakeover)
+inline auto overlaySerializationThunk(Target& target, OverlayTakeover::ID& overlayOwnerID)
 {
-    return OverlaySerializationThunk<Target>(target, overlayTakeover);
+    return OverlaySerializationThunk<Target>(target, overlayOwnerID);
 }
