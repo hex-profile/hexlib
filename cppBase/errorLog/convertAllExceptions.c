@@ -1,4 +1,4 @@
-#include "foreignErrorBlock.h"
+#include "convertAllExceptions.h"
 
 #include <exception>
 
@@ -7,11 +7,11 @@
 
 //================================================================
 //
-// reportForeignException
+// printExternalExceptions
 //
 //================================================================
 
-void reportForeignException(stdPars(ErrorLogExKit)) noexcept
+void printExternalExceptions(stdPars(ErrorLogExKit)) noexcept
 {
     try 
     {
@@ -46,7 +46,7 @@ void reportForeignException(stdPars(ErrorLogExKit)) noexcept
 
         catch (...)
         {
-            printMsgTrace(kit.errorLogEx, STR("Unrecognized foreign exception."), msgErr, stdPassThru);
+            printMsgTrace(kit.errorLogEx, STR("Unrecognized external exception."), msgErr, stdPassThru);
         }
 
     }

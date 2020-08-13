@@ -25,7 +25,7 @@ stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
     if_not (status == 0)
     {
         printMsg(kit.msgLog, STR("Cannot launch %0"), cmdLine, msgErr);
-        return false;
+        returnFalse;
     }
 
     returnTrue;
