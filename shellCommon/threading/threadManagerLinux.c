@@ -85,7 +85,7 @@ stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdP
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
 
-    return true;
+    returnTrue;
 }
 
 //================================================================
@@ -137,7 +137,7 @@ stdbool ThreadManagerLinux::createThread(ThreadFunc* threadFunc, void* threadPar
 {
     threadControl.waitAndClear();
     REQUIRE(false); // not impl
-    return true;
+    returnTrue;
 }
 
 //================================================================
@@ -150,7 +150,7 @@ stdbool ThreadManagerLinux::getCurrentThread(ThreadControl& threadControl, stdPa
 {
     threadControl.waitAndClear();
     REQUIRE(false); // not impl
-    return true;
+    returnTrue;
 }
 
 //----------------------------------------------------------------

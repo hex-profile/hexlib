@@ -52,7 +52,7 @@ class EmuMultiProcFake
 public:
 
     stdbool create(Space streamCount, stdPars(CreateKit))
-        {return true;}
+        {returnTrue;}
 
     void destroy()
         {}
@@ -70,7 +70,7 @@ public:
     )
     {
         REQUIRE(false); // not implemented
-        return false;
+        returnFalse;
     }
 
 };

@@ -7,7 +7,7 @@
 
 #include "stlString/stlString.h"
 #include "formattedOutput/formatStreamStl.h"
-#include "errorLog/foreignErrorBlock.h"
+#include "errorLog/convertAllExceptions.h"
 
 //================================================================
 //
@@ -33,17 +33,4 @@ inline StlString sprintMsg(const CharArray& format, const Types&... values)
     formatOutput(paramMsg, formatToStream);
    
     return stringStream.rdbuf()->str();
-}
-
-//================================================================
-//
-// sprintMsgNoThrow
-//
-//================================================================
-
-template <typename Kit, typename... Types>
-inline stdbool sprintMsgNoThrow(StlString& result, const CharArray& format, stdPars(Kit), const Types&... values)
-{
-    require(foreignErrorBlockVoid(result = sprintMsg(format, values...);));
-    returnTrue;
 }
