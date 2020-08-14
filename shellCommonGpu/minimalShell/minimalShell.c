@@ -371,6 +371,8 @@ stdbool MinimalShellImpl::processWithProfiler(stdPars(ProcessWithProfilerKit))
 stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 {
 
+    kit.sysAllocHappened = false;
+
     //----------------------------------------------------------------
     //
     // Give GPU control to the profiler.
@@ -428,6 +430,11 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     REQUIRE(engineStateActivity.fastAllocCount <= 1);
     REQUIRE(engineStateActivity.sysAllocCount <= 1);
 
+    ////
+
+    if (engineStateActivity.sysAllocCount)
+        kit.sysAllocHappened = true;
+
     //----------------------------------------------------------------
     //
     // ProcessThunk
@@ -482,8 +489,13 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
     REQUIRE(engineTempActivity.fastAllocCount <= 1);
     REQUIRE(engineTempActivity.sysAllocCount <= 1);
-    REQUIRE(engineStateActivity.fastAllocCount <= 1);
-    REQUIRE(engineStateActivity.sysAllocCount <= 1);
+
+    ////
+
+    if (engineTempActivity.sysAllocCount)
+        kit.sysAllocHappened = true;
+
+    ////
 
     if (displayMemoryUsage || uncommonActivity(engineStateActivity, engineTempActivity))
         memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, stdPass);
