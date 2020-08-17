@@ -477,7 +477,7 @@ stdbool processFreqProd
 
         for_count_ex (X, size.X, (++oldPtr, ++newPtr))
         {
-            float32 magnitude = minv(vectorLength(*oldPtr), vectorLength(*newPtr));
+            float32 magnitude = minv(vectorLength(helpRead(*oldPtr)), vectorLength(helpRead(*newPtr)));
             maxHarmonic = maxv(maxHarmonic, magnitude);
         }
 
@@ -565,8 +565,8 @@ stdbool processFreqProd
 
         for_count_ex (X, size.X, (++oldPtr, ++newPtr))
         {
-            oldSum2 += vectorLengthSq(*oldPtr);
-            newSum2 += vectorLengthSq(*newPtr);
+            oldSum2 += vectorLengthSq(helpRead(*oldPtr));
+            newSum2 += vectorLengthSq(helpRead(*newPtr));
         }
 
         pragmaOmp(critical)
