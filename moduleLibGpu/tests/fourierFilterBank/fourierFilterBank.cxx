@@ -393,7 +393,7 @@ stdbool normalizeFreqResponse(const Matrix<float32_x2>& dst, stdPars(CpuFuncKit)
         auto dst = MATRIX_POINTER(dst, 0, Y);
 
         for_count_ex (X, dstSizeX, ++dst)
-            maxFreq2 = maxv(maxFreq2, vectorLengthSq(*dst));
+            maxFreq2 = maxv(maxFreq2, vectorLengthSq(helpRead(*dst)));
     }
 
     ////

@@ -108,6 +108,10 @@ public:
     sysinline stdbool realloc(const Point<Space>& size, stdPars(Kit))
         {return reallocEx(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
+    template <typename Kit>
+    sysinline stdbool realloc(const Point<Space>& size, Space rowByteAlignment, stdPars(Kit))
+        {return reallocEx(size, kit.gpuProperties.samplerBaseAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);}
+
 public:
 
     sysinline void releaseOwnership() {memoryOwner.discardAlloc(); initZero();}
