@@ -338,7 +338,9 @@ sysinline bool def(const SimpleStringEx<Type>& str)
 //================================================================
 //
 // SimpleString
+// SimpleStringChar
 //
 //================================================================
 
 using SimpleString = SimpleStringEx<CharType>;
+using SimpleStringChar = SimpleStringEx<char>;
