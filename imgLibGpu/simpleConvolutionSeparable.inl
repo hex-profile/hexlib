@@ -1,5 +1,4 @@
-#ifndef _512EE1E7E51711B0
-#define _512EE1E7E51711B0
+#pragma once
 
 #include "gpuSupport/gpuTexTools.h"
 #include "gpuDevice/gpuDevice.h"
@@ -149,7 +148,3 @@ sysinline void simpleConvolutionValueAndSquare
     resultAvg = sum;
     resultAvgSq = sumSq;
 }
-
-//----------------------------------------------------------------
-
-#endif // _512EE1E7E51711B0

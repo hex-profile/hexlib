@@ -1,5 +1,4 @@
-#ifndef _279352ED9ABAB771
-#define _279352ED9ABAB771
+#pragma once
 
 #include "cfgTools/standardSignal.h"
 #include "cfgTools/numericVar.h"
@@ -89,7 +88,3 @@ public:
     inline void operator =(EnumType newValue) {setValue(newValue);}
 
 };
-
-//----------------------------------------------------------------
-
-#endif // _279352ED9ABAB771
