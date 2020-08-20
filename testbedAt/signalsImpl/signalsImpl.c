@@ -60,7 +60,7 @@ bool getSignalNamePath(const CfgNamespace* scope, const CfgSerializeSignal& sign
 
     // Get namespace scope
     for (const CfgNamespace* p = scope; p != 0; p = p->prev)
-        result = String(p->desc) + CT("/") + result;
+        result = String(p->desc.ptr, p->desc.size) + CT("/") + result;
 
     return true;
 }

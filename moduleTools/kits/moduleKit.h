@@ -91,9 +91,6 @@ KIT_COMBINE10(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit,
 
 KIT_COMBINE2(ModuleSerializeKit, CfgSerializeKit, OverlayTakeoverKit);
 
-#define CFG_NAMESPACE(name) \
-    CFG_NAMESPACE_EX(CT(name))
-
 //================================================================
 //
 // MODULE_OUTPUT_ENABLED
