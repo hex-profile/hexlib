@@ -15,12 +15,12 @@ class CfgNamespace
 
 public:
 
-    const CharType* desc;
+    CharArray desc;
     const CfgNamespace* prev;
 
 public:
 
-    inline CfgNamespace(const CharType* desc, const CfgNamespace* prev)
+    inline CfgNamespace(const CharArray& desc, const CfgNamespace* prev)
         : desc(desc), prev(prev) {}
 
 };
@@ -34,7 +34,7 @@ public:
     kit.scope = &PREP_PASTE(newFrame, __LINE__)
 
 #define CFG_NAMESPACE(name) \
-    CFG_NAMESPACE_EX(CT(name))
+    CFG_NAMESPACE_EX(STR(name))
 
 //================================================================
 //

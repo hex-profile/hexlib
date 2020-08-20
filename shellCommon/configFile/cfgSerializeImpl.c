@@ -248,7 +248,7 @@ bool getVarNamePath(const CfgNamespace* scope, const CfgSerializeVariable& var, 
 
     // Get space scope
     for (const CfgNamespace* p = scope; p != 0; p = p->prev)
-        ensure(getName.addStr(charArrayFromPtr(p->desc)));
+        ensure(getName.addStr(p->desc));
 
     return true;
 }
