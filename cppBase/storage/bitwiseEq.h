@@ -4,12 +4,12 @@
 
 //================================================================
 //
-// trivialEq
+// bitwiseEq
 //
 //================================================================
 
 template <typename Type>
-inline bool trivialEq(const Type& A, const Type& B)
+inline bool bitwiseEq(const Type& A, const Type& B)
 {
     return memcmp(&A, &B, sizeof(Type)) == 0;
 }
