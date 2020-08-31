@@ -117,6 +117,46 @@ inline auto arrayCheckPointerConversion()
 
 //================================================================
 //
+// ARRAY_EXPOSE
+//
+//================================================================
+
+#define ARRAY_EXPOSE_EX2(array, arrayPtr, arraySize) \
+    auto arrayPtr = (array).ptr(); \
+    auto arraySize = (array).size();
+
+#define ARRAY_EXPOSE_EX(array, prefix) \
+    ARRAY_EXPOSE_EX2(array, prefix##Ptr, prefix##Size)
+
+#define ARRAY_EXPOSE(array) \
+    ARRAY_EXPOSE_EX(array, array)
+
+//----------------------------------------------------------------
+
+#define ARRAY_EXPOSE_UNSAFE_EX2(array, arrayPtr, arraySize) \
+    auto arrayPtr = (array).ptrUnsafeForInternalUseOnly(); \
+    auto arraySize = (array).size()
+
+#define ARRAY_EXPOSE_UNSAFE_EX(array, prefix) \
+    ARRAY_EXPOSE_UNSAFE_EX2(array, prefix##Ptr, prefix##Size)
+
+#define ARRAY_EXPOSE_UNSAFE(array) \
+    ARRAY_EXPOSE_UNSAFE_EX(array, array)
+
+//================================================================
+//
+// ARRAY_VALID_ACCESS
+//
+//================================================================
+
+#define ARRAY_VALID_ACCESS(array, pos) \
+    (SpaceU(pos) < SpaceU(array##Size))
+
+sysinline bool arrayValidAccess(Space size, Space pos)
+    {return SpaceU(pos) < SpaceU(size);}
+
+//================================================================
+//
 // ArrayEx<Pointer>
 //
 // Supports custom address space.
@@ -278,13 +318,46 @@ public:
 
     //----------------------------------------------------------------
     //
-    // operator []
+    // validAccess.
     //
     //----------------------------------------------------------------
 
-    sysinline auto& operator [](ptrdiff_t index) const
+public:
+
+    sysinline bool validAccess(Space pos) const
     {
-        return ptr()[index];
+        ARRAY_EXPOSE_EX(*this, my);
+        return ARRAY_VALID_ACCESS(my, pos);
+    }
+
+    //----------------------------------------------------------------
+    //
+    // Pointer, reference, read: direct access, checked only in guarded mode.
+    //
+    //----------------------------------------------------------------
+
+    sysinline auto pointer(Space index) const
+        {return ptr() + index;}
+
+    sysinline auto& operator [](Space index) const
+        {return ptr()[index];}
+
+    sysinline auto read(Space index) const
+        {return helpRead(ptr()[index]);}
+
+    //----------------------------------------------------------------
+    //
+    // writeSafe
+    //
+    //----------------------------------------------------------------
+
+    template <typename Value>
+    sysinline void writeSafe(Space index, const Value& value) const
+    {
+        ARRAY_EXPOSE_UNSAFE_EX(*this, my);
+
+        if (ARRAY_VALID_ACCESS(my, index))
+            helpModify(myPtr[index]) = helpRead(value);
     }
 
 };
@@ -387,34 +460,6 @@ GET_SIZE_DEFINE(Array<Type>, value.size())
 template <typename Pointer>
 sysinline Space getLayers(const ArrayEx<Pointer>& arr)
     {return 1;}
-
-//================================================================
-//
-// ARRAY_EXPOSE
-//
-//================================================================
-
-#define ARRAY_EXPOSE_EX(array, arrayPtr, arraySize) \
-    auto arrayPtr = (array).ptr(); \
-    auto arraySize = (array).size();
-
-#define ARRAY_EXPOSE_PREFIX(array, prefix) \
-    ARRAY_EXPOSE_EX(array, prefix##Ptr, prefix##Size)
-
-#define ARRAY_EXPOSE(array) \
-    ARRAY_EXPOSE_PREFIX(array, array)
-
-//----------------------------------------------------------------
-
-#define ARRAY_EXPOSE_UNSAFE_EX(array, arrayPtr, arraySize) \
-    auto arrayPtr = (array).ptrUnsafeForInternalUseOnly(); \
-    auto arraySize = (array).size()
-
-#define ARRAY_EXPOSE_UNSAFE_PREFIX(array, prefix) \
-    ARRAY_EXPOSE_UNSAFE_EX(array, prefix##Ptr, prefix##Size)
-
-#define ARRAY_EXPOSE_UNSAFE(array) \
-    ARRAY_EXPOSE_UNSAFE_PREFIX(array, array)
 
 //================================================================
 //

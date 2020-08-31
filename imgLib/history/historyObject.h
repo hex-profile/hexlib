@@ -296,8 +296,8 @@ private:
 template <typename Type, typename Action>
 sysinline void historyForEach(const HistoryRanges<Type>& historyRanges, const Action& action)
 {
-    ARRAY_EXPOSE_PREFIX(historyRanges.a, a);
-    ARRAY_EXPOSE_PREFIX(historyRanges.b, b);
+    ARRAY_EXPOSE_EX(historyRanges.a, a);
+    ARRAY_EXPOSE_EX(historyRanges.b, b);
 
     for_count (i, aSize)
         action(aPtr[i]);

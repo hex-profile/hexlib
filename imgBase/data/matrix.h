@@ -118,6 +118,37 @@ inline auto matrixCheckPointerConversion()
 
 //================================================================
 //
+// MATRIX_EXPOSE
+//
+//================================================================
+
+#define MATRIX_EXPOSE_GENERIC(matrix, prefix) \
+    auto prefix##MemPtr = (matrix).memPtr(); \
+    auto prefix##MemPitch = (matrix).memPitch(); \
+    auto prefix##SizeX = (matrix).sizeX(); \
+    auto prefix##SizeY = (matrix).sizeY()
+
+//----------------------------------------------------------------
+
+#define MATRIX_EXPOSE(matrix) \
+    MATRIX_EXPOSE_GENERIC(matrix, matrix)
+
+#define MATRIX_EXPOSE_EX(matrix, prefix) \
+    MATRIX_EXPOSE_GENERIC(matrix, prefix)
+
+//----------------------------------------------------------------
+
+#define MATRIX_EXPOSE_UNSAFE_EX(matrix, prefix) \
+    auto prefix##MemPtr = (matrix).memPtrUnsafeInternalUseOnly(); \
+    auto prefix##MemPitch = (matrix).memPitch(); \
+    auto prefix##SizeX = (matrix).sizeX(); \
+    auto prefix##SizeY = (matrix).sizeY()
+
+#define MATRIX_EXPOSE_UNSAFE(matrix) \
+    MATRIX_EXPOSE_UNSAFE_EX(matrix, matrix)
+
+//================================================================
+//
 // MATRIX_VALID_ACCESS
 //
 //================================================================
@@ -219,7 +250,7 @@ class MatrixEx
 private:
 
     // Base pointer. If the matrix is empty, can be 0.
-    Pointer theMemPtr = Pointer(0);
+    Pointer theMemPtrUnsafe = Pointer(0);
 
     // Pitch. Can be negative. |pitch| >= sizeX.
     // If the matrix is empty, can be undefined.
@@ -234,7 +265,7 @@ public:
 
     friend sysinline void exchange(MatrixEx<Pointer>& A, MatrixEx<Pointer>& B)
     {
-        exchange(A.theMemPtr, B.theMemPtr);
+        exchange(A.theMemPtrUnsafe, B.theMemPtrUnsafe);
         exchange(A.theMemPitch, B.theMemPitch);
         exchange(A.theSizeX, B.theSizeX);
         exchange(A.theSizeY, B.theSizeY);
@@ -278,7 +309,7 @@ public:
     template <typename OtherPointer>
     sysinline MatrixEx(const ArrayEx<OtherPointer>& that)
         :
-        theMemPtr(that.thePtr),
+        theMemPtrUnsafe(that.thePtr),
         theMemPitch(that.theSize),
         theSizeX(that.theSize),
         theSizeY(1)
@@ -310,7 +341,7 @@ public:
 
         theSizeX = sizeX;
         theSizeY = sizeY;
-        theMemPtr = memPtr;
+        theMemPtrUnsafe = memPtr;
         theMemPitch = memPitch;
 
         return ok;
@@ -322,7 +353,7 @@ public:
 
     sysinline void assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions&)
     {
-        theMemPtr = memPtr;
+        theMemPtrUnsafe = memPtr;
         theMemPitch = memPitch;
         theSizeX = sizeX;
         theSizeY = sizeY;
@@ -370,7 +401,7 @@ public:
 
     sysinline void assignNull()
     {
-        theMemPtr = Pointer(0);
+        theMemPtrUnsafe = Pointer(0);
         theMemPitch = 0;
         theSizeX = 0;
         theSizeY = 0;
@@ -407,45 +438,19 @@ public:
     //
 
     sysinline Pointer memPtrUnsafeInternalUseOnly() const
-        {return theMemPtr;}
+        {return theMemPtrUnsafe;}
 
 #if HEXLIB_GUARDED_MEMORY
 
     sysinline typename MatrixPtr(Type) memPtr() const
-        {return MatrixPtrCreate(Type, theMemPtr, theMemPitch, theSizeX, theSizeY, DbgptrMatrixPreconditions());}
+        {return MatrixPtrCreate(Type, theMemPtrUnsafe, theMemPitch, theSizeX, theSizeY, DbgptrMatrixPreconditions());}
 
 #else
 
     sysinline Pointer memPtr() const
-        {return theMemPtr;}
+        {return theMemPtrUnsafe;}
 
 #endif
-
-    //
-    // subRow
-    //
-
-    template <typename OtherPointer>
-    sysinline bool subRow(Space Y, ArrayEx<OtherPointer>& result) const
-    {
-        MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
-
-        bool tmpOk = false;
-        Pointer tmpPtr = Pointer(0);
-        Space tmpSizeX = 0; // >= 0
-
-        ////
-
-        if (SpaceU(Y) < SpaceU(theSizeY))
-        {
-            tmpPtr = MATRIX_POINTER(the, 0, Y);
-            tmpSizeX = theSizeX; // >= 0
-            tmpOk = true;
-        }
-
-        result.assign(tmpPtr, tmpSizeX, arrayPreconditionsAreVerified());
-        return tmpOk;
-    }
 
     //
     // subr
@@ -459,14 +464,16 @@ public:
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
-        Space clOrgX = clampRange(orgX, 0, theSizeX);
-        Space clOrgY = clampRange(orgY, 0, theSizeY);
+        MATRIX_EXPOSE_UNSAFE_EX(*this, my);
 
-        Space clEndX = clampRange(endX, clOrgX, theSizeX);
-        Space clEndY = clampRange(endY, clOrgY, theSizeY);
+        Space clOrgX = clampRange(orgX, 0, mySizeX);
+        Space clOrgY = clampRange(orgY, 0, mySizeY);
 
-        result.theMemPtr = MATRIX_POINTER(the, clOrgX, clOrgY);
-        result.theMemPitch = theMemPitch;
+        Space clEndX = clampRange(endX, clOrgX, mySizeX);
+        Space clEndY = clampRange(endY, clOrgY, mySizeY);
+
+        result.theMemPtrUnsafe = MATRIX_POINTER(my, clOrgX, clOrgY);
+        result.theMemPitch = myMemPitch;
 
         result.theSizeX = clEndX - clOrgX;
         result.theSizeY = clEndY - clOrgY;
@@ -487,30 +494,6 @@ public:
     }
 
     //
-    // subsUnsafeVeryDangerous
-    //
-
-    template <typename OtherPointer>
-    sysinline void subsUnsafeVeryDangerous(Space orgX, Space orgY, Space sizeX, Space sizeY, MatrixEx<OtherPointer>& result) const
-    {
-        MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
-
-        result.theMemPtr = MATRIX_POINTER(the, orgX, orgY);
-        result.theMemPitch = theMemPitch;
-
-        result.theSizeX = sizeX;
-        result.theSizeY = sizeY;
-    }
-
-    ////
-
-    template <typename Coord, typename OtherPointer>
-    sysinline void subsUnsafeVeryDangerous(const Point<Coord>& org, const Point<Coord>& size, MatrixEx<OtherPointer>& result) const
-    {
-        return subsUnsafeVeryDangerous(org.X, org.Y, size.X, size.Y, result);
-    }
-
-    //
     // subs
     //
     // Cuts a rectangular area from matrix, given by starting point and size.
@@ -524,14 +507,16 @@ public:
     {
         MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
 
-        Space clOrgX = clampRange(orgX, 0, theSizeX);
-        Space clOrgY = clampRange(orgY, 0, theSizeY);
+        MATRIX_EXPOSE_UNSAFE_EX(*this, my);
 
-        Space clSizeX = clampRange(sizeX, 0, theSizeX - clOrgX);
-        Space clSizeY = clampRange(sizeY, 0, theSizeY - clOrgY);
+        Space clOrgX = clampRange(orgX, 0, mySizeX);
+        Space clOrgY = clampRange(orgY, 0, mySizeY);
 
-        result.theMemPtr = MATRIX_POINTER(the, clOrgX, clOrgY);
-        result.theMemPitch = theMemPitch;
+        Space clSizeX = clampRange(sizeX, 0, mySizeX - clOrgX);
+        Space clSizeY = clampRange(sizeY, 0, mySizeY - clOrgY);
+
+        result.theMemPtrUnsafe = MATRIX_POINTER(my, clOrgX, clOrgY);
+        result.theMemPitch = myMemPitch;
 
         result.theSizeX = clSizeX;
         result.theSizeY = clSizeY;
@@ -572,7 +557,7 @@ public:
         if_not (ok)
             totalSize = 0;
 
-        result.assign(theMemPtr, totalSize, arrayPreconditionsAreVerified());
+        result.assign(theMemPtrUnsafe, totalSize, arrayPreconditionsAreVerified());
 
         return ok;
     }
@@ -584,42 +569,62 @@ public:
     //----------------------------------------------------------------
 
     sysinline bool validAccess(const Point<Space>& pos) const
-        {return MATRIX_VALID_ACCESS_(the, pos);}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return MATRIX_VALID_ACCESS_(my, pos);
+    }
 
     sysinline bool validAccess(Space X, Space Y) const
-        {return MATRIX_VALID_ACCESS(the, X, Y);}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return MATRIX_VALID_ACCESS(my, X, Y);
+    }
 
     //----------------------------------------------------------------
     //
-    // Pointer and reference: not safe.
+    // Pointer, reference, read: direct access, checked only in guarded mode.
     //
     //----------------------------------------------------------------
 
     sysinline auto pointer(const Point<Space>& pos) const
-        {return MATRIX_POINTER_(the, pos);}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return MATRIX_POINTER_(my, pos);
+    }
 
     sysinline auto pointer(Space X, Space Y) const
-        {return MATRIX_POINTER(the, X, Y);}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return MATRIX_POINTER(my, X, Y);
+    }
 
     ////
 
     sysinline auto& element(const Point<Space>& pos) const
-        {return MATRIX_ELEMENT_(the, pos);}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return MATRIX_ELEMENT_(my, pos);
+    }
 
     sysinline auto& element(Space X, Space Y) const
-        {return MATRIX_ELEMENT(the, X, Y);}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return MATRIX_ELEMENT(my, X, Y);
+    }
 
-    //----------------------------------------------------------------
-    //
-    // read
-    //
-    //----------------------------------------------------------------
+    ////
 
     sysinline auto read(const Point<Space>& pos) const
-        {return helpRead(MATRIX_ELEMENT_(the, pos));}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return helpRead(MATRIX_ELEMENT_(my, pos));
+    }
 
     sysinline auto read(Space X, Space Y) const
-        {return helpRead(MATRIX_ELEMENT(the, X, Y));}
+    {
+        MATRIX_EXPOSE_EX(*this, my);
+        return helpRead(MATRIX_ELEMENT(my, X, Y));
+    }
 
     //----------------------------------------------------------------
     //
@@ -630,14 +635,19 @@ public:
     template <typename Value>
     sysinline void writeSafe(const Point<Space>& pos, const Value& value) const
     {
-        if (MATRIX_VALID_ACCESS_(the, pos))
-            helpModify(MATRIX_ELEMENT_(the, pos)) = helpRead(value);
+        MATRIX_EXPOSE_UNSAFE_EX(*this, my);
+
+        if (MATRIX_VALID_ACCESS_(my, pos))
+            helpModify(MATRIX_ELEMENT_(my, pos)) = helpRead(value);
     }
 
     template <typename Value>
     sysinline void writeSafe(Space X, Space Y, const Value& value) const
     {
-        writeSafe(point(X, Y), value);
+        MATRIX_EXPOSE_UNSAFE_EX(*this, my);
+
+        if (MATRIX_VALID_ACCESS(my, X, Y))
+            helpModify(MATRIX_ELEMENT(my, X, Y)) = helpRead(value);
     }
 
 };
@@ -715,34 +725,6 @@ public:
     }
 
 };
-
-//================================================================
-//
-// MATRIX_EXPOSE
-//
-//================================================================
-
-#define MATRIX_EXPOSE_GENERIC(matrix, prefix) \
-    auto prefix##MemPtr = (matrix).memPtr(); \
-    auto prefix##MemPitch = (matrix).memPitch(); \
-    auto prefix##SizeX = (matrix).sizeX(); \
-    auto prefix##SizeY = (matrix).sizeY()
-
-//----------------------------------------------------------------
-
-#define MATRIX_EXPOSE(matrix) \
-    MATRIX_EXPOSE_GENERIC(matrix, matrix)
-
-#define MATRIX_EXPOSE_EX(matrix, prefix) \
-    MATRIX_EXPOSE_GENERIC(matrix, prefix)
-
-//----------------------------------------------------------------
-
-#define MATRIX_EXPOSE_UNSAFE(matrix, prefix) \
-    auto prefix##MemPtr = (matrix).memPtrUnsafeInternalUseOnly(); \
-    auto prefix##MemPitch = (matrix).memPitch(); \
-    auto prefix##SizeX = (matrix).sizeX(); \
-    auto prefix##SizeY = (matrix).sizeY()
 
 //================================================================
 //

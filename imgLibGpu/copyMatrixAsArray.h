@@ -15,7 +15,7 @@
 template <typename Pointer, typename Kit>
 inline stdbool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx<Pointer>& result, stdPars(Kit))
 {
-    MATRIX_EXPOSE_UNSAFE(img, img);
+    MATRIX_EXPOSE_UNSAFE(img);
 
     result.assignNull();
     REQUIRE(imgMemPitch >= imgSizeX);
