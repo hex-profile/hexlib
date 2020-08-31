@@ -909,7 +909,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
 
     ////
 
-    ARRAY_EXPOSE_UNSAFE_PREFIX(client->videofileName, videofileName);
+    ARRAY_EXPOSE_UNSAFE_EX(client->videofileName, videofileName);
 
     AtVideoInfo atVideoInfo
     (

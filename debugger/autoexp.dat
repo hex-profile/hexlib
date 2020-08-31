@@ -63,7 +63,7 @@ MatrixEx<*>|Matrix<*>|MatrixMemoryEx<*>|MatrixMemory<*> {
     #
     ( 
       $e.theSize.X, " x ", $e.theSize.Y,
-      ", ptr = ", [$e.theMemPtr, x],
+      ", ptr = ", [$e.theMemPtrUnsafe, x],
       ", pitch = ", $e.theMemPitch
     )
   )
@@ -74,7 +74,7 @@ MatrixEx<*>|Matrix<*>|MatrixMemoryEx<*>|MatrixMemory<*> {
       [raw members]: [$c,!],
       #array
       (
-        expr :  [$c.theMemPtr + $i * $c.theMemPitch, 32],
+        expr :  [$c.theMemPtrUnsafe + $i * $c.theMemPitch, 32],
         size :  $c.theSize.Y
       )
     )
@@ -87,7 +87,7 @@ GpuMatrix<*>|GpuMatrixMemory<*> {
     #
     ( 
       $e.theSize.X, " x ", $e.theSize.Y,
-      ", ptr = ", [$e.theMemPtr, x],
+      ", ptr = ", [$e.theMemPtrUnsafe, x],
       ", pitch = ", $e.theMemPitch
     )
   )

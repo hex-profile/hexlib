@@ -78,7 +78,7 @@ public:
     template <typename OtherType>
     HEXLIB_INLINE MatrixBase(const ArrayBase<OtherType>& that)
         :
-        theMemPtr(that.thePtr),
+        theMemPtrUnsafe(that.thePtr),
         theMemPitch(that.theSize),
         theSize(point(that.theSize, 1))
     {
@@ -124,7 +124,7 @@ public:
 
         theSize.X = sizeX;
         theSize.Y = sizeY;
-        theMemPtr = memPtr;
+        theMemPtrUnsafe = memPtr;
         theMemPitch = memPitch;
 
         return ok;
@@ -136,7 +136,7 @@ public:
 
     HEXLIB_INLINE void assignNull()
     {
-        theMemPtr = nullptr;
+        theMemPtrUnsafe = nullptr;
         theMemPitch = 0;
         theSize.X = 0;
         theSize.Y = 0;
@@ -163,7 +163,7 @@ public:
         {return theMemPitch;}
 
     HEXLIB_INLINE Type* memPtr() const
-        {return theMemPtr;}
+        {return theMemPtrUnsafe;}
 
 private:
 
@@ -176,7 +176,7 @@ private:
 private:
 
     // Base pointer. If the matrix is empty, can be nullptr.
-    Type* theMemPtr;
+    Type* theMemPtrUnsafe;
 
     // Pitch. Can be negative. |pitch| >= sizeX.
     // If the matrix is empty, can be undefined.

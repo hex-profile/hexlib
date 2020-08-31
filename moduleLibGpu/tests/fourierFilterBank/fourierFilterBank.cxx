@@ -851,8 +851,8 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
             if (outputFile)
             {
-                ARRAY_EXPOSE_PREFIX(filterSpaceCpuX, filterX);
-                ARRAY_EXPOSE_PREFIX(filterSpaceCpuY, filterY);
+                ARRAY_EXPOSE_EX(filterSpaceCpuX, filterX);
+                ARRAY_EXPOSE_EX(filterSpaceCpuY, filterY);
 
                 ////
 
