@@ -222,7 +222,7 @@ template <typename Float>
 struct VectorExtendImpl<Movement3D<Float>>
 {
     static sysinline auto func(const Float& value)
-        {return Movement3D<Float>{point4D(value), point3D(value)};}
+        {return movement3D(point4D(value), point3D(value));}
 };
 
 //================================================================
