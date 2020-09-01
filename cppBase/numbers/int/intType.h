@@ -169,15 +169,18 @@ BUILTIN_INT_FOREACH(TMP_MACRO, o)
 
 //================================================================
 //
-// nanOfImpl
+// NanOfImpl
 //
 //================================================================
 
 #define TMP_MACRO(Type, o) \
     \
     template <> \
-    sysinline Type nanOfImpl() \
-        {return TYPE_MIN(Type);}
+    struct NanOfImpl<Type> \
+    { \
+        static sysinline Type func() \
+            {return TYPE_MIN(Type);} \
+    };
 
 BUILTIN_INT_FOREACH(TMP_MACRO, o)
 

@@ -346,12 +346,15 @@ sysinline Type typeMax()
 //================================================================
 
 template <typename Type>
-sysinline Type nanOfImpl()
-    MISSING_FUNCTION_BODY
+struct NanOfImpl;
+
+//----------------------------------------------------------------
 
 template <typename Type>
-sysinline TYPE_CLEANSE(Type) nanOf()
-    {return vectorExtend<Type>(nanOfImpl<VECTOR_BASE(Type)>());}
+sysinline auto nanOf()
+{
+    return vectorExtend<Type>(NanOfImpl<VECTOR_BASE(Type)>::func());
+}
 
 //================================================================
 //

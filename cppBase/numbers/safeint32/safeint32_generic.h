@@ -723,15 +723,16 @@ struct DefImpl<safeint32::Type>
 
 //================================================================
 //
-// nanOf
+// NanOfImpl
 //
 //================================================================
 
 template <>
-sysinline safeint32::Type nanOfImpl()
+struct NanOfImpl<safeint32::Type>
 {
-    return INT32C__CREATE(safeint32::indefinite);
-}
+    static sysinline safeint32::Type func()
+        {return INT32C__CREATE(safeint32::indefinite);}
+};
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
