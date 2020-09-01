@@ -209,12 +209,21 @@ sysinline Movement3D<Float> toCenteredSystem(const Movement3D<Float>& movement, 
 
 //================================================================
 //
-// Traits.
+// Vector traits.
 //
 //================================================================
 
 VECTOR_BASE_REBASE_VECTOR_IMPL(Movement3D)
 TYPE_CONTROL_VECTOR_IMPL(Movement3D)
+
+//----------------------------------------------------------------
+
+template <typename Float>
+struct VectorExtendImpl<Movement3D<Float>>
+{
+    static sysinline auto func(const Float& value)
+        {return Movement3D<Float>{point4D(value), point3D(value)};}
+};
 
 //================================================================
 //

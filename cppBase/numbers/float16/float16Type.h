@@ -99,15 +99,18 @@ struct TypeMinMaxImpl<float16>
 
 //================================================================
 //
-// nanOfImpl
+// NanOfImpl
 //
 //================================================================
 
 template <>
-sysinline float16 nanOfImpl<float16>()
+struct NanOfImpl<float16>
 {
-    return packFloat16(nanOfImpl<float32>());
-}
+    sysinline float16 func()
+    {
+        return packFloat16(NanOfImpl<float32>::func());
+    }
+};
 
 //================================================================
 //

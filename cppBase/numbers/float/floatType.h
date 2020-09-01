@@ -114,7 +114,7 @@ TYPE_MIN_MAX_IMPL_RUNTIME(double, -DBL_MAX, +DBL_MAX)
 
 //================================================================
 //
-// nanOfImpl
+// NanOfImpl
 //
 //================================================================
 
@@ -126,18 +126,21 @@ COMPILE_ASSERT_EQUAL_LAYOUT(float32, uint32);
 static const int32 ieeeFloat32Nan = 0xFFC00000UL;
 
 template <>
-sysinline float32 nanOfImpl<float32>()
+struct NanOfImpl<float32>
 {
-#if defined(__CUDA_ARCH__)
-    return __int_as_float(ieeeFloat32Nan);
-#else
-    return * (const float32*) &ieeeFloat32Nan;
-#endif
-}
+    static sysinline float32 func()
+    {
+    #if defined(__CUDA_ARCH__)
+        return __int_as_float(ieeeFloat32Nan);
+    #else
+        return * (const float32*) &ieeeFloat32Nan;
+    #endif
+    }
+};
 
 sysinline float32 float32Nan()
 {
-    return nanOfImpl<float32>();
+    return NanOfImpl<float32>::func();
 }
 
 //----------------------------------------------------------------
@@ -148,18 +151,21 @@ static const int64 ieeeFloat64Nan = 0xFFF8000000000000ULL;
 //----------------------------------------------------------------
 
 template <>
-sysinline float64 nanOfImpl<float64>()
+struct NanOfImpl<float64>
 {
-#if defined(__CUDA_ARCH__)
-    return __longlong_as_double(ieeeFloat64Nan);
-#else
-    return * (const float64*) &ieeeFloat64Nan;
-#endif
-}
+    static sysinline float64 func()
+    {
+    #if defined(__CUDA_ARCH__)
+        return __longlong_as_double(ieeeFloat64Nan);
+    #else
+        return * (const float64*) &ieeeFloat64Nan;
+    #endif
+    }
+};
 
 sysinline float64 float64Nan()
 {
-    return nanOfImpl<float64>();
+    return NanOfImpl<float64>::func();
 }
 
 //----------------------------------------------------------------
