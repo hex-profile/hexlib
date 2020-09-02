@@ -3,6 +3,7 @@
 #include "charType/charArray.h"
 #include "storage/noncopyable.h"
 #include "numbers/interface/exchangeInterface.h"
+#include "numbers/interface/numberInterface.h"
 
 //================================================================
 //
@@ -334,6 +335,23 @@ private:
 template <typename Type>
 sysinline bool def(const SimpleStringEx<Type>& str)
     {return str.valid();}
+
+//================================================================
+//
+// NanOfImpl
+//
+//================================================================
+
+template <typename Type>
+struct NanOfImpl<SimpleStringEx<Type>>
+{
+    static sysinline auto func()
+    {
+        SimpleStringEx<Type> result;
+        result.invalidate();
+        return result;
+    }
+};
 
 //================================================================
 //
