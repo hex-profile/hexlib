@@ -686,9 +686,10 @@ stdbool VideoPreprocessorImpl::processTarget
         {
             Space i = kit.display.temporalIndex(-(frameHistory.size()-1), 0);
 
-            require(kit.gpuImageConsole.addRgbColorImage(makeConst(frameHistory[-i]->frameMemory),
-                0x00, 0xFF * kit.display.factor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO,
-                paramMsg(STR("Video Preprocessor: Frame history [%0]"), i), stdPass));
+            auto img = makeConst(frameHistory[-i]->frameMemory);
+
+            require(kit.gpuImageConsole.addRgbColorImage(img, 0x00, 0xFF * kit.display.factor, point(1.f), INTERP_NEAREST, 
+                img.size(), BORDER_ZERO, paramMsg(STR("Video Preprocessor: Frame history [%0]"), i), stdPass));
         }
     }
 
@@ -1075,33 +1076,6 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     //----------------------------------------------------------------
     //
-    // Normal execution: counting rollback = 0, execution rollback = 1
-    // Repeated frame: counting rollback = 1, execution rollback = 1
-    //
-    // If video preprocessor has its own advancing process, we need to fix
-    // repeated frame: counting rollback = 0, execution rollback = 1
-    //
-    //----------------------------------------------------------------
-
-    bool internalProcess = randomizeSignal != 0;
-
-    PipeControl pipeControl = kit.pipeControl;
-    ProcessKit savedPipeKit = kit;
-
-    REQUIRE(pipeControl.rollbackFrames == 0 || pipeControl.rollbackFrames == 1);
-
-    if (internalProcess && !kit.dataProcessing)
-        pipeControl.rollbackFrames = 0;
-
-    ProcessKit kit = kitReplace(savedPipeKit, PipeControlKit(pipeControl));
-
-    ////
-
-    if (randomizeSignal && !kit.dataProcessing)
-        movingFrameIndex += 1;
-
-    //----------------------------------------------------------------
-    //
     // Add the video frame to the queue.
     //
     //----------------------------------------------------------------
@@ -1109,12 +1083,16 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
     GpuCopyThunk cpuFrameSender;
 
     ////
+    
+    HistoryState historyState;
+    frameHistory.saveState(historyState);
+    REMEMBER_CLEANUP_EX(historyRestore, frameHistory.restoreState(historyState));
+
+    ////
 
     if_not (!kit.frameAdvance && frameHistory.size() >= 1)
     {
-        frameHistory.rollback(kit.pipeControl.rollbackFrames);
-
-        FrameSnapshot* f = frameHistory.addLocation();
+        FrameSnapshot* f = frameHistory.add();
 
         if (cpuFrame.memPitch() >= 0)
         {
@@ -1126,9 +1104,34 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
             require(copyMatrixAsArray(flipMatrix(cpuFrame), f->frameMemory, cpuFrameSender, stdPass));
             f->frame = flipMatrix(f->frameMemory);
         }
-
-        frameHistory.addAdvance();
     }
+
+    //----------------------------------------------------------------
+    //
+    // Normal execution: counting rollback = 0, execution rollback = 1
+    // Repeated frame: counting rollback = 1, execution rollback = 1
+    //
+    // If video preprocessor has its own advancing process, we need to fix
+    // repeated frame: counting rollback = 0, execution rollback = 1
+    //
+    //----------------------------------------------------------------
+
+    bool internalProcess = randomizeSignal != 0;
+
+    PipeControl pipeControl = kit.pipeControl;
+
+    REQUIRE(pipeControl.rollbackFrames == 0 || pipeControl.rollbackFrames == 1);
+
+    if (internalProcess && !kit.dataProcessing)
+        pipeControl.rollbackFrames = 0;
+
+    auto oldKit = kit;
+    ProcessKit kit = kitReplace(oldKit, PipeControlKit(pipeControl));
+
+    ////
+
+    if (randomizeSignal && !kit.dataProcessing)
+        movingFrameIndex += 1;
 
     //----------------------------------------------------------------
     //
@@ -1208,7 +1211,14 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
         }
     }
 
-    ////
+    //----------------------------------------------------------------
+    //
+    // Success.
+    //
+    //----------------------------------------------------------------
+
+    if (kit.dataProcessing)
+        historyRestore.cancel();
 
     stdScopedEnd;
 }
