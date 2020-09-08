@@ -630,7 +630,7 @@ stdbool VideoPreprocessorImpl::processTarget
         bmpOk = errorBlock(bmpSetOutput());
 
         printMsgL(kit, bmpOk ? STR("BMP Saving: Files are saved to %") : STR("BMP Saving: Error happened"),
-            bmpConfig.outputDir->cstr(), bmpOk ? msgInfo : msgWarn);
+            bmpConfig.outputDir->cstr(), msgWarn);
     }
 
     ////
