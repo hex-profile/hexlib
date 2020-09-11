@@ -3,7 +3,21 @@
 #include <stddef.h>
 
 #include "extLib/types/charType.h"
-#include "extLib/diagLog/msgKind.h"
+
+//================================================================
+//
+// MsgKind
+//
+// Auxiliary message type specification.
+//
+//================================================================
+
+#ifndef HEXLIB_MSGKIND
+#define HEXLIB_MSGKIND
+
+enum MsgKind {msgInfo, msgWarn, msgErr};
+
+#endif
 
 //================================================================
 //
@@ -34,13 +48,13 @@ struct DiagLogThreading
 
 struct DiagLogThreadingNull : public DiagLogThreading
 {
-    bool isThreadProtected() const override
+    bool isThreadProtected() const
         {return true;}
 
-    void lock() override
+    void lock()
         {}
 
-    void unlock() override
+    void unlock()
         {}
 };
 
@@ -68,13 +82,13 @@ struct DiagLogOutput
 
 struct DiagLogOutputNull : public DiagLogOutput
 {
-    bool addMsg(const CharType* msgStr, MsgKind msgKind) override
+    bool addMsg(const CharType* msgStr, MsgKind msgKind)
         {return true;}
 
-    bool clear() override
+    bool clear()
         {return true;}
 
-    virtual bool update() override
+    virtual bool update()
         {return true;}
 };
 

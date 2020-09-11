@@ -1,4 +1,4 @@
-#include "extLib/matrixBase.h"
+#include "matrixBase.h"
 
 //================================================================
 //
