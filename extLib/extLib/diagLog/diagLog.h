@@ -21,11 +21,13 @@ enum MsgKind {msgInfo, msgWarn, msgErr};
 
 //================================================================
 //
-// DiagLogThreading
+// DiagLog
+//
+// The simplest diagnostic logging interface.
 //
 //================================================================
 
-struct DiagLogThreading
+struct DiagLog
 {
     //
     // Can the instance be shared among multiple threads?
@@ -42,32 +44,7 @@ struct DiagLogThreading
 
     virtual void lock() =0;
     virtual void unlock() =0;
-};
 
-//----------------------------------------------------------------
-
-struct DiagLogThreadingNull : public DiagLogThreading
-{
-    bool isThreadProtected() const
-        {return true;}
-
-    void lock()
-        {}
-
-    void unlock()
-        {}
-};
-
-//================================================================
-//
-// DiagLogOutput
-//
-// The simplest diagnostic logging interface.
-//
-//================================================================
-
-struct DiagLogOutput
-{
     // Add message to the log.
     virtual bool addMsg(const CharType* msgStr, MsgKind msgKind) =0;
 
@@ -78,32 +55,29 @@ struct DiagLogOutput
     virtual bool update() =0;
 };
 
-//----------------------------------------------------------------
+//================================================================
+//
+// DiagLogNull
+//
+//================================================================
 
-struct DiagLogOutputNull : public DiagLogOutput
+struct DiagLogNull : public DiagLog
 {
+    bool isThreadProtected() const
+        {return true;}
+
+    void lock()
+        {}
+
+    void unlock()
+        {}
+
     bool addMsg(const CharType* msgStr, MsgKind msgKind)
         {return true;}
 
     bool clear()
         {return true;}
 
-    virtual bool update()
+    bool update()
         {return true;}
-};
-
-//================================================================
-//
-// DiagLog
-//
-//================================================================
-
-struct DiagLog : public DiagLogThreading, public DiagLogOutput
-{
-};
-
-//----------------------------------------------------------------
-
-struct DiagLogNull : public DiagLogThreadingNull, DiagLogOutputNull
-{
 };
