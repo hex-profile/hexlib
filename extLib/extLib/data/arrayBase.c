@@ -1,6 +1,6 @@
-#include "arrayBase.h"
+#include "extLib/arrayBase.h"
 
-#include "types/intTypes.h"
+#include "extLib/types/intTypes.h"
 
 //================================================================
 //

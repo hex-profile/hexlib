@@ -2,8 +2,8 @@
 
 #include <type_traits>
 
-#include "data/arrayBase.h"
-#include "types/pointTypes.h"
+#include "extLib/data/arrayBase.h"
+#include "extLib/types/pointTypes.h"
 
 //================================================================
 //

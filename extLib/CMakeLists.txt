@@ -1,7 +1,7 @@
 #================================================================
 #
-# Minimal common types for pure interfaces with external projects.
+# Base types for external interfaces.
 #
 #================================================================
 
-hexlibProjectTemplate(baseLib STATIC . "" FALSE hexlib)
+hexlibProjectTemplate(extLib STATIC . "" FALSE hexlib)
