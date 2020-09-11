@@ -195,12 +195,15 @@ public:
 
     static SimpleString getDefaultDir()
     {
+        SimpleString dir; 
+        
         auto tempDir = getenv("HEXLIB_OUTPUT");
 
         if_not (tempDir)
             tempDir = getenv("TEMP");
 
-        SimpleString dir; dir << tempDir << "/imageConsole";
+        if (tempDir)
+            dir << tempDir << "/imageConsole";
 
         if_not (def(dir))
             dir.clear();
