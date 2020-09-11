@@ -3,7 +3,7 @@
 #ifndef HEXLIB_POINT_BASE
 #define HEXLIB_POINT_BASE
 
-#include "types/compileTools.h"
+#include "extLib/types/compileTools.h"
 
 //================================================================
 //

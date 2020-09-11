@@ -3,7 +3,7 @@
 #ifndef HEXLIB_MOVEMENT_3D
 #define HEXLIB_MOVEMENT_3D
 
-#include "types/pointTypes.h"
+#include "extLib/types/pointTypes.h"
 
 //================================================================
 //

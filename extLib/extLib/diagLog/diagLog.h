@@ -2,8 +2,8 @@
 
 #include <stddef.h>
 
-#include "types/charType.h"
-#include "diagLog/msgKind.h"
+#include "extLib/types/charType.h"
+#include "extLib/diagLog/msgKind.h"
 
 //================================================================
 //

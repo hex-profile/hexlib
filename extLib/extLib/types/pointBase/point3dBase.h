@@ -1,55 +1,52 @@
 #pragma once
 
-#ifndef HEXLIB_POINT4D_BASE
-#define HEXLIB_POINT4D_BASE
+#ifndef HEXLIB_POINT3D_BASE
+#define HEXLIB_POINT3D_BASE
 
-#include "types/compileTools.h"
+#include "extLib/types/compileTools.h"
 
 //================================================================
 //
-// Point4D
+// Point3D
 //
 //================================================================
 
 template <typename Type>
-struct Point4D
+struct Point3D
 {
     Type X;
     Type Y;
     Type Z;
-    Type W;
 };
 
 //================================================================
 //
-// point4D
+// point3D
 //
-// point function is used to create Point4D objects.
+// point function is used to create Point3D objects.
 //
 //================================================================
 
 template <typename Type>
-HEXLIB_INLINE Point4D<Type> point4D(const Type& X, const Type& Y, const Type& Z, const Type& W)
+HEXLIB_INLINE Point3D<Type> point3D(const Type& X, const Type& Y, const Type& Z)
 {
-    Point4D<Type> result;
+    Point3D<Type> result;
     result.X = X;
     result.Y = Y;
     result.Z = Z;
-    result.W = W;
     return result;
 }
 
 template <typename Type>
-HEXLIB_INLINE Point4D<Type> point4D(const Type& value)
+HEXLIB_INLINE Point3D<Type> point3D(const Type& value)
 {
-    Point4D<Type> result;
+    Point3D<Type> result;
     result.X = value;
     result.Y = value;
     result.Z = value;
-    result.W = value;
     return result;
 }
 
 //----------------------------------------------------------------
 
-#endif // HEXLIB_POINT4D_BASE
+#endif // HEXLIB_POINT3D_BASE

@@ -3,9 +3,9 @@
 #ifndef HEXLIB_TIMER
 #define HEXLIB_TIMER
 
-#include "storage/opaqueStruct.h"
-#include "types/floatTypes.h"
-#include "types/intTypes.h"
+#include "extLib/storage/opaqueStruct.h"
+#include "extLib/types/floatTypes.h"
+#include "extLib/types/intTypes.h"
 
 //================================================================
 //

@@ -14,7 +14,7 @@ include(common.cmake)
 #
 #================================================================
 
-add_subdirectory(baseLib)
+add_subdirectory(extLib)
 
 add_subdirectory(cppBase)
 add_subdirectory(imgBase)

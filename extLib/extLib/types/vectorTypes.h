@@ -3,9 +3,9 @@
 #ifndef HEXLIB_VECTOR_BASE_TYPES
 #define HEXLIB_VECTOR_BASE_TYPES
 
-#include "types/intTypes.h"
-#include "types/floatTypes.h"
-#include "types/compileTools.h"
+#include "extLib/types/intTypes.h"
+#include "extLib/types/floatTypes.h"
+#include "extLib/types/compileTools.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
