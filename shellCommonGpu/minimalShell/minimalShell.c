@@ -84,6 +84,8 @@ public:
 
 public:
 
+    bool isInitialized() const {return initialized;}
+
     stdbool init(stdPars(InitKit));
 
 public:

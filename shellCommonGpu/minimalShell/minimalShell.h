@@ -62,6 +62,8 @@ public:
 
 public:
 
+    virtual bool isInitialized() const =0;
+
     using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, ThreadManagerKit, FileToolsKit>;
     virtual stdbool init(stdPars(InitKit)) =0;
 
