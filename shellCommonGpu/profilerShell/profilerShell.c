@@ -87,7 +87,7 @@ stdbool ProfilerShell::makeHtmlReport(float32 processingThroughput, stdPars(Repo
 
         if_not (tempDir)
             tempDir = getenv("TEMP");
-  
+
         if (tempDir != 0)
             outputDir.clear() << tempDir << "/profilerReport";
 
