@@ -39,7 +39,7 @@ private:
 //================================================================
 
 #define MAKE_MALLOC_ALLOCATOR_OBJECT(kit) \
-    MallocFlatAllocatorThunk<CpuAddrU> mallocFlat(kit); \
-    FlatToSpaceAllocatorThunk<CpuAddrU> mallocSpace(mallocFlat, kit); \
+    MallocFlatAllocatorThunk<CpuAddrU> mallocFlat{kit}; \
+    FlatToSpaceAllocatorThunk<CpuAddrU> mallocSpace{mallocFlat, kit}; \
     AllocatorState mallocUnusedState; \
-    AllocatorObject<CpuAddrU> mallocAllocator(mallocUnusedState, mallocSpace);
+    AllocatorObject<CpuAddrU> mallocAllocator{mallocUnusedState, mallocSpace};
