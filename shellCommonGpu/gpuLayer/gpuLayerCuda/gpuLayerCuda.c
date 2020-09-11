@@ -28,7 +28,7 @@
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-constexpr bool initAllocatedBlocks = true;
+constexpr bool initAllocatedBlocks = false;
 constexpr bool reportAllocatedBlocks = false;
 
 //================================================================
