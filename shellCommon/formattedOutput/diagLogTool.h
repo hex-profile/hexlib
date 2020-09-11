@@ -1,10 +1,10 @@
 #pragma once
 
-#include "diagLog/diagLog.h"
+#include "extLib/diagLog/diagLog.h"
+#include "formattedOutput/userOutputThunks.h"
 #include "storage/disposableObject.h"
 #include "userOutput/diagnosticKit.h"
 #include "userOutput/msgLog.h"
-#include "formattedOutput/userOutputThunks.h"
 
 //================================================================
 //
