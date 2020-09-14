@@ -51,7 +51,7 @@ function (checkDefs)
         ###
 
         if (NOT DEFINED HEXLIB_CUDA_ARCH)
-            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...).")
+            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified as a comma-separated list of integers, for example: 20,30,35.")
         endif()
 
     endif()
