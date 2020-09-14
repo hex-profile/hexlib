@@ -254,6 +254,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
+    target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_DISASM=${HEXLIB_GPU_DISASM})
 
     ###
 

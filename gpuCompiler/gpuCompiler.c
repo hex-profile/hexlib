@@ -765,6 +765,7 @@ stdbool compileDevicePartToBin
     const vector<StlString>& defines,
     const StlString& platformArch,
     const StlString& platformBitness,
+    const StlString& platformDisasm,
     stdPars(CompilerKit)
 )
 {
@@ -946,22 +947,26 @@ stdbool compileDevicePartToBin
     // After /C switch, the whole command line should be enclosed in another pair of quotes.
     //
 
-    // ```
-    StlString dumpSass = sprintMsg(STR("cuobjdump --dump-resource-usage --dump-sass --gpu-architecture=sm_%0 \"%1\" >\"%2\""), STR("61"), binPath, asmPath);
+    if (platformDisasm.size())
+    {
 
-#if defined(_WIN32)
+        StlString dumpSass = sprintMsg(STR("cuobjdump --dump-resource-usage --dump-sass --gpu-architecture=sm_%0 \"%1\" >\"%2\""), platformDisasm, binPath, asmPath);
 
-    require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
+    #if defined(_WIN32)
 
-#elif defined(__linux__)
+        require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
 
-    require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
+    #elif defined(__linux__)
 
-#else
+        require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
 
-    #error
+    #else
 
-#endif
+        #error
+
+    #endif
+
+    }
 
     //
     // Sucessful, rename .cup to .src
@@ -1555,7 +1560,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             StlString binPath = sprintMsg(STR("%0/%1.bin"), outputDir, inputName);
             StlString asmPath = sprintMsg(STR("%0/%1.asm"), outputDir, inputName);
 
-            require(compileDevicePartToBin(inputPath, binPath, asmPath, kernelNames, samplerNames, includes, defines, platformArch, platformBitness, stdPass));
+            require(compileDevicePartToBin(inputPath, binPath, asmPath, kernelNames, samplerNames, includes, defines, platformArch, platformBitness, platformDisasm, stdPass));
 
             if (0)
             {
