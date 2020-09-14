@@ -719,7 +719,7 @@ void extractKernelAndSamplerNames(const CharType* filePtr, size_t fileSize, vect
 
 stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch, stdPars(CompilerKit))
 {
-    REMEMBER_CLEANUP_EX(formatError, printMsg(kit.msgLog, STR("HEXLIB_GPU_ARCH should be a comma-separated list of integers")));
+    REMEMBER_CLEANUP_EX(formatError, printMsg(kit.msgLog, STR("HEXLIB_GPU_ARCH should be a colon-separated list of integers")));
 
     auto p = platformArch.begin();
 
@@ -738,7 +738,7 @@ stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch
         if (p == platformArch.end())
             break;
 
-        REQUIRE(*p == ',');
+        REQUIRE(*p == ':');
         ++p;
     }
 
@@ -1447,7 +1447,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     if (gpuHardwareTarget)
     {
         REQUIRE_MSG(platformArch.size() != 0, 
-            STR("For CUDA hardware target, HEXLIB_GPU_ARCH should be specified as a comma-separated list of integers"));
+            STR("For CUDA hardware target, HEXLIB_GPU_ARCH should be specified as a colon-separated list of integers."));
 
         REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"), 
             STR("For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)"));

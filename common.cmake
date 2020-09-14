@@ -51,7 +51,7 @@ function (checkDefs)
         ###
 
         if (NOT DEFINED HEXLIB_GPU_ARCH)
-            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_GPU_ARCH should be specified as a comma-separated list of integers, for example: 20,30,35.")
+            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_GPU_ARCH should be specified as a colon-separated list of integers, for example: 20:30:35.")
         endif()
 
     endif()
@@ -254,7 +254,10 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
-    target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_DISASM=${HEXLIB_GPU_DISASM})
+
+    if (DEFINED HEXLIB_GPU_DISASM)
+        target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_DISASM=${HEXLIB_GPU_DISASM})
+    endif()
 
     ###
 
