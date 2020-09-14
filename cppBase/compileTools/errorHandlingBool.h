@@ -27,7 +27,7 @@
 #else
 
     class stdbool 
-    #if HEXLIB_PLATFORM == 0
+    #if (__cplusplus >= 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L) && (_MSC_VER >= 1913))
         [[nodiscard]]
     #endif
     {
