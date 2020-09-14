@@ -717,10 +717,35 @@ void extractKernelAndSamplerNames(const CharType* filePtr, size_t fileSize, vect
 //
 //================================================================
 
-void addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch)
+stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch, stdPars(CompilerKit))
 {
-    nvccArgs.push_back(CT("--gpu-architecture"));
-    nvccArgs.push_back(platformArch);
+    REMEMBER_CLEANUP_EX(formatError, printMsg(kit.msgLog, STR("HEXLIB_CUDA_ARCH should be a comma-separated list of integers")));
+
+    auto p = platformArch.begin();
+
+    for (;;)
+    {
+        auto startPtr = p;
+
+        while (p != platformArch.end() && isDigit(*p))
+            ++p;
+
+        REQUIRE(p != startPtr);
+
+        auto arch = StlString(startPtr, p);
+        nvccArgs.push_back(sprintMsg(STR("--generate-code=arch=compute_%0,code=sm_%0"), arch));
+
+        if (p == platformArch.end())
+            break;
+
+        REQUIRE(*p == ',');
+        ++p;
+    }
+
+    ////
+
+    formatError.cancel();
+    returnTrue;
 }
 
 //================================================================
@@ -806,7 +831,7 @@ stdbool compileDevicePartToBin
         nvccArgs.push_back(CT("-o"));
         nvccArgs.push_back(cupPath);
 
-        addTargetArch(nvccArgs, platformArch);
+        require(addTargetArch(nvccArgs, platformArch, stdPass));
 
         nvccArgs.push_back(cuInputPath);
 
@@ -904,14 +929,14 @@ stdbool compileDevicePartToBin
 
         // nvccArgs.push_back(CT("--ptxas-options=-v"));
 
-        nvccArgs.push_back(CT("--cubin"));
+        nvccArgs.push_back(CT("--fatbin"));
 
         nvccArgs.push_back(CT("-o"));
         nvccArgs.push_back(binPath);
 
         nvccArgs.push_back(cupPath);
 
-        addTargetArch(nvccArgs, platformArch);
+        require(addTargetArch(nvccArgs, platformArch, stdPass));
 
         require(runProcess(nvccArgs, stdPass));
     }
@@ -1410,7 +1435,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     if (gpuHardwareTarget)
     {
         REQUIRE_MSG(platformArch.size() != 0, 
-            STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified (sm_20, sm_30, ...)"));
+            STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified as a comma-separated list of integers"));
 
         REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"), 
             STR("For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)"));
