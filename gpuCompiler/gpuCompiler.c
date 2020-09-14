@@ -927,11 +927,11 @@ stdbool compileDevicePartToBin
 
 #if defined(_WIN32)
 
-    require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
+    // ``` require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
 
 #elif defined(__linux__)
 
-    require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
+    // ``` require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
 
 #else
 
