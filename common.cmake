@@ -38,7 +38,7 @@ function (checkDefs)
     #----------------------------------------------------------------
     #
     # HEXLIB_GPU_BITNESS
-    # HEXLIB_CUDA_ARCH
+    # HEXLIB_GPU_ARCH
     #
     #----------------------------------------------------------------
 
@@ -50,8 +50,8 @@ function (checkDefs)
 
         ###
 
-        if (NOT DEFINED HEXLIB_CUDA_ARCH)
-            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified as a comma-separated list of integers, for example: 20,30,35.")
+        if (NOT DEFINED HEXLIB_GPU_ARCH)
+            message(FATAL_ERROR "For CUDA hardware target, HEXLIB_GPU_ARCH should be specified as a comma-separated list of integers, for example: 20,30,35.")
         endif()
 
     endif()
@@ -267,7 +267,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
             add_dependencies(${projectName} makeGpuCompiler)
 
-            target_compile_definitions(${projectName} PRIVATE HEXLIB_CUDA_ARCH=${HEXLIB_CUDA_ARCH})
+            target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_ARCH=${HEXLIB_GPU_ARCH})
 
             target_link_libraries(${projectName} PRIVATE cuda)
 

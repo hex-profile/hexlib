@@ -719,7 +719,7 @@ void extractKernelAndSamplerNames(const CharType* filePtr, size_t fileSize, vect
 
 stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch, stdPars(CompilerKit))
 {
-    REMEMBER_CLEANUP_EX(formatError, printMsg(kit.msgLog, STR("HEXLIB_CUDA_ARCH should be a comma-separated list of integers")));
+    REMEMBER_CLEANUP_EX(formatError, printMsg(kit.msgLog, STR("HEXLIB_GPU_ARCH should be a comma-separated list of integers")));
 
     auto p = platformArch.begin();
 
@@ -927,8 +927,6 @@ stdbool compileDevicePartToBin
 
         nvccArgs.push_back(CT("-m" + platformBitness));
 
-        // nvccArgs.push_back(CT("--ptxas-options=-v"));
-
         nvccArgs.push_back(CT("--fatbin"));
 
         nvccArgs.push_back(CT("-o"));
@@ -948,15 +946,16 @@ stdbool compileDevicePartToBin
     // After /C switch, the whole command line should be enclosed in another pair of quotes.
     //
 
-    StlString dumpSass = sprintMsg(STR("\"nvdisasm\" --print-code \"%0\" >\"%1\""), binPath, asmPath);
+    // ```
+    StlString dumpSass = sprintMsg(STR("cuobjdump --dump-resource-usage --dump-sass --gpu-architecture=sm_%0 \"%1\" >\"%2\""), STR("61"), binPath, asmPath);
 
 #if defined(_WIN32)
 
-    // ``` require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
+    require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
 
 #elif defined(__linux__)
 
-    // ``` require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
+    require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
 
 #else
 
@@ -1409,6 +1408,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
     StlString platformArch;
     StlString platformBitness;
+    StlString platformDisasm;
 
     for_count (i, defines.size())
     {
@@ -1417,7 +1417,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
         ////
 
-        StlString platformArchStr = CT("HEXLIB_CUDA_ARCH=");
+        StlString platformArchStr = CT("HEXLIB_GPU_ARCH=");
 
         if (stringBeginsWith(defines[i], platformArchStr))
             platformArch = defines[i].substr(platformArchStr.size());
@@ -1428,6 +1428,13 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
         if (stringBeginsWith(defines[i], platformBitnessStr))
             platformBitness = defines[i].substr(platformBitnessStr.size());
+
+        ////
+
+        StlString platformDisasmStr = CT("HEXLIB_GPU_DISASM=");
+
+        if (stringBeginsWith(defines[i], platformDisasmStr))
+            platformDisasm = defines[i].substr(platformDisasmStr.size());
     }
 
     ////
@@ -1435,7 +1442,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     if (gpuHardwareTarget)
     {
         REQUIRE_MSG(platformArch.size() != 0, 
-            STR("For CUDA hardware target, HEXLIB_CUDA_ARCH should be specified as a comma-separated list of integers"));
+            STR("For CUDA hardware target, HEXLIB_GPU_ARCH should be specified as a comma-separated list of integers"));
 
         REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"), 
             STR("For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)"));
