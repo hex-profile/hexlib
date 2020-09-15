@@ -182,35 +182,28 @@ private:
 template <typename AtApi>
 bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 {
-    try
+    constexpr size_t bufferSize = 1024;
+    CharType bufferArray[bufferSize];
+    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
+
+    v.func(v.value, formatter);
+    ensure(formatter.valid());
+
+    ensure(func.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
+
+    if (aux.print)
+        ensure(aux.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
+
+#if defined(_WIN32)
+
+    if (useDebugOutput)
     {
-        using namespace std;
-
-        constexpr size_t bufferSize = 1024;
-        CharType bufferArray[bufferSize];
-
-        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-        v.func(v.value, formatter);
+        formatter.write(CT("\n"), 1);
         ensure(formatter.valid());
-
-        ensure(func.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
-
-        if (aux.print)
-            ensure(aux.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
-
-    #if defined(_WIN32)
-
-        if (useDebugOutput)
-        {
-            formatter.write(CT("\n"), 1);
-            ensure(formatter.valid());
-            OutputDebugString(formatter.data());
-        }
-
-    #endif
-
+        OutputDebugString(formatter.data());
     }
-    catch (const std::exception&) {return false;}
+
+#endif
 
     return true;
 }
@@ -256,20 +249,14 @@ private:
 template <typename AtApi>
 bool SetBusyStatusByAt<AtApi>::set(const FormatOutputAtom& message)
 {
-    try
-    {
-        using namespace std;
+    constexpr size_t bufferSize = 1024;
+    CharType bufferArray[bufferSize];
+    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-        constexpr size_t bufferSize = 1024;
-        CharType bufferArray[bufferSize];
-        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
+    message.func(message.value, formatter);
+    ensure(formatter.valid());
 
-        message.func(message.value, formatter);
-        ensure(formatter.valid());
-
-        ensure(api->set_busy_status(api, formatter.data()) != 0);
-    }
-    catch (const std::exception&) {return false;}
+    ensure(api->set_busy_status(api, formatter.data()) != 0);
 
     return true;
 }

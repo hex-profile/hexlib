@@ -1,12 +1,10 @@
 #pragma once
 
-#include <sstream>
-
 #include "formatting/paramMsgOutput.h"
 #include "charType/charArray.h"
 
 #include "stlString/stlString.h"
-#include "formattedOutput/formatStreamStl.h"
+#include "formattedOutput/formatStreamStdio.h"
 #include "errorLog/convertAllExceptions.h"
 
 //================================================================
@@ -27,10 +25,15 @@ inline StlString sprintMsg(const CharArray& format, const Types&... values)
     const FormatOutputAtom params[] = {values...};
     ParamMsg paramMsg(format, params, sizeof...(values));
    
-    std::basic_stringstream<CharType> stringStream;
-    FormatStreamStlThunk formatToStream(stringStream);
+    ////
+
+    constexpr size_t bufferSize = 1024;
+    CharType bufferArray[bufferSize];
+    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
+    
+    ////
+
+    formatOutput(paramMsg, formatter);
    
-    formatOutput(paramMsg, formatToStream);
-   
-    return stringStream.rdbuf()->str();
+    return StlString{formatter.data()};
 }

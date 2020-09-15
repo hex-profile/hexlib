@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "formattedOutput/formatStreamStl.h"
+#include "formattedOutput/formatStreamStdio.h"
 #include "stdFunc/stdFunc.h"
 #include "stlString/stlString.h"
 #include "userOutput/errorLogEx.h"
@@ -188,12 +188,15 @@ public:
 
         try
         {
-            FormatStreamStlThunk formatToStream(stream);
+            constexpr size_t bufferSize = 1024;
+            CharType bufferArray[bufferSize];
+            FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-            v.func(v.value, formatToStream);
-            ensure(formatToStream.valid());
+            v.func(v.value, formatter);
+            formatter.write(CT("\n"), 1);
+            ensure(formatter.valid());
 
-            stream << endl;
+            stream << formatter.data();
             ensure(!!stream);
         }
         catch (const exception&) {return false;}
