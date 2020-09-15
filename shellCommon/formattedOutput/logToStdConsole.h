@@ -6,16 +6,16 @@
 
 //================================================================
 //
-// LogToStlConsole
+// logToStdConsole
 //
 //================================================================
 
-class LogToStlConsole : public MsgLog
+class logToStdConsole : public MsgLog
 {
 
 public:
 
-    LogToStlConsole(bool useDebugOutput, bool useStdErr)
+    logToStdConsole(bool useDebugOutput, bool useStdErr)
         : 
         useDebugOutput(useDebugOutput),
         useStdErr(useStdErr)

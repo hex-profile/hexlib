@@ -8,7 +8,7 @@
 #include "cmdLine/cmdLine.h"
 #include "errorLog/convertAllExceptions.h"
 #include "fileToolsImpl/fileToolsImpl.h"
-#include "formattedOutput/logToStlConsole.h"
+#include "formattedOutput/logToStdConsole.h"
 #include "formattedOutput/requireMsg.h"
 #include "formattedOutput/sprintMsg.h"
 #include "formattedOutput/textFiles.h"
@@ -1639,9 +1639,9 @@ int main(int argCount, const CharType* argStr[])
     //----------------------------------------------------------------
 
 #ifdef _DEBUG
-    LogToStlConsole msgLog(true, false);
+    logToStdConsole msgLog(true, false);
 #else
-    LogToStlConsole msgLog(false, false);
+    logToStdConsole msgLog(false, false);
 #endif
 
     ErrorLogByMsgLog errorLog(msgLog);
