@@ -8,16 +8,16 @@
 
 //================================================================
 //
-// MsgLogByDiagLogStlFormatting
+// MsgLogByDiagLog
 //
 //================================================================
 
-class MsgLogByDiagLogStlFormatting : public MsgLog
+class MsgLogByDiagLog : public MsgLog
 {
 
 public:
 
-    inline MsgLogByDiagLogStlFormatting(DiagLog* output = nullptr)
+    inline MsgLogByDiagLog(DiagLog* output = nullptr)
         : output(output) {}
 
     inline void setup(DiagLog* output)
@@ -79,7 +79,7 @@ public:
 
 private:
 
-    DisposableObject<MsgLogByDiagLogStlFormatting> msgLog;
+    DisposableObject<MsgLogByDiagLog> msgLog;
     DisposableObject<ErrorLogByMsgLog> errorLog;
     DisposableObject<ErrorLogExByMsgLog> errorLogEx;
 

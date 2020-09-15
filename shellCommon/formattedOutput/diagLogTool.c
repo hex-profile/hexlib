@@ -1,40 +1,34 @@
 #include "diagLogTool.h"
 
-#include <sstream>
-
 #include "stdFunc/stdFunc.h"
-#include "formattedOutput/formatStreamStl.h"
+#include "formattedOutput/formatStreamStdio.h"
 #include "stlString/stlString.h"
 
 //================================================================
 //
-// MsgLogByDiagLogStlFormatting::addMsg
+// MsgLogByDiagLog::addMsg
 //
 //================================================================
 
-bool MsgLogByDiagLogStlFormatting::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
+bool MsgLogByDiagLog::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 {
     using namespace std;
 
     if (!output)
         return true;
 
-    try
-    {
-        basic_stringstream<CharType> stringStream;
-        FormatStreamStlThunk formatToStream(stringStream);
+    ////
 
-        v.func(v.value, formatToStream);
-        ensure(formatToStream.valid());
-        ensure(!!stringStream);
+    constexpr size_t bufferSize = 1024;
+    CharType bufferArray[bufferSize];
+    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-        const auto& str = stringStream.rdbuf()->str();
-        output->addMsg(str.c_str(), msgKind);
-    }
-    catch (const exception&)
-    {
-        return false;
-    }
+    v.func(v.value, formatter);
+    ensure(formatter.valid());
+
+    output->addMsg(formatter.data(), msgKind);
+
+    ////
 
     return true;
 }

@@ -1,10 +1,7 @@
 #include "logToBuffer.h"
 
-#include <sstream>
-
 #include "stdFunc/stdFunc.h"
-#include "formattedOutput/formatStreamStl.h"
-#include "stlString/stlString.h"
+#include "formattedOutput/formatStreamStdio.h"
 
 //================================================================
 //
@@ -14,26 +11,15 @@
 
 bool LogToBufferThunk::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 {
-    using namespace std;
+    constexpr size_t bufferSize = 1024;
+    CharType bufferArray[bufferSize];
+    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-    try
-    {
-        basic_stringstream<CharType> stringStream;
-        FormatStreamStlThunk formatToStream(stringStream);
+    v.func(v.value, formatter);
+    ensure(formatter.valid());
 
-        v.func(v.value, formatToStream);
-        ensure(formatToStream.valid());
-        ensure(!!stringStream);
-
-        StlString str = stringStream.rdbuf()->str();
-
-        if (outputInterface && timer)
-            outputInterface->add(CharArray(str.data(), str.size()), msgKind, timer->moment());
-    }
-    catch (const exception&)
-    {
-        return false;
-    }
+    if (outputInterface && timer)
+        outputInterface->add(CharArray(formatter.data(), formatter.size()), msgKind, timer->moment());
 
     return true;
 }
