@@ -31,27 +31,46 @@ public:
 
 public:
 
-    inline FormatStreamStdioThunk(CharType* bufferArray, size_t bufferCapacity)
-        :
-        theOk(true),
-        theBufferArray(bufferArray),
-        theBufferCapacity(bufferCapacity),
-        theBufferSize(0)
+    FormatStreamStdioThunk() 
+        {}
+
+    FormatStreamStdioThunk(CharType* newArray, size_t newSize)
+        {setMemory(newArray, newSize);}
+
+public:
+
+    inline void setMemory(CharType* newArray, size_t newSize)
     {
+        ok = false;
+        memoryArray = nullptr;
+        memorySize = 0;
+        usedSize = 0;
+
+        if (newSize >= 1)
+        {
+            memoryArray = newArray;
+            memorySize = newSize - 1; // reserve space for NUL terminator
+            ok = true;
+        }
     }
 
 public:
 
-    inline bool valid() {return theOk;}
-    inline size_t usedSize() {return theBufferSize;}
+    inline bool valid() {return ok;}
+    inline size_t size() {return usedSize;}
 
 private:
 
-    bool theOk;
+    bool ok = false;
 
-    CharType* const theBufferArray; // not used if theBufferCapacity == 0
-    size_t const theBufferCapacity; // >= 0
-    size_t theBufferSize; // <= theBufferCapacity
+    // Not used if memorySize == 0.
+    CharType* memoryArray = nullptr; 
+
+    // Not including NUL terminator, memorySize >= 0
+    size_t memorySize = 0; 
+
+    // Not including NUL terminator, 0 <= usedSize <= memorySize
+    size_t usedSize = 0; 
 
 private:
 

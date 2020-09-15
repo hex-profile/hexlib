@@ -13,7 +13,8 @@
 #include "atInterface/atInterface.h"
 #include "checkHeap.h"
 #include "formattedOutput/userOutputThunks.h"
-#include "formattedOutput/formatStreamStl.h"
+#include "formattedOutput/formatStreamStl.h" // ```
+#include "formattedOutput/formatStreamStdio.h"
 #include "atAssembly/atAssembly.h"
 #include "dataAlloc/arrayMemory.h"
 #include "threading/threadManagerImpl.h"
@@ -187,23 +188,27 @@ bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     {
         using namespace std;
 
-        std::basic_stringstream<CharType> stringStream;
-        FormatStreamStlThunk formatToStream(stringStream);
+        constexpr size_t bufferSize = 1024;
+        CharType bufferArray[bufferSize];
 
-        v.func(v.value, formatToStream);
-        ensure(formatToStream.valid());
-        ensure(!!stringStream);
+        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
+        v.func(v.value, formatter);
+        ensure(formatter.valid());
 
-        ensure(func.print(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
+        ensure(func.print(api, bufferArray, at_msg_kind(msgKind)) != 0);
 
         if (aux.print)
-            ensure(aux.print(api, stringStream.rdbuf()->str().c_str(), at_msg_kind(msgKind)) != 0);
+            ensure(aux.print(api, bufferArray, at_msg_kind(msgKind)) != 0);
 
     #if defined(_WIN32)
-        stringStream << endl;
 
         if (useDebugOutput)
-            OutputDebugString(stringStream.rdbuf()->str().c_str());
+        {
+            formatter.write(CT("\n"), 1);
+            ensure(formatter.valid());
+            OutputDebugString(bufferArray);
+        }
+
     #endif
 
     }

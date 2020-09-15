@@ -34,13 +34,20 @@
 
 void FormatStreamStdioThunk::write(const CharType* bufferPtr, size_t bufferSize)
 {
-    if_not (theOk) return;
+    if_not (ok) 
+        return;
 
-    size_t availSize = theBufferCapacity - theBufferSize;
-    size_t actualSize = clampRange(bufferSize, size_t{0}, availSize);
+    size_t availSize = memorySize - usedSize;
 
-    memcpy(theBufferArray + theBufferSize, bufferPtr, actualSize * sizeof(bufferPtr[0]));
-    theBufferSize += actualSize;
+    if_not (bufferSize <= availSize)
+        {ok = false; return;}
+
+    auto dstPtr = memoryArray + usedSize;
+
+    memcpy(dstPtr, bufferPtr, bufferSize * sizeof(bufferPtr[0]));
+    dstPtr[bufferSize] = 0; // use reserved space
+
+    usedSize += bufferSize;
 }
 
 //================================================================
@@ -52,6 +59,11 @@ void FormatStreamStdioThunk::write(const CharType* bufferPtr, size_t bufferSize)
 template <typename Type>
 inline void FormatStreamStdioThunk::printIntFloat(Type value, const FormatNumberOptions& options)
 {
+    if_not (ok)
+        return;
+
+    ////
+
     CharType formatBuf[16];
     CharType* formatPtr = formatBuf;
 
@@ -100,7 +112,7 @@ inline void FormatStreamStdioThunk::printIntFloat(Type value, const FormatNumber
 
     ////
 
-    size_t availSize = theBufferCapacity - theBufferSize;
+    size_t availSize = memorySize - usedSize;
 
     int result = 0;
 
@@ -110,22 +122,24 @@ inline void FormatStreamStdioThunk::printIntFloat(Type value, const FormatNumber
             write(CT("NAN"), 3);
         else
         {
-            result = SNPRINTF(theBufferArray + theBufferSize, availSize,
+            result = SNPRINTF(memoryArray + usedSize, availSize + 1,
                 formatBuf, int(options.getWidth()), int(options.getPrecision()), value);
         }
     }
     else
     {
-        result = SNPRINTF(theBufferArray + theBufferSize, availSize,
+        result = SNPRINTF(memoryArray + usedSize, availSize + 1,
             formatBuf, int(options.getWidth()), value);
     }
 
     ////
 
-    if_not (result >= 0 && size_t(result) <= size_t(availSize))
-        theOk = false;
-    else
-        theBufferSize += result;
+    if_not (result >= 0 && size_t(result) <= availSize)
+        {ok = false; return;}
+
+    ////
+
+    usedSize += result;
 }
 
 //================================================================

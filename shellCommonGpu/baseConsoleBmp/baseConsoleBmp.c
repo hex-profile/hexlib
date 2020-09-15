@@ -62,13 +62,13 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
     ARRAY_EXPOSE_UNSAFE(result);
-    FormatStreamStdioThunk formatter(resultPtr, resultSize);
+    FormatStreamStdioThunk formatter{resultPtr, size_t(resultSize)};
 
     v.func(v.value, formatter);
     REQUIRE(formatter.valid());
 
-    REQUIRE(formatter.usedSize() <= size_t{spaceMax});
-    result.resize(Space(formatter.usedSize()));
+    REQUIRE(formatter.size() <= size_t{spaceMax});
+    result.resize(Space(formatter.size()));
 
     returnTrue;
 }
