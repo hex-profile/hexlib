@@ -56,8 +56,14 @@ public:
 
 public:
 
-    inline bool valid() {return ok;}
-    inline size_t size() {return usedSize;}
+    inline bool valid() 
+        {return ok;}
+
+    inline size_t size() 
+        {return usedSize;}
+
+    CharType* data() 
+        {return memoryArray;}
 
 private:
 

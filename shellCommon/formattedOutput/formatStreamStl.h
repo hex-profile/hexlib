@@ -7,6 +7,9 @@
 //================================================================
 //
 // FormatStreamStlThunk
+// 
+// ``` Avoid using it as it is much slower than FormatStreamStdioThunk,
+// especially because of locale init.
 //
 //================================================================
 

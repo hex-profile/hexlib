@@ -4,7 +4,6 @@
 #include <windows.h>
 
 #include <new>
-#include <sstream>
 
 #include "errorLog/errorLog.h"
 #include "numbers/int/intType.h"
@@ -13,7 +12,6 @@
 #include "atInterface/atInterface.h"
 #include "checkHeap.h"
 #include "formattedOutput/userOutputThunks.h"
-#include "formattedOutput/formatStreamStl.h" // ```
 #include "formattedOutput/formatStreamStdio.h"
 #include "atAssembly/atAssembly.h"
 #include "dataAlloc/arrayMemory.h"
@@ -195,10 +193,10 @@ bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         v.func(v.value, formatter);
         ensure(formatter.valid());
 
-        ensure(func.print(api, bufferArray, at_msg_kind(msgKind)) != 0);
+        ensure(func.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
 
         if (aux.print)
-            ensure(aux.print(api, bufferArray, at_msg_kind(msgKind)) != 0);
+            ensure(aux.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
 
     #if defined(_WIN32)
 
@@ -206,7 +204,7 @@ bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         {
             formatter.write(CT("\n"), 1);
             ensure(formatter.valid());
-            OutputDebugString(bufferArray);
+            OutputDebugString(formatter.data());
         }
 
     #endif
@@ -262,14 +260,14 @@ bool SetBusyStatusByAt<AtApi>::set(const FormatOutputAtom& message)
     {
         using namespace std;
 
-        std::basic_stringstream<CharType> stringStream;
-        FormatStreamStlThunk formatToStream(stringStream);
+        constexpr size_t bufferSize = 1024;
+        CharType bufferArray[bufferSize];
+        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-        message.func(message.value, formatToStream);
-        ensure(formatToStream.valid());
-        ensure(!!stringStream);
+        message.func(message.value, formatter);
+        ensure(formatter.valid());
 
-        ensure(api->set_busy_status(api, stringStream.rdbuf()->str().c_str()) != 0);
+        ensure(api->set_busy_status(api, formatter.data()) != 0);
     }
     catch (const std::exception&) {return false;}
 
@@ -294,12 +292,12 @@ public:
 
     stdbool addImage(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
     {
-        std::basic_stringstream<CharType> stringStream;
-        FormatStreamStlThunk formatToStream(stringStream);
+        constexpr size_t bufferSize = 1024;
+        CharType bufferArray[bufferSize];
+        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-        hint.desc.func(hint.desc.value, formatToStream);
-        require(formatToStream.valid());
-        require(!!stringStream);
+        hint.desc.func(hint.desc.value, formatter);
+        require(formatter.valid());
 
         ////
 
@@ -310,7 +308,7 @@ public:
             api->outimg_gray8(api, unsafePtr(imgMemPtr, imgSizeX, imgSizeY),
                 imgMemPitch, imgSizeX, imgSizeY,
                 hint.id, hint.minSize.X, hint.minSize.Y, hint.newLine,
-                stringStream.rdbuf()->str().c_str()) != 0
+                formatter.data()) != 0
         );
 
         returnTrue;
@@ -322,13 +320,12 @@ public:
 
         ////
 
-        std::basic_stringstream<CharType> stringStream;
-        FormatStreamStlThunk formatToStream(stringStream);
+        constexpr size_t bufferSize = 1024;
+        CharType bufferArray[bufferSize];
+        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-        hint.desc.func(hint.desc.value, formatToStream);
-        require(formatToStream.valid());
-        require(!!stringStream);
-        const CharType* textDesc = stringStream.rdbuf()->str().c_str();
+        hint.desc.func(hint.desc.value, formatter);
+        require(formatter.valid());
 
         ////
 
@@ -337,10 +334,14 @@ public:
 
         require
         (
-            api->outimg_rgb32(api, (const at_pixel_rgb32*) imgPtr,
-                imgMemPitch, imgSizeX, imgSizeY,
+            api->outimg_rgb32
+            (
+                api, 
+                (const at_pixel_rgb32*) imgPtr, imgMemPitch, imgSizeX, imgSizeY,
                 hint.id, hint.minSize.X, hint.minSize.Y, hint.newLine,
-                stringStream.rdbuf()->str().c_str()) != 0
+                formatter.data()
+            ) 
+            != 0
         );
 
         returnTrue;

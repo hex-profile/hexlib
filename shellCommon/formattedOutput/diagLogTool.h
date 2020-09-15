@@ -12,7 +12,6 @@
 //
 //================================================================
 
-// ``` Remove STL formatting
 class MsgLogByDiagLogStlFormatting : public MsgLog
 {
 
