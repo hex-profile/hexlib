@@ -53,34 +53,38 @@ private:
 
 //================================================================
 //
-// DiagLogTool
+// DiagLogByMsgLog
 //
 //================================================================
 
-class DiagLogTool
+class DiagLogByMsgLog : public DiagLog
 {
 
 public:
 
-    DiagLogTool(DiagLog* diagLog = nullptr)
-        {create(diagLog);}
+    DiagLogByMsgLog(MsgLog& base)
+        : base(base) {}
 
-    void create(DiagLog* diagLog) // may be nullptr
-    {
-        msgLog.create(diagLog);
-        errorLog.create(*msgLog);
-        errorLogEx.create(*msgLog);
-    }
+    virtual bool isThreadProtected() const
+        {return base.isThreadProtected();}
 
-    DiagnosticKit kit()
-    {
-        return kitCombine(ErrorLogKit(*errorLog), MsgLogKit(*msgLog), ErrorLogExKit(*errorLogEx));
-    }
+    virtual void lock() override
+        {return base.lock();}
+
+    virtual void unlock() override
+        {return base.unlock();}
+
+    virtual bool addMsg(const CharType* msgPtr, MsgKind msgKind) override
+        {return base.addMsg(FormatOutputAtom(charArrayFromPtr(msgPtr)), msgKind);}
+
+    virtual bool clear()
+        {return base.clear();}
+
+    virtual bool update()
+        {return base.update();}
 
 private:
 
-    DisposableObject<MsgLogByDiagLog> msgLog;
-    DisposableObject<ErrorLogByMsgLog> errorLog;
-    DisposableObject<ErrorLogExByMsgLog> errorLogEx;
+    MsgLog& base;
 
 };
