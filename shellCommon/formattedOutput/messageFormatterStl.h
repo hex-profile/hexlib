@@ -6,13 +6,13 @@
 
 //================================================================
 //
-// FormatStreamStlThunk
+// MessageFormatterStl
 // 
-// Avoid using it as it is much slower than FormatStreamStdioThunk.
+// Avoid using it as it is much slower than MessageFormatterStdio.
 //
 //================================================================
 
-class FormatStreamStlThunk : public FormatOutputStream
+class MessageFormatterStl : public FormatOutputStream
 {
 
 public:
@@ -34,7 +34,7 @@ public:
 
 public:
 
-    inline FormatStreamStlThunk(std::basic_ostream<CharType>& outputStream)
+    inline MessageFormatterStl(std::basic_ostream<CharType>& outputStream)
         : theOk(true), outputStream(outputStream) {}
 
 public:

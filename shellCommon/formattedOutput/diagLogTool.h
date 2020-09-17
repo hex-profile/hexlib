@@ -5,6 +5,7 @@
 #include "storage/disposableObject.h"
 #include "userOutput/diagnosticKit.h"
 #include "userOutput/msgLog.h"
+#include "formatting/messageFormatter.h"
 
 //================================================================
 //
@@ -17,37 +18,32 @@ class MsgLogByDiagLog : public MsgLog
 
 public:
 
-    inline MsgLogByDiagLog(DiagLog* output = nullptr)
-        : output(output) {}
-
-    inline void setup(DiagLog* output)
-        {this->output = output;}
-
-    inline void reset()
-        {this->output = nullptr;}
+    inline MsgLogByDiagLog(DiagLog& base, MessageFormatter& formatter)
+        : base(base), formatter(formatter) {}
 
 public:
 
     bool isThreadProtected() const
-        {return !output ? true : output->isThreadProtected();}
+        {return base.isThreadProtected();}
 
     void lock()
-        {if (output) output->lock();}
+        {return base.lock();}
 
     void unlock()
-        {if (output) output->unlock();}
+        {return base.unlock();}
 
     bool addMsg(const FormatOutputAtom& v, MsgKind msgKind);
 
     bool clear()
-        {return true;}
+        {return base.clear();}
 
     bool update()
-        {return true;}
+        {return base.update();}
 
 private:
 
-    DiagLog* output = nullptr;
+    DiagLog& base;
+    MessageFormatter& formatter;
 
 };
 

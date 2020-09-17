@@ -2,14 +2,15 @@
 
 #include "formatting/messageFormatter.h"
 #include "numbers/int/intType.h"
+#include "data/array.h"
 
 //================================================================
 //
-// FormatStreamStdioThunk
+// MessageFormatterStdio
 //
 //================================================================
 
-class FormatStreamStdioThunk : public MessageFormatter
+class MessageFormatterStdio : public MessageFormatter
 {
 
 public:
@@ -43,27 +44,32 @@ public:
     virtual CharType* data() 
         {return memoryArray;}
 
+    virtual CharArray charArray()
+        {return CharArray(memoryArray, usedSize);}
+
 public:
 
-    FormatStreamStdioThunk() 
+    MessageFormatterStdio() 
         {}
 
-    FormatStreamStdioThunk(CharType* newArray, size_t newSize)
-        {setMemory(newArray, newSize);}
+    MessageFormatterStdio(const Array<CharType>& memory)
+        {setMemory(memory);}
 
 public:
 
-    inline void setMemory(CharType* newArray, size_t newSize)
+    inline void setMemory(const Array<CharType>& newMemory)
     {
         memoryOk = false;
         memoryArray = nullptr;
         memorySize = 0;
         usedSize = 0;
 
-        if (newSize >= 1)
+        ARRAY_EXPOSE_UNSAFE(newMemory);
+
+        if (newMemorySize >= 1)
         {
-            memoryArray = newArray;
-            memorySize = newSize - 1; // reserve space for NUL terminator
+            memoryArray = newMemoryPtr;
+            memorySize = newMemorySize - 1; // reserve space for NUL terminator
             memoryOk = true;
         }
 

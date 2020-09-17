@@ -60,7 +60,7 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
     REQUIRE(cssText.size() >= 2);
     cssText = cssText.substr(1, cssText.size() - 2);
 
-    printMsg(file, STR("%0"), cssText);
+    file.write(cssText.data(), cssText.size());
 
     ////
 
@@ -77,14 +77,14 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 
 stdbool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
 {
-    StlString javascriptText =
+    StlString jsText =
     # include "profiler.js"
     ;
 
-    REQUIRE(javascriptText.size() >= 2);
-    javascriptText = javascriptText.substr(1, javascriptText.size() - 2);
+    REQUIRE(jsText.size() >= 2);
+    jsText = jsText.substr(1, jsText.size() - 2);
 
-    printMsg(file, STR("%0"), javascriptText);
+    file.write(jsText.data(), jsText.size());
 
     ////
 
@@ -544,12 +544,13 @@ public:
 //
 //================================================================
 
-StlString locationMsg(const CodeLocation& l)
+template <typename Kit>
+StlString locationMsg(const Kit& kit, const CodeLocation& l)
 {
     StlString result;
 
     if (l.filename.size())
-        result = sprintMsg(STR("%0(%1)"), l.filename, l.lineNumber);
+        result = sprintMsg(kit, STR("%0(%1)"), l.filename, l.lineNumber);
 
     if (l.userMsg.size())
     {
@@ -1157,7 +1158,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         ////
 
-        info.filename = sprintMsg(STR("%0%1.html"), hex(info.hash.A), hex(info.hash.B));
+        info.filename = sprintMsg(kit, STR("%0%1.html"), hex(info.hash.A), hex(info.hash.B));
 
         ////
 
@@ -1191,26 +1192,28 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
     OutputTextFile file;
     require(file.open(thisFilename.c_str(), stdPass));
 
+    auto log = getLog(file, kit);
+
     {
 
-        printMsg(file, STR("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"));
+        printMsg(log, STR("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"));
 
-        printMsg(file, STR("<html>"));
-        REMEMBER_CLEANUP(printMsg(file, STR("</html>")));
+        printMsg(log, STR("<html>"));
+        REMEMBER_CLEANUP(printMsg(log, STR("</html>")));
 
         ////
 
         {
-            printMsg(file, STR("<head>"));
-            REMEMBER_CLEANUP(printMsg(file, STR("</head>")));
+            printMsg(log, STR("<head>"));
+            REMEMBER_CLEANUP(printMsg(log, STR("</head>")));
 
-            printMsg(file, STR("<title>Profiler Report %0</title>"), o.reportCreationTime);
+            printMsg(log, STR("<title>Profiler Report %0</title>"), o.reportCreationTime);
 
-            printMsg(file, STR("<link href=\"profiler.css\" rel=\"stylesheet\" type=\"text/css\"/>"));
+            printMsg(log, STR("<link href=\"profiler.css\" rel=\"stylesheet\" type=\"text/css\"/>"));
         }
 
-        printMsg(file, STR("<body>"));
-        REMEMBER_CLEANUP(printMsg(file, STR("</body>")));
+        printMsg(log, STR("<body>"));
+        REMEMBER_CLEANUP(printMsg(log, STR("</body>")));
 
         //----------------------------------------------------------------
         //
@@ -1226,7 +1229,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         //
         //----------------------------------------------------------------
 
-        printMsg(file, STR("<pre class=\"headerBlock\"><a href=\"index.html\">Profiler report created at %0, %1, Minimal displayed fraction %2%%</a></pre>"),
+        printMsg(log, STR("<pre class=\"headerBlock\"><a href=\"index.html\">Profiler report created at %0, %1, Minimal displayed fraction %2%%</a></pre>"),
             o.reportCreationTime, o.timingParams.deviceTimingMode ? STR("Device mode") : STR("Host mode"),
             fltf(o.displayParams.timeThresholdFraction * 100, 1));
 
@@ -1243,25 +1246,25 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         #if DEBUG_CALLSTACK
 
             {
-                printMsg(file, STR("<a id=\"I%0\" title=\"%1\" onclick=\"toggleBlock(this);\" href=\"#_I%0\"> <pre class=\"linkBlock\">"),
+                printMsg(log, STR("<a id=\"I%0\" title=\"%1\" onclick=\"toggleBlock(this);\" href=\"#_I%0\"> <pre class=\"linkBlock\">"),
                     hex(clickId), STR("Click to expand the block (Javascript must be enabled)"));
 
-                printMsg(file, STR("(show full callstack)"));
+                printMsg(log, STR("(show full callstack)"));
 
-                printMsg(file, STR("</pre></a>"));
+                printMsg(log, STR("</pre></a>"));
 
-                printMsg(file, STR("<pre id=\"I%0_\" style=\"display:none\">"), hex(clickId));
+                printMsg(log, STR("<pre id=\"I%0_\" style=\"display:none\">"), hex(clickId));
 
                 ////
 
                 for_count (i, thisInfo.stack.size())
-                    printMsg(file, STR("%0"), thisInfo.stack[i]);
+                    printMsg(log, STR("%0"), thisInfo.stack[i]);
 
-                printMsg(file, STR(""));
+                printMsg(log, STR(""));
 
                 ////
 
-                printMsg(file, STR("</pre>"));
+                printMsg(log, STR("</pre>"));
 
                 ++clickId;
             }
@@ -1270,22 +1273,22 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         ////
 
-        printMsg(file, STR("<pre>"));
-        printMsg(file, STR(""));
-        printMsg(file, STR("</pre>"));
+        printMsg(log, STR("<pre>"));
+        printMsg(log, STR(""));
+        printMsg(log, STR("</pre>"));
 
         ////
 
-        printMsg(file, STR("<table>"));
-        REMEMBER_CLEANUP(printMsg(file, STR("</table>")));
+        printMsg(log, STR("<table>"));
+        REMEMBER_CLEANUP(printMsg(log, STR("</table>")));
 
 
         {
-            printMsg(file, STR("<tr>"));
-            REMEMBER_CLEANUP(printMsg(file, STR("</tr>")));
+            printMsg(log, STR("<tr>"));
+            REMEMBER_CLEANUP(printMsg(log, STR("</tr>")));
 
-            printMsg(file, STR("<th>Name</th>"));
-            printMsg(file, STR("<th>Time (Per Frame)</th>"));
+            printMsg(log, STR("<th>Name</th>"));
+            printMsg(log, STR("<th>Time (Per Frame)</th>"));
         }
 
         //----------------------------------------------------------------
@@ -1304,26 +1307,26 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         ////
 
         {
-            printMsg(file, STR("<tr class=\"nodeTotal\">"));
-            REMEMBER_CLEANUP(printMsg(file, STR("</tr>")));
+            printMsg(log, STR("<tr class=\"nodeTotal\">"));
+            REMEMBER_CLEANUP(printMsg(log, STR("</tr>")));
 
             ////
 
             if (parentHtml.size())
-                printMsg(file, STR("<td class = \"uplinkTd\"><a href=\"%0\"><pre class=\"linkBlock\">"), parentHtml);
+                printMsg(log, STR("<td class = \"uplinkTd\"><a href=\"%0\"><pre class=\"linkBlock\">"), parentHtml);
             else
-                printMsg(file, STR("<td> <pre>"));
+                printMsg(log, STR("<td> <pre>"));
 
-            printMsg(file, STR(""));
-            printMsg(file, parentHtml.size() ? STR("&uarr; Up &uarr;") : STR(""));
-            printMsg(file, STR(""));
-            printMsg(file, STR("</pre>%0</td>"), parentHtml.size() ? STR("</a>") : STR(""));
+            printMsg(log, STR(""));
+            printMsg(log, parentHtml.size() ? STR("&uarr; Up &uarr;") : STR(""));
+            printMsg(log, STR(""));
+            printMsg(log, STR("</pre>%0</td>"), parentHtml.size() ? STR("</a>") : STR(""));
 
             ////
 
             printMsg
             (
-                file,
+                log,
 
                 !(thisNodeBodyTime > thisNodeTimeThreshold) ?
                     STR("<td>%0 ms</td>") :
@@ -1367,14 +1370,14 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
             ////
 
-            printMsg(file, STR("<tr>"));
-            REMEMBER_CLEANUP(printMsg(file, STR("</tr>")));
+            printMsg(log, STR("<tr>"));
+            REMEMBER_CLEANUP(printMsg(log, STR("</tr>")));
 
             const ProfilerNode& node = *children[i];
 
             bool makeLink = info.expandFlag;
 
-            printMsg(file, STR("<td class=\"nameCell\">"));
+            printMsg(log, STR("<td class=\"nameCell\">"));
 
             ////
 
@@ -1388,77 +1391,77 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
             ////
 
-            printMsg(file, !makeLink ? STR("<pre>") : STR("<a href=\"%0\"> <pre class=\"linkBlock\">"), info.filename);
-            printMsg(file, STR(""));
+            printMsg(log, !makeLink ? STR("<pre>") : STR("<a href=\"%0\"> <pre class=\"linkBlock\">"), info.filename);
+            printMsg(log, STR(""));
 
             for (; k != locationsEnd && unfoldCounter != 0; ++k, --unfoldCounter)
             {
                 if (k != locationsBegin)
                 {
-                    printMsg(file, STR(""));
-                    printMsg(file, STR("&mdash;&mdash;&mdash;&mdash;&mdash;"));
-                    printMsg(file, STR(""));
+                    printMsg(log, STR(""));
+                    printMsg(log, STR("&mdash;&mdash;&mdash;&mdash;&mdash;"));
+                    printMsg(log, STR(""));
                 }
 
                 for (StringArray::const_iterator i = k->code.begin(); i != k->code.end(); ++i)
-                    printMsg(file, STR("%0"), translateStringToHtml(*i, o.displayParams.maxSourceLineLength));
+                    printMsg(log, STR("%0"), translateStringToHtml(*i, o.displayParams.maxSourceLineLength));
 
-                printMsg(file, STR(""));
-                printMsg(file, STR("%0%1"), locationMsg(*k), k+1 == locationsEnd ? STR("") : STR(", called from:"));
+                printMsg(log, STR(""));
+                printMsg(log, STR("%0%1"), locationMsg(kit, *k), k+1 == locationsEnd ? STR("") : STR(", called from:"));
             }
 
             ////
 
             if (k == locationsEnd)
-                printMsg(file, STR(""));
+                printMsg(log, STR(""));
 
-            printMsg(file, !makeLink ? STR("</pre>") : STR("</pre> </a>"));
+            printMsg(log, !makeLink ? STR("</pre>") : STR("</pre> </a>"));
 
             ////
 
             if (k != locationsEnd)
             {
-                printMsg(file, STR("<a id=\"I%0\" title=\"%1\" onclick=\"toggleBlock(this);\" href=\"#_I%0\"> <pre class=\"linkBlock\">"),
+                printMsg(log, STR("<a id=\"I%0\" title=\"%1\" onclick=\"toggleBlock(this);\" href=\"#_I%0\"> <pre class=\"linkBlock\">"),
                     hex(clickId), STR("Click to expand the block (Javascript must be enabled)"));
 
-                printMsg(file, STR(""));
-                printMsg(file, STR("(more...)"));
+                printMsg(log, STR(""));
+                printMsg(log, STR("(more...)"));
 
-                printMsg(file, STR("</pre></a>"));
+                printMsg(log, STR("</pre></a>"));
 
-                printMsg(file, STR("<pre id=\"I%0_\" style=\"display:none\">"), hex(clickId));
+                printMsg(log, STR("<pre id=\"I%0_\" style=\"display:none\">"), hex(clickId));
 
                 vector<CodeLocation>::const_reverse_iterator startIter = k;
 
                 for (; k != locationsEnd; ++k)
                 {
                     {
-                        if (k != startIter) printMsg(file, STR(""));
-                        printMsg(file, STR("&mdash;&mdash;&mdash;&mdash;&mdash;"));
-                        printMsg(file, STR(""));
+                        if (k != startIter) printMsg(log, STR(""));
+                        printMsg(log, STR("&mdash;&mdash;&mdash;&mdash;&mdash;"));
+                        printMsg(log, STR(""));
                     }
 
                     for (StringArray::const_iterator i = k->code.begin(); i != k->code.end(); ++i)
-                        printMsg(file, STR("%0"), translateStringToHtml(*i, o.displayParams.maxSourceLineLength));
+                        printMsg(log, STR("%0"), translateStringToHtml(*i, o.displayParams.maxSourceLineLength));
 
-                    printMsg(file, STR(""));
-                    printMsg(file, STR("%0%1"), locationMsg(*k), k+1 == locationsEnd ? STR("") : STR(", called from:"));
+                    printMsg(log, STR(""));
+                    printMsg(log, STR("%0%1"), locationMsg(kit, *k), k+1 == locationsEnd ? STR("") : STR(", called from:"));
                 }
 
                 ////
 
-                printMsg(file, STR(""));
+                printMsg(log, STR(""));
 
                 ////
 
-                printMsg(file, STR("</pre>"));
+                printMsg(log, STR("</pre>"));
 
                 ++clickId;
             }
 
             ////
 
-            printMsg(file, STR("</td>"));
+            printMsg(log, STR("</td>"));
 
             ////
 
@@ -1467,7 +1470,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
             float32 repetitionFactor = timing.repetitionFactor;
             float32 parentFactor = thisInfo.timing.repetitionFactor;
 
-            printMsg(file, STR("<td>"));
+            printMsg(log, STR("<td>"));
 
             ////
 
@@ -1480,6 +1483,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
                 repetitionMsg = sprintMsg
                 (
+                    kit,
                     factorIsEqual(parentFactor, 1, factorTolerance) ?
                         STR("%1 &times;") :
 
@@ -1497,7 +1501,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
             printMsg
             (
-                file,
+                log,
                 !repetitionMsg.size() ? STR("<p>%0 ms</p>") : STR("<p>%1 %2 ms = %0 ms</p>"),
                 formatTime(timing.totalTime, o.displayParams),
                 repetitionMsg,
@@ -1507,7 +1511,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
             ////
 
             if (timing.avgElemClocks > 0)
-                printMsg(file, STR("<p>%0 clocks &times; %1 elements</p>"), prettyNumber(fltg(timing.avgElemClocks, 3)), prettyNumber(fltg(timing.avgElemCount, 3)));
+                printMsg(log, STR("<p>%0 clocks &times; %1 elements</p>"), prettyNumber(fltg(timing.avgElemClocks, 3)), prettyNumber(fltg(timing.avgElemCount, 3)));
 
             ////
 
@@ -1515,19 +1519,22 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
             {
                 StlString timeMsg = sprintMsg
                 (
+                    kit,
                     !repetitionMsg.size() ? STR("~%0 ms") : STR("%1 %2 ms = ~%0 ms"),
                     formatTime(timing.avgPredictedOverhead, o.displayParams),
                     repetitionMsg,
                     formatTime(timing.avgPredictedOverhead / repetitionFactor, o.displayParams)
                 );
 
-                printMsg(file, STR("<p>Potential overhead up to %0 </p>"), timeMsg);
+                printMsg(log, STR("<p>Potential overhead up to %0 </p>"), timeMsg);
             }
 
-            printMsg(file, STR("</td>"));
+            printMsg(log, STR("</td>"));
         }
 
     }
+
+    ////
 
     require(file.flushAndClose(stdPass));
 
@@ -1806,7 +1813,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
         tm* locTime = localtime(&rawTime);
         REQUIRE(locTime != 0);
 
-        StlString timeStr = sprintMsg(STR("%0:%1:%2"), dec(locTime->tm_hour, 2), dec(locTime->tm_min, 2), dec(locTime->tm_sec, 2));
+        StlString timeStr = sprintMsg(kit, STR("%0:%1:%2"), dec(locTime->tm_hour, 2), dec(locTime->tm_min, 2), dec(locTime->tm_sec, 2));
 
         ////
 

@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "data/array.h"
-#include "errorLog/errorLog.h"
 
 //================================================================
 //
@@ -55,11 +54,11 @@ public:
 
 public:
 
-    sysinline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
+    sysinline bool realloc(Space newSize)
     {
         dealloc();
 
-        REQUIRE(newSize >= 0);
+        ensure(newSize >= 0);
 
         try
         {
@@ -67,12 +66,12 @@ public:
         }
         catch (...)
         {
-            REQUIRE(false); // memory allocation failed
+            ensure(false); // memory allocation failed
         }
 
         BaseArray::assign(newSize ? &data[0] : nullptr, newSize);
 
-        returnTrue;
+        return true;
     }
 
 public:

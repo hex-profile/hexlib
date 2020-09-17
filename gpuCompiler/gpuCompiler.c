@@ -55,7 +55,7 @@ using namespace std;
 //
 //================================================================
 
-KIT_COMBINE4(CompilerKit, ErrorLogKit, MsgLogKit, ErrorLogExKit, FileToolsKit);
+KIT_COMBINE2(CompilerKit, DiagnosticKit, FileToolsKit);
 
 //================================================================
 //
@@ -318,30 +318,32 @@ stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString&
     InputTextFile<CharType> inputStream;
     require(inputStream.open(inputName.c_str(), stdPass));
 
-    OutputTextFile outputStream;
-    require(outputStream.open(outputName.c_str(), stdPass));
+    OutputTextFile file;
+    require(file.open(outputName.c_str(), stdPass));
+
+    auto log = getLog(file, kit);
 
     ////
 
-    printMsg(outputStream, STR("#ifdef __CUDA_ARCH__"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("#ifdef __CUDA_ARCH__"));
+    printMsg(log, STR(""));
 
-    printMsg(outputStream, STR("#line 1 \"%0\""), filenameToCString(inputName));
+    printMsg(log, STR("#line 1 \"%0\""), filenameToCString(inputName));
 
     StlString tmpStr;
 
     while (inputStream.getLine(tmpStr, stdPass))
     {
-        outputStream.write(tmpStr.data(), tmpStr.size());
-        outputStream.write("\n", 1);
+        file.write(tmpStr.data(), tmpStr.size());
+        file.write("\n", 1);
     }
 
     REQUIRE(inputStream.eof());
 
-    printMsg(outputStream, STR(""));
-    printMsg(outputStream, STR("#endif"));
+    printMsg(log, STR(""));
+    printMsg(log, STR("#endif"));
 
-    require(outputStream.flushAndClose(stdPass));
+    require(file.flushAndClose(stdPass));
 
     returnTrue;
 }
@@ -736,7 +738,7 @@ stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch
         REQUIRE(p != startPtr);
 
         auto arch = StlString(startPtr, p);
-        nvccArgs.push_back(sprintMsg(STR("--generate-code=arch=compute_%0,code=sm_%0"), arch));
+        nvccArgs.push_back(sprintMsg(kit, STR("--generate-code=arch=compute_%0,code=sm_%0"), arch));
 
         if (p == platformArch.end())
             break;
@@ -792,7 +794,7 @@ stdbool compileDevicePartToBin
     //
     //----------------------------------------------------------------
 
-    StlString cuInputPath = sprintMsg(STR("%0/%1.cu"), inputDir, inputName);
+    StlString cuInputPath = sprintMsg(kit, STR("%0/%1.cu"), inputDir, inputName);
     REMEMBER_CLEANUP1(remove(cuInputPath.c_str()), const StlString&, cuInputPath);
     require(prepareForDeviceCompilation(inputPath, cuInputPath, stdPass));
 
@@ -802,8 +804,8 @@ stdbool compileDevicePartToBin
     //
     //----------------------------------------------------------------
 
-    StlString cupPath = sprintMsg(STR("%0/%1.cup"), binDir, binName);
-    StlString cachedPath = sprintMsg(STR("%0/%1.src"), binDir, binName);
+    StlString cupPath = sprintMsg(kit, STR("%0/%1.cup"), binDir, binName);
+    StlString cachedPath = sprintMsg(kit, STR("%0/%1.src"), binDir, binName);
 
     {
         vector<StlString> nvccArgs;
@@ -953,15 +955,15 @@ stdbool compileDevicePartToBin
     if (platformDisasm.size())
     {
 
-        StlString dumpSass = sprintMsg(STR("cuobjdump --dump-resource-usage --dump-sass --gpu-architecture=sm_%0 \"%1\" >\"%2\""), platformDisasm, binPath, asmPath);
+        StlString dumpSass = sprintMsg(kit, STR("cuobjdump --dump-resource-usage --dump-sass --gpu-architecture=sm_%0 \"%1\" >\"%2\""), platformDisasm, binPath, asmPath);
 
     #if defined(_WIN32)
 
-        require(runProcess(sprintMsg(STR("cmd /c \"%0\""), dumpSass), stdPass));
+        require(runProcess(sprintMsg(kit, STR("cmd /c \"%0\""), dumpSass), stdPass));
 
     #elif defined(__linux__)
 
-        require(runProcess(sprintMsg(STR("sh -c \"%0\""), dumpSass), stdPass));
+        require(runProcess(sprintMsg(kit, STR("sh -c \"%0\""), dumpSass), stdPass));
 
     #else
 
@@ -996,42 +998,44 @@ stdbool makeCppBinAssembly
     stdPars(CompilerKit)
 )
 {
-    OutputTextFile outputStream;
-    require(outputStream.open(outPath.c_str(), stdPass));
+    OutputTextFile file;
+    require(file.open(outPath.c_str(), stdPass));
+
+    auto log = getLog(file, kit);
 
     //
     // Kernel links forward declarations
     // Sampler link forward declarations
     //
 
-    printMsg(outputStream, STR("struct GpuKernelLink;"));
-    printMsg(outputStream, STR("struct GpuSamplerLink;"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("struct GpuKernelLink;"));
+    printMsg(log, STR("struct GpuSamplerLink;"));
+    printMsg(log, STR(""));
 
-    printMsg(outputStream, STR("namespace {"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("namespace {"));
+    printMsg(log, STR(""));
 
     for_count (i, kernelNames.size())
-        printMsg(outputStream, STR("extern const GpuKernelLink %0;"), kernelNames[i]);
+        printMsg(log, STR("extern const GpuKernelLink %0;"), kernelNames[i]);
 
     if (kernelNames.size())
-        printMsg(outputStream, STR(""));
+        printMsg(log, STR(""));
 
     for_count (i, samplerNames.size())
-        printMsg(outputStream, STR("extern const GpuSamplerLink %0;"), samplerNames[i]);
+        printMsg(log, STR("extern const GpuSamplerLink %0;"), samplerNames[i]);
 
     if (samplerNames.size())
-        printMsg(outputStream, STR(""));
+        printMsg(log, STR(""));
 
-    printMsg(outputStream, STR("}"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("}"));
+    printMsg(log, STR(""));
 
     //
     // Include base C++ file
     //
 
-    printMsg(outputStream, STR("#" "include \"%0\""), filenameToCString(cppPath));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("#" "include \"%0\""), filenameToCString(cppPath));
+    printMsg(log, STR(""));
 
     //
     // Read module data.
@@ -1058,31 +1062,31 @@ stdbool makeCppBinAssembly
     // Neccessary definitions
     //
 
-    printMsg(outputStream, STR("#ifndef GPU_DEFINE_MODULE_DESC"));
-    printMsg(outputStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_MODULE_DESC)));
-    printMsg(outputStream, STR("#endif"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("#ifndef GPU_DEFINE_MODULE_DESC"));
+    printMsg(log, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_MODULE_DESC)));
+    printMsg(log, STR("#endif"));
+    printMsg(log, STR(""));
 
-    printMsg(outputStream, STR("#ifndef GPU_DEFINE_KERNEL_LINK"));
-    printMsg(outputStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_KERNEL_LINK)));
-    printMsg(outputStream, STR("#endif"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("#ifndef GPU_DEFINE_KERNEL_LINK"));
+    printMsg(log, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_KERNEL_LINK)));
+    printMsg(log, STR("#endif"));
+    printMsg(log, STR(""));
 
-    printMsg(outputStream, STR("#ifndef GPU_DEFINE_SAMPLER_LINK"));
-    printMsg(outputStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_SAMPLER_LINK)));
-    printMsg(outputStream, STR("#endif"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("#ifndef GPU_DEFINE_SAMPLER_LINK"));
+    printMsg(log, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_SAMPLER_LINK)));
+    printMsg(log, STR("#endif"));
+    printMsg(log, STR(""));
 
     //
     // Module data
     //
 
-    printMsg(outputStream, STR("namespace {"));
-    printMsg(outputStream, STR("namespace gpuEmbeddedBinary {"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("namespace {"));
+    printMsg(log, STR("namespace gpuEmbeddedBinary {"));
+    printMsg(log, STR(""));
 
-    printMsg(outputStream, STR("const unsigned char moduleData[] = "));
-    printMsg(outputStream, STR("{"));
+    printMsg(log, STR("const unsigned char moduleData[] = "));
+    printMsg(log, STR("{"));
 
     ////
 
@@ -1127,14 +1131,14 @@ stdbool makeCppBinAssembly
         auto rowSize = size_t(rowPtr - rowStart);
         REQUIRE(rowSize <= row.size());
 
-        outputStream.write(rowStart, rowSize);
+        file.write(rowStart, rowSize);
 
         if (binPtr == binEnd)
             break;
     }
 
-    printMsg(outputStream, STR("};"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("};"));
+    printMsg(log, STR(""));
 
     //
     // Kernel names
@@ -1142,14 +1146,14 @@ stdbool makeCppBinAssembly
 
     if (kernelNames.size())
     {
-        printMsg(outputStream, STR("const char* const moduleKernels[] = "));
-        printMsg(outputStream, STR("{"));
+        printMsg(log, STR("const char* const moduleKernels[] = "));
+        printMsg(log, STR("{"));
 
         for_count (i, kernelNames.size())
-            printMsg(outputStream, STR("    \"%0\", "), kernelNames[i]);
+            printMsg(log, STR("    \"%0\", "), kernelNames[i]);
 
-        printMsg(outputStream, STR("};"));
-        printMsg(outputStream, STR(""));
+        printMsg(log, STR("};"));
+        printMsg(log, STR(""));
     }
 
     //
@@ -1158,38 +1162,38 @@ stdbool makeCppBinAssembly
 
     if (samplerNames.size())
     {
-        printMsg(outputStream, STR("const char* const moduleSamplers[] = "));
-        printMsg(outputStream, STR("{"));
+        printMsg(log, STR("const char* const moduleSamplers[] = "));
+        printMsg(log, STR("{"));
 
         for_count (i, samplerNames.size())
-            printMsg(outputStream, STR("    \"%0\", "), samplerNames[i]);
+            printMsg(log, STR("    \"%0\", "), samplerNames[i]);
 
-        printMsg(outputStream, STR("};"));
-        printMsg(outputStream, STR(""));
+        printMsg(log, STR("};"));
+        printMsg(log, STR(""));
     }
 
     //
     // Module desc
     //
 
-    printMsg(outputStream, STR("const GpuModuleDesc moduleDesc ="));
-    printMsg(outputStream, STR("{"));
+    printMsg(log, STR("const GpuModuleDesc moduleDesc ="));
+    printMsg(log, STR("{"));
 
-    printMsg(outputStream, STR("    %0, %1,"), STR("moduleData"), STR("sizeof(moduleData) / sizeof(moduleData[0])"));
-    printMsg(outputStream, STR("    %0, %1,"), kernelNames.size() ? STR("moduleKernels") : STR("0"), kernelNames.size());
-    printMsg(outputStream, STR("    %0, %1"), samplerNames.size() ? STR("moduleSamplers") : STR("0"), samplerNames.size());
+    printMsg(log, STR("    %0, %1,"), STR("moduleData"), STR("sizeof(moduleData) / sizeof(moduleData[0])"));
+    printMsg(log, STR("    %0, %1,"), kernelNames.size() ? STR("moduleKernels") : STR("0"), kernelNames.size());
+    printMsg(log, STR("    %0, %1"), samplerNames.size() ? STR("moduleSamplers") : STR("0"), samplerNames.size());
 
-    printMsg(outputStream, STR("};"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("};"));
+    printMsg(log, STR(""));
 
 #if defined(_WIN32)
 
-    printMsg(outputStream, STR("#pragma section(\"gpu_section$m\", read)"));
-    printMsg(outputStream, STR("__declspec(allocate(\"gpu_section$m\")) const GpuModuleDesc* moduleRef = &moduleDesc;"));
+    printMsg(log, STR("#pragma section(\"gpu_section$m\", read)"));
+    printMsg(log, STR("__declspec(allocate(\"gpu_section$m\")) const GpuModuleDesc* moduleRef = &moduleDesc;"));
 
 #elif defined(__linux__)
 
-    printMsg(outputStream, STR("const GpuModuleDesc* moduleRef __attribute__((section(\"gpu_section\"))) = &moduleDesc;"));
+    printMsg(log, STR("const GpuModuleDesc* moduleRef __attribute__((section(\"gpu_section\"))) = &moduleDesc;"));
 
 #else
 
@@ -1197,10 +1201,10 @@ stdbool makeCppBinAssembly
 
 #endif
 
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR(""));
 
-    printMsg(outputStream, STR("}"));
-    printMsg(outputStream, STR(""));
+    printMsg(log, STR("}"));
+    printMsg(log, STR(""));
 
     //
     // Kernel and sampler links
@@ -1208,26 +1212,26 @@ stdbool makeCppBinAssembly
 
     for_count (i, kernelNames.size())
     {
-        printMsg(outputStream, STR("const GpuKernelLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
+        printMsg(log, STR("const GpuKernelLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
             kernelNames[i], i);
     }
 
     for_count (i, samplerNames.size())
     {
-        printMsg(outputStream, STR("const GpuSamplerLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
+        printMsg(log, STR("const GpuSamplerLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
             samplerNames[i], i);
     }
 
     ////
 
-    printMsg(outputStream, STR(""));
-    printMsg(outputStream, STR("}"));
+    printMsg(log, STR(""));
+    printMsg(log, STR("}"));
 
     //
     // Flush
     //
 
-    require(outputStream.flushAndClose(stdPass));
+    require(file.flushAndClose(stdPass));
 
     returnTrue;
 }
@@ -1335,7 +1339,6 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
                     break;
                 }
 
-                // printMsg(msgLog, STR("%0"), s);
                 cmdLine::parseCmdLine(s, args);
             }
 
@@ -1490,7 +1493,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
         clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
         
-        clArgs.push_back(sprintMsg(STR("-%0%1"), outputOption, outputFile));
+        clArgs.push_back(sprintMsg(kit, STR("-%0%1"), outputOption, outputFile));
         clArgs.insert(clArgs.end(), cppFiles.begin(), cppFiles.end());
 
         require(runProcess(clArgs, stdPass));
@@ -1527,7 +1530,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         clArgs.push_back(CT("DEVCODE=1"));
 
         clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
-        clArgs.push_back(sprintMsg(STR("-%0%1"), outputOption, outputFile));
+        clArgs.push_back(sprintMsg(kit, STR("-%0%1"), outputOption, outputFile));
         clArgs.insert(clArgs.end(), cudaFiles.begin(), cudaFiles.end());
 
         require(runProcess(clArgs, stdPass));
@@ -1560,8 +1563,8 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             vector<StlString> kernelNames;
             vector<StlString> samplerNames;
 
-            StlString binPath = sprintMsg(STR("%0/%1.bin"), outputDir, inputName);
-            StlString asmPath = sprintMsg(STR("%0/%1.asm"), outputDir, inputName);
+            StlString binPath = sprintMsg(kit, STR("%0/%1.bin"), outputDir, inputName);
+            StlString asmPath = sprintMsg(kit, STR("%0/%1.asm"), outputDir, inputName);
 
             require(compileDevicePartToBin(inputPath, binPath, asmPath, kernelNames, samplerNames, includes, defines, platformArch, platformBitness, platformDisasm, stdPass));
 
@@ -1575,7 +1578,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             // Translate to C module
             //
 
-            StlString cppAssemblyPath = sprintMsg(STR("%0/%1.assembled.cpp"), outputDir, inputName);
+            StlString cppAssemblyPath = sprintMsg(kit, STR("%0/%1.assembled.cpp"), outputDir, inputName);
             require(makeCppBinAssembly(inputPath, binPath, cppAssemblyPath, kernelNames, samplerNames, stdPass));
 
             //
@@ -1612,7 +1615,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
                 clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
 
-                clArgs.push_back(sprintMsg(STR("-%0%1"), outputOption, outputFile));
+                clArgs.push_back(sprintMsg(kit, STR("-%0%1"), outputOption, outputFile));
                 clArgs.push_back(cppAssemblyPath);
 
                 require(runProcess(clArgs, stdPass));
@@ -1641,10 +1644,16 @@ int main(int argCount, const CharType* argStr[])
     //
     //----------------------------------------------------------------
 
+    const size_t formatterSize = 65536;
+    CharType formatterPtr[formatterSize];
+    MessageFormatterStdio formatter{makeArray(formatterPtr, formatterSize)};
+
+    ////
+
 #ifdef _DEBUG
-    logToStdConsole msgLog(true, false);
+    LogToStdConsole msgLog{formatter, true, false};
 #else
-    logToStdConsole msgLog(false, false);
+    LogToStdConsole msgLog{formatter, false, false};
 #endif
 
     ErrorLogByMsgLog errorLog(msgLog);
@@ -1653,6 +1662,7 @@ int main(int argCount, const CharType* argStr[])
 
     CompilerKit kit = kitCombine
     (
+        MessageFormatterKit(formatter),
         ErrorLogKit(errorLog),
         ErrorLogExKit(errorLogEx),
         MsgLogKit(msgLog),

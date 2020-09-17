@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "formattedOutput/formatStreamStdio.h"
+#include "formattedOutput/messageFormatterStdio.h"
 #include "stdFunc/stdFunc.h"
 #include "stlString/stlString.h"
 #include "userOutput/errorLogEx.h"
@@ -178,26 +178,88 @@ private:
 //
 //================================================================
 
-class OutputTextFile : public MsgLog
+class OutputTextFile
 {
+
+public:
+
+    stdbool open(const CharType* filename, stdPars(TextFileKit))
+    {
+        close();
+
+        stream.open(filename);
+        REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
+
+        openedFilename = filename;
+
+        returnTrue;
+    }
+
+    void close()
+    {
+        stream.close();
+        stream.clear();
+        openedFilename.clear();
+    }
+
+    bool valid() const 
+    {
+        return !!stream;
+    }
+
+    void invalidate()
+    {
+        stream.setstate(std::ios::failbit);
+    }
+
+    stdbool flushAndClose(stdPars(TextFileKit))
+    {
+        stream.flush();
+        bool ok = !!stream;
+        stream.close();
+        stream.clear();
+        REQUIRE_TRACE1(ok, STR("Cannot write to file %0"), openedFilename);
+        returnTrue;
+    }
+
+    void write(const CharType* ptr, size_t size)
+    {
+        stream.write(ptr, size);
+    }
+
+private:
+
+    StlString openedFilename;
+    std::basic_ofstream<CharType> stream;
+
+};
+
+//================================================================
+//
+// MsgLogToTextFile
+//
+//================================================================
+
+class MsgLogToTextFile : public MsgLog
+{
+
+public:
+
+    MsgLogToTextFile(OutputTextFile& file, MessageFormatter& formatter)
+        : file(file), formatter(formatter) {}
 
 public:
 
     bool addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     {
-        ensure(valid);
-        REMEMBER_CLEANUP_EX(errorExit, valid = false);
+        REMEMBER_CLEANUP_EX(errorExit, file.invalidate());
 
-        constexpr size_t bufferSize = 1024;
-        CharType bufferArray[bufferSize];
-        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-
+        formatter.clear();
         v.func(v.value, formatter);
         formatter.write(CT("\n"), 1);
         ensure(formatter.valid());
 
-        stream << formatter.data();
-        ensure(!!stream);
+        file.write(formatter.data(), formatter.size());
 
         errorExit.cancel();
         return true;
@@ -218,48 +280,16 @@ public:
     virtual void unlock()
         {}
 
-public:
-
-    stdbool open(const CharType* filename, stdPars(TextFileKit))
-    {
-        close();
-
-        stream.open(filename);
-        REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
-
-        openedFilename = filename;
-
-        returnTrue;
-    }
-
-    void close()
-    {
-        valid = true;
-        stream.close();
-        stream.clear();
-        openedFilename.clear();
-    }
-
-    stdbool flushAndClose(stdPars(TextFileKit))
-    {
-        REQUIRE(valid);
-        stream.flush();
-        bool ok = !!stream;
-        stream.close();
-        stream.clear();
-        REQUIRE_TRACE1(ok, STR("Cannot write to file %0"), openedFilename);
-        returnTrue;
-    }
-
-    void write(const CharType* ptr, size_t size)
-    {
-        stream.write(ptr, size);
-    }
-
 private:
 
-    bool valid = true;
-    StlString openedFilename;
-    std::basic_ofstream<CharType> stream;
+    OutputTextFile& file; 
+    MessageFormatter& formatter;
 
 };
+
+//----------------------------------------------------------------
+
+inline auto getLog(OutputTextFile& file, const MessageFormatterKit& kit)
+{
+    return MsgLogToTextFile{file, kit.formatter};
+}
