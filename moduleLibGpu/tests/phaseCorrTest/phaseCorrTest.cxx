@@ -491,10 +491,6 @@ stdbool processFreqProd
 
     float32 divMaxHarmonic = nativeRecipZero(xMaxHarmonic);
 
-    ////
-
-    PRINT_VAR(useMagnitude);
-
     //----------------------------------------------------------------
     //
     // Preprocess

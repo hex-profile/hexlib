@@ -55,12 +55,3 @@ inline bool printMsgL(const Kit& kit, const CharArray& format, const Types&... v
 template <typename Kit, typename... Types>
 inline bool printMsgG(const Kit& kit, const CharArray& format, const Types&... values)
     {return !isOutputEnabled(kit) ? true : printMsg(kit.msgLog, format, values...);}
-
-//================================================================
-//
-// PRINT_VAR
-//
-//================================================================
-
-#define PRINT_VAR(var) \
-    printMsgL(kit, STR(PREP_STRINGIZE(var) " = %0"), var)

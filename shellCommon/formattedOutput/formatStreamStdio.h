@@ -1,6 +1,6 @@
 #pragma once
 
-#include "formatting/formatStream.h"
+#include "formatting/messageFormatter.h"
 #include "numbers/int/intType.h"
 
 //================================================================
@@ -9,7 +9,7 @@
 //
 //================================================================
 
-class FormatStreamStdioThunk : public FormatOutputStream
+class FormatStreamStdioThunk : public MessageFormatter
 {
 
 public:
@@ -31,6 +31,20 @@ public:
 
 public:
 
+    virtual void clear()
+        {ok = memoryOk; usedSize = 0;}
+
+    virtual bool valid() 
+        {return ok;}
+
+    virtual size_t size() 
+        {return usedSize;}
+
+    virtual CharType* data() 
+        {return memoryArray;}
+
+public:
+
     FormatStreamStdioThunk() 
         {}
 
@@ -41,7 +55,7 @@ public:
 
     inline void setMemory(CharType* newArray, size_t newSize)
     {
-        ok = false;
+        memoryOk = false;
         memoryArray = nullptr;
         memorySize = 0;
         usedSize = 0;
@@ -50,30 +64,27 @@ public:
         {
             memoryArray = newArray;
             memorySize = newSize - 1; // reserve space for NUL terminator
-            ok = true;
+            memoryOk = true;
         }
+
+        clear();
     }
-
-public:
-
-    inline bool valid() 
-        {return ok;}
-
-    inline size_t size() 
-        {return usedSize;}
-
-    CharType* data() 
-        {return memoryArray;}
 
 private:
 
-    bool ok = false;
+    // Is memory usable?
+    bool memoryOk = false;
 
     // Not used if memorySize == 0.
     CharType* memoryArray = nullptr; 
 
     // Not including NUL terminator, memorySize >= 0
     size_t memorySize = 0; 
+
+private:
+
+    // Ok during formatting message.
+    bool ok = false;
 
     // Not including NUL terminator, 0 <= usedSize <= memorySize
     size_t usedSize = 0; 
