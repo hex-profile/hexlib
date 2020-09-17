@@ -331,14 +331,17 @@ stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString&
     StlString tmpStr;
 
     while (inputStream.getLine(tmpStr, stdPass))
-        printMsg(outputStream, STR("%0"), tmpStr);
+    {
+        outputStream.write(tmpStr.data(), tmpStr.size());
+        outputStream.write("\n", 1);
+    }
 
-    require(inputStream.eof());
+    REQUIRE(inputStream.eof());
 
     printMsg(outputStream, STR(""));
     printMsg(outputStream, STR("#endif"));
 
-    require(outputStream.flush(stdPass));
+    require(outputStream.flushAndClose(stdPass));
 
     returnTrue;
 }
@@ -993,42 +996,42 @@ stdbool makeCppBinAssembly
     stdPars(CompilerKit)
 )
 {
-    OutputTextFile outStream;
-    require(outStream.open(outPath.c_str(), stdPass));
+    OutputTextFile outputStream;
+    require(outputStream.open(outPath.c_str(), stdPass));
 
     //
     // Kernel links forward declarations
     // Sampler link forward declarations
     //
 
-    printMsg(outStream, STR("struct GpuKernelLink;"));
-    printMsg(outStream, STR("struct GpuSamplerLink;"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("struct GpuKernelLink;"));
+    printMsg(outputStream, STR("struct GpuSamplerLink;"));
+    printMsg(outputStream, STR(""));
 
-    printMsg(outStream, STR("namespace {"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("namespace {"));
+    printMsg(outputStream, STR(""));
 
     for_count (i, kernelNames.size())
-        printMsg(outStream, STR("extern const GpuKernelLink %0;"), kernelNames[i]);
+        printMsg(outputStream, STR("extern const GpuKernelLink %0;"), kernelNames[i]);
 
     if (kernelNames.size())
-        printMsg(outStream, STR(""));
+        printMsg(outputStream, STR(""));
 
     for_count (i, samplerNames.size())
-        printMsg(outStream, STR("extern const GpuSamplerLink %0;"), samplerNames[i]);
+        printMsg(outputStream, STR("extern const GpuSamplerLink %0;"), samplerNames[i]);
 
     if (samplerNames.size())
-        printMsg(outStream, STR(""));
+        printMsg(outputStream, STR(""));
 
-    printMsg(outStream, STR("}"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("}"));
+    printMsg(outputStream, STR(""));
 
     //
     // Include base C++ file
     //
 
-    printMsg(outStream, STR("#" "include \"%0\""), filenameToCString(cppPath));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("#" "include \"%0\""), filenameToCString(cppPath));
+    printMsg(outputStream, STR(""));
 
     //
     // Read module data.
@@ -1055,31 +1058,31 @@ stdbool makeCppBinAssembly
     // Neccessary definitions
     //
 
-    printMsg(outStream, STR("#ifndef GPU_DEFINE_MODULE_DESC"));
-    printMsg(outStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_MODULE_DESC)));
-    printMsg(outStream, STR("#endif"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("#ifndef GPU_DEFINE_MODULE_DESC"));
+    printMsg(outputStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_MODULE_DESC)));
+    printMsg(outputStream, STR("#endif"));
+    printMsg(outputStream, STR(""));
 
-    printMsg(outStream, STR("#ifndef GPU_DEFINE_KERNEL_LINK"));
-    printMsg(outStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_KERNEL_LINK)));
-    printMsg(outStream, STR("#endif"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("#ifndef GPU_DEFINE_KERNEL_LINK"));
+    printMsg(outputStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_KERNEL_LINK)));
+    printMsg(outputStream, STR("#endif"));
+    printMsg(outputStream, STR(""));
 
-    printMsg(outStream, STR("#ifndef GPU_DEFINE_SAMPLER_LINK"));
-    printMsg(outStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_SAMPLER_LINK)));
-    printMsg(outStream, STR("#endif"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("#ifndef GPU_DEFINE_SAMPLER_LINK"));
+    printMsg(outputStream, STR("%0"), charArrayFromPtr(PREP_STRINGIZE(GPU_DEFINE_SAMPLER_LINK)));
+    printMsg(outputStream, STR("#endif"));
+    printMsg(outputStream, STR(""));
 
     //
     // Module data
     //
 
-    printMsg(outStream, STR("namespace {"));
-    printMsg(outStream, STR("namespace gpuEmbeddedBinary {"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("namespace {"));
+    printMsg(outputStream, STR("namespace gpuEmbeddedBinary {"));
+    printMsg(outputStream, STR(""));
 
-    printMsg(outStream, STR("const unsigned char moduleData[] = "));
-    printMsg(outStream, STR("{"));
+    printMsg(outputStream, STR("const unsigned char moduleData[] = "));
+    printMsg(outputStream, STR("{"));
 
     ////
 
@@ -1124,14 +1127,14 @@ stdbool makeCppBinAssembly
         auto rowSize = size_t(rowPtr - rowStart);
         REQUIRE(rowSize <= row.size());
 
-        outStream.write(rowStart, rowSize);
+        outputStream.write(rowStart, rowSize);
 
         if (binPtr == binEnd)
             break;
     }
 
-    printMsg(outStream, STR("};"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("};"));
+    printMsg(outputStream, STR(""));
 
     //
     // Kernel names
@@ -1139,14 +1142,14 @@ stdbool makeCppBinAssembly
 
     if (kernelNames.size())
     {
-        printMsg(outStream, STR("const char* const moduleKernels[] = "));
-        printMsg(outStream, STR("{"));
+        printMsg(outputStream, STR("const char* const moduleKernels[] = "));
+        printMsg(outputStream, STR("{"));
 
         for_count (i, kernelNames.size())
-            printMsg(outStream, STR("    \"%0\", "), kernelNames[i]);
+            printMsg(outputStream, STR("    \"%0\", "), kernelNames[i]);
 
-        printMsg(outStream, STR("};"));
-        printMsg(outStream, STR(""));
+        printMsg(outputStream, STR("};"));
+        printMsg(outputStream, STR(""));
     }
 
     //
@@ -1155,38 +1158,38 @@ stdbool makeCppBinAssembly
 
     if (samplerNames.size())
     {
-        printMsg(outStream, STR("const char* const moduleSamplers[] = "));
-        printMsg(outStream, STR("{"));
+        printMsg(outputStream, STR("const char* const moduleSamplers[] = "));
+        printMsg(outputStream, STR("{"));
 
         for_count (i, samplerNames.size())
-            printMsg(outStream, STR("    \"%0\", "), samplerNames[i]);
+            printMsg(outputStream, STR("    \"%0\", "), samplerNames[i]);
 
-        printMsg(outStream, STR("};"));
-        printMsg(outStream, STR(""));
+        printMsg(outputStream, STR("};"));
+        printMsg(outputStream, STR(""));
     }
 
     //
     // Module desc
     //
 
-    printMsg(outStream, STR("const GpuModuleDesc moduleDesc ="));
-    printMsg(outStream, STR("{"));
+    printMsg(outputStream, STR("const GpuModuleDesc moduleDesc ="));
+    printMsg(outputStream, STR("{"));
 
-    printMsg(outStream, STR("    %0, %1,"), STR("moduleData"), STR("sizeof(moduleData) / sizeof(moduleData[0])"));
-    printMsg(outStream, STR("    %0, %1,"), kernelNames.size() ? STR("moduleKernels") : STR("0"), kernelNames.size());
-    printMsg(outStream, STR("    %0, %1"), samplerNames.size() ? STR("moduleSamplers") : STR("0"), samplerNames.size());
+    printMsg(outputStream, STR("    %0, %1,"), STR("moduleData"), STR("sizeof(moduleData) / sizeof(moduleData[0])"));
+    printMsg(outputStream, STR("    %0, %1,"), kernelNames.size() ? STR("moduleKernels") : STR("0"), kernelNames.size());
+    printMsg(outputStream, STR("    %0, %1"), samplerNames.size() ? STR("moduleSamplers") : STR("0"), samplerNames.size());
 
-    printMsg(outStream, STR("};"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("};"));
+    printMsg(outputStream, STR(""));
 
 #if defined(_WIN32)
 
-    printMsg(outStream, STR("#pragma section(\"gpu_section$m\", read)"));
-    printMsg(outStream, STR("__declspec(allocate(\"gpu_section$m\")) const GpuModuleDesc* moduleRef = &moduleDesc;"));
+    printMsg(outputStream, STR("#pragma section(\"gpu_section$m\", read)"));
+    printMsg(outputStream, STR("__declspec(allocate(\"gpu_section$m\")) const GpuModuleDesc* moduleRef = &moduleDesc;"));
 
 #elif defined(__linux__)
 
-    printMsg(outStream, STR("const GpuModuleDesc* moduleRef __attribute__((section(\"gpu_section\"))) = &moduleDesc;"));
+    printMsg(outputStream, STR("const GpuModuleDesc* moduleRef __attribute__((section(\"gpu_section\"))) = &moduleDesc;"));
 
 #else
 
@@ -1194,10 +1197,10 @@ stdbool makeCppBinAssembly
 
 #endif
 
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR(""));
 
-    printMsg(outStream, STR("}"));
-    printMsg(outStream, STR(""));
+    printMsg(outputStream, STR("}"));
+    printMsg(outputStream, STR(""));
 
     //
     // Kernel and sampler links
@@ -1205,26 +1208,26 @@ stdbool makeCppBinAssembly
 
     for_count (i, kernelNames.size())
     {
-        printMsg(outStream, STR("const GpuKernelLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
+        printMsg(outputStream, STR("const GpuKernelLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
             kernelNames[i], i);
     }
 
     for_count (i, samplerNames.size())
     {
-        printMsg(outStream, STR("const GpuSamplerLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
+        printMsg(outputStream, STR("const GpuSamplerLink %0 = {&gpuEmbeddedBinary::moduleRef, %1};"),
             samplerNames[i], i);
     }
 
     ////
 
-    printMsg(outStream, STR(""));
-    printMsg(outStream, STR("}"));
+    printMsg(outputStream, STR(""));
+    printMsg(outputStream, STR("}"));
 
     //
     // Flush
     //
 
-    require(outStream.flush(stdPass));
+    require(outputStream.flushAndClose(stdPass));
 
     returnTrue;
 }

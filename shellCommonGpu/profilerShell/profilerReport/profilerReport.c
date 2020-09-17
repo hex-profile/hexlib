@@ -64,6 +64,8 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 
     ////
 
+    require(file.flushAndClose(stdPass));
+
     returnTrue;
 }
 
@@ -1194,13 +1196,13 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         printMsg(file, STR("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"));
 
         printMsg(file, STR("<html>"));
-        REMEMBER_CLEANUP1(printMsg(file, STR("</html>")), OutputTextFile&, file);
+        REMEMBER_CLEANUP(printMsg(file, STR("</html>")));
 
         ////
 
         {
             printMsg(file, STR("<head>"));
-            REMEMBER_CLEANUP1(printMsg(file, STR("</head>")), OutputTextFile&, file);
+            REMEMBER_CLEANUP(printMsg(file, STR("</head>")));
 
             printMsg(file, STR("<title>Profiler Report %0</title>"), o.reportCreationTime);
 
@@ -1208,7 +1210,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         }
 
         printMsg(file, STR("<body>"));
-        REMEMBER_CLEANUP1(printMsg(file, STR("</body>")), OutputTextFile&, file);
+        REMEMBER_CLEANUP(printMsg(file, STR("</body>")));
 
         //----------------------------------------------------------------
         //
@@ -1275,12 +1277,12 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         ////
 
         printMsg(file, STR("<table>"));
-        REMEMBER_CLEANUP1(printMsg(file, STR("</table>")), OutputTextFile&, file);
+        REMEMBER_CLEANUP(printMsg(file, STR("</table>")));
 
 
         {
             printMsg(file, STR("<tr>"));
-            REMEMBER_CLEANUP1(printMsg(file, STR("</tr>")), OutputTextFile&, file);
+            REMEMBER_CLEANUP(printMsg(file, STR("</tr>")));
 
             printMsg(file, STR("<th>Name</th>"));
             printMsg(file, STR("<th>Time (Per Frame)</th>"));
@@ -1303,7 +1305,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         {
             printMsg(file, STR("<tr class=\"nodeTotal\">"));
-            REMEMBER_CLEANUP1(printMsg(file, STR("</tr>")), OutputTextFile&, file);
+            REMEMBER_CLEANUP(printMsg(file, STR("</tr>")));
 
             ////
 
@@ -1366,7 +1368,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
             ////
 
             printMsg(file, STR("<tr>"));
-            REMEMBER_CLEANUP1(printMsg(file, STR("</tr>")), OutputTextFile&, file);
+            REMEMBER_CLEANUP(printMsg(file, STR("</tr>")));
 
             const ProfilerNode& node = *children[i];
 
@@ -1527,7 +1529,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
     }
 
-    require(file.flushClose(stdPass));
+    require(file.flushAndClose(stdPass));
 
     //----------------------------------------------------------------
     //
