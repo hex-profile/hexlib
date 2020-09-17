@@ -1,15 +1,15 @@
-#include "formatStreamStl.h"
+#include "messageFormatterStl.h"
 
 #include "numbers/int/intType.h"
 #include "numbers/float/floatType.h"
 
 //================================================================
 //
-// FormatStreamStlThunk::write
+// MessageFormatterStl::write
 //
 //================================================================
 
-void FormatStreamStlThunk::write(const CharType* bufferPtr, size_t bufferSize)
+void MessageFormatterStl::write(const CharType* bufferPtr, size_t bufferSize)
 {
     using namespace std;
 
@@ -31,12 +31,12 @@ void FormatStreamStlThunk::write(const CharType* bufferPtr, size_t bufferSize)
 
 //================================================================
 //
-// FormatStreamStlThunk::printIntFloat
+// MessageFormatterStl::printIntFloat
 //
 //================================================================
 
 template <typename Type>
-inline void FormatStreamStlThunk::printIntFloat(Type value, const FormatNumberOptions& options)
+inline void MessageFormatterStl::printIntFloat(Type value, const FormatNumberOptions& options)
 {
     using namespace std;
 
@@ -136,16 +136,16 @@ inline void FormatStreamStlThunk::printIntFloat(Type value, const FormatNumberOp
 
 //================================================================
 //
-// FormatStreamStlThunk::write<BuiltinInt>
+// MessageFormatterStl::write<BuiltinInt>
 //
 //================================================================
 
 #define TMP_MACRO(Type, o) \
     \
-    void FormatStreamStlThunk::write(Type value) \
+    void MessageFormatterStl::write(Type value) \
         {printIntFloat(value, FormatNumberOptions());} \
     \
-    void FormatStreamStlThunk::write(const FormatNumber<Type>& value) \
+    void MessageFormatterStl::write(const FormatNumber<Type>& value) \
         {printIntFloat(value.value, value.options);} \
 
 BUILTIN_INT_FOREACH(TMP_MACRO, o)

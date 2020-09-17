@@ -3,20 +3,22 @@
 #include <mutex>
 
 #include "userOutput/msgLog.h"
+#include "formatting/messageFormatter.h"
 
 //================================================================
 //
-// logToStdConsole
+// LogToStdConsole
 //
 //================================================================
 
-class logToStdConsole : public MsgLog
+class LogToStdConsole : public MsgLog
 {
 
 public:
 
-    logToStdConsole(bool useDebugOutput, bool useStdErr)
+    LogToStdConsole(MessageFormatter& formatter, bool useDebugOutput, bool useStdErr)
         : 
+        formatter(formatter),
         useDebugOutput(useDebugOutput),
         useStdErr(useStdErr)
     {
@@ -42,6 +44,8 @@ public:
 private:
 
     std::recursive_mutex mutex;
+
+    MessageFormatter& formatter;
 
     bool const useDebugOutput;
     bool const useStdErr;

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "userOutput/msgLog.h"
-
 #include "formattedOutput/logBuffer/logBuffer.h"
+#include "formatting/messageFormatter.h"
 
 //================================================================
 //
@@ -15,11 +15,19 @@ class LogToBufferThunk : public MsgLog
 
 public:
 
-    inline void setup(LogBufferWriting* outputInterface, Timer* timer)
-        {this->outputInterface = outputInterface; this->timer = timer;}
+    inline void setup(LogBufferWriting* outputInterface, MessageFormatter* formatter, Timer* timer)
+    {
+        this->outputInterface = outputInterface; 
+        this->formatter = formatter;
+        this->timer = timer;
+    }
 
     inline void reset()
-        {this->outputInterface = 0; this->timer = 0;}
+    {
+        this->outputInterface = nullptr; 
+        this->formatter = nullptr;
+        this->timer = nullptr;
+    }
 
 public:
 
@@ -47,7 +55,8 @@ public:
 
 private:
 
-    LogBufferWriting* outputInterface = 0;
-    Timer* timer = 0;
+    LogBufferWriting* outputInterface = nullptr;
+    MessageFormatter* formatter = nullptr;
+    Timer* timer = nullptr;
 
 };

@@ -4,6 +4,7 @@
 #include "userOutput/msgLog.h"
 #include "errorLog/errorLog.h"
 #include "userOutput/errorLogEx.h"
+#include "formatting/messageFormatter.h"
 
 //================================================================
 //
@@ -18,12 +19,13 @@ public:
 
     inline DiagnosticKitNull()
         : 
-        DiagnosticKit(kitCombine(ErrorLogKit(errorLogNull), MsgLogKit(msgLogNull), ErrorLogExKit(errorLogExNull)))
+        DiagnosticKit(kitCombine(MessageFormatterKit(formatterNull), ErrorLogKit(errorLogNull), MsgLogKit(msgLogNull), ErrorLogExKit(errorLogExNull)))
     {
     }
 
 private:
 
+    MessageFormatterNull formatterNull;
     MsgLogNull msgLogNull;
     ErrorLogNull errorLogNull;
     ErrorLogExNull errorLogExNull;

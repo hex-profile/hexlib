@@ -9,7 +9,7 @@
 #include "errorLog/errorLog.h"
 #include "errorLog/convertAllExceptions.h"
 #include "flipMatrix.h"
-#include "formattedOutput/formatStreamStdio.h"
+#include "formattedOutput/messageFormatterStdio.h"
 #include "interfaces/fileTools.h"
 #include "rndgen/rndgenBase.h"
 #include "storage/rememberCleanup.h"
@@ -62,7 +62,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
     ARRAY_EXPOSE_UNSAFE(result);
-    FormatStreamStdioThunk formatter{resultPtr, size_t(resultSize)};
+    MessageFormatterStdio formatter{result};
 
     v.func(v.value, formatter);
     REQUIRE(formatter.valid());

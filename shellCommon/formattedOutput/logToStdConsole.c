@@ -8,21 +8,18 @@
 #endif
 
 #include "stdFunc/stdFunc.h"
-#include "formattedOutput/formatStreamStdio.h"
+#include "formattedOutput/messageFormatterStdio.h"
 #include "errorLog/debugBreak.h"
 
 //================================================================
 //
-// logToStdConsole::addMsg
+// LogToStdConsole::addMsg
 //
 //================================================================
 
-bool logToStdConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
+bool LogToStdConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 {
-    constexpr size_t bufferSize = 1024;
-    CharType bufferArray[bufferSize];
-    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-
+    formatter.clear();
     v.func(v.value, formatter);
 
     formatter.write(CT("\n"), 1);

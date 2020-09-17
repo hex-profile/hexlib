@@ -4,8 +4,8 @@
 #include "charType/charArray.h"
 
 #include "stlString/stlString.h"
-#include "formattedOutput/formatStreamStdio.h"
 #include "errorLog/convertAllExceptions.h"
+#include "formatting/messageFormatter.h"
 
 //================================================================
 //
@@ -19,21 +19,19 @@
 //
 //================================================================
 
-template <typename... Types>
-inline StlString sprintMsg(const CharArray& format, const Types&... values)
+template <typename Kit, typename... Types>
+inline StlString sprintMsg(const Kit& kit, const CharArray& format, const Types&... values)
 {
     const FormatOutputAtom params[] = {values...};
     ParamMsg paramMsg(format, params, sizeof...(values));
    
     ////
 
-    constexpr size_t bufferSize = 1024;
-    CharType bufferArray[bufferSize];
-    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-    
-    ////
+    kit.formatter.clear();
+    formatOutput(paramMsg, kit.formatter);
 
-    formatOutput(paramMsg, formatter);
+    if_not (kit.formatter.valid())
+        throw std::bad_alloc();
    
-    return StlString{formatter.data()};
+    return StlString{kit.formatter.data()};
 }

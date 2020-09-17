@@ -12,7 +12,7 @@
 #include "atInterface/atInterface.h"
 #include "checkHeap.h"
 #include "formattedOutput/userOutputThunks.h"
-#include "formattedOutput/formatStreamStdio.h"
+#include "formattedOutput/messageFormatterStdio.h"
 #include "atAssembly/atAssembly.h"
 #include "dataAlloc/arrayMemory.h"
 #include "threading/threadManagerImpl.h"
@@ -63,9 +63,9 @@ void reportError(const PrintApi* api, const CharType* message, bool finalExit = 
 //================================================================
 
 #define REQUIRE_AT(condition) \
-    REQUIRE_AT_EX(condition, false)
+    REQUIRE_AT_EX(condition, false, return)
 
-#define REQUIRE_AT_EX(condition, finalExit) \
+#define REQUIRE_AT_EX(condition, finalExit, returnStatement) \
     \
     if (condition) \
         ; \
@@ -74,7 +74,7 @@ void reportError(const PrintApi* api, const CharType* message, bool finalExit = 
         reportError(api, CT(__FILE__) CT("(") \
             CT(PREP_STRINGIZE(__LINE__)) CT("): ") \
             CT(PREP_STRINGIZE(condition)) CT(" failed"), finalExit); \
-        return; \
+        returnStatement; \
     }
 
 //================================================================
@@ -117,13 +117,15 @@ public:
         const OutputFuncs& func,
         const OutputFuncs& aux,
         const AtApi* api,
-        bool useDebugOutput
+        bool useDebugOutput,
+        MessageFormatter& formatter
     )
         :
         func(func),
         aux(aux),
         api(api),
-        useDebugOutput(useDebugOutput)
+        useDebugOutput(useDebugOutput),
+        formatter(formatter)
     {
     }
 
@@ -171,6 +173,8 @@ private:
 
     bool const useDebugOutput;
 
+    MessageFormatter& formatter;
+
 };
 
 //================================================================
@@ -182,10 +186,7 @@ private:
 template <typename AtApi>
 bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 {
-    constexpr size_t bufferSize = 1024;
-    CharType bufferArray[bufferSize];
-    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-
+    formatter.clear();
     v.func(v.value, formatter);
     ensure(formatter.valid());
 
@@ -224,8 +225,8 @@ class SetBusyStatusByAt : public SetBusyStatus
 
 public:
 
-    SetBusyStatusByAt(const AtApi* api)
-        : api(api) {}
+    SetBusyStatusByAt(const AtApi* api, MessageFormatter& formatter)
+        : api(api), formatter(formatter) {}
 
     bool set(const FormatOutputAtom& message);
 
@@ -237,6 +238,7 @@ public:
 private:
 
     const AtApi* const api;
+    MessageFormatter& formatter;
 
 };
 
@@ -249,10 +251,7 @@ private:
 template <typename AtApi>
 bool SetBusyStatusByAt<AtApi>::set(const FormatOutputAtom& message)
 {
-    constexpr size_t bufferSize = 1024;
-    CharType bufferArray[bufferSize];
-    FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-
+    formatter.clear();
     message.func(message.value, formatter);
     ensure(formatter.valid());
 
@@ -279,10 +278,7 @@ public:
 
     stdbool addImage(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
     {
-        constexpr size_t bufferSize = 1024;
-        CharType bufferArray[bufferSize];
-        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-
+        formatter.clear();
         hint.desc.func(hint.desc.value, formatter);
         require(formatter.valid());
 
@@ -307,10 +303,7 @@ public:
 
         ////
 
-        constexpr size_t bufferSize = 1024;
-        CharType bufferArray[bufferSize];
-        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
-
+        formatter.clear();
         hint.desc.func(hint.desc.value, formatter);
         require(formatter.valid());
 
@@ -348,12 +341,13 @@ public:
 
 public:
 
-    inline AtImgConsoleImplThunk(const AtApi* api)
-        : api(api) {}
+    inline AtImgConsoleImplThunk(const AtApi* api, MessageFormatter& formatter)
+        : api(api), formatter(formatter) {}
 
 private:
 
     const AtApi* const api;
+    MessageFormatter& formatter;
 
 };
 
@@ -577,11 +571,13 @@ private:
 
 #define COMMON_KIT_IMPL(AtApi, baseKit) \
     \
+    MessageFormatterStdio formatter{makeArray(client->formatterArray, client->formatterSize)}; \
+    \
     OutputLogByAt<AtApi> msgLog({api->gcon_print_ex, api->gcon_clear, api->gcon_update}, \
-        {api->lcon_print_ex, api->lcon_clear, api->lcon_update}, api, true); \
+        {api->lcon_print_ex, api->lcon_clear, api->lcon_update}, api, true, formatter); \
     \
     OutputLogByAt<AtApi> localLog({api->lcon_print_ex, api->lcon_clear, api->lcon_update}, \
-        {nullptr, nullptr, nullptr}, api, false); \
+        {nullptr, nullptr, nullptr}, api, false, formatter); \
     \
     ErrorLogByMsgLog errorLog(msgLog); \
     ErrorLogKit errorLogKit(errorLog); \
@@ -589,15 +585,16 @@ private:
     \
     MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit); \
     \
-    AtImgConsoleImplThunk<AtApi> imgConsole(api); \
+    AtImgConsoleImplThunk<AtApi> imgConsole(api, formatter); \
     \
     AtSignalSetThunk<AtApi> signalSet(api); \
     ThreadManagerImpl threadManager; \
     \
-    SetBusyStatusByAt<AtApi> setBusyStatus(api); \
+    SetBusyStatusByAt<AtApi> setBusyStatus(api, formatter); \
     \
     auto baseKit = kitCombine \
     ( \
+        MessageFormatterKit(formatter), \
         ErrorLogKit(errorLog), \
         ErrorLogExKit(errorLogEx), \
         MsgLogKit(msgLog), \
@@ -694,6 +691,9 @@ struct Client
 
     atStartup::AtAssembly assembly;
     ArrayMemory<CharType> videofileName;
+
+    static constexpr int formatterSize = 65536;
+    CharType formatterArray[formatterSize];
 };
 
 //================================================================
@@ -708,14 +708,19 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const AtEn
 
     ////
 
-    TRACE_ROOT_STD;
-    COMMON_KIT_IMPL(at_api_create, kit);
+    Client* client = new (std::nothrow) Client;
+    REMEMBER_CLEANUP1_EX(clientCleanup, delete client, Client*, client);
+
+    if_not (client)
+    {
+        api->gcon_print_ex(api, CT("Cannot allocate AT client instance"), at_msg_err);
+        returnFalse;
+    }
 
     ////
 
-    Client* client = new (std::nothrow) Client;
-    REQUIRE(client != 0);
-    REMEMBER_CLEANUP1_EX(clientCleanup, delete client, Client*, client);
+    TRACE_ROOT_STD;
+    COMMON_KIT_IMPL(at_api_create, kit);
 
     ////
 
@@ -754,17 +759,15 @@ void atClientCreate(void** instance, const at_api_create* api, const AtEngineFac
 
 void atClientDestroy(void* instance, const at_api_destroy* api)
 {
+    bool finalExit = api->final_exit(api) != 0;
+    
+    Client* client = (Client*) instance;
+    REQUIRE_AT_EX(client != 0, finalExit, return);
+
+    ////
+
     TRACE_ROOT_STD;
     COMMON_KIT_IMPL(at_api_destroy, kit);
-
-    ////
-
-    bool finalExit = api->final_exit(api) != 0;
-
-    ////
-
-    Client* client = (Client*) instance;
-    REQUIRE_AT_EX(client != 0, finalExit);
 
     ////
 
@@ -823,6 +826,11 @@ private:
 
 stdbool atClientProcessCore(void* instance, const at_api_process* api)
 {
+    Client* client = static_cast<Client*>(instance);
+    REQUIRE_AT_EX(client != 0, false, returnFalse);
+
+    ////
+
     TRACE_ROOT_STD;
 
     COMMON_KIT_IMPL(at_api_process, baseKit);
@@ -877,11 +885,6 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     // Video info
     //
     //----------------------------------------------------------------
-
-    Client* client = static_cast<Client*>(instance);
-    REQUIRE(client != 0);
-
-    ////
 
     if_not (errorBlock(getVideoName(*api, client->videofileName, mallocAllocator, stdPass)))
         client->videofileName.resizeNull();
