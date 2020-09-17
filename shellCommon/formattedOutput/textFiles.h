@@ -10,6 +10,7 @@
 #include "userOutput/msgLog.h"
 #include "userOutput/printMsg.h"
 #include "userOutput/diagnosticKit.h"
+#include "storage/rememberCleanup.h"
 
 //================================================================
 //
@@ -184,23 +185,21 @@ public:
 
     bool addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     {
-        using namespace std;
+        ensure(valid);
+        REMEMBER_CLEANUP_EX(errorExit, valid = false);
 
-        try
-        {
-            constexpr size_t bufferSize = 1024;
-            CharType bufferArray[bufferSize];
-            FormatStreamStdioThunk formatter{bufferArray, bufferSize};
+        constexpr size_t bufferSize = 1024;
+        CharType bufferArray[bufferSize];
+        FormatStreamStdioThunk formatter{bufferArray, bufferSize};
 
-            v.func(v.value, formatter);
-            formatter.write(CT("\n"), 1);
-            ensure(formatter.valid());
+        v.func(v.value, formatter);
+        formatter.write(CT("\n"), 1);
+        ensure(formatter.valid());
 
-            stream << formatter.data();
-            ensure(!!stream);
-        }
-        catch (const exception&) {return false;}
+        stream << formatter.data();
+        ensure(!!stream);
 
+        errorExit.cancel();
         return true;
     }
 
@@ -223,8 +222,7 @@ public:
 
     stdbool open(const CharType* filename, stdPars(TextFileKit))
     {
-        stream.close();
-        stream.clear();
+        close();
 
         stream.open(filename);
         REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
@@ -234,15 +232,17 @@ public:
         returnTrue;
     }
 
-    stdbool flush(stdPars(TextFileKit))
+    void close()
     {
-        stream.flush();
-        REQUIRE_TRACE1(!!stream, STR("Cannot write to file %0"), openedFilename);
-        returnTrue;
+        valid = true;
+        stream.close();
+        stream.clear();
+        openedFilename.clear();
     }
 
-    stdbool flushClose(stdPars(TextFileKit))
+    stdbool flushAndClose(stdPars(TextFileKit))
     {
+        REQUIRE(valid);
         stream.flush();
         bool ok = !!stream;
         stream.close();
@@ -258,6 +258,7 @@ public:
 
 private:
 
+    bool valid = true;
     StlString openedFilename;
     std::basic_ofstream<CharType> stream;
 
