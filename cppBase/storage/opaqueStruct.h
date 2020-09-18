@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef HEXLIB_OPAQUE_STRUCT
-#define HEXLIB_OPAQUE_STRUCT
-
 #include "storage/typeAlignment.h"
 
 //================================================================
@@ -54,7 +51,3 @@ inline void exchange(OpaqueStruct<size>& a, OpaqueStruct<size>& b)
     a = b;
     b = tmp;
 }
-
-//----------------------------------------------------------------
-
-#endif // HEXLIB_OPAQUE_STRUCT

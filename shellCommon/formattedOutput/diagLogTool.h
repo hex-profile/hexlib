@@ -1,6 +1,6 @@
 #pragma once
 
-#include "extLib/diagLog/diagLog.h"
+#include "extLib/userOutput/diagLog.h"
 #include "formattedOutput/userOutputThunks.h"
 #include "storage/disposableObject.h"
 #include "userOutput/diagnosticKit.h"

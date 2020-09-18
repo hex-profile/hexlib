@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef HEXLIB_POINT_BASE
-#define HEXLIB_POINT_BASE
-
 #include "extLib/types/compileTools.h"
 
 //================================================================
@@ -48,7 +45,3 @@ HEXLIB_INLINE Point<Type> point(const Type& value)
     result.Y = value;
     return result;
 }
-
-//----------------------------------------------------------------
-
-#endif // HEXLIB_POINT_BASE

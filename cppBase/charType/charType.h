@@ -1,5 +1,7 @@
 #pragma once
 
+#include "extLib/types/charType.h"
+
 //================================================================
 //
 // CHARTYPE_SELECT
@@ -17,19 +19,6 @@
 
     #define CHARTYPE_SELECT(notUnicode, unicode) \
         notUnicode
-
-#endif
-
-//================================================================
-//
-// CharType
-//
-//================================================================
-
-#ifndef HEXLIB_CHARTYPE
-#define HEXLIB_CHARTYPE
-
-using CharType = CHARTYPE_SELECT(char, wchar_t);
 
 #endif
 

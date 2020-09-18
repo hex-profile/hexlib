@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef HEXLIB_TIMER
-#define HEXLIB_TIMER
-
 #include <stdint.h>
 
 #include "storage/opaqueStruct.h"
@@ -65,7 +62,3 @@ struct Timer
     // launch of an application.
     virtual TimeMicroseconds convertToSteadyMicroseconds(const TimeMoment& baseMoment) const =0;
 };
-
-//----------------------------------------------------------------
-
-#endif
