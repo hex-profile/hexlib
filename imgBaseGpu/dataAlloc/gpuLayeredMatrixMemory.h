@@ -76,7 +76,7 @@ public:
                 resultPtr,
                 currentImagePitch,
                 currentImageSize.X, currentImageSize.Y,
-                matrixPreconditionsAreVerified()
+                MatrixValidityAssertion{}
             );
         }
 

@@ -134,7 +134,7 @@ public:
     inline bool resize(Space size)
     {
         ensure(SpaceU(size) <= SpaceU(theAllocSize));
-        BaseArray::assign(theAllocPtr, size, arrayPreconditionsAreVerified());
+        BaseArray::assign(theAllocPtr, size, ArrayValidityAssertion{});
 
         return true;
     }

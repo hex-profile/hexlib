@@ -48,7 +48,7 @@ stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, Allocat
 
     ////
 
-    BaseArray::assign(newPtr, size, arrayPreconditionsAreVerified());
+    BaseArray::assign(newPtr, size, ArrayValidityAssertion{});
 
     returnTrue;
 }

@@ -24,6 +24,28 @@
 //
 //================================================================
 
+//================================================================
+//
+// MatrixValidityAssertion
+//
+// Static assertion:
+//
+// (1) sizeX >= 0 && sizeY >= 0
+// (2) sizeX <= |pitch|
+// (3) (sizeX * pitch * sizeof(*memPtr)) fits into Space type
+//
+//================================================================
+
+class MatrixValidityAssertion
+{
+};
+
+//================================================================
+//
+// MatrixBase
+//
+//================================================================
+
 template <typename Type, typename Pointer = Type*>
 class MatrixBase
 {
@@ -59,3 +81,48 @@ protected:
     Space theSizeY = 0;
 
 };
+
+//================================================================
+//
+// Checks preconditions:
+//
+// (1) sizeX >= 0 && sizeY >= 0
+// (2) sizeX <= |pitch|
+// (3) (sizeY * pitch * elemSize) fits into Space type.
+//
+//================================================================
+
+template <Space elemSize>
+HEXLIB_INLINE bool matrixBaseIsValid(Space sizeX, Space sizeY, Space pitch)
+{
+    HEXLIB_ENSURE(sizeX >= 0);
+    HEXLIB_ENSURE(sizeY >= 0);
+
+    ////
+
+    static_assert(elemSize >= 1, "");
+    constexpr Space maxArea = spaceMax / elemSize;
+
+    ////
+
+    Space absPitch = pitch;
+
+    if (absPitch < 0)
+        absPitch = -absPitch;
+
+    HEXLIB_ENSURE(absPitch >= 0);
+
+    ////
+
+    HEXLIB_ENSURE(sizeX <= absPitch);
+
+    ////
+
+    if (sizeY >= 1)
+    {
+        Space maxWidth = maxArea / sizeY;
+        HEXLIB_ENSURE(absPitch <= maxWidth);
+    }
+
+    return true;
+}

@@ -204,30 +204,9 @@ sysinline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& p
 
 //================================================================
 //
-// MatrixPreconditions
-//
-// Static assertion:
-//
-// (1) sizeX >= 0 && sizeY >= 0
-// (2) sizeX <= |pitch|
-// (3) (sizeX * pitch * sizeof(*memPtr)) fits into Space type
-//
-//================================================================
-
-class MatrixPreconditions
-{
-    sysinline MatrixPreconditions() {}
-    friend sysinline MatrixPreconditions matrixPreconditionsAreVerified();
-};
-
-sysinline MatrixPreconditions matrixPreconditionsAreVerified()
-    {return MatrixPreconditions();}
-
-//================================================================
-//
 // matrixParamsAreValid
 //
-// Checks MatrixPreconditions.
+// Checks MatrixValidityAssertion.
 //
 //================================================================
 
@@ -295,8 +274,8 @@ public:
         {assign(memPtr, memPitch, sizeX, sizeY);} // checked
 
     template <typename Ptr>
-    sysinline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
-        {assign(memPtr, memPitch, sizeX, sizeY, preconditions);} // unchecked, static assertion
+    sysinline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion& assertion)
+        {assign(memPtr, memPitch, sizeX, sizeY, assertion);} // unchecked, static assertion
 
     //
     // Create by an array.
@@ -344,7 +323,7 @@ public:
     // Assign data (unchecked, static assertion).
     //
 
-    sysinline void assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions&)
+    sysinline void assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion&)
     {
         theMemPtrUnsafe = memPtr;
         theMemPitch = memPitch;
@@ -383,7 +362,7 @@ public:
     bool assign(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         {return assign(unsafePtr(memPtr, sizeX, sizeY), memPitch, sizeX, sizeY);}
 
-    bool assign(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions&)
+    bool assign(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion&)
         {return assign(unsafePtr(memPtr, sizeX, sizeY), memPitch, sizeX, sizeY);}
 
 #endif
@@ -550,7 +529,7 @@ public:
         if_not (ok)
             totalSize = 0;
 
-        result.assign(theMemPtrUnsafe, totalSize, arrayPreconditionsAreVerified());
+        result.assign(theMemPtrUnsafe, totalSize, ArrayValidityAssertion{});
 
         return ok;
     }
@@ -677,8 +656,8 @@ public:
     sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}
 
-    sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
-        : Base(memPtr, memPitch, sizeX, sizeY, preconditions) {}
+    sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion& assertion)
+        : Base(memPtr, memPitch, sizeX, sizeY, assertion) {}
 
 #if HEXLIB_GUARDED_MEMORY
 

@@ -26,7 +26,7 @@ private:
 
     sysinline void updateBaseArray()
     {
-        BaseArray::assign(&storage[0], currentSize, arrayPreconditionsAreVerified());
+        BaseArray::assign(&storage[0], currentSize, ArrayValidityAssertion{});
     }
 
 public:

@@ -52,7 +52,7 @@ public:
         ensure(SpaceU(newSize) <= SpaceU(maxSize));
 
         currentSize = newSize;
-        BaseArray::assign(data, newSize, arrayPreconditionsAreVerified());
+        BaseArray::assign(data, newSize, ArrayValidityAssertion{});
 
         return true;
     }

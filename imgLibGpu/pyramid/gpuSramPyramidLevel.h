@@ -96,7 +96,7 @@ sysinline GpuMatrix<Type> GpuSramPyramidLevel<Type>::getImage(Space layer) const
         (Type*) (basePointer + layout.memOffset + layer * layout.layerBytePitch),
         layout.pitch,
         layout.size.X, layout.size.Y,
-        matrixPreconditionsAreVerified()
+        MatrixValidityAssertion{}
     );
 }
 
