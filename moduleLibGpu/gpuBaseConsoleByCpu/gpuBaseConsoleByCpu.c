@@ -7,6 +7,7 @@
 #include "gpuMatrixCopy/gpuMatrixCopy.h"
 #include "errorLog/debugBreak.h"
 #include "gpuMatrixSet/gpuMatrixSet.h"
+#include "data/spacex.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

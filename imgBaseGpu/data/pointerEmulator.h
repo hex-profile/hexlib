@@ -30,7 +30,8 @@ private:
 
 public:
 
-    PointerEmulator() {addr = 0xBAADF00D;}
+    PointerEmulator() 
+        {addr = 0xBAADF00D;}
 
     //
     // Convert from address type
@@ -54,7 +55,7 @@ public:
 
     using SelfConstType = PointerEmulator<AddrU, const Type>;
 
-    inline operator const SelfConstType& ()
+    inline operator const SelfConstType& () const
     {
         return recastEqualLayout<const SelfConstType>(*this);
     }
