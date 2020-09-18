@@ -1,12 +1,11 @@
 #pragma once
 
-#include "data/space.h"
-#include "data/spacex.h"
 #include "point/point.h"
 #include "data/array.h"
 #include "data/pointerInterface.h"
 #include "numbers/int/intType.h"
 #include "data/commonFuncs.h"
+#include "extLib/data/matrixBase.h"
 
 //================================================================
 //
@@ -244,22 +243,26 @@ bool matrixParamsAreValid(Space sizeX, Space sizeY, Space pitch);
 //================================================================
 
 template <typename Pointer>
-class MatrixEx
+class MatrixEx 
+    : 
+    public MatrixBase<typename PtrElemType<Pointer>::T, Pointer>
 {
+
+    template <typename OtherPointer>
+    friend class MatrixEx;
+
+public:
+
+    using Type = typename PtrElemType<Pointer>::T;
 
 private:
 
-    // Base pointer. If the matrix is empty, can be 0.
-    Pointer theMemPtrUnsafe = Pointer(0);
+    using BaseType = MatrixBase<Type, Pointer>;
 
-    // Pitch. Can be negative. |pitch| >= sizeX.
-    // If the matrix is empty, can be undefined.
-    Space theMemPitch = 0;
-
-    // Dimensions. Always >= 0.
-    // sizeX >= |pitch|
-    Space theSizeX = 0;
-    Space theSizeY = 0;
+    using BaseType::theMemPtrUnsafe;
+    using BaseType::theMemPitch;
+    using BaseType::theSizeX;
+    using BaseType::theSizeY;
 
 public:
 
@@ -270,13 +273,6 @@ public:
         exchange(A.theSizeX, B.theSizeX);
         exchange(A.theSizeY, B.theSizeY);
     }
-
-public:
-
-    template <typename OtherPointer>
-    friend class MatrixEx;
-
-    using Type = typename PtrElemType<Pointer>::T;
 
     //
     // Create empty.
@@ -309,10 +305,7 @@ public:
     template <typename OtherPointer>
     sysinline MatrixEx(const ArrayEx<OtherPointer>& that)
         :
-        theMemPtrUnsafe(that.thePtr),
-        theMemPitch(that.theSize),
-        theSizeX(that.theSize),
-        theSizeY(1)
+        BaseType{that.thePtr, that.theSize, that.theSize, 1}
     {
         MATRIX__CHECK_CONVERSION(OtherPointer, Pointer);
     }
@@ -651,6 +644,10 @@ public:
     }
 
 };
+
+//----------------------------------------------------------------
+
+COMPILE_ASSERT_EQUAL_LAYOUT(MatrixEx<int*>, MatrixBase<int>);
 
 //================================================================
 //

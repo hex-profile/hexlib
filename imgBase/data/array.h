@@ -4,6 +4,7 @@
 #include "data/commonFuncs.h"
 #include "data/pointerInterface.h"
 #include "numbers/int/intType.h"
+#include "extLib/data/arrayBase.h"
 
 //================================================================
 //
@@ -164,13 +165,21 @@ sysinline bool arrayValidAccess(Space size, Space pos)
 //================================================================
 
 template <typename Pointer>
-class ArrayEx
+class ArrayEx 
+    : 
+    public ArrayBase<typename PtrElemType<Pointer>::T, Pointer>
 {
+
+public:
+
+    using Type = typename PtrElemType<Pointer>::T;
 
 private:
 
-    Pointer thePtr; // if theSize == 0, is not used.
-    Space theSize; // always >= 0
+    using BaseType = ArrayBase<Type, Pointer>;
+
+    using BaseType::thePtr;
+    using BaseType::theSize;
 
 private:
 
@@ -180,10 +189,6 @@ private:
     template <typename OtherPointer>
     friend class MatrixEx;
 
-public:
-
-    using Type = typename PtrElemType<Pointer>::T;
-
     //
     // Creation
     //
@@ -191,7 +196,7 @@ public:
 public:
 
     sysinline ArrayEx()
-        : theSize(0) {}
+        {}
 
     sysinline ArrayEx(Pointer ptr, Space size)
         {assign(ptr, size);}
@@ -361,6 +366,10 @@ public:
     }
 
 };
+
+////
+
+COMPILE_ASSERT_EQUAL_LAYOUT(ArrayBase<int>, ArrayEx<int*>);
 
 //================================================================
 //
