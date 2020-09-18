@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef HEXLIB_SMART_PTR
-#define HEXLIB_SMART_PTR
-
 #include <memory>
 #include <utility>
 
@@ -48,7 +45,3 @@ inline SharedPtr<Type> makeShared(Args&&... args)
 {
     return std::make_shared<Type>(std::forward<Args>(args)...);
 }
-
-//----------------------------------------------------------------
-
-#endif // HEXLIB_SMART_PTR

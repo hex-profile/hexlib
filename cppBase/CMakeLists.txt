@@ -4,4 +4,4 @@
 #
 #================================================================
 
-hexlibProjectTemplate(cppBase STATIC . "" FALSE hexlib)
+hexlibProjectTemplate(cppBase STATIC . "extLib" FALSE hexlib)

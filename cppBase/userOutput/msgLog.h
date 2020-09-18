@@ -1,7 +1,7 @@
 #pragma once
 
 #include "formatting/formatOutputAtom.h"
-#include "userOutput/msgKind.h"
+#include "extLib/userOutput/msgKind.h"
           
 //================================================================
 //

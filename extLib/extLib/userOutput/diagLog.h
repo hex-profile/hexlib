@@ -2,22 +2,8 @@
 
 #include <stddef.h>
 
+#include "extLib/userOutput/msgKind.h"
 #include "extLib/types/charType.h"
-
-//================================================================
-//
-// MsgKind
-//
-// Auxiliary message type specification.
-//
-//================================================================
-
-#ifndef HEXLIB_MSGKIND
-#define HEXLIB_MSGKIND
-
-enum MsgKind {msgInfo, msgWarn, msgErr};
-
-#endif
 
 //================================================================
 //

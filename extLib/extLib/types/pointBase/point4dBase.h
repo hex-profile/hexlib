@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef HEXLIB_POINT4D_BASE
-#define HEXLIB_POINT4D_BASE
-
 #include "extLib/types/compileTools.h"
 
 //================================================================
@@ -49,7 +46,3 @@ HEXLIB_INLINE Point4D<Type> point4D(const Type& value)
     result.W = value;
     return result;
 }
-
-//----------------------------------------------------------------
-
-#endif // HEXLIB_POINT4D_BASE

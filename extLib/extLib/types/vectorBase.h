@@ -1,27 +1,9 @@
 #pragma once
 
-#ifndef HEXLIB_VECTOR_BASE_TYPES
-#define HEXLIB_VECTOR_BASE_TYPES
-
-#include "extLib/types/intTypes.h"
-#include "extLib/types/floatTypes.h"
+#include "extLib/types/intBase.h"
+#include "extLib/types/floatBase.h"
+#include "extLib/types/float16Base.h"
 #include "extLib/types/compileTools.h"
-
-//================================================================
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-//----------------------------------------------------------------
-//
-// Define vector types.
-//
-// The header should define the following vector types: base_x2 and base_x4 
-// where the base is {bool, int8, uint8, int16, uint16, int32, uint32, float16, float32}.
-//
-// For each type, the function make_[type] should be defined,
-// where [type] is the name of the vector type.
-//
-//----------------------------------------------------------------
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-//================================================================
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -233,7 +215,3 @@ TMP_MACRO(float32_x4, 16, 16);
 ////
 
 #undef TMP_MACRO
-
-//----------------------------------------------------------------
-
-#endif // HEXLIB_VECTOR_BASE_TYPES

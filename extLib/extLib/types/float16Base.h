@@ -1,13 +1,17 @@
 #pragma once
 
+#include <stdint.h>
+
 //================================================================
 //
-// CharType
+// float16
 //
 //================================================================
 
-#if defined(_UNICODE)
-    using CharType = wchar_t;
-#else
-    using CharType = char;
-#endif
+struct float16
+{
+    uint16_t data;
+};
+
+static_assert(sizeof(float16) == 2, "");
+static_assert(alignof(float16) == 2, "");

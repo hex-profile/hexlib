@@ -1,4 +1,4 @@
-#include "userOutput/msgKind.h"
+#include "extLib/userOutput/msgKind.h"
 #include "formatting/formatOutputEnum.h"
 
 //----------------------------------------------------------------

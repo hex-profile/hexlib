@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef HEXLIB_MOVEMENT_3D
-#define HEXLIB_MOVEMENT_3D
-
 #include "extLib/types/pointTypes.h"
 
 //================================================================
@@ -33,7 +30,3 @@ HEXLIB_INLINE Movement3D<Float> movement3D(const Point4D<Float>& rotation, const
     result.translation = translation;
     return result;
 }
-
-//----------------------------------------------------------------
-
-#endif // #ifndef HEXLIB_MOVEMENT_3D

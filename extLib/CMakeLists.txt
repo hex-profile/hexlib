@@ -1,6 +1,6 @@
 #================================================================
 #
-# Base types for external interfaces.
+# Clean base types for external interfaces.
 #
 #================================================================
 

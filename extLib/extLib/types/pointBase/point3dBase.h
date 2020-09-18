@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef HEXLIB_POINT3D_BASE
-#define HEXLIB_POINT3D_BASE
-
 #include "extLib/types/compileTools.h"
 
 //================================================================
@@ -46,7 +43,3 @@ HEXLIB_INLINE Point3D<Type> point3D(const Type& value)
     result.Z = value;
     return result;
 }
-
-//----------------------------------------------------------------
-
-#endif // HEXLIB_POINT3D_BASE
