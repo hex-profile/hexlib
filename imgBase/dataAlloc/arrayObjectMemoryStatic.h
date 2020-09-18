@@ -58,7 +58,7 @@ public:
 
         currentSize = newSize;
 
-        BaseArray::assign(data, newSize, arrayPreconditionsAreVerified());
+        BaseArray::assign(data, newSize, ArrayValidityAssertion{});
 
         return true;
     }

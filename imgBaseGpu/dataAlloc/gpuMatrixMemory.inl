@@ -95,7 +95,7 @@ stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByt
 
     ////
 
-    BaseMatrix::assign(newPtr, alignedSizeX, sizeX, sizeY, matrixPreconditionsAreVerified());
+    BaseMatrix::assign(newPtr, alignedSizeX, sizeX, sizeY, MatrixValidityAssertion{});
 
     returnTrue;
 }
@@ -135,7 +135,7 @@ bool GpuMatrixMemory<Type>::resize(Space sizeX, Space sizeY)
     ensure(SpaceU(sizeY) <= SpaceU(allocSize.Y));
 
     Space alignedSizeX = (sizeX + allocAlignMask) & (~allocAlignMask); // overflow impossible
-    BaseMatrix::assign(allocPtr, alignedSizeX, sizeX, sizeY, matrixPreconditionsAreVerified());
+    BaseMatrix::assign(allocPtr, alignedSizeX, sizeX, sizeY, MatrixValidityAssertion{});
 
     return true;
 }

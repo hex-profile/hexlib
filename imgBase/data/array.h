@@ -81,24 +81,6 @@ REQUIRE(hasData(example.size()));
 
 //================================================================
 //
-// ArrayPreconditions
-//
-// size >= 0
-// size * sizeof(*ptr) fits into Space type.
-//
-//================================================================
-
-class ArrayPreconditions
-{
-    sysinline ArrayPreconditions() {}
-    friend sysinline ArrayPreconditions arrayPreconditionsAreVerified();
-};
-
-sysinline ArrayPreconditions arrayPreconditionsAreVerified()
-    {return ArrayPreconditions();}
-
-//================================================================
-//
 // ARRAY__CHECK_CONVERSION
 //
 //================================================================
@@ -216,7 +198,7 @@ public:
         theSize = ok ? size : 0;
     }
 
-    sysinline void assign(Pointer ptr, Space size, const ArrayPreconditions& p)
+    sysinline void assign(Pointer ptr, Space size, const ArrayValidityAssertion&)
     {
         thePtr = ptr;
         theSize = size;

@@ -22,6 +22,25 @@
 //
 //================================================================
 
+//================================================================
+//
+// ArrayValidityAssertion
+//
+// size >= 0
+// size * sizeof(*ptr) fits into Space type.
+//
+//================================================================
+
+struct ArrayValidityAssertion
+{
+};
+
+//================================================================
+//
+// ArrayBase
+//
+//================================================================
+
 template <typename Type, typename Pointer = Type*>
 class ArrayBase
 {
@@ -33,7 +52,7 @@ public:
     }
 
     template <typename OtherPointer>
-    HEXLIB_INLINE ArrayBase(OtherPointer ptr, Space size)
+    HEXLIB_INLINE ArrayBase(OtherPointer ptr, Space size, const ArrayValidityAssertion&)
         :
         thePtr{ptr},
         theSize{size}
@@ -46,3 +65,24 @@ protected:
     Space theSize = 0;
 
 };
+
+//================================================================
+//
+// arrayBaseIsValid
+//
+//================================================================
+
+template <Space elemSize>
+HEXLIB_INLINE bool arrayBaseIsValid(Space size)
+{
+    HEXLIB_ENSURE(size >= 0);
+
+    ////
+
+    static_assert(elemSize >= 1, "");
+    constexpr Space maxArea = spaceMax / elemSize;
+
+    HEXLIB_ENSURE(size <= maxArea);
+
+    return true;
+}

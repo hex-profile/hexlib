@@ -15,3 +15,12 @@
 #else
     #define HEXLIB_INLINE inline
 #endif
+
+//================================================================
+//
+// HEXLIB_ENSURE
+//
+//================================================================
+
+#define HEXLIB_ENSURE(condition) \
+    if (condition) ; else return false

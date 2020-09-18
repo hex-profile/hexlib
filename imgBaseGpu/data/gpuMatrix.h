@@ -31,7 +31,7 @@ public:
     sysinline GpuMatrix(GpuPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}
 
-    sysinline GpuMatrix(GpuPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
+    sysinline GpuMatrix(GpuPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion& preconditions)
         : Base(memPtr, memPitch, sizeX, sizeY, preconditions) {}
 
 #if HEXLIB_GUARDED_MEMORY
@@ -42,7 +42,7 @@ public:
     sysinline GpuMatrix(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
         : Base(memPtr, memPitch, sizeX, sizeY) {}
 
-    sysinline GpuMatrix(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixPreconditions& preconditions)
+    sysinline GpuMatrix(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion& preconditions)
         : Base(memPtr, memPitch, sizeX, sizeY, preconditions) {}
 
 #endif
