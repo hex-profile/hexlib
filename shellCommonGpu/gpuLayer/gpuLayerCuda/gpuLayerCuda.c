@@ -499,9 +499,18 @@ void CudaInitApiThunk::destroyContext(GpuContextDeallocContext& deallocContext)
 stdbool CudaInitApiThunk::setThreadContext(const GpuContext& context, stdNullPars)
 {
     const ContextEx& ctx = uncast(context);
-
     REQUIRE(ctx.isCreated());
-    REQUIRE_CUDA(cuCtxSetCurrent(ctx.getBaseContext()));
+    auto newContext = ctx.getBaseContext();
+
+    CUcontext currentContext = nullptr;
+    REQUIRE_CUDA(cuCtxGetCurrent(&currentContext));
+
+    if (newContext != currentContext)
+    {
+        REQUIRE_CUDA(cuCtxSetCurrent(newContext));
+        void* p = newContext;
+        printMsg(kit.msgLog, STR("Setting CUDA thread context %"), p, msgWarn); // ```
+    }
 
     returnTrue;
 }
