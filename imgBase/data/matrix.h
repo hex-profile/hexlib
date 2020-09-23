@@ -283,10 +283,9 @@ public:
 
     template <typename OtherPointer>
     sysinline MatrixEx(const ArrayEx<OtherPointer>& that)
-        :
-        BaseType{that.thePtr, that.theSize, that.theSize, 1}
     {
         MATRIX__CHECK_CONVERSION(OtherPointer, Pointer);
+        assign(that.thePtr, that.theSize, that.theSize, 1);
     }
 
     //
