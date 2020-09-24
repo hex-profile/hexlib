@@ -506,11 +506,7 @@ stdbool CudaInitApiThunk::setThreadContext(const GpuContext& context, stdNullPar
     REQUIRE_CUDA(cuCtxGetCurrent(&currentContext));
 
     if (newContext != currentContext)
-    {
         REQUIRE_CUDA(cuCtxSetCurrent(newContext));
-        void* p = newContext;
-        printMsg(kit.msgLog, STR("Setting CUDA thread context %"), p, msgWarn); // ```
-    }
 
     returnTrue;
 }
