@@ -384,7 +384,6 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     //
     //----------------------------------------------------------------
 
-    // ```
     require(kit.gpuContextCreation.setThreadContext(kit.gpuCurrentContext, stdPass));
 
     //----------------------------------------------------------------
