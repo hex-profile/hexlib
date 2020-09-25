@@ -66,6 +66,17 @@ public:
     {
     }
 
+public:
+
+    HEXLIB_INLINE Pointer memPtr() const 
+        {return theMemPtrUnsafe;}
+
+    HEXLIB_INLINE Space memPitch() const 
+        {return theMemPitch;}
+
+    HEXLIB_INLINE Point<Space> size() const 
+        {return point(theSizeX, theSizeY);}
+
 protected:
 
     // Base pointer. If the matrix is empty, can be 0.
