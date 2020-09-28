@@ -27,6 +27,8 @@ void DisplayParamsImpl::serialize(const CfgSerializeKit& kit, bool& prepParamsSt
     displayInterpolation.serialize(kit, STR("Interpolation"), STR("Alt+I"));
 
     viewIndex.serialize(kit, STR("View Index"), STR("9"), STR("0"));
+    viewIndexDisplayAll.serialize(kit, STR("View Index: Display All"));
+
     temporalIndex.serialize(kit, STR("Temporal Index"), STR(","), STR("."));
     circularIndex.serialize(kit, STR("Circular Index"), STR(";"), STR("'"));
     scaleIndex.serialize(kit, STR("Scale Index"), STR("="), STR("-"));

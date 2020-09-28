@@ -165,17 +165,20 @@ class DisplayedRangeIndexEx
 
 public:
 
-    inline DisplayedRangeIndexEx(int32 index)
-        : index(index) {}
+    inline DisplayedRangeIndexEx(int32 index, bool displayAll)
+        : index(index), displayAll(displayAll) {}
 
     inline auto singleValue() const
         {return index;}
 
-    inline DisplayedRange operator () (int32 minVal, int32 maxVal)
+    inline DisplayedRange operator ()(int32 minVal, int32 maxVal)
     {
         if (index < minVal) index = minVal;
         if (index > maxVal) index = maxVal;
-        return DisplayedRange{index, index, index+1};
+
+        return displayAll ?
+            DisplayedRange{index, minVal, maxVal + 1} :
+            DisplayedRange{index, index, index + 1};
     }
 
     inline auto singleValue(int32 minVal, int32 maxVal)
@@ -188,6 +191,7 @@ public:
 private:
 
     int32 index;
+    bool displayAll;
 
 };
 

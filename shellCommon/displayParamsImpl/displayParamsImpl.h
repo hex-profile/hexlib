@@ -54,6 +54,8 @@ private:
     BoolSwitch<true> displayInterpolation;
 
     RangeValueControl<int32> viewIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    BoolSwitch<false> viewIndexDisplayAll;
+
     RangeValueControl<int32> temporalIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
     RangeValueControl<int32> circularIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
     RangeValueControl<int32> scaleIndex{0, 0x7F, 0, 1, RangeValueLinear};
@@ -77,7 +79,7 @@ public:
         :
         o(o),
 
-        viewIndexThunk(o.viewIndex),
+        viewIndexThunk(o.viewIndex, o.viewIndexDisplayAll),
         scaleIndexThunk(o.scaleIndex),
         circularIndexThunk(o.circularIndex),
         temporalIndexThunk(o.temporalIndex),
