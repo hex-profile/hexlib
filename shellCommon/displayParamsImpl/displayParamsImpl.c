@@ -10,6 +10,7 @@
 void DisplayParamsImpl::serialize(const CfgSerializeKit& kit, bool& prepParamsSteady)
 {
     check_flag(theAlternativeVersion.serialize(kit, STR("Alternative Version"), STR("a")), prepParamsSteady);
+    theAlternativeVersionPrintAlways.serialize(kit, STR("Alternative Version: Print Always"));
 
     theDisplayMode.serialize(kit, STR("Mode"), STR("Ctrl+D"));
 

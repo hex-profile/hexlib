@@ -31,6 +31,9 @@ public:
     bool alternativeVersion() const
         {return theAlternativeVersion;}
 
+    bool alternativeVersionPrintAlways() const
+        {return theAlternativeVersionPrintAlways;}
+
 private:
 
     friend class DisplayParamsThunk;
@@ -38,6 +41,7 @@ private:
 private:
 
     BoolSwitch<false> theAlternativeVersion;
+    BoolSwitch<false> theAlternativeVersionPrintAlways;
 
 private:
 
@@ -98,7 +102,7 @@ public:
 
     ~DisplayParamsThunk()
     {
-        o.viewIndex = viewIndexThunk;
+        o.viewIndex = viewIndexThunk.singleValue();
         o.scaleIndex = scaleIndexThunk;
         o.temporalIndex = temporalIndexThunk;
         o.stageIndex = stageIndexThunk;
@@ -119,7 +123,7 @@ private:
 
     DisplayParamsImpl& o;
 
-    DisplayedRangeIndex viewIndexThunk;
+    DisplayedRangeIndexEx viewIndexThunk;
     DisplayedRangeIndex scaleIndexThunk;
     DisplayedCircularIndex circularIndexThunk;
     DisplayedRangeIndex temporalIndexThunk;

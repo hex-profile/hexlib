@@ -359,7 +359,6 @@ private:
 private:
 
     DisplayParamsImpl displayParams;
-    BoolSwitch<false> alternativeVersionPrintAlways;
 
 private:
 
@@ -397,7 +396,6 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         CFG_NAMESPACE("Display Params");
 
         displayParams.serialize(kit, prepParamsSteady);
-        alternativeVersionPrintAlways.serialize(kit, STR("Alternative Version: Print Always"));
     }
 
     {
@@ -664,8 +662,6 @@ stdbool VideoPreprocessorImpl::processTarget
 
     GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, dp.displayMode(), dp.vectorMode(), kit);
 
-    ////
-
     DisplayParamsThunk displayParamsThunk{inputFrame.size(), displayParams};
 
     ////
@@ -687,7 +683,7 @@ stdbool VideoPreprocessorImpl::processTarget
             printMsgL(kit, STR("Video Preprocessor: Frame history empty"), msgErr);
         else
         {
-            Space i = kit.display.temporalIndex(-(frameHistory.size()-1), 0);
+            auto i = kit.display.temporalIndex(-(frameHistory.size()-1), 0);
 
             auto img = makeConst(frameHistory[-i]->frameMemory);
 
@@ -1058,7 +1054,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     bool alternativeVersion = displayParams.alternativeVersion();
 
-    if (alternativeVersionPrintAlways)
+    if (displayParams.alternativeVersionPrintAlways())
         printMsgL(kit, STR("Alternative Version: %"), alternativeVersion, alternativeVersion ? msgWarn : msgInfo);
     else
     {
