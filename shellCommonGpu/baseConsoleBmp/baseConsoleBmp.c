@@ -420,7 +420,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     //
     //----------------------------------------------------------------
 
-    auto filenameMsg = paramMsg(STR("%/%-%.bmp"), currentOutputDir, descArray(), dec(frameIndex, 8));
+    auto filenameMsg = paramMsg(STR("%/%--%.bmp"), currentOutputDir, dec(frameIndex, 8), descArray());
 
     require(formatAtomToBuffer(filenameMsg, filenameArray, stdPass));
 
