@@ -278,9 +278,27 @@ sysinline Point4D<Float> quatMixedPlus(const Point4D<Float>& A, const Point3D<Fl
 //================================================================
 
 template <typename Float>
-Float quatL2Diff(const Point4D<Float>& A, const Point4D<Float>& B)
+sysinline Float quatL2Diff(const Point4D<Float>& A, const Point4D<Float>& B)
 {
     Float lenSq1 = vectorLengthSq(A - B);
     Float lenSq2 = vectorLengthSq(A + B);
     return fastSqrt(minv(lenSq1, lenSq2));
+}
+
+//================================================================
+//
+// quatFlipToBase
+//
+// Flips a quaternion sign to make it closer to the specified base 
+// as if they were R^4 vectors.
+//
+//================================================================
+
+template <typename Float>
+sysinline Point4D<Float> quatFlipToBase(const Point4D<Float>& Q, const Point4D<Float>& base)
+{
+    Float lenSq1 = vectorLengthSq(Q - base);
+    Float lenSq2 = vectorLengthSq(Q + base);
+
+    return (lenSq1 < lenSq2) ? +Q : -Q;
 }
