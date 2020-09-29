@@ -27,6 +27,15 @@ template <typename StaticArray>
 constexpr inline auto makeRangeFromArray(const StaticArray& staticArray)
     {return makeRange(staticArray, staticArray + COMPILE_ARRAY_SIZE(staticArray));}
 
+//----------------------------------------------------------------
+
+template <typename Literal>
+constexpr inline auto makeStr(const Literal& str)
+{
+    COMPILE_ASSERT(COMPILE_ARRAY_SIZE(str) >= 1);
+    return makeRange(str, str + COMPILE_ARRAY_SIZE(str) - 1);
+}
+
 //================================================================
 //
 // equal
