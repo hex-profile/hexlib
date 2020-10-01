@@ -126,6 +126,11 @@ inline void MessageFormatterStdio::printIntFloat(Type value, const FormatNumberO
                 formatBuf, int(options.getWidth()), int(options.getPrecision()), value);
         }
     }
+    else if (TYPE_EQUAL(Type, bool))
+    {
+        result = SNPRINTF(memoryArray + usedSize, availSize + 1,
+            value ? CT("ON") : CT("OFF"));
+    }
     else
     {
         result = SNPRINTF(memoryArray + usedSize, availSize + 1,
