@@ -749,10 +749,12 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
             kit
         };
 
-        auto bits = -nativeLog2(maxVal - minVal);
+        auto msg = hint.desc;
 
-        auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
-            hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
+        //auto bits = -nativeLog2(maxVal - minVal);
+
+        //auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
+        //    hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
 
         require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, msg, stdPass));
     }
@@ -1271,12 +1273,12 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
             colorMode, kit
         };
 
-        auto bits = -nativeLog2(maxVal - minVal);
-        
-        auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
-            hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
+        //auto bits = -nativeLog2(maxVal - minVal);
+        //
+        //auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
+        //    hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
 
-        require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, msg, stdPass));
+        require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, hint.desc, stdPass));
     }
 
     //----------------------------------------------------------------
