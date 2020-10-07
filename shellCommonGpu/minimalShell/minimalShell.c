@@ -80,6 +80,14 @@ class MinimalShellImpl : public MinimalShell
 
 public:
 
+    virtual void setDefaultImageSaving(bool active, const CharType* dir)
+    {
+        bmpConfig.savingActive.setDefaultValue(active);
+        bmpConfig.outputDir.setDefaultValue(dir ? SimpleString(dir) : bmpConfig.getDefaultDir());
+    }
+
+public:
+
     void serialize(const CfgSerializeKit& kit);
 
 public:
