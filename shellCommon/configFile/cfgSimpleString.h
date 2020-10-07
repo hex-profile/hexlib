@@ -49,10 +49,18 @@ class SimpleStringVarEx
 
 public:
 
-    template <typename DefaultValue>
-    explicit SimpleStringVarEx(const DefaultValue& defaultValue)
+    template <typename AnyString>
+    explicit SimpleStringVarEx(const AnyString& defaultValue)
     {
         this->value = defaultValue;
+        this->defaultValue = defaultValue;
+    }
+
+public:
+
+    template <typename AnyString>
+    inline void setDefaultValue(const AnyString& defaultValue)
+    {
         this->defaultValue = defaultValue;
     }
 

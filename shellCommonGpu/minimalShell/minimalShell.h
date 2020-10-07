@@ -58,6 +58,8 @@ public:
 
 public:
 
+    virtual void setDefaultImageSaving(bool active, const CharType* dir) =0;
+
     virtual void serialize(const CfgSerializeKit& kit) =0;
 
 public:
