@@ -61,6 +61,7 @@ public:
     template <typename AnyString>
     inline void setDefaultValue(const AnyString& defaultValue)
     {
+        this->value = defaultValue;
         this->defaultValue = defaultValue;
     }
 
