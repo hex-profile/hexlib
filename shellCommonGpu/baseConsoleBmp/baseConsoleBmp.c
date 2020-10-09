@@ -246,7 +246,6 @@ stdbool writeImage
 //================================================================
 
 using HashKey = RndgenState;
-using Counter = uint32;
 
 //================================================================
 //
@@ -282,11 +281,13 @@ public:
     stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
+    void setLockstepCounter(Counter counter);
 
 private:
 
     SimpleString currentOutputDir;
     
+    Counter initCounter = 0;
     unordered_map<HashKey, Counter> table;
 
 };
@@ -313,6 +314,9 @@ stdbool BaseConsoleBmp::saveImage(const Point<Space>& imageSize, BaseImageProvid
 
 ////
 
+void BaseConsoleBmp::setLockstepCounter(Counter counter)
+    {return instance->setLockstepCounter(counter);}
+
 stdbool BaseConsoleBmp::setOutputDir(const CharType* outputDir, stdPars(Kit))
     {return instance->setOutputDir(outputDir, stdPassThru);}
 
@@ -332,6 +336,20 @@ stdbool BaseConsoleBmpImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
     }
 
     returnTrue;
+}
+
+//================================================================
+//
+// BaseConsoleBmpImpl::setLockstepCounter
+//
+//================================================================
+
+void BaseConsoleBmpImpl::setLockstepCounter(Counter counter)
+{
+    initCounter = counter;
+
+    for (auto& value: table)
+        value.second = counter;
 }
 
 //================================================================
@@ -406,7 +424,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     auto getFrameIndex = [&]
     {
         auto hash = getHash(descStr);
-        auto f = table.insert(make_pair(hash, Counter{}));
+        auto f = table.insert(make_pair(hash, initCounter));
         Counter& counter = f.first->second;
         frameIndex = counter++;
         returnTrue;

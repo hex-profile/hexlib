@@ -26,6 +26,14 @@ using Kit = KitCombine<DiagnosticKit, ProfilerKit, CpuFastAllocKit, DataProcessi
 
 //================================================================
 //
+// Counter
+//
+//================================================================
+
+using Counter = uint32;
+
+//================================================================
+//
 // BaseConsoleBmp
 //
 //================================================================
@@ -42,6 +50,7 @@ public:
     stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
+    void setLockstepCounter(Counter counter);
 
 private:
                 

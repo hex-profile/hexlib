@@ -80,10 +80,15 @@ class MinimalShellImpl : public MinimalShell
 
 public:
 
-    virtual void setDefaultImageSaving(bool active, const CharType* dir)
+    virtual void setImageSavingDefaultConfig(bool active, const CharType* dir)
     {
         bmpConfig.savingActive.setDefaultValue(active);
         bmpConfig.outputDir.setDefaultValue(dir ? SimpleString(dir) : bmpConfig.getDefaultDir());
+    }
+
+    virtual void setImageSavingLockstepCounter(uint32 counter)
+    {
+        bmpConsole.setLockstepCounter(counter);
     }
 
 public:
