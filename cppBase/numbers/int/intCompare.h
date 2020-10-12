@@ -269,7 +269,7 @@ inline bool intGreaterEq(TA A, TB B)
 template <typename T1, typename T2, typename T3>
 inline bool intInRange(T1 X, T2 minVal, T3 maxVal)
 {
-    return greaterEq(X, minVal) && lessEq(X, maxVal);
+    return intLessEq(minVal, X) && intLessEq(X, maxVal);
 }
 
 //----------------------------------------------------------------
