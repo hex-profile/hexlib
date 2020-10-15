@@ -15,6 +15,7 @@
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
+#include "bmpFile/bmpFile.h" // ```
 
 namespace baseConsoleBmp {
 
@@ -182,6 +183,16 @@ stdbool writeImage
     REQUIRE(kit.dataProcessing);
 
     require(imageProvider.saveImage(flipMatrix(bufferImage), stdPass));
+
+    //----------------------------------------------------------------
+    //
+    // ``` Test BMP writer
+    //
+    //----------------------------------------------------------------
+
+    //bmpFile::BmpWriter bmpWriter;
+    //require(bmpWriter.write(makeConst(bufferImage), filename, stdPass));
+    //returnTrue;
 
     //----------------------------------------------------------------
     //
