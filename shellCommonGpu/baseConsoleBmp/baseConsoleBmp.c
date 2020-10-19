@@ -15,7 +15,7 @@
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
-#include "bmpFile/bmpFile.h" // ```
+#include "bmpFile/bmpPackedHeaders.h"
 
 namespace baseConsoleBmp {
 
@@ -108,57 +108,6 @@ stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 
 //================================================================
 //
-// BitmapFileHeader
-//
-//================================================================
-
-#pragma pack(push, 1)
-
-struct BitmapFileHeader
-{
-    uint16 bfType;
-    uint32 bfSize;
-    uint16 bfReserved1;
-    uint16 bfReserved2;
-    uint32 bfOffBits;
-};
-
-COMPILE_ASSERT(sizeof(BitmapFileHeader) == (2*32 + 3*16) / 8);
-COMPILE_ASSERT(alignof(BitmapFileHeader) == 1);
-
-//----------------------------------------------------------------
-
-struct BitmapInfoHeader
-{
-    uint32 biSize;
-    int32 biWidth;
-    int32 biHeight;
-    uint16 biPlanes;
-    uint16 biBitCount;
-    uint32 biCompression;
-    uint32 biSizeImage;
-    int32 biXPelsPerMeter;
-    int32 biYPelsPerMeter;
-    uint32 biClrUsed;
-    uint32 biClrImportant;
-};
-
-COMPILE_ASSERT(sizeof(BitmapInfoHeader) == (2*16 + 9*32) / 8);
-COMPILE_ASSERT(alignof(BitmapInfoHeader) == 1);
-
-//----------------------------------------------------------------
-
-struct BitmapFullHeader : public BitmapFileHeader, public BitmapInfoHeader {};
-
-COMPILE_ASSERT(sizeof(BitmapFullHeader) == sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader));
-COMPILE_ASSERT(alignof(BitmapFullHeader) == 1);
-
-//----------------------------------------------------------------
-
-#pragma pack(pop)
-
-//================================================================
-//
 // writeImage
 //
 //================================================================
@@ -186,16 +135,6 @@ stdbool writeImage
 
     //----------------------------------------------------------------
     //
-    // ``` Test BMP writer
-    //
-    //----------------------------------------------------------------
-
-    //bmpFile::BmpWriter bmpWriter;
-    //require(bmpWriter.write(makeConst(bufferImage), filename, stdPass));
-    //returnTrue;
-
-    //----------------------------------------------------------------
-    //
     // Prepare header.
     //
     //----------------------------------------------------------------
@@ -204,7 +143,8 @@ stdbool writeImage
 
     Space dataSizeInBytes = bufferArraySize * sizeof(Pixel);
 
-    Space headerSize = sizeof(BitmapFullHeader);
+    Space headerSize = sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader);
+    COMPILE_ASSERT(sizeof(Pixel) == 4); // Ensure there is no palette
 
     Space totalSize{};
     REQUIRE(safeAdd(headerSize, dataSizeInBytes, totalSize));
@@ -244,7 +184,7 @@ stdbool writeImage
     BinaryFileImpl file;
     require(file.open(filename, true, true, stdPass));
 
-    require(file.write(&header, sizeof(header), stdPass));
+    require(file.write(&header, headerSize, stdPass));
     require(file.write(bufferArrayPtr, dataSizeInBytes, stdPass));
 
     returnTrue;
