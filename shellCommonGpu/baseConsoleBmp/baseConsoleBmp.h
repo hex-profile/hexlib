@@ -5,6 +5,8 @@
 #include "storage/dynamicClass.h"
 #include "userOutput/diagnosticKit.h"
 #include "cpuFuncKit.h"
+#include "cfg/cfgInterface.h"
+#include "storage/smartPtr.h"
 
 namespace baseConsoleBmp {
 
@@ -38,23 +40,33 @@ using Counter = uint32;
 //
 //================================================================
 
-class BaseConsoleBmp
+struct BaseConsoleBmp
 {
 
 public:
 
-    BaseConsoleBmp();
-    ~BaseConsoleBmp();
+    static UniquePtr<BaseConsoleBmp> create();
+    virtual ~BaseConsoleBmp() {}
 
-    stdbool saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+public:
 
-    stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
-    void setLockstepCounter(Counter counter);
+    virtual void setDefaultActive(bool active) =0;
+    virtual void setDefaultDir(const CharType* dir) =0; // can be NULL
 
-private:
-                
-    DynamicClass<class BaseConsoleBmpImpl> instance;
+public:
+
+    virtual void serialize(const CfgSerializeKit& kit) =0;
+
+public:
+
+    virtual bool active() const =0;
+    virtual const CharType* getOutputDir() const =0;
+    virtual void setLockstepCounter(Counter counter) =0;
+
+public:
+
+    virtual stdbool saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
+    virtual stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
 
 };
 

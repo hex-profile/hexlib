@@ -16,6 +16,8 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
 #include "bmpFile/bmpPackedHeaders.h"
+#include "cfgTools/boolSwitch.h"
+#include "configFile/cfgSimpleString.h"
 
 namespace baseConsoleBmp {
 
@@ -219,75 +221,90 @@ HashKey getHash(const CharArray& str)
 
 //================================================================
 //
+// getDefaultImageDir
+//
+//================================================================
+
+SimpleString getDefaultImageDir()
+{
+    SimpleString dir; 
+        
+    auto tempDir = getenv("HEXLIB_OUTPUT");
+
+    if_not (tempDir)
+        tempDir = getenv("TEMP");
+
+    if (tempDir)
+        dir << tempDir << "/imageConsole";
+
+    if_not (def(dir))
+        dir.clear();
+
+    return dir;
+}
+
+//================================================================
+//
 // BaseConsoleBmpImpl
 //
 //================================================================
 
-class BaseConsoleBmpImpl
+class BaseConsoleBmpImpl : public BaseConsoleBmp
 {
+
+public:
+
+    void setDefaultActive(bool active)
+        {savingActive.setDefaultValue(active);}
+
+    void setDefaultDir(const CharType* dir)
+        {outputDir.setDefaultValue(dir ? SimpleString(dir) : getDefaultImageDir());}
+
+public:
+
+    void serialize(const CfgSerializeKit& kit)
+    {
+        savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+B"));
+        outputDir.serialize(kit, STR("Output Directory"));
+    }
 
 public:
 
     stdbool saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
     stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
-    stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
+public:
+
+    bool active() const
+        {return savingActive;}
+
+    const CharType* getOutputDir() const
+        {return outputDir().cstr();}
+
     void setLockstepCounter(Counter counter);
 
 private:
 
-    SimpleString currentOutputDir;
-    
+    BoolSwitch<false> savingActive;
+    SimpleStringVar outputDir{getDefaultImageDir()};
+
+private:
+
     Counter initCounter = 0;
     unordered_map<HashKey, Counter> table;
 
+private:
+
+    stdbool mdCheck(stdPars(Kit));
+
+    SimpleString mdCurrentDir = nanOf<SimpleString>();
+
 };
 
-//================================================================
-//
-// Thunks.
-//
-//================================================================
+//----------------------------------------------------------------
 
-BaseConsoleBmp::BaseConsoleBmp()
-    {}
-
-BaseConsoleBmp::~BaseConsoleBmp()
-    {}
-
-////
-
-stdbool BaseConsoleBmp::saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return instance->saveImage(img, desc, id, stdPassThru);}
-
-stdbool BaseConsoleBmp::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
-
-////
-
-void BaseConsoleBmp::setLockstepCounter(Counter counter)
-    {return instance->setLockstepCounter(counter);}
-
-stdbool BaseConsoleBmp::setOutputDir(const CharType* outputDir, stdPars(Kit))
-    {return instance->setOutputDir(outputDir, stdPassThru);}
-
-//================================================================
-//
-// BaseConsoleBmpImpl::setOutputDir
-//
-//================================================================
-
-stdbool BaseConsoleBmpImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
-{
-    if_not (currentOutputDir == outputDir)
-    {
-        kit.fileTools.makeDirectory(outputDir);
-        currentOutputDir = outputDir;
-        REQUIRE(def(currentOutputDir));
-    }
-
-    returnTrue;
-}
+UniquePtr<BaseConsoleBmp> BaseConsoleBmp::create()
+    {return makeUnique<BaseConsoleBmpImpl>();}
 
 //================================================================
 //
@@ -305,12 +322,35 @@ void BaseConsoleBmpImpl::setLockstepCounter(Counter counter)
 
 //================================================================
 //
+// BaseConsoleBmpImpl::mdCheck
+//
+//================================================================
+
+stdbool BaseConsoleBmpImpl::mdCheck(stdPars(Kit))
+{
+    auto& dir = outputDir();
+    REQUIRE(def(dir));
+
+    if_not (mdCurrentDir == dir)
+    {
+        mdCurrentDir = dir;
+        REQUIRE(def(mdCurrentDir));
+
+        kit.fileTools.makeDirectory(mdCurrentDir.cstr()); // don't check for error
+    }
+
+    returnTrue;
+}
+
+//================================================================
+//
 // BaseConsoleBmpImpl::saveImage
 //
 //================================================================
 
 stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
+    require(mdCheck(stdPass));
 
     //----------------------------------------------------------------
     //
@@ -389,7 +429,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     //
     //----------------------------------------------------------------
 
-    auto filenameMsg = paramMsg(STR("%/%--%.bmp"), currentOutputDir, dec(frameIndex, 8), descArray());
+    auto filenameMsg = paramMsg(STR("%/%--%.bmp"), outputDir(), dec(frameIndex, 8), descArray());
 
     require(formatAtomToBuffer(filenameMsg, filenameArray, stdPass));
 
@@ -415,6 +455,8 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
 stdbool BaseConsoleBmpImpl::saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
+    require(mdCheck(stdPass));
+
     ImageProviderMemcpy imageProvider(image, kit);
     return saveImage(image.size(), imageProvider, desc, id, stdPassThru);
 }

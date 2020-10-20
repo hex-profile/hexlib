@@ -58,8 +58,15 @@ public:
 
 public:
 
-    virtual void setImageSavingDefaultConfig(bool active, const CharType* dir) =0;
+    virtual void setImageSavingDefaultActive(bool active) =0;
+    virtual void setImageSavingDefaultDir(const CharType* dir) =0; // can be NULL
+
+public:
+
     virtual void setImageSavingLockstepCounter(uint32 counter) =0;
+    virtual const CharType* getImageSavingCurrentDir() const =0;
+
+public:
 
     virtual void serialize(const CfgSerializeKit& kit) =0;
 
