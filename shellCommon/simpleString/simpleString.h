@@ -193,6 +193,9 @@ public:
     sysinline const Type* cstr() const
         {return buffer.cstr();}
 
+    sysinline Type* data() const
+        {return buffer.cstr();}
+
     sysinline size_t size() const
         {return buffer.size();}
 
