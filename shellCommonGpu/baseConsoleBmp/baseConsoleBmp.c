@@ -50,6 +50,9 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
         )
             c = '-';
 
+        if (c >= 'A' && c <= 'Z')
+            c = c - 'A' + 'a';
+
         dstPtr[i] = c;
     }
 
