@@ -179,50 +179,6 @@ public:
 
 //================================================================
 //
-// BmpConfig
-//
-//================================================================
-
-struct BmpConfig
-{
-
-public:
-
-    BoolSwitch<false> savingActive;
-    SimpleStringVar outputDir{getDefaultDir()};
-
-public:
-
-    static SimpleString getDefaultDir()
-    {
-        SimpleString dir; 
-        
-        auto tempDir = getenv("HEXLIB_OUTPUT");
-
-        if_not (tempDir)
-            tempDir = getenv("TEMP");
-
-        if (tempDir)
-            dir << tempDir << "/imageConsole";
-
-        if_not (def(dir))
-            dir.clear();
-
-        return dir;
-    }
-
-public:
-
-    void serialize(const CfgSerializeKit& kit)
-    {
-        savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+B"));
-        outputDir.serialize(kit, STR("Output Directory"));
-    }
-
-};
-
-//================================================================
-//
 // ProcessExKit
 //
 //================================================================
@@ -374,8 +330,7 @@ private:
     AviConfig aviConfig;
     BaseConsoleAvi aviConsole;
 
-    BmpConfig bmpConfig;
-    BaseConsoleBmp bmpConsole;
+    UniquePtr<BaseConsoleBmp> bmpConsole = BaseConsoleBmp::create();
 
 private:
 
@@ -455,7 +410,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 
     {
         CFG_NAMESPACE("Saving BMP Files");
-        bmpConfig.serialize(kit);
+        bmpConsole->serialize(kit);
     }
 
     {
@@ -605,41 +560,18 @@ stdbool VideoPreprocessorImpl::processTarget
 
     //----------------------------------------------------------------
     //
-    // Saving to BMP.
+    // Saving to BMPs.
     //
     //----------------------------------------------------------------
-
-    auto bmpSetOutput = [&] () -> stdbool
-    {
-        if_not (bmpConfig.outputDir->size() != 0)
-        {
-            printMsgL(kit, STR("BMP Saving: <%0> is not set (Testbed->Config->Edit)"), outputDirName(), msgWarn);
-            returnFalse;
-        }
-
-        require(bmpConsole.setOutputDir(bmpConfig.outputDir->cstr(), stdPass));
-
-        returnTrue;
-    };
-
-    ////
-
-    bool bmpOk = false;
     
-    if (bmpConfig.savingActive)
+    BaseConsoleBmpThunk bmpThunk(*bmpConsole, *atImageConsole, *atVideoOverlay, kit);
+
+    if (bmpConsole->active())
     {
-        bmpOk = errorBlock(bmpSetOutput());
-
-        printMsgL(kit, bmpOk ? STR("BMP Saving: Files are saved to %") : STR("BMP Saving: Error happened"),
-            bmpConfig.outputDir->cstr(), msgWarn);
+        printMsgL(kit, STR("Image Saving: Files are saved to %0"), bmpConsole->getOutputDir());
+        atImageConsole = &bmpThunk; 
+        atVideoOverlay = &bmpThunk;
     }
-
-    ////
-
-    BaseConsoleBmpThunk bmpThunk(bmpConsole, *atImageConsole, *atVideoOverlay, kit);
-
-    if (bmpOk)
-        {atImageConsole = &bmpThunk; atVideoOverlay = &bmpThunk;}
 
     //----------------------------------------------------------------
     //

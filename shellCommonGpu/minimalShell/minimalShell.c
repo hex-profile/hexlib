@@ -27,50 +27,6 @@ using namespace gpuShell;
 
 //================================================================
 //
-// BmpConfig
-//
-//================================================================
-
-struct BmpConfig
-{
-
-public:
-
-    BoolSwitch<false> savingActive;
-    SimpleStringVar outputDir{getDefaultDir()};
-
-public:
-
-    static SimpleString getDefaultDir()
-    {
-        SimpleString dir; 
-        
-        auto tempDir = getenv("HEXLIB_OUTPUT");
-
-        if_not (tempDir)
-            tempDir = getenv("TEMP");
-
-        if (tempDir)
-            dir << tempDir << "/imageConsole";
-
-        if_not (def(dir))
-            dir.clear();
-
-        return dir;
-    }
-
-public:
-
-    void serialize(const CfgSerializeKit& kit)
-    {
-        savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+B"));
-        outputDir.serialize(kit, STR("Output Directory"));
-    }
-
-};
-
-//================================================================
-//
 // MinimalShellImpl
 //
 //================================================================
@@ -80,16 +36,17 @@ class MinimalShellImpl : public MinimalShell
 
 public:
 
-    virtual void setImageSavingDefaultConfig(bool active, const CharType* dir)
-    {
-        bmpConfig.savingActive.setDefaultValue(active);
-        bmpConfig.outputDir.setDefaultValue(dir ? SimpleString(dir) : bmpConfig.getDefaultDir());
-    }
+    virtual void setImageSavingDefaultActive(bool active)
+        {bmpConsole->setDefaultActive(active);}
+
+    virtual void setImageSavingDefaultDir(const CharType* dir)
+        {bmpConsole->setDefaultDir(dir);}
 
     virtual void setImageSavingLockstepCounter(uint32 counter)
-    {
-        bmpConsole.setLockstepCounter(counter);
-    }
+        {bmpConsole->setLockstepCounter(counter);}
+
+    virtual const CharType* getImageSavingCurrentDir() const
+        {return bmpConsole->getOutputDir();}
 
 public:
 
@@ -178,8 +135,7 @@ private:
 
     DisplayParamsImpl displayParams;
 
-    BmpConfig bmpConfig;
-    BaseConsoleBmp bmpConsole;
+    UniquePtr<BaseConsoleBmp> bmpConsole = BaseConsoleBmp::create();
 
 };
 
@@ -218,7 +174,7 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 
         {
             CFG_NAMESPACE("Saving BMP Files");
-            bmpConfig.serialize(kit);
+            bmpConsole->serialize(kit);
         }
     }
 }
@@ -595,37 +551,6 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 
     //----------------------------------------------------------------
     //
-    // Saving to BMP.
-    //
-    //----------------------------------------------------------------
-
-    auto bmpSetOutput = [&] () -> stdbool
-    {
-        if_not (bmpConfig.outputDir->size() != 0)
-        {
-            printMsgL(kit, STR("BMP Saving: Output directory is not set"), msgWarn);
-            returnFalse;
-        }
-
-        require(bmpConsole.setOutputDir(bmpConfig.outputDir->cstr(), stdPass));
-
-        returnTrue;
-    };
-
-    ////
-
-    bool bmpOk = false;
-    
-    if (bmpConfig.savingActive)
-    {
-        bmpOk = errorBlock(bmpSetOutput());
-
-        printMsgL(kit, bmpOk ? STR("BMP Saving: Files are saved to %") : STR("BMP Saving: Error happened"),
-            bmpConfig.outputDir->cstr(), msgWarn);
-    }
-
-    //----------------------------------------------------------------
-    //
     // CPU base console.
     //
     //----------------------------------------------------------------
@@ -636,10 +561,14 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
     BaseVideoOverlayNull baseOverlayNull;
     BaseVideoOverlay* baseOverlay = &baseOverlayNull;
 
-    BaseConsoleBmpThunk bmpThunk(bmpConsole, *baseConsole, *baseOverlay, kit);
+    BaseConsoleBmpThunk bmpThunk(*bmpConsole, *baseConsole, *baseOverlay, kit);
 
-    if (bmpOk)
-        {baseConsole = &bmpThunk; baseOverlay = &bmpThunk;}
+    if (bmpConsole->active())
+    {
+        printMsgL(kit, STR("Image Saving: Files are saved to %0"), bmpConsole->getOutputDir());
+        baseConsole = &bmpThunk; 
+        baseOverlay = &bmpThunk;
+    }
 
     //----------------------------------------------------------------
     //
