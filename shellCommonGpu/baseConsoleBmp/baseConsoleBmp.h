@@ -50,8 +50,8 @@ public:
 
 public:
 
-    virtual void setDefaultActive(bool active) =0;
-    virtual void setDefaultDir(const CharType* dir) =0; // can be NULL
+    virtual void setActive(bool active) =0;
+    virtual void setDir(const CharType* dir) =0; // can be NULL
 
 public:
 

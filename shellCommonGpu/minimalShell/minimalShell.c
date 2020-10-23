@@ -36,16 +36,16 @@ class MinimalShellImpl : public MinimalShell
 
 public:
 
-    virtual void setImageSavingDefaultActive(bool active)
-        {bmpConsole->setDefaultActive(active);}
+    virtual void setImageSavingActive(bool active)
+        {bmpConsole->setActive(active);}
 
-    virtual void setImageSavingDefaultDir(const CharType* dir)
-        {bmpConsole->setDefaultDir(dir);}
+    virtual void setImageSavingDir(const CharType* dir)
+        {bmpConsole->setDir(dir);}
 
     virtual void setImageSavingLockstepCounter(uint32 counter)
         {bmpConsole->setLockstepCounter(counter);}
 
-    virtual const CharType* getImageSavingCurrentDir() const
+    virtual const CharType* getImageSavingDir() const
         {return bmpConsole->getOutputDir();}
 
 public:

@@ -58,13 +58,11 @@ public:
 
 public:
 
-    virtual void setImageSavingDefaultActive(bool active) =0;
-    virtual void setImageSavingDefaultDir(const CharType* dir) =0; // can be NULL
-
-public:
+    virtual void setImageSavingActive(bool active) =0;
+    virtual void setImageSavingDir(const CharType* dir) =0; // can be NULL
 
     virtual void setImageSavingLockstepCounter(uint32 counter) =0;
-    virtual const CharType* getImageSavingCurrentDir() const =0;
+    virtual const CharType* getImageSavingDir() const =0;
 
 public:
 

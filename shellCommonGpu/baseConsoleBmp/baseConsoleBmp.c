@@ -257,11 +257,11 @@ class BaseConsoleBmpImpl : public BaseConsoleBmp
 
 public:
 
-    void setDefaultActive(bool active)
-        {savingActive.setDefaultValue(active);}
+    void setActive(bool active)
+        {savingActive = active;}
 
-    void setDefaultDir(const CharType* dir)
-        {outputDir.setDefaultValue(dir ? SimpleString(dir) : getDefaultImageDir());}
+    void setDir(const CharType* dir)
+        {outputDir = dir ? SimpleString(dir) : getDefaultImageDir();}
 
 public:
 
