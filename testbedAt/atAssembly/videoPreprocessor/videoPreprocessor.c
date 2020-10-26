@@ -331,6 +331,7 @@ private:
     BaseConsoleAvi aviConsole;
 
     UniquePtr<BaseConsoleBmp> bmpConsole = BaseConsoleBmp::create();
+    uint32 processCounter = 0;
 
 private:
 
@@ -568,6 +569,8 @@ stdbool VideoPreprocessorImpl::processTarget
 
     if (bmpConsole->active())
     {
+        bmpConsole->setLockstepCounter(processCounter);
+
         printMsgL(kit, STR("Image Saving: Files are saved to %0"), bmpConsole->getOutputDir());
         atImageConsole = &bmpThunk; 
         atVideoOverlay = &bmpThunk;
@@ -974,6 +977,20 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessKit))
 {
     stdScopedBegin;
+
+    //----------------------------------------------------------------
+    //
+    // Process counter.
+    //
+    //----------------------------------------------------------------
+
+    REMEMBER_CLEANUP(if (kit.dataProcessing) ++processCounter);
+
+    //----------------------------------------------------------------
+    //
+    // Headers.
+    //
+    //----------------------------------------------------------------
 
     Matrix<const uint8_x4> cpuFrame = kit.atVideoFrame;
 
