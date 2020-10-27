@@ -283,8 +283,12 @@ stdbool BmpWriter::writeFunc(const Matrix<const Pixel>& image, const CharArray& 
     BinaryFileImpl file;
     require(file.open(filename, true, true, stdPass));
 
-    require(file.write(&header, headerSize, stdPass));
-    require(file.write(usedImageMemPtr, requiredSizeInBytes, stdPass));
+    {
+        stdEnter; // Pure file IO
+
+        require(file.write(&header, headerSize, stdPass));
+        require(file.write(usedImageMemPtr, requiredSizeInBytes, stdPass));
+    }
 
     ////
 
