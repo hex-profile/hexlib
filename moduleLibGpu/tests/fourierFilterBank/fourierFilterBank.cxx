@@ -548,7 +548,7 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
     fourierBlurSigma.serialize(kit, STR("Fourier Blur Sigma"));
     orientationCount.serialize(kit, STR("Orientation Count"));
     orientationOffset.serialize(kit, STR("Orientation Offset"));
-    generateFilterBank.serialize(kit, STR("Generate Filter Bank"), STR("Ctrl+Shift+B"));
+    generateFilterBank.serialize(kit, STR("Generate Filter Bank"));
     pyramidFilterCompensation.serialize(kit, STR("Pyramid Filter Compensation"), STR(""));
     displayUpsampleFactor.serialize(kit, STR("Display Upsample Factor"));
   
@@ -739,12 +739,12 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
         if (outputFile)
         {
-            fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, OrientCount) = %d;\n", orientationCount());
-            fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, SizeX) = %d;\n", filterSize.X);
-            fprintf(outputFile, "constexpr Space PREP_PASTE(FILTER, SizeY) = %d;\n", filterSize.Y);
+            fprintf(outputFile, "constexpr Space PREP_PASTE(GABOR_BANK, OrientCount) = %d;\n", orientationCount());
+            fprintf(outputFile, "constexpr Space PREP_PASTE(GABOR_BANK, SizeX) = %d;\n", filterSize.X);
+            fprintf(outputFile, "constexpr Space PREP_PASTE(GABOR_BANK, SizeY) = %d;\n", filterSize.Y);
             fprintf(outputFile, "\n");
-            fprintf(outputFile, "constexpr float32 PREP_PASTE(FILTER, Freq) = %+.9ff;\n", gaborCenter());
-            fprintf(outputFile, "constexpr float32 PREP_PASTE(FILTER, Sigma) = %+.9ff;\n", gaborSigma());
+            fprintf(outputFile, "constexpr float32 PREP_PASTE(GABOR_BANK, Freq) = %+.9ff;\n", gaborCenter());
+            fprintf(outputFile, "constexpr float32 PREP_PASTE(GABOR_BANK, Sigma) = %+.9ff;\n", gaborSigma());
             fprintf(outputFile, "\n");
         }
 
@@ -881,7 +881,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 if (k == 0)
                 {
-                    fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, ShapeX)[%d] = { ", filterSize.X);
+                    fprintf(outputFile, "static devConstant float32 PREP_PASTE(GABOR_BANK, ShapeX)[%d] = { ", filterSize.X);
 
                     for_count (i, filterSize.X)
                         fprintf(outputFile, "%+.9ff, ", vectorLength(filterXPtr[i]));
@@ -890,7 +890,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                     ////
 
-                    fprintf(outputFile, "static devConstant float32 PREP_PASTE(FILTER, ShapeY)[%d] = { ", filterSize.Y);
+                    fprintf(outputFile, "static devConstant float32 PREP_PASTE(GABOR_BANK, ShapeY)[%d] = { ", filterSize.Y);
 
                     for_count (i, filterSize.Y)
                         fprintf(outputFile, "%+.9ff, ", vectorLength(filterYPtr[i]));
@@ -900,8 +900,8 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 ////
 
-                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, Freq%d) = {%+.9ff, %+.9ff};\n", k, freq.X, freq.Y);
-                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, DataX%d)[%d] = { ", k, filterSize.X);
+                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(GABOR_BANK, Freq%d) = {%+.9ff, %+.9ff};\n", k, freq.X, freq.Y);
+                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(GABOR_BANK, DataX%d)[%d] = { ", k, filterSize.X);
 
                 for_count (i, filterSize.X)
                     fprintf(outputFile, "{%+.9ff, %+.9ff}, ", filterXPtr[i].x, filterXPtr[i].y);
@@ -910,7 +910,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 ////
 
-                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(FILTER, DataY%d)[%d] = { ", k, filterSize.Y);
+                fprintf(outputFile, "static devConstant float32_x2 PREP_PASTE(GABOR_BANK, DataY%d)[%d] = { ", k, filterSize.Y);
 
                 for_count (i, filterSize.Y)
                     fprintf(outputFile, "{%+.9ff, %+.9ff}, ", filterYPtr[i].x, filterYPtr[i].y);
