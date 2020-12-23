@@ -15,7 +15,7 @@ sysinline Space mapDownsampleIndexToSource(Space dstIdx)
     // radius = 0.5 * (filterSize - 1)
     //
 
-    const Space radius2 = (filterSize - 1); // compile-time
+    constexpr Space radius2 = (filterSize - 1); // compile-time
 
     //
     // dstPos = dstIdx + 0.5, to space coords
