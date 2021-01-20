@@ -26,6 +26,7 @@
 #include "storage/classThunks.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/printMsgEx.h"
+#include "numbers/getBits.h"
 #endif
 
 namespace fourierFilterBank {
@@ -53,18 +54,6 @@ sysinline float32 gauss1(float32 t)
 
 sysinline float32 unitGauss(float32 t)
     {return expf(-0.5f * square(t));}
-
-//================================================================
-//
-// GaborParams
-//
-//================================================================
-
-struct GaborParams
-{
-    float32 center; 
-    float32 sigma; 
-};
 
 //================================================================
 //
@@ -115,26 +104,30 @@ GPUTOOL_2D_BEG
     makeGaborFreqTest,
     PREP_EMPTY,
     ((float32_x2, dst)),
+    
+    // orient grid
     ((float32, orientCenter)) // in circles
-    ((float32, orientSigma)) // in circles
     ((Space, orientCount))
     ((float32, orientOfs)) // in orient samples
-    ((GaborParams, g0))
-    ((Space, scaleStart))
-    ((Space, scaleLevels))
-    ((float32, scaleFactor))
+    ((float32, orientSigmaStart)) // in orient samples
+    ((float32, orientSigmaEnd)) // in orient samples
+
+    // intra-scale params
+    ((Space, intraLevels))
+    ((float32, gaborCenterStart))
+    ((float32, gaborCenterEnd))
+    ((float32, gaborSigmaStart))
+    ((float32, gaborSigmaEnd))
+
+    // inter-scale params
+    ((Space, pyramidStart))
+    ((Space, pyramidLevels))
+    ((float32, pyramidFactor))
 )
 #if DEVCODE
 {
-    Point<float32> dstSizef = convertFloat32(vGlobSize);
-    Point<float32> dstCenter = 0.5f * dstSizef;
-    Point<float32> pos = point(Xs, Ys) - dstCenter;
-
-    Point<float32> freq = pos / dstSizef; /* (-1/2, +1/2) */
-
-    float32 freqLen = sqrtf(square(freq.X) + square(freq.Y));
-    Point<float32> freqDir = freq / freqLen;
-    if (freqLen == 0) freqDir = point(0.f);
+    auto dstSizef = convertFloat32(vGlobSize);
+    auto originalFreq = point(Xs, Ys) / dstSizef - 0.5f;
 
     ////
 
@@ -143,30 +136,43 @@ GPUTOOL_2D_BEG
 
     ////
 
-    for_count (s, scaleLevels)
+    for_count (pyramidIndex, pyramidLevels)
     {
-        float32 scaleRadius = 0.5f * scaleLevels;
-        float32 scaleCenter = 0.5f * scaleLevels;
-        float32 scaleWeight = cosShape(((s + 0.5f) - scaleCenter) / scaleRadius);
+        float32 pyramidWeight = cosShape(((pyramidIndex + 0.5f) - (0.5f * pyramidLevels)) / (0.5f * pyramidLevels));
+        float32 pyramidScale = powf(pyramidFactor, float32(pyramidStart + pyramidIndex));
 
-        float32 scale = powf(scaleFactor, float32(scaleStart + s));
-        float32 center = scale * g0.center;
-        float32 sigma = scale * g0.sigma;
-
-        Space totalOrientations = 2 * orientCount;
-
-        for_count (k, totalOrientations)
+        for_count (intraIndex, intraLevels)
         {
-            float32 currentOrient = (k + orientOfs) / totalOrientations;
-            float32 dist = circularDistance(orientCenter, currentOrient);
+            float32 intraAlpha = (intraLevels >= 2) ? float32(intraIndex) / (intraLevels - 1) : 0.f;
+            float32 intraWeight = 1.f;
 
-            float32 orientWeight = unitGauss(dist / clampMin(orientSigma, 1e-12f));
+            float32 center = pyramidScale * linerp(intraAlpha, gaborCenterStart, gaborCenterEnd);
+            float32 sigma = pyramidScale * linerp(intraAlpha, gaborSigmaStart, gaborSigmaEnd);
 
-            Point<float32> rotatedCenter = complexMul(point(center, 0.f), circleCCW(currentOrient));
-            Point<float32> ofs = (freq - rotatedCenter) / sigma;
+            float32 orientSigma = linerp(intraAlpha, orientSigmaStart, orientSigmaEnd);
 
-            sumWeightValue += scaleWeight * orientWeight * unitGauss(ofs.X) * unitGauss(ofs.Y);
-            sumWeight += scaleWeight * orientWeight;
+            Space totalOrientations = 2 * orientCount;
+
+            float32 weight = pyramidWeight * intraWeight;
+
+            for_count (k, totalOrientations)
+            {
+                float32 currentOrient = (k + orientOfs) / totalOrientations;
+                float32 dist = circularDistance(orientCenter, currentOrient);
+
+                float32 orientWeight = unitGauss(dist / clampMin(orientSigma, 1e-12f));
+
+                Point<float32> rotatedCenter = complexMul(point(center, 0.f), circleCCW(currentOrient));
+                Point<float32> ofs = (originalFreq - rotatedCenter) / sigma;
+
+                float32 gaussValue = unitGauss(ofs.X) * unitGauss(ofs.Y);
+
+                if_not (absv(originalFreq) <= 0.5f * pyramidScale)
+                    gaussValue = 0;
+
+                sumWeightValue += weight * orientWeight * gaussValue;
+                sumWeight += weight * orientWeight;
+            }
         }
     }
 
@@ -474,7 +480,6 @@ class FourierFilterBankImpl
 
 public:
 
-    FourierFilterBankImpl();
     void serialize(const ModuleSerializeKit& kit);
     bool reallocValid() const {return true;}
     stdbool realloc(stdPars(GpuModuleReallocKit)) {returnTrue;}
@@ -489,43 +494,32 @@ private:
     NumericVarStaticEx<Point<Space>, Space, 1, 512, 22> filterAreaSize;
     NumericVarStaticEx<Point<Space>, Space, 1, 512, 256> fourierAreaSize;
 
-    NumericVarStaticEx<float32, Space, 0, 1000000, 0> fourierBlurSigma;
-    NumericVarStatic<Space, 2, 16, 7> orientationCount;
+    NumericVar<float32> fourierBlurSigma{0, 1e6f, 0};
+    NumericVarStatic<Space, 2, 128, 6> orientationCount;
     NumericVarStaticEx<float32, Space, 0, 1, 0> orientationOffset;
     StandardSignal generateFilterBank;
     BoolSwitch<false> pyramidFilterCompensation;
 
     NumericVarStaticEx<float32, Space, 1, 16, 4> displayUpsampleFactor;
 
-    NumericVarStaticEx<float32, int, 0, 128, 0> gaborCenter;
-    NumericVarStaticEx<float32, int, 0, 128, 0> gaborSigma;
-    NumericVarStaticEx<float32, int, 0, 1024, 0> gaborScaleFactor;
-    NumericVar<float32> gaborOrientBlurSigma{0, 128, 0};
-    NumericVarStatic<int, 0, 64, 0> gaborScaleStart;
-    NumericVarStatic<int, 0, 64, 4> gaborScaleLevels;
+    NumericVar<Point<float32>> gaborOrientSigma{point(0.f), point(16.f), point(0.f)};
+
+    NumericVar<Point<float32>> gaborCenterRange{point(0.f), point(128.f), point(0.25f)}; // in the middle between 0 (brightness invariance) and 1/2 (Nyquist)
+    NumericVar<Point<float32>> gaborSigmaRange{point(0.f), point(128.f), point(0.075f)}; // the thickest one to be zero at both 0 and 1/2 with 8 bit accuracy.
+
+    float32 gaborCenter() {return gaborCenterRange().X;}
+    float32 gaborSigma() {return gaborSigmaRange().X;}
+
+    NumericVar<Space> gaborIntraLevels{1, 128, 1};
+
+    NumericVar<float32> gaborPyramidFactor{1/128.f, 128.f, 1/1.5f};
+    NumericVar<int> gaborPyramidStart{0, 64, 0};
+    NumericVar<int> gaborPyramidLevels{0, 64, 5};
 
     BoolVarStatic<true> displayFreqFilter;
     BoolVarStatic<true> displaySpaceFilter;
 
 };
-
-//================================================================
-//
-// FourierFilterBankImpl::FourierFilterBankImpl
-//
-//================================================================
-
-FourierFilterBankImpl::FourierFilterBankImpl()
-{
-    gaborCenter = 0.2477296157f;
-    gaborSigma = 0.06073787279f;
-
-    gaborScaleStart = 0;
-    gaborScaleLevels = 5;
-    gaborScaleFactor = 1/1.5f;
-
-    fourierBlurSigma = 0;
-}
 
 //================================================================
 //
@@ -548,19 +542,20 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
     fourierBlurSigma.serialize(kit, STR("Fourier Blur Sigma"));
     orientationCount.serialize(kit, STR("Orientation Count"));
     orientationOffset.serialize(kit, STR("Orientation Offset"));
-    generateFilterBank.serialize(kit, STR("Generate Filter Bank"));
+    generateFilterBank.serialize(kit, STR("Generate Filter Bank"), STR("Ctrl+Shift+B"));
     pyramidFilterCompensation.serialize(kit, STR("Pyramid Filter Compensation"), STR(""));
     displayUpsampleFactor.serialize(kit, STR("Display Upsample Factor"));
   
     {
         CFG_NAMESPACE("Gauss Test");
 
-        gaborCenter.serialize(kit, STR("Center"));
-        gaborSigma.serialize(kit, STR("Sigma"));
-        gaborScaleStart.serialize(kit, STR("Scale Start"));
-        gaborScaleLevels.serialize(kit, STR("Scale Levels"));
-        gaborScaleFactor.serialize(kit, STR("Scale Factor"));
-        gaborOrientBlurSigma.serialize(kit, STR("Orient Blur Sigma"));
+        gaborCenterRange.serialize(kit, STR("Center"));
+        gaborSigmaRange.serialize(kit, STR("Sigma"));
+        gaborIntraLevels.serialize(kit, STR("Intra Levels"));
+        gaborPyramidStart.serialize(kit, STR("Pyramid Start"));
+        gaborPyramidLevels.serialize(kit, STR("Pyramid Levels"));
+        gaborPyramidFactor.serialize(kit, STR("Pyramid Factor"));
+        gaborOrientSigma.serialize(kit, STR("Orient Sigma"));
     }
 
     displayFreqFilter.serialize(kit, STR("Display Freq Filter"));
@@ -645,10 +640,21 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
                 makeGaborFreqTest
                 (
                     filterFreq, 
-                    (k + orientationOffset) / totalOrientations, gaborOrientBlurSigma, 
+
+                    // orient grid
+                    (k + orientationOffset) / totalOrientations, 
                     orientationCount, orientationOffset,
-                    GaborParams{gaborCenter, gaborSigma}, 
-                    gaborScaleStart, gaborScaleLevels, gaborScaleFactor, 
+                    gaborOrientSigma().X, gaborOrientSigma().Y,
+
+                    // intra-scale params
+                    gaborIntraLevels,
+                    gaborCenterRange().X, gaborCenterRange().Y,
+                    gaborSigmaRange().X, gaborSigmaRange().Y,
+
+                    // inter-scale params
+                    gaborPyramidStart,
+                    gaborPyramidLevels,
+                    gaborPyramidFactor, 
                     stdPass
                 )
             );
@@ -691,7 +697,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
             if (displaySpaceFilter)
             {
-                require(kit.gpuImageConsole.addVectorImage(filterSpace, 1.f/96 * kit.display.factor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
+                require(kit.gpuImageConsole.addVectorImage(filterSpace, 1.f/32 * kit.display.factor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
                     BORDER_ZERO, ImgOutputHint(STR("Filter(Space)")).setTargetConsole(), stdPass));
             }
 
@@ -762,8 +768,8 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
             GPU_ARRAY_ALLOC(filterFreqY, float32_x2, fourierSize.Y);
 
             Point<float32> freq = gaborCenter() * circleCCW(float32(k + orientationOffset) / orientationCount / 2);
-            require(makeSeparableGaborFreq(filterFreqX, freq.X, gaborSigma, stdPass));
-            require(makeSeparableGaborFreq(filterFreqY, freq.Y, gaborSigma, stdPass));
+            require(makeSeparableGaborFreq(filterFreqX, freq.X, gaborSigma(), stdPass));
+            require(makeSeparableGaborFreq(filterFreqY, freq.Y, gaborSigma(), stdPass));
 
             ////
 
@@ -833,7 +839,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 require(combineSeparableResponses(filterSpaceX, filterSpaceY, filterSpace, stdPass));
 
-                require(kit.gpuImageConsole.addVectorImage(filterSpace, 1.f/96 * kit.display.factor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
+                require(kit.gpuImageConsole.addVectorImage(filterSpace, 1.f/32 * kit.display.factor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
                     BORDER_ZERO, ImgOutputHint(STR("Filter(Space)")).setTargetConsole(), stdPass));
             }
 
@@ -862,19 +868,50 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                     float32 spaceSigma = 1.f / ((2 * pi32) * gaborSigma());
 
+                    auto maxFilterSize = point(256);
+
+                    ////
+
+                    auto maxSum = point(float32{0});
+
+                    for_count (i, maxFilterSize.X)
+                    {
+                        float32 t = (i + 0.5f) - 0.5f * maxFilterSize.X;
+                        maxSum.X += gauss1(t / spaceSigma) / spaceSigma;
+                    }
+
+                    for_count (i, maxFilterSize.Y)
+                    {
+                        float32 t = (i + 0.5f) - 0.5f * maxFilterSize.Y;
+                        maxSum.Y += gauss1(t / spaceSigma) / spaceSigma;
+                    }
+
+                    ////
+
+                    auto sum = point(float32{0});
+
                     for_count (i, filterSize.X)
                     {
                         float32 t = (i + 0.5f) - 0.5f * filterSize.X;
                         float32 shape = gauss1(t / spaceSigma) / spaceSigma;
                         filterXPtr[i] = shape * complexConjugate(circleCcw(freq.X * t));
+                        sum.X += shape;
                     }
+
+                    ////
 
                     for_count (i, filterSize.Y)
                     {
                         float32 t = (i + 0.5f) - 0.5f * filterSize.Y;
                         float32 shape = gauss1(t / spaceSigma) / spaceSigma;
                         filterYPtr[i] = shape * complexConjugate(circleCcw(freq.Y * t));
+                        sum.Y += shape;
                     }
+
+                    ////
+
+                    auto accBits = getBits(1 - sum / maxSum);
+                    printMsgL(kit, STR("Gabor Coverage is {%} bits"), fltf(accBits, 1), msgWarn);
                 }
 
                 ////

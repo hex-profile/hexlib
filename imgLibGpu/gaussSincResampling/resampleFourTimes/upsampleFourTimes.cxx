@@ -3,8 +3,8 @@
 #endif
 
 #include "gpuDevice/gpuDevice.h"
-
 #include "gaussSincResampling/gaussSincResamplingSettings.h"
+#include "gaussSincResampling/resampleFourTimes/allTypes.h"
 
 //================================================================
 //
@@ -29,16 +29,6 @@ static devConstant float32 FILTER3[] = {-0.00194152f, +0.00482143f, -0.01098439f
 #define PACK_TO_SRC_FACTOR 1
 
 #define HORIZONTAL_FIRST 0
-
-#define FOREACH_TYPE(action) \
-    \
-    action(int8, int8, int8, 1) \
-    action(uint8, uint8, uint8, 1) \
-    action(float16, float16, float16, 1) \
-    \
-    action(int8_x2, int8_x2, int8_x2, 2) \
-    action(uint8_x2, uint8_x2, uint8_x2, 2) \
-    action(float16_x2, float16_x2, float16_x2, 2)
 
 # include "rationalResample/rationalResampleMultiple.inl"
 

@@ -1,18 +1,20 @@
-Gauss-sinc resampling module.
+The Gauss-sinc resampling module.
 
-The resampling kernel used here is sinc shaped by gaussian: 
+The resampling kernel used here is a sinc function shaped by a gaussian: 
 baseKernel(x) = sinc(x) * gauss1(x, sigma).
 
-Here sinc(x) = sin(pi*x) / (pi*x),
+Here:
+
+sinc(x) = sin(pi*x) / (pi*x),
 gauss1(x, sigma) = exp(-x^2 / sigma^2 / 2).
 
-In frequency domain, this kernel is box blurred by gaussian:
-sinc in frequency domain is box, gauss in frequency domain is gauss and multiplication becomes convolution.
+In frequency domain, this kernel is a box blurred by a gaussian.
+(in frequency domain: the sinc is a box, the gauss is a gauss and multiplication becomes convolution).
 
-For downsampling functions, the tradeoff between loosing resolution and having aliasing artifacts
+For downsampling, the tradeoff between loosing resolution and having aliasing artifacts
 is totally shifted to "no aliasing artifacts" side and such functions are named "conservative".
 
-For this purpose, the kernel is scaled up by "theta" parameter:
+For this purpose, the kernel is scaled up by a "theta" parameter:
 kernel(x) = baseKernel(x / theta) / theta.
 
 The scaling up in spatial domain scales it down in frequency domain so that 
@@ -20,5 +22,5 @@ at the critical frequency the response is zero with almost 9 bits of accuracy.
 
 Filters are computed in "gaussSincResampling.mws".
 
-For upsampling functions, this is not important, because the signal is already filtered well, 
+For upsampling, the theta is not needed, because the signal is already filtered well, 
 so theta=1 is used and such functions are named "balanced".

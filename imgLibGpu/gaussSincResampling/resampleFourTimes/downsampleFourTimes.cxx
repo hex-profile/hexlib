@@ -5,6 +5,7 @@
 #include "gpuDevice/gpuDevice.h"
 
 #include "gaussSincResampling/gaussSincResamplingSettings.h"
+#include "gaussSincResampling/resampleFourTimes/allTypes.h"
 
 //================================================================
 //

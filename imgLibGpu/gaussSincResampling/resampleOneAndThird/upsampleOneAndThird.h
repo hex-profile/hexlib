@@ -7,12 +7,12 @@ namespace gaussSincResampling {
 
 //================================================================
 //
-// upsampleOneAndHalfBalanced
+// upsampleOneAndThirdBalanced
 //
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool upsampleOneAndHalfBalanced(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
+stdbool upsampleOneAndThirdBalanced(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 

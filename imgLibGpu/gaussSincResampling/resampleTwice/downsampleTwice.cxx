@@ -3,6 +3,7 @@
 #endif
 
 #include "gaussSincResampling/gaussSincResamplingSettings.h"
+#include "gaussSincResampling/common/allTypes.h"
 
 //================================================================
 //
@@ -23,15 +24,5 @@ static const Space FILTER_SRC_SHIFT = -18;
 #define PACK_TO_SRC_FACTOR 2
 
 #define HORIZONTAL_FIRST 1
-
-#define FOREACH_TYPE(action) \
-    \
-    action(int8, int8, int8, 1) \
-    action(uint8, uint8, uint8, 1) \
-    action(float16, float16, float16, 1) \
-    \
-    action(int8_x2, int8_x2, int8_x2, 2) \
-    action(uint8_x2, uint8_x2, uint8_x2, 2) \
-    action(float16_x2, float16_x2, float16_x2, 2)
 
 # include "rationalResample/rationalResampleMultiple.inl"
