@@ -39,7 +39,7 @@ GPUTOOL_2D_BEG
         sumW += w;
     }
 
-    float32 divSumW = 1.f/sumW;
+    float32 divSumW = 1.f / sumW;
     if (sumW == 0) divSumW = 0;
     FloatType result = sumWV * divSumW;
 

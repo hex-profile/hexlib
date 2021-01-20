@@ -32,18 +32,11 @@ constexpr int downsampleOneAndHalfMaxTasks = 4;
 template <typename Src, typename Interm, typename Dst>              
 stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
+////
+
 template <typename Src, typename Interm, typename Dst>
 inline stdbool downsampleOneAndHalfConservative(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
     {return downsampleOneAndHalfConservativeMultitask<Src, Interm, Dst>(layeredMatrix(src), layeredMatrix(dst), borderMode, stdPassThru);}
-
-//================================================================
-//
-// downsampleOneAndHalfBalanced
-//
-//================================================================
-
-template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndHalfBalanced(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 
