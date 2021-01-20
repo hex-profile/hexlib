@@ -1,4 +1,4 @@
-#include "downsampleOneAndHalfGaussMask.h"
+#include "downsampleOneAndThirdGaussMask.h"
 
 #include "gpuDevice/gpuDevice.h"
 #include "prepTools/prepFor.h"
@@ -8,31 +8,33 @@ using namespace gaussMaskResampling;
 
 //================================================================
 //
-// downsampleOneAndHalfGaussMaskInitial
+// downsampleOneAndThirdGaussMaskInitial
 //
 //================================================================
 
-static devConstant float32 initialFilter0[] = {+0.01948875f, +0.16907312f, +0.42677512f, +0.31344228f, +0.06698076f, +0.00416463f, +0.00007534f};
-static devConstant float32 initialFilter1[] = {+0.00007534f, +0.00416463f, +0.06698076f, +0.31344228f, +0.42677512f, +0.16907312f, +0.01948875f};
+static devConstant float32 initialFilter0[] = {+0.01273839f, +0.17222247f, +0.48806752f, +0.28992447f, +0.03609979f, +0.00094219f, +0.00000515f, +0.00000001f};
+static devConstant float32 initialFilter1[] = {+0.00003479f, +0.00377785f, +0.08598342f, +0.41020394f, +0.41020394f, +0.08598342f, +0.00377785f, +0.00003479f};
+static devConstant float32 initialFilter2[] = {+0.00000001f, +0.00000515f, +0.00094219f, +0.03609979f, +0.28992447f, +0.48806752f, +0.17222247f, +0.01273839f};
 static const Space initialFilterShift = -2;
 
 #define FILTER0 initialFilter0
 #define FILTER1 initialFilter1
+#define FILTER2 initialFilter2
 #define FILTER_SRC_SHIFT initialFilterShift
 
 ////
 
 #define FUNCSPACE gaussMaskResampling
 
-#define PACK_SIZE 2
-#define PACK_TO_SRC_FACTOR 3
+#define PACK_SIZE 3
+#define PACK_TO_SRC_FACTOR 4
 
 #define HORIZONTAL_FIRST 1
 
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskInitial1
+#define FUNCNAME downsampleOneAndThirdGaussMaskInitial1
 
 #undef TASK_COUNT
 #define TASK_COUNT 1
@@ -41,7 +43,7 @@ static const Space initialFilterShift = -2;
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskInitial2
+#define FUNCNAME downsampleOneAndThirdGaussMaskInitial2
 
 #undef TASK_COUNT
 #define TASK_COUNT 2
@@ -51,7 +53,7 @@ static const Space initialFilterShift = -2;
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskInitial3
+#define FUNCNAME downsampleOneAndThirdGaussMaskInitial3
 
 #undef TASK_COUNT
 #define TASK_COUNT 3
@@ -61,7 +63,7 @@ static const Space initialFilterShift = -2;
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskInitial4
+#define FUNCNAME downsampleOneAndThirdGaussMaskInitial4
 
 #undef TASK_COUNT
 #define TASK_COUNT 4
@@ -70,13 +72,14 @@ static const Space initialFilterShift = -2;
 
 //================================================================
 //
-// downsampleOneAndHalfGaussMaskSustaining
+// downsampleOneAndThirdGaussMaskSustaining
 //
 //================================================================
 
-static devConstant float32 sustainingFilter0[] = {+0.00214486f, +0.10479062f, +0.55481288f, +0.31832579f, +0.01979239f, +0.00013336f, +0.00000010f};
-static devConstant float32 sustainingFilter1[] = {+0.00000010f, +0.00013336f, +0.01979239f, +0.31832579f, +0.55481288f, +0.10479062f, +0.00214486f};
-static const Space sustainingSrcShift = -2;
+static devConstant float32 sustainingFilter0[] = {+0.06608526f, +0.71472518f, +0.21733108f, +0.00185803f, +0.00000045f, +0.00000000f};
+static devConstant float32 sustainingFilter1[] = {+0.00001081f, +0.01367310f, +0.48631609f, +0.48631609f, +0.01367310f, +0.00001081f};
+static devConstant float32 sustainingFilter2[] = {+0.00000000f, +0.00000045f, +0.00185803f, +0.21733108f, +0.71472518f, +0.06608526f};
+static const Space sustainingSrcShift = -1;
 
 //----------------------------------------------------------------
 
@@ -84,16 +87,18 @@ static const Space sustainingSrcShift = -2;
 
 #undef FILTER0
 #undef FILTER1
+#undef FILTER2
 #undef FILTER_SRC_SHIFT
 
 #define FILTER0 sustainingFilter0
 #define FILTER1 sustainingFilter1
+#define FILTER2 sustainingFilter2
 #define FILTER_SRC_SHIFT sustainingSrcShift
 
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining1
+#define FUNCNAME downsampleOneAndThirdGaussMaskSustaining1
 
 #undef TASK_COUNT
 #define TASK_COUNT 1
@@ -103,7 +108,7 @@ static const Space sustainingSrcShift = -2;
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining2
+#define FUNCNAME downsampleOneAndThirdGaussMaskSustaining2
 
 #undef TASK_COUNT
 #define TASK_COUNT 2
@@ -113,7 +118,7 @@ static const Space sustainingSrcShift = -2;
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining3
+#define FUNCNAME downsampleOneAndThirdGaussMaskSustaining3
 
 #undef TASK_COUNT
 #define TASK_COUNT 3
@@ -123,7 +128,7 @@ static const Space sustainingSrcShift = -2;
 ////
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndHalfGaussMaskSustaining4
+#define FUNCNAME downsampleOneAndThirdGaussMaskSustaining4
 
 #undef TASK_COUNT
 #define TASK_COUNT 4
@@ -142,12 +147,12 @@ namespace gaussMaskResampling {
 
 //================================================================
 //
-// downsampleOneAndHalfGaussMaskMultitask
+// downsampleOneAndThirdGaussMaskMultitask
 //
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>              
-stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
+stdbool downsampleOneAndThirdGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
 {
     REQUIRE(equalLayers(src, dst));
     auto layers = dst.layers();
@@ -162,8 +167,8 @@ stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>
         else if (layers == n) \
         { \
             auto func = initial ? \
-                downsampleOneAndHalfGaussMaskInitial##n<Src, Interm, Dst> : \
-                downsampleOneAndHalfGaussMaskSustaining##n<Src, Interm, Dst>; \
+                downsampleOneAndThirdGaussMaskInitial##n<Src, Interm, Dst> : \
+                downsampleOneAndThirdGaussMaskSustaining##n<Src, Interm, Dst>; \
             \
             require(func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass)); \
         }
@@ -190,7 +195,7 @@ stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>
 //----------------------------------------------------------------
 
 #define TMP_MACRO(Src, Interm, Dst, _) \
-    INSTANTIATE_FUNC_EX((downsampleOneAndHalfGaussMaskMultitask<Src, Interm, Dst>), Dst)
+    INSTANTIATE_FUNC_EX((downsampleOneAndThirdGaussMaskMultitask<Src, Interm, Dst>), Dst)
 
 FOREACH_TYPE(TMP_MACRO)
 

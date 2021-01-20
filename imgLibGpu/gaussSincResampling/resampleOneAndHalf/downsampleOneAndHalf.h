@@ -16,14 +16,6 @@ namespace gaussSincResampling {
 
 //================================================================
 //
-// downsampleOneAndHalfMaxTasks
-//
-//================================================================
-
-constexpr int downsampleOneAndHalfMaxTasks = 4;
-
-//================================================================
-//
 // downsampleOneAndHalfConservative
 // downsampleOneAndHalfConservativeMultitask
 //

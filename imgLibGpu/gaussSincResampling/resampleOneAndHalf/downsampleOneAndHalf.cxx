@@ -72,7 +72,6 @@ static const Space conservativeFilterSrcShift = -13;
 ////
 
 #undef TASK_COUNT
-COMPILE_ASSERT(downsampleOneAndHalfMaxTasks == 4);
 
 //================================================================
 //
@@ -112,7 +111,6 @@ stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const S
     ////
 
     #define MAX_TASKS 4
-    COMPILE_ASSERT(MAX_TASKS == downsampleOneAndHalfMaxTasks);
 
     if (layers == 0)
     {
