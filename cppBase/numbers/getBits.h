@@ -18,3 +18,15 @@ sysinline Float getBits(Float err, int maxBits = 24)
 
     return -nativeLog2(err);
 }
+
+//================================================================
+//
+// getBits
+//
+//================================================================
+
+template <typename Float>
+sysinline Point<Float> getBits(const Point<Float>& err, int maxBits = 24)
+{
+    return point(getBits(err.X, maxBits), getBits(err.Y, maxBits));
+}
