@@ -3,14 +3,11 @@
 1 0 0 0 0 1 }{CSTYLE "2D Math" -1 2 "Times" 0 1 0 0 0 0 0 0 2 0 0 0 0 
 0 0 1 }{CSTYLE "2D Output" 2 20 "" 0 1 0 0 255 1 0 0 0 0 0 0 0 0 0 1 }
 {PSTYLE "Normal" -1 0 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 
-2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Text Output" -1 6 
-1 {CSTYLE "" -1 -1 "Courier" 1 10 0 0 255 1 2 2 2 2 2 1 2 1 3 1 }1 1 
-0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Output" -1 11 1 {CSTYLE "" -1 
--1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 3 0 0 0 0 1 0 1 0 2 2 
-0 1 }{PSTYLE "Maple Output" -1 12 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 
-0 1 2 2 2 2 2 2 1 1 1 1 }1 3 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple P
-lot" -1 13 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 
-1 }3 1 0 0 0 0 1 0 1 0 2 2 0 1 }}
+2 2 1 1 1 1 }1 1 0 0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Output" -1 
+11 1 {CSTYLE "" -1 -1 "Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 3 0 
+0 0 0 1 0 1 0 2 2 0 1 }{PSTYLE "Maple Plot" -1 13 1 {CSTYLE "" -1 -1 "
+Times" 1 12 0 0 0 1 2 2 2 2 2 2 1 1 1 1 }3 1 0 0 0 0 1 0 1 0 2 2 0 1 }
+}
 {SECT 0 {EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 8 "restart;" }}}{EXCHG 
 {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" 
 {MPLTEXT 1 0 14 "assume(s > 0);" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
@@ -67,96 +64,9 @@ sqrt(targetSigma^2 - (targetSigma / f)^2); # sigma for unscaled kernel
 " }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%0sustainingSigmaG$\"+bf8sW!#5" }
 }}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "#=========================
 =========================================" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 33 "# Do
-wnsample 1.5X (initial sigma)" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
-0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "#================
-==================================================" }}}{EXCHG {PARA 0 
-"> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 
-13 "scale := 3/2:" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 16 "lookCo
-unt := 20;" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%*lookCountG\"#?" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 73 "filterCenters := evalf(seq((
-(idx + 1/2) * scale), idx = 0..lookCount-1));" }}{PARA 12 "" 1 "" 
-{XPPMATH 20 "6#>%.filterCentersG66$\"+++++v!#5$\"++++]A!\"*$\"++++]PF+
-$\"++++]_F+$\"++++]nF+$\"++++]#)F+$\"++++](*F+$\"++++D6!\")$\"++++v7F8
-$\"++++D9F8$\"++++v:F8$\"++++D<F8$\"++++v=F8$\"++++D?F8$\"++++v@F8$\"+
-+++DBF8$\"++++vCF8$\"++++DEF8$\"++++vFF8$\"++++DHF8" }}}{EXCHG {PARA 
-0 "> " 0 "" {MPLTEXT 1 0 12 "period := 2;" }}{PARA 11 "" 1 "" 
-{XPPMATH 20 "6#>%'periodG\"\"#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 
-1 0 68 "#-------------------------------------------------------------
-------" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 
-0 "> " 0 "" {MPLTEXT 1 0 10 "diam := 7:" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 80 "startIndex := seq(round(filterCenters[k] - (diam-1)/2
- - 1/2), k = 1..lookCount);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%+star
-tIndexG66!\"$!\"\"\"\"!\"\"#\"\"$\"\"&\"\"'\"\")\"\"*\"#6\"#7\"#9\"#:
-\"#<\"#=\"#?\"#@\"#B\"#C\"#E" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 
-0 89 "avgStartIndex := round(sum(filterCenters[k] - (diam-1)/2 - 1/2, \+
-k = 1..period) / period);" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%.avgSta
-rtIndexG!\"#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "startOffset
- := evalf(seq((avgStartIndex + 1/2) - filterCenters[k], k = 1..lookCou
-nt));" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,startOffsetG66$!++++]A!\"*
-$!++++]PF($!++++]_F($!++++]nF($!++++]#)F($!++++](*F($!++++D6!\")$!++++
-v7F5$!++++D9F5$!++++v:F5$!++++D<F5$!++++v=F5$!++++D?F5$!++++v@F5$!++++
-DBF5$!++++vCF5$!++++DEF5$!++++vFF5$!++++DHF5$!++++vIF5" }}}{EXCHG 
-{PARA 0 "> " 0 "" {MPLTEXT 1 0 67 "kernelScaled := unapply(gauss(x / s
-cale, initialSigma) / scale, x):" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 138 "-log[2
-](1 - sum(abs(kernelScaled(k + startOffset[1])), k = 0..diam-1) / sum(
-abs(kernelScaled(startOffset[1] + k)), k = -200..diam-1+200));" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+6)Gl0\"!\")" }}}{EXCHG {PARA 0 "> \+
-" 0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(abs(kernelScaled(k + startOff
-set[2])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[2] + k)), \+
-k = -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+6)Gl0\"
-!\")" }}}{EXCHG {PARA 11 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 
-0 "" {MPLTEXT 1 0 59 "s1 := sum(kernelScaled(k + startOffset[1]), k = \+
-0..diam-1);" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 59 "s2 := sum(kernelScal
-ed(k + startOffset[2]), k = 0..diam-1);" }}{PARA 11 "" 1 "" {XPPMATH 
-20 "6#>%#s1G$\"+!>+M***!#5" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%#s2G$
-\"+!>+M***!#5" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from
- 0 to diam-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[1] + i) \+
-/ s1) end do;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.01948875f, +0.1690731
-2f, +0.42677512f, +0.31344228f, +0.06698076f, +0.00416463f, +0.0000753
-4f, " }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from 0 to dia
-m-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[2] + i) / s2) end
- do;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.00007534f, +0.00416463f, +0.06
-698076f, +0.31344228f, +0.42677512f, +0.16907312f, +0.01948875f, " }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 68 "#--------------------------------------------------
------------------" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 10 "diam := 7:" }}}{EXCHG {PARA 
-0 "> " 0 "" {MPLTEXT 1 0 80 "startIndex := seq(round(filterCenters[k] \+
-- (diam-1)/2 - 1/2), k = 1..lookCount);" }}{PARA 11 "" 1 "" {XPPMATH 
-20 "6#>%+startIndexG66!\"$!\"\"\"\"!\"\"#\"\"$\"\"&\"\"'\"\")\"\"*\"#6
-\"#7\"#9\"#:\"#<\"#=\"#?\"#@\"#B\"#C\"#E" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 89 "avgStartIndex := round(sum(filterCenters[k] - (diam-1
-)/2 - 1/2, k = 1..period) / period);" }}{PARA 11 "" 1 "" {XPPMATH 20 "
-6#>%.avgStartIndexG!\"#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 86 "
-startOffset := evalf(seq((avgStartIndex + 1/2) - filterCenters[k], k =
- 1..lookCount));" }}{PARA 12 "" 1 "" {XPPMATH 20 "6#>%,startOffsetG66$
-!++++]A!\"*$!++++]PF($!++++]_F($!++++]nF($!++++]#)F($!++++](*F($!++++D
-6!\")$!++++v7F5$!++++D9F5$!++++v:F5$!++++D<F5$!++++v=F5$!++++D?F5$!+++
-+v@F5$!++++DBF5$!++++vCF5$!++++DEF5$!++++vFF5$!++++DHF5$!++++vIF5" }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 70 "kernelScaled := unapply(gaus
-s(x / scale, sustainingSigma) / scale, x):" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 138 "-log
-[2](1 - sum(abs(kernelScaled(k + startOffset[1])), k = 0..diam-1) / su
-m(abs(kernelScaled(startOffset[1] + k)), k = -200..diam-1+200));" }}
-{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+QJ5o<!\")" }}}{EXCHG {PARA 0 "> " 
-0 "" {MPLTEXT 1 0 138 "-log[2](1 - sum(abs(kernelScaled(k + startOffse
-t[2])), k = 0..diam-1) / sum(abs(kernelScaled(startOffset[2] + k)), k \+
-= -200..diam-1+200));" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#$\"+QJ5o<!\")
-" }}}{EXCHG {PARA 11 "" 1 "" {TEXT -1 0 "" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 59 "s1 := sum(kernelScaled(k + startOffset[1]), k = 0..
-diam-1);" }}{PARA 0 "> " 0 "" {MPLTEXT 1 0 59 "s2 := sum(kernelScaled(
-k + startOffset[2]), k = 0..diam-1);" }}{PARA 11 "" 1 "" {XPPMATH 20 "
-6#>%#s1G$\"+2C&*****!#5" }}{PARA 11 "" 1 "" {XPPMATH 20 "6#>%#s2G$\"+2
-C&*****!#5" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from 0 \+
-to diam-1 do printf(\"%+.8ff, \", kernelScaled(startOffset[1] + i) / s
-1) end do;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.00214486f, +0.10479062f,
- +0.55481288f, +0.31832579f, +0.01979239f, +0.00013336f, +0.00000010f,
- " }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 91 "for i from 0 to diam-1
- do printf(\"%+.8ff, \", kernelScaled(startOffset[2] + i) / s2) end do
-;" }}{PARA 6 "" 1 "" {TEXT -1 98 "+0.00000010f, +0.00013336f, +0.01979
-239f, +0.31832579f, +0.55481288f, +0.10479062f, +0.00214486f, " }}}
-{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> " 0 "
-" {MPLTEXT 1 0 0 "" }}}}{MARK "56 1 0" 96 }{VIEWOPTS 1 1 0 1 1 1803 1 
-1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
+" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 64 "# Fi
+lter packs computation is moved to \"gaussSincResampling.py\"." }}}
+{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 1 "#" }}}{EXCHG {PARA 0 "> " 0 "
+" {MPLTEXT 1 0 67 "#==================================================
+================" }}}}{MARK "23" 0 }{VIEWOPTS 1 1 0 1 1 1803 1 1 1 1 }
+{PAGENUMBERS 0 1 2 33 1 1 }

@@ -39,7 +39,7 @@ def computeFilterStartPos(filterCenter, taps):
 #
 #================================================================
 
-def generateFilterPack(taps, factor, kernel):
+def generateFilterPack(name, taps, factor, kernel):
 
     period = 2
 
@@ -47,7 +47,7 @@ def generateFilterPack(taps, factor, kernel):
     scale = factor[0] / (factor[1] + 0.0)
 
     print('-' * 67)
-    print('Scaling %d:%d, factor %.6f' % (factor[0], factor[1], scale))
+    print('%s, scaling %d:%d, factor %.6f' % (name, factor[0], factor[1], scale))
 
     # Position of the filter center in the destintation image.
     dstCenterIdx = np.arange(period * 3)
@@ -95,12 +95,16 @@ def generateFilterPack(taps, factor, kernel):
 
 #================================================================
 #
-# winSinc
+# gaussSinc
+# gauss
 #
 #================================================================
 
-def winSinc(x, sigma, theta):
+def gaussSinc(x, sigma, theta):
     return np.sin(np.pi * x / theta) / np.pi / x * np.exp(-x * x / (2 * theta * theta * sigma * sigma))
+
+def gauss(x, sigma):
+    return np.exp(-x * x / (2 * sigma * sigma)) * np.sqrt(2 * np.pi) / sigma
 
 #================================================================
 #
@@ -130,7 +134,7 @@ if __name__ == '__main__':
 
     #----------------------------------------------------------------
     #
-    #
+    # Gauss sinc resampling.
     #
     #----------------------------------------------------------------
 
@@ -139,41 +143,75 @@ if __name__ == '__main__':
 
     ###
 
-    kernelConservative = lambda x: winSinc(x, sigma, theta)
-    kernelBalanced = lambda x: winSinc(x, sigma, 1)
+    kernelConservative = lambda x: gaussSinc(x, sigma, theta)
+    kernelBalanced = lambda x: gaussSinc(x, sigma, 1)
 
     #
     # 4X
     #
 
-    generateFilterPack(76, [1, 4], kernelConservative)
-    generateFilterPack(15, [4, 1], kernelBalanced)
+    generateFilterPack('Downsample 4X', 76, [1, 4], kernelConservative)
+    generateFilterPack('Upsample 4X', 15, [4, 1], kernelBalanced)
 
     #
     # 2X
     #
 
-    generateFilterPack(38, [1, 2], kernelConservative)
-    generateFilterPack(38, [2, 4], kernelConservative)
-    generateFilterPack(15, [2, 1], kernelBalanced)
+    generateFilterPack('Downsample 2X', 38, [1, 2], kernelConservative)
+    generateFilterPack('Downsample 2X packetized2', 38, [2, 4], kernelConservative)
+    generateFilterPack('Upsample 2X', 15, [2, 1], kernelBalanced)
 
     #
     # 1.5X
     #
 
-    generateFilterPack(29, [2, 3], kernelConservative)
-    generateFilterPack(16, [3, 2], kernelBalanced)
+    generateFilterPack('Downsample 1.5X', 29, [2, 3], kernelConservative)
+    generateFilterPack('Upsample 1.5X', 16, [3, 2], kernelBalanced)
    
     #
-    # 1.33333X
+    # 1.333X
     #
 
-    generateFilterPack(26, [3, 4], kernelConservative)
-    generateFilterPack(15, [4, 3], kernelBalanced)
+    generateFilterPack('Downsample 1.333X', 26, [3, 4], kernelConservative)
+    generateFilterPack('Upsample 1.333X', 15, [4, 3], kernelBalanced)
 
     #
     # 1.25X
     #
 
-    generateFilterPack(25, [4, 5], kernelConservative)
-    generateFilterPack(16, [5, 4], kernelBalanced)
+    generateFilterPack('Downsample 1.25X', 25, [4, 5], kernelConservative)
+    generateFilterPack('Upsample 1.25X', 16, [5, 4], kernelBalanced)
+
+    #----------------------------------------------------------------
+    #
+    # Gauss downsampling (for masks).
+    #
+    #----------------------------------------------------------------
+
+    targetSigma = 0.6
+
+    gaussKernel = lambda sigma: (lambda x: gauss(x, sigma))
+
+    initialSigma = targetSigma
+    sustainingSigma = lambda factor: np.sqrt(targetSigma ** 2 - (targetSigma * factor) ** 2); # sigma for unscaled kernel
+
+    #
+    # 1.5X
+    #
+
+    generateFilterPack('Mask Downsample Initial', 7, [2, 3], gaussKernel(initialSigma))
+    generateFilterPack('Mask Downsample Sustaining', 7, [2, 3], gaussKernel(sustainingSigma(2.0 / 3)))
+
+    #
+    # 1.33333X
+    #
+
+    generateFilterPack('Mask Downsample Initial', 8, [3, 4], gaussKernel(initialSigma))
+    generateFilterPack('Mask Downsample Sustaining', 6, [3, 4], gaussKernel(sustainingSigma(3.0 / 4)))
+
+    #
+    # 1.25X
+    #
+
+    generateFilterPack('Mask Downsample Initial', 9, [4, 5], gaussKernel(initialSigma))
+    generateFilterPack('Mask Downsample Sustaining', 7, [4, 5], gaussKernel(sustainingSigma(4.0 / 5)))
