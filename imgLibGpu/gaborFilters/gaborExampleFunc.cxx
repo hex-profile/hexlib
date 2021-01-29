@@ -35,7 +35,7 @@ struct PostprocessParams
 #define FUNCNAME gaborExample
 #define GABOR_ENABLED 1
 #define ENVELOPE_ENABLED 0
-#define COMPRESS_OCTAVES 1
+#define COMPRESS_FACTOR 2
 
 #define GABOR_INPUT_PIXEL float16
 #define GABOR_COMPLEX_PIXEL float16_x2
@@ -64,7 +64,7 @@ struct PostprocessParams
 #undef FUNCNAME
 #undef GABOR_ENABLED
 #undef ENVELOPE_ENABLED
-#undef COMPRESS_OCTAVES
+#undef COMPRESS_FACTOR
 
 #undef GABOR_INPUT_PIXEL
 #undef GABOR_COMPLEX_PIXEL

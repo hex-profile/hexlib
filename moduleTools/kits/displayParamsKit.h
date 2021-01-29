@@ -85,6 +85,36 @@ private:
 
 //================================================================
 //
+// DisplayedScaleIndex
+//
+//================================================================
+
+class DisplayedScaleIndex
+{
+
+public:
+
+    inline DisplayedScaleIndex(int32 index)
+        : index(index) {}
+
+    inline operator int32 () const
+        {return index;}
+
+    inline auto operator () (int32 minVal, int32 maxVal)
+    {
+        if (index < minVal) index = minVal;
+        if (index > maxVal) index = maxVal;
+        return index;
+    }
+
+private:
+
+    int32 index;
+
+};
+
+//================================================================
+//
 // DisplayedIndexIterator
 //
 //================================================================
@@ -233,6 +263,9 @@ struct DisplayParams
     // User desire to see interpolated data.
     bool const interpolation;
 
+    // User desire to see modulated data.
+    bool const modulation;
+
     // Abstract view index or image side.
     DisplayedRangeIndexEx& viewIndex;
 
@@ -240,7 +273,7 @@ struct DisplayParams
     DisplayedRangeIndex& temporalIndex;
 
     // Abstract scale index.
-    DisplayedRangeIndex& scaleIndex;
+    DisplayedScaleIndex& scaleIndex;
 
     // Abstract circular index.
     const DisplayedCircularIndex& circularIndex;

@@ -72,7 +72,7 @@ def generateFilterPack(name, taps, factor, kernel):
 
     # Filter starting offsets.
     startOffset = (avgStartIdx + 0.5) - srcCenterPos
-    # print(startOffset)
+    print('startOffset = ', startOffset)
 
     kernelScaled = lambda x: kernel(x * min(scale, 1)) * min(scale, 1)
 

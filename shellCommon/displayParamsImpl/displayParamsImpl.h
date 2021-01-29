@@ -52,15 +52,16 @@ private:
 
     RangeValueControl<float32> displayFactor{1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale};
     BoolSwitch<true> displayInterpolation;
+    BoolSwitch<false> displayModulation;
 
-    RangeValueControl<int32> viewIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> viewIndex{0, 32, 0, 1, RangeValueLinear};
     BoolSwitch<false> viewIndexDisplayAll;
 
-    RangeValueControl<int32> temporalIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> temporalIndex{-32, +32, 0, 1, RangeValueLinear};
     RangeValueControl<int32> circularIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> scaleIndex{0, 0x7F, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> stageIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
-    RangeValueControl<int32> channelIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> scaleIndex{-32, +128, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> stageIndex{-32, +32, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> channelIndex{0, 128, 0, 1, RangeValueLinear};
 
 };
 
@@ -92,6 +93,7 @@ public:
             o.displayFactor,
             screenSize, 
             o.displayInterpolation,
+            o.displayModulation,
             viewIndexThunk, 
             temporalIndexThunk, 
             scaleIndexThunk,
@@ -126,7 +128,7 @@ private:
     DisplayParamsImpl& o;
 
     DisplayedRangeIndexEx viewIndexThunk;
-    DisplayedRangeIndex scaleIndexThunk;
+    DisplayedScaleIndex scaleIndexThunk;
     DisplayedCircularIndex circularIndexThunk;
     DisplayedRangeIndex temporalIndexThunk;
     DisplayedRangeIndex stageIndexThunk;

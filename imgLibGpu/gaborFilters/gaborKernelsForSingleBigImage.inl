@@ -22,7 +22,7 @@
 
 //----------------------------------------------------------------
 
-#if !(defined(FUNCNAME) && defined(COMPRESS_OCTAVES) && defined(GABOR_BANK))
+#if !(defined(FUNCNAME) && defined(COMPRESS_FACTOR) && defined(GABOR_BANK))
     #error
 #endif
 
@@ -147,8 +147,7 @@ GPUTOOL_2D_BEG
 {
 
     constexpr Space filterSize = PREP_PASTE(GABOR_BANK, DIR(SizeX, SizeY));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES == 0) || (filterSize % 2 == 1));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES >= 1) || (filterSize % 2 == 0));
+    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);;
 
     //----------------------------------------------------------------
     //
@@ -157,7 +156,7 @@ GPUTOOL_2D_BEG
     //----------------------------------------------------------------
 
     Point<Space> dstIdx = point(X, Y);
-    constexpr Space downsampleFactor = (1 << COMPRESS_OCTAVES);
+    constexpr Space downsampleFactor = COMPRESS_FACTOR;
     Point<Space> srcIdx = dstIdx;
     srcIdx.DIR(X, Y) = mapDownsampleIndexToSource<downsampleFactor, filterSize>(dstIdx.DIR(X, Y));
 
@@ -200,7 +199,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
+    float32 filterCenter = DIR(Xs, Ys) * COMPRESS_FACTOR;
 
     #define TMP_MACRO(k, _) \
         \
@@ -241,8 +240,7 @@ GPUTOOL_2D_BEG_EX
 {
 
     constexpr Space filterSize = PREP_PASTE(GABOR_BANK, DIR(SizeX, SizeY));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES == 0) || (filterSize % 2 == 1));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES >= 1) || (filterSize % 2 == 0));
+    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);
 
     //
     // Map tile origin to source image
@@ -251,7 +249,7 @@ GPUTOOL_2D_BEG_EX
     Point<Space> dstBase = vTileOrg;
     Point<Space> srcBase = dstBase;
 
-    constexpr Space downsampleFactor = (1 << COMPRESS_OCTAVES);
+    constexpr Space downsampleFactor = COMPRESS_FACTOR;
     srcBase.DIR(X, Y) = mapDownsampleIndexToSource<downsampleFactor, filterSize>(srcBase.DIR(X, Y));
 
     //
@@ -352,7 +350,7 @@ GPUTOOL_2D_BEG_EX
 
     ////
 
-    float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
+    float32 filterCenter = DIR(Xs, Ys) * COMPRESS_FACTOR;
 
     #define TMP_MACRO(k, _) \
         \
@@ -416,12 +414,11 @@ GPUTOOL_2D_BEG
 {
 
     constexpr Space filterSize = PREP_PASTE(GABOR_BANK, DIR(SizeX, SizeY));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES == 0) || (filterSize % 2 == 1));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES >= 1) || (filterSize % 2 == 0));
+    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);
 
     ////
 
-    constexpr Space downsampleFactor = (1 << COMPRESS_OCTAVES);
+    constexpr Space downsampleFactor = COMPRESS_FACTOR;
 
     Point<Space> dstIdx = point(X, Y);
     Point<Space> srcIdx = dstIdx;
@@ -470,7 +467,7 @@ GPUTOOL_2D_BEG
     //
     //----------------------------------------------------------------
 
-    float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
+    float32 filterCenter = DIR(Xs, Ys) * COMPRESS_FACTOR;
 
     #define TMP_MACRO(k, _) \
         \
@@ -533,12 +530,11 @@ GPUTOOL_2D_BEG_EX
 {
 
     constexpr Space filterSize = PREP_PASTE(GABOR_BANK, DIR(SizeX, SizeY));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES == 0) || (filterSize % 2 == 1));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES >= 1) || (filterSize % 2 == 0));
+    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);
 
     ////
 
-    constexpr Space downsampleFactor = (1 << COMPRESS_OCTAVES);
+    constexpr Space downsampleFactor = COMPRESS_FACTOR;
 
     Point<Space> dstBase = vTileOrg;
     Point<Space> srcBase = dstBase;
@@ -634,7 +630,7 @@ GPUTOOL_2D_BEG_EX
     //
     //----------------------------------------------------------------
 
-    float32 filterCenter = DIR(Xs, Ys) * (1 << COMPRESS_OCTAVES);
+    float32 filterCenter = DIR(Xs, Ys) * COMPRESS_FACTOR;
 
     #define TMP_MACRO(k, _) \
         \
@@ -892,8 +888,7 @@ GPUTOOL_2D_BEG_EX
 #if DEVCODE
 {
     constexpr Space filterSize = PREP_PASTE(GABOR_BANK, DIR(SizeX, SizeY));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES == 0) || (filterSize % 2 == 1));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES >= 1) || (filterSize % 2 == 0));
+    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);
 
     //
     // Map tile origin to source image
@@ -902,7 +897,7 @@ GPUTOOL_2D_BEG_EX
     Point<Space> dstBase = vTileOrg;
     Point<Space> srcBase = dstBase;
 
-    constexpr Space downsampleFactor = (1 << COMPRESS_OCTAVES);
+    constexpr Space downsampleFactor = COMPRESS_FACTOR;
     srcBase.DIR(X, Y) = mapDownsampleIndexToSource<downsampleFactor, filterSize>(srcBase.DIR(X, Y));
 
     //
@@ -1042,12 +1037,11 @@ GPUTOOL_2D_BEG_EX
 {
 
     constexpr Space filterSize = PREP_PASTE(GABOR_BANK, DIR(SizeX, SizeY));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES == 0) || (filterSize % 2 == 1));
-    COMPILE_ASSERT(!(COMPRESS_OCTAVES >= 1) || (filterSize % 2 == 0));
+    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);
 
     ////
 
-    constexpr Space downsampleFactor = (1 << COMPRESS_OCTAVES);
+    constexpr Space downsampleFactor = COMPRESS_FACTOR;
 
     Point<Space> dstBase = vTileOrg;
     Point<Space> srcBase = dstBase;

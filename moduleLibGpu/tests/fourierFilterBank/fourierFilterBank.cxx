@@ -123,6 +123,7 @@ GPUTOOL_2D_BEG
     ((Space, pyramidStart))
     ((Space, pyramidLevels))
     ((float32, pyramidFactor))
+    ((int, pyramidMode))
 )
 #if DEVCODE
 {
@@ -138,7 +139,20 @@ GPUTOOL_2D_BEG
 
     for_count (pyramidIndex, pyramidLevels)
     {
-        float32 pyramidWeight = cosShape(((pyramidIndex + 0.5f) - (0.5f * pyramidLevels)) / (0.5f * pyramidLevels));
+
+        float32 pyramidWeight = 1.f;
+        
+        if (pyramidMode == 0)
+            pyramidWeight = cosShape(((pyramidIndex + 0.5f) - (0.5f * pyramidLevels)) / (0.5f * pyramidLevels));
+
+        if (pyramidMode == 1)
+            pyramidWeight = cosShape((pyramidIndex + 0.5f) / pyramidLevels);
+
+        if (pyramidMode == 2)
+            pyramidWeight = 1.f;
+
+        ////
+
         float32 pyramidScale = powf(pyramidFactor, float32(pyramidStart + pyramidIndex));
 
         for_count (intraIndex, intraLevels)
@@ -515,6 +529,7 @@ private:
     NumericVar<float32> gaborPyramidFactor{1/128.f, 128.f, 1/1.5f};
     NumericVar<int> gaborPyramidStart{0, 64, 0};
     NumericVar<int> gaborPyramidLevels{0, 64, 5};
+    NumericVar<int> gaborPyramidMode{0, 2, 0};
 
     BoolVarStatic<true> displayFreqFilter;
     BoolVarStatic<true> displaySpaceFilter;
@@ -552,9 +567,12 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
         gaborCenterRange.serialize(kit, STR("Center"));
         gaborSigmaRange.serialize(kit, STR("Sigma"));
         gaborIntraLevels.serialize(kit, STR("Intra Levels"));
+        
         gaborPyramidStart.serialize(kit, STR("Pyramid Start"));
         gaborPyramidLevels.serialize(kit, STR("Pyramid Levels"));
         gaborPyramidFactor.serialize(kit, STR("Pyramid Factor"));
+        gaborPyramidMode.serialize(kit, STR("Pyramid Mode"), STR("0 cos shape, 1 half cos shape, 2 equal weight"));
+
         gaborOrientSigma.serialize(kit, STR("Orient Sigma"));
     }
 
@@ -655,6 +673,8 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
                     gaborPyramidStart,
                     gaborPyramidLevels,
                     gaborPyramidFactor, 
+                    gaborPyramidMode,
+
                     stdPass
                 )
             );
