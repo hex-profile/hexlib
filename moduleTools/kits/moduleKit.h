@@ -4,6 +4,7 @@
 #include "cfgTools/overlayTakeover.h"
 #include "cpuFuncKit.h"
 #include "dataAlloc/memoryAllocatorKit.h"
+#include "formatting/messageFormatterKit.h"
 #include "kits/alternativeVersionKit.h"
 #include "kits/displayParamsKit.h"
 #include "kits/msgLogsKit.h"
@@ -77,11 +78,11 @@ sysinline auto verboseOnlyIf(bool condition, const Kit& kit)
 //
 //================================================================
 
-KIT_COMBINE3(ModuleReallocKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit);
+using ModuleReallocKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit>;
 
-KIT_COMBINE10(ModuleProcessKit, CpuFuncKit, ErrorLogExKit, MsgLogsKit,
+using ModuleProcessKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit,
     PipeControlKit, TimerKit, VerbosityKit, UserPointKit, SetBusyStatusKit,
-    AlternativeVersionKit, DisplayParamsKit);
+    AlternativeVersionKit, DisplayParamsKit>;
 
 //================================================================
 //
