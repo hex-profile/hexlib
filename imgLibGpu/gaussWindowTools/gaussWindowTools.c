@@ -1,4 +1,4 @@
-#include "gaussWindowTools.h"
+#include "gaussWindowTools/gaussWindowTools.h"
 
 //================================================================
 //
