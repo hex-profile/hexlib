@@ -922,7 +922,7 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
         if (allv(def(vectorValue)))
         {
             Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // to space format
-            require(imposeVectorArrow(dest, dstPos, arrowFactor * vectorValue, stdPass));
+            require(imposeVectorArrow(dest, dstPos, (arrowFactor == 0 ? 1.f : arrowFactor) * vectorValue, arrowFactor == 0, stdPass));
         }
 
         returnTrue;

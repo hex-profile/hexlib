@@ -534,6 +534,10 @@ private:
     BoolVarStatic<true> displayFreqFilter;
     BoolVarStatic<true> displaySpaceFilter;
 
+    NumericVar<float32> displayFactor{0, typeMax<float32>(), 1};
+    NumericVar<float32> displayFreqFactor{0, typeMax<float32>(), 1};
+    NumericVar<float32> displaySpaceFactor{0, typeMax<float32>(), 0.02f};
+
 };
 
 //================================================================
@@ -544,22 +548,13 @@ private:
 
 void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
 {
-    displaySwitch.serialize
-    (
-        kit, STR("Display"), 
-        {STR("<Nothing>"), STR("")}, 
-        {STR("Gabor Bank Test"), STR("Alt+1")},
-        {STR("Separable Gabor"), STR("Alt+2")}
-    );
-
     filterAreaSize.serialize(kit, STR("Filter Size"));
     fourierAreaSize.serialize(kit, STR("Fourier Size"));
     fourierBlurSigma.serialize(kit, STR("Fourier Blur Sigma"));
     orientationCount.serialize(kit, STR("Orientation Count"));
     orientationOffset.serialize(kit, STR("Orientation Offset"));
-    generateFilterBank.serialize(kit, STR("Generate Filter Bank"), STR("Ctrl+Shift+B"));
+    generateFilterBank.serialize(kit, STR("Generate Filter Bank"), STR("Ctrl+Alt+B"));
     pyramidFilterCompensation.serialize(kit, STR("Pyramid Filter Compensation"), STR(""));
-    displayUpsampleFactor.serialize(kit, STR("Display Upsample Factor"));
   
     {
         CFG_NAMESPACE("Gauss Test");
@@ -576,8 +571,26 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
         gaborOrientSigma.serialize(kit, STR("Orient Sigma"));
     }
 
-    displayFreqFilter.serialize(kit, STR("Display Freq Filter"));
-    displaySpaceFilter.serialize(kit, STR("Display Space Filter"));
+    {
+        CFG_NAMESPACE("Display");
+
+        displaySwitch.serialize
+        (
+            kit, STR("Display"), 
+            {STR("<Nothing>"), STR("")}, 
+            {STR("Gabor Bank Test"), STR("Alt+1")},
+            {STR("Separable Gabor"), STR("Alt+2")}
+        );
+
+        displayUpsampleFactor.serialize(kit, STR("Display Upsample Factor"));
+
+        displayFreqFilter.serialize(kit, STR("Display Freq Filter"));
+        displaySpaceFilter.serialize(kit, STR("Display Space Filter"));
+
+        displayFactor.serialize(kit, STR("Display Factor"));
+        displayFreqFactor.serialize(kit, STR("Display Freq Factor"));
+        displaySpaceFactor.serialize(kit, STR("Display Space Factor"));
+    }
 }
 
 //================================================================
@@ -594,6 +607,11 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
     if (displayType == DisplayNothing)
         returnTrue;
+
+    ////
+
+    float32 freqFactor = kit.display.factor * displayFactor * displayFreqFactor;
+    float32 spaceFactor = kit.display.factor * displayFactor * displaySpaceFactor;
 
     //----------------------------------------------------------------
     //
@@ -691,7 +709,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
             if (displayFreqFilter)
             {
-                require(kit.gpuImageConsole.addVectorImage(filterFreq, kit.display.factor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
+                require(kit.gpuImageConsole.addVectorImage(filterFreq, freqFactor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
                     ImgOutputHint(STR("Filter(Freq)")).setTargetConsole(), stdPass));
             }
 
@@ -717,7 +735,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
             if (displaySpaceFilter)
             {
-                require(kit.gpuImageConsole.addVectorImage(filterSpace, 1.f/32 * kit.display.factor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
+                require(kit.gpuImageConsole.addVectorImage(filterSpace, spaceFactor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
                     BORDER_ZERO, ImgOutputHint(STR("Filter(Space)")).setTargetConsole(), stdPass));
             }
 
@@ -735,7 +753,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
         ////
 
-        require(kit.gpuImageConsole.addVectorImage(filterFreqSum, 2.f * kit.display.factor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
+        require(kit.gpuImageConsole.addVectorImage(filterFreqSum, freqFactor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
             ImgOutputHint(STR("Filter Freq Sum")).setTargetConsole(), stdPass));
 
     }
@@ -817,7 +835,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
             GPU_MATRIX_ALLOC(filterFreq, float32_x2, fourierSize);
             require(combineSeparableResponses(filterFreqX, filterFreqY, filterFreq, stdPass));
 
-            require(kit.gpuImageConsole.addVectorImage(filterFreq, kit.display.factor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
+            require(kit.gpuImageConsole.addVectorImage(filterFreq, freqFactor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
                 ImgOutputHint(STR("Separable(Freq)")).setTargetConsole(), stdPass));
 
             require(accumulateFreqResponse(filterFreq, filterFreqSum, stdPass));
@@ -859,7 +877,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                 require(combineSeparableResponses(filterSpaceX, filterSpaceY, filterSpace, stdPass));
 
-                require(kit.gpuImageConsole.addVectorImage(filterSpace, 1.f/32 * kit.display.factor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
+                require(kit.gpuImageConsole.addVectorImage(filterSpace, spaceFactor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0), 
                     BORDER_ZERO, ImgOutputHint(STR("Filter(Space)")).setTargetConsole(), stdPass));
             }
 
@@ -980,7 +998,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
         ////
 
-        require(kit.gpuImageConsole.addVectorImage(filterFreqSum, kit.display.factor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
+        require(kit.gpuImageConsole.addVectorImage(filterFreqSum, freqFactor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO, 
             ImgOutputHint(STR("Filter Freq Sum")).setTargetConsole(), stdPass));
 
     }

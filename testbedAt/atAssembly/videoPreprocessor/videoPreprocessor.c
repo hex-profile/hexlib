@@ -278,7 +278,7 @@ private:
 
     ////
 
-    RangeValueControl<float32> rotationAngle{0, 1, 0, 1.f/128, RangeValueCircular};
+    RangeValueControl<float32> rotationAngle{0, 1, 0, 1.f/512, RangeValueCircular};
 
     uint32 movingFrameIndex = 0;
 
@@ -1001,14 +1001,14 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     ////
 
-    bool alternativeVersion = displayParams.alternativeVersion();
+    bool alternative = displayParams.alternative();
 
     if (displayParams.alternativeVersionPrintAlways())
-        printMsgL(kit, STR("Alternative Version: %"), alternativeVersion, alternativeVersion ? msgWarn : msgInfo);
+        printMsgL(kit, STR("Alternative Version: %"), alternative, alternative ? msgWarn : msgInfo);
     else
     {
-        if (alternativeVersion)
-            printMsgL(kit, STR("Alternative Version!"), alternativeVersion, msgWarn);
+        if (alternative)
+            printMsgL(kit, STR("Alternative Version!"), alternative, msgWarn);
     }
 
     //----------------------------------------------------------------

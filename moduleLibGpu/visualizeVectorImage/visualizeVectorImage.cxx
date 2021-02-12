@@ -156,10 +156,19 @@ GPUTOOL_2D_BEG
     ((uint8_x4, dst)),
     ((Point<float32>, vectorBegin))
     ((Point<float32>, vectorValue))
+    ((bool, orientationMode))
 )
 #if DEVCODE
 {
     VECTOR_DECOMPOSE_EX(vec, vectorValue);
+
+    ////
+
+    if (orientationMode)
+        vecDir = circleCCW(0.5f * getPhase(vecDir) + 0.25f);
+
+    ////
+
     Point<float32> revPos = complexMul(point(Xs, Ys) - vectorBegin, complexConjugate(vecDir));
 
     ////
@@ -167,33 +176,36 @@ GPUTOOL_2D_BEG
     float32 borderRadius = 1.f;
     float32 divAntialiasSigmaSq = 1 / (0.6f * 0.6f);
 
-    ////
-
-    const bool alternativeImpl = true;
-
-    float32 arrowHeight = 3.0f;
-
-    const float32 arrowLen = alternativeImpl ? vecLength : 12.f;
-    float32 divArrowLen = nativeRecipZero(arrowLen);
+    float32 pureDistSq = square(revPos.Y);
 
     ////
 
-    float32 currentArrowHeight = arrowHeight * saturate(divArrowLen * (vecLength - revPos.X));
-    float32 maxArrowHeight = arrowHeight;
+    if_not (orientationMode)
+    {
+        float32 arrowHeight = 3.0f;
 
-    ////
+        const float32 arrowLen = vecLength;
+        float32 divArrowLen = nativeRecipZero(arrowLen);
 
-    float32 arrowStart = clampMin(vecLength - arrowLen, 0.f);
+        ////
 
-    ////
+        float32 currentArrowHeight = arrowHeight * saturate(divArrowLen * (vecLength - revPos.X));
+        float32 maxArrowHeight = arrowHeight;
 
-    float32 lineHeight = 0.5f;
+        ////
 
-    float32 lineDistanceSq = vectorLengthSq(revPos - point(clampRange(revPos.X, 0.f, arrowStart), clampRange(revPos.Y, -lineHeight, +lineHeight)));
-    float32 arrowDistSq = vectorLengthSq(revPos - point(clampRange(revPos.X, arrowStart, vecLength), clampRange(revPos.Y, -currentArrowHeight, +currentArrowHeight)));
-    float32 circleDistSq = square(clampMin(vectorLength(revPos) - maxArrowHeight, 0.f));
+        float32 arrowStart = clampMin(vecLength - arrowLen, 0.f);
 
-    float32 pureDistSq = minv(lineDistanceSq, arrowDistSq, circleDistSq);
+        ////
+
+        float32 lineHeight = 0.5f;
+
+
+        float32 lineDistanceSq = vectorLengthSq(revPos - point(clampRange(revPos.X, 0.f, arrowStart), clampRange(revPos.Y, -lineHeight, +lineHeight)));
+        float32 arrowDistSq = vectorLengthSq(revPos - point(clampRange(revPos.X, arrowStart, vecLength), clampRange(revPos.Y, -currentArrowHeight, +currentArrowHeight)));
+        float32 circleDistSq = square(clampMin(vectorLength(revPos) - maxArrowHeight, 0.f));
+        pureDistSq = minv(lineDistanceSq, arrowDistSq, circleDistSq);
+    }
 
     ////
 

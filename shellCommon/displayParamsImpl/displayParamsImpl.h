@@ -28,7 +28,7 @@ public:
     VectorMode vectorMode() const 
         {return theVectorMode;}
 
-    bool alternativeVersion() const
+    bool alternative() const
         {return theAlternativeVersion;}
 
     bool alternativeVersionPrintAlways() const
@@ -119,7 +119,7 @@ public:
         return kitCombine
         (
             DisplayParamsKit{displayParams},
-            AlternativeVersionKit{o.alternativeVersion()}
+            AlternativeVersionKit{o.alternative()}
         );
     }
 
