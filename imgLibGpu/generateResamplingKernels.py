@@ -39,15 +39,14 @@ def computeFilterStartPos(filterCenter, taps):
 #
 #================================================================
 
-def generateFilterPack(name, taps, factor, normalizedVectorKernel):
-
-    period = 2
+def generateFilterPack(name, taps, factor, normalizedVectorKernel, verbose=True):
 
     period = factor[0]
     scale = factor[0] / (factor[1] + 0.0)
 
-    print('-' * 67)
-    print('%s, scaling %d:%d, factor %.6f' % (name, factor[0], factor[1], scale))
+    if verbose:
+        print('-' * 67)
+        print('%s, scaling %d:%d, factor %.6f' % (name, factor[0], factor[1], scale))
 
     # Position of the filter center in the destintation image.
     dstCenterIdx = np.arange(period * 3)
@@ -56,8 +55,10 @@ def generateFilterPack(name, taps, factor, normalizedVectorKernel):
 
     # To recheck period
     srcRems = srcCenterPos - np.floor(srcCenterPos)
-    print('Check period %d: %s' % (period, ', '.join(['%f' % v for v in srcRems])))
-    print('-' * 67)
+
+    if verbose:
+        print('Check period %d: %s' % (period, ', '.join(['%f' % v for v in srcRems])))
+        print('-' * 67)
 
     srcCenterPos = srcCenterPos[0:period]
 
@@ -72,25 +73,26 @@ def generateFilterPack(name, taps, factor, normalizedVectorKernel):
 
     # Filter starting offsets.
     startOffset = (avgStartIdx + 0.5) - srcCenterPos
-    print('startOffset = ', startOffset)
+
+    if verbose:
+        print('startOffset = ', startOffset)
 
     kernelScaled = lambda x, normalized: normalizedVectorKernel(x * min(scale, 1), normalized) * (1 if normalized else min(scale, 1))
 
     filterRange = np.arange(taps)
     largeRange = np.arange(-256, taps + 256)
 
-    print()
-
-    print('Filter shift = %d' % avgStartIdx)
-
-    print()
+    if verbose:
+        print()
+        print('Filter shift = %d' % avgStartIdx)
+        print()
 
     for p in range(period):
         sumInner = np.sum(abs(kernelScaled(filterRange + startOffset[p], False)))
         sumOuter = np.sum(abs(kernelScaled(largeRange + startOffset[p], False)))
         coverageBits = -np.log2(1 - sumInner / sumOuter)
         coeffs = kernelScaled(filterRange + startOffset[p], True)
-        print('[filter%d, coverage %.2f bits]\n%s\n' % (p, coverageBits, ', '.join(['%+.8ff' % v for v in coeffs])))
+        print('[%s, coverage %.2f bits] [%d] = {%s};' % (name, coverageBits, p, ', '.join(['%+.8ff' % v for v in coeffs])))
 
 #================================================================
 #
@@ -101,7 +103,6 @@ def generateFilterPack(name, taps, factor, normalizedVectorKernel):
 #================================================================
 
 def normalizeToOne(x, normalized):
-    # print(np.sum(x))
     return x / np.sum(x) if normalized else x
 
 #================================================================
@@ -111,8 +112,16 @@ def normalizeToOne(x, normalized):
 #
 #================================================================
 
+def gauss1(x, sigma):
+    return np.exp(-x * x / (2 * sigma * sigma))
+
+def gaussSincBase(x, sigma):
+    return np.sinc(x) * gauss1(x, sigma)
+
+#----------------------------------------------------------------
+
 def gaussSinc(x, sigma, theta, normalized):
-    return normalizeToOne(np.sin(np.pi * x / theta) / np.pi / x * np.exp(-x * x / (2 * theta * theta * sigma * sigma)), normalized)
+    return normalizeToOne(gaussSincBase(x / theta, sigma) / theta, normalized)
 
 def gauss(x, sigma, normalized):
     return normalizeToOne(np.exp(-x * x / (2 * sigma * sigma)) / np.sqrt(2 * np.pi) / sigma, normalized)
@@ -164,7 +173,7 @@ if __name__ == '__main__':
     #
     #----------------------------------------------------------------
 
-    if False:
+    if True:
 
         sigma = 3
         theta = 1.3
@@ -210,6 +219,12 @@ if __name__ == '__main__':
         generateFilterPack('Gauss-Sinc Downsample 1.25X', 25, [4, 5], kernelConservative)
         generateFilterPack('Gauss-Sinc Upsample 1.25X', 16, [5, 4], kernelBalanced)
 
+        #
+        # 1X
+        #
+
+        generateFilterPack('Gauss-Sinc Filter Downsample 1X', 21, [4, 4], kernelConservative)
+
     #----------------------------------------------------------------
     #
     # Gauss kernel downsampling (for masks).
@@ -252,16 +267,29 @@ if __name__ == '__main__':
     #
     #----------------------------------------------------------------
 
-    if True:
-    
-        targetSigma = 0.6
+    if False:
 
-        gradKernelDog = lambda x, normalized: -dog(x, targetSigma, normalized)
-        gradKernelDiff = lambda x, normalized: -gaussDiff(x, targetSigma, normalized)
+        for i in range(5):
+            f = 1.25**i
+            targetSigma = 0.6 * f
+            taps = [5, 7, 7, 9, 11][i]
 
-        gaussKernel = lambda x, normalized: gauss(x, targetSigma, normalized)
+            #gradKernelDog = lambda x, normalized: -dog(x, targetSigma, normalized)
+            gradKernelDiff = lambda x, normalized: -gaussDiff(x, targetSigma, normalized)
+            gaussKernel = lambda x, normalized: gauss(x, targetSigma, normalized)
 
-        generateFilterPack('Grad-Gauss Dog', 5, [1, 1], gradKernelDog)
-        generateFilterPack('Grad-Gauss Diff', 5, [1, 1], gradKernelDiff)
+            generateFilterPack('Gauss Differ Sigma %.2f' % targetSigma, taps, [1, 1], gradKernelDiff)
+            generateFilterPack('Gauss Smooth Sigma %.2f' % targetSigma, taps, [1, 1], gaussKernel)
 
-        generateFilterPack('Gauss Across', 5, [1, 1], gaussKernel)
+    if False:
+
+        for i in range(5):
+            f = 1.25**i
+            sigma = 0.6 * f
+            taps = [13, 17, 21, 27, 33][i]
+
+            eps = 2.0**(-6)
+            gaussKernel = lambda sigma: (lambda x, normalized: gauss(x, sigma, normalized))
+
+            generateFilterPack('Radial Dog Inner Sigma %.2f' % sigma, taps, [1, 1], gaussKernel(2 * sigma / (1 + eps)))
+            generateFilterPack('Radial Dog Outer Sigma %.2f' % sigma, taps, [1, 1], gaussKernel(2 * sigma * (1 + eps)))

@@ -35,5 +35,6 @@ stdbool imposeVectorArrow
     const GpuMatrix<uint8_x4>& dst,
     const Point<float32>& vectorBegin,
     const Point<float32>& vectorValue,
+    const bool& orientationMode,
     stdPars(GpuProcessKit)
 );

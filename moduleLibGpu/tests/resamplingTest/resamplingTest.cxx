@@ -26,6 +26,7 @@
 #include "gaussSincResampling/resampleOneAndThird/upsampleOneAndThird.h"
 #include "gaussSincResampling/resampleOneAndQuarter/downsampleOneAndQuarter.h"
 #include "gaussSincResampling/resampleOneAndQuarter/upsampleOneAndQuarter.h"
+#include "gaussSincResampling/resampleOne/downsampleOne.h"
 #include "gaussSincResampling/resampleTwice/downsampleTwice.h"
 #include "gaussSincResampling/resampleTwice/upsampleTwice.h"
 #include "gpuMatrixCopy/gpuMatrixCopy.h"
@@ -399,6 +400,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         DownsampleOneAndHalf,
         DownsampleOneAndThird,
         DownsampleOneAndQuarter,
+        DownsampleOne,
         UpsampleOneAndQuarter,
         UpsampleOneAndThird,
         UpsampleOneAndHalf,
@@ -421,6 +423,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         (test == Test::UpsampleOneAndThird) ? 4.f / 3 : 
         (test == Test::DownsampleOneAndQuarter) ? 4.f / 5 : 
         (test == Test::UpsampleOneAndQuarter) ? 5.f / 4 : 
+        (test == Test::DownsampleOne) ? 1.f : 
         (test == Test::DownsampleFourTimes) ? 1/4.f :
         (test == Test::UpsampleFourTimes) ? 4.f :
         (test == Test::InterpolationBicubic) ? variableUpsampleFactor :
@@ -454,12 +457,13 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         test == Test::UpsampleOneAndThird ||
         test == Test::DownsampleOneAndQuarter ||
         test == Test::UpsampleOneAndQuarter ||
+        test == Test::DownsampleOne ||
         test == Test::DownsampleTwice ||
         test == Test::UpsampleTwice ||
         test == Test::DownsampleFourTimes ||
         test == Test::UpsampleFourTimes
     )
-        require(resamplePyramidModel(srcImage, dstImage, 1.f/resampleFactor, resampleFactorScalar < 1 ? downsamplingKernel : upsamplingKernel, stdPass));
+        require(resamplePyramidModel(srcImage, dstImage, 1.f/resampleFactor, resampleFactorScalar <= 1 ? downsamplingKernel : upsamplingKernel, stdPass));
 
     if (test == Test::InterpolationBicubic)
         require(resampleCubicModel(srcImage, dstImage, 1.f/resampleFactor, cubicKernel, stdPass));
@@ -507,6 +511,11 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
 
     if (test == Test::UpsampleOneAndQuarter)
         require((upsampleOneAndQuarterBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
+
+    ////
+
+    if (test == Test::DownsampleOne)
+        require((downsampleOneConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
 
     ////
 

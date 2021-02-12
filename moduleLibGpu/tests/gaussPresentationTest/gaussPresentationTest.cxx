@@ -330,7 +330,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
 
     GPU_MATRIX_ALLOC(loresData, float32, loSize);
 
-    require(downsampleByFilter(hiresData, loresData, downsampleFactor, downsampleScale, gaussSigma, kit.alternativeVersion, stdPass));
+    require(downsampleByFilter(hiresData, loresData, downsampleFactor, downsampleScale, gaussSigma, kit.alternative, stdPass));
 
     //----------------------------------------------------------------
     //
@@ -353,7 +353,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
             convertFloat32(hiSize),
             upsampleScale, 
             gaussSigma, 
-            kit.alternativeVersion, 
+            kit.alternative, 
             stdPass
         )
     );

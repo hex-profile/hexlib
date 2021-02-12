@@ -1,4 +1,4 @@
-#include "downsampleOneAndQuarter.h"
+#include "downsampleOne.h"
 
 #include "gaussSincResampling/gaussSincResamplingSettings.h"
 #include "gaussSincResampling/common/allTypes.h"
@@ -7,23 +7,23 @@ using namespace gaussSincResampling;
 
 //================================================================
 //
-// downsampleOneAndQuarterConservative
+// downsampleOneConservative
 //
 //================================================================
 
 COMPILE_ASSERT(GAUSS_SINC_RESAMPLING_QUALITY == 0);
-static devConstant float32 conservativeFilter0[] = {+0.00241186f, -0.00565753f, +0.00000000f, +0.01435584f, -0.01565120f, -0.01660933f, +0.05355094f, -0.01984877f, -0.11210227f, +0.22673374f, +0.60919981f, +0.35535279f, -0.07326762f, -0.06169844f, +0.05600034f, +0.00000000f, -0.02450656f, +0.01135782f, +0.00509503f, -0.00678908f, +0.00099145f, +0.00200081f, -0.00113536f, -0.00018091f, +0.00039665f};
-static devConstant float32 conservativeFilter1[] = {+0.00000000f, +0.00297905f, -0.00354263f, -0.00403734f, +0.01364123f, -0.00508064f, -0.02653388f, +0.04002093f, +0.01775756f, -0.11813595f, +0.10336638f, +0.56109975f, +0.47220693f, +0.00000000f, -0.09806011f, +0.04415521f, +0.02038911f, -0.02886426f, +0.00456581f, +0.01010837f, -0.00634871f, -0.00112687f, +0.00276548f, -0.00074093f, -0.00058448f};
-static devConstant float32 conservativeFilter2[] = {-0.00058448f, -0.00074093f, +0.00276548f, -0.00112687f, -0.00634871f, +0.01010837f, +0.00456581f, -0.02886426f, +0.02038911f, +0.04415521f, -0.09806011f, +0.00000000f, +0.47220693f, +0.56109975f, +0.10336638f, -0.11813595f, +0.01775756f, +0.04002093f, -0.02653388f, -0.00508064f, +0.01364123f, -0.00403734f, -0.00354263f, +0.00297905f, +0.00000000f};
-static devConstant float32 conservativeFilter3[] = {+0.00039665f, -0.00018091f, -0.00113536f, +0.00200081f, +0.00099145f, -0.00678908f, +0.00509503f, +0.01135782f, -0.02450656f, +0.00000000f, +0.05600034f, -0.06169844f, -0.07326762f, +0.35535279f, +0.60919981f, +0.22673374f, -0.11210227f, -0.01984877f, +0.05355094f, -0.01660933f, -0.01565120f, +0.01435584f, +0.00000000f, -0.00565753f, +0.00241186f};
-static const Space conservativeFilterSrcShift = -10;
+static devConstant float32 conservativeFilter0[] = {+0.00225560f, -0.00849235f, +0.01519044f, -0.01300677f, -0.01125501f, +0.06495925f, -0.13853066f, +0.20425735f, +0.76924904f, +0.20425735f, -0.13853066f, +0.06495925f, -0.01125501f, -0.01300677f, +0.01519044f, -0.00849235f, +0.00225560f, +0.00059045f, -0.00097857f, +0.00053805f, -0.00015468f};
+static devConstant float32 conservativeFilter1[] = {+0.00059001f, +0.00225392f, -0.00848602f, +0.01517913f, -0.01299709f, -0.01124663f, +0.06491088f, -0.13842752f, +0.20410527f, +0.76867627f, +0.20410527f, -0.13842752f, +0.06491088f, -0.01124663f, -0.01299709f, +0.01517913f, -0.00848602f, +0.00225392f, +0.00059001f, -0.00097784f, +0.00053765f};
+static devConstant float32 conservativeFilter2[] = {-0.00097932f, +0.00059091f, +0.00225734f, -0.00849890f, +0.01520217f, -0.01301681f, -0.01126370f, +0.06500941f, -0.13863762f, +0.20441506f, +0.76984296f, +0.20441506f, -0.13863762f, +0.06500941f, -0.01126370f, -0.01301681f, +0.01520217f, -0.00849890f, +0.00225734f, +0.00059091f, -0.00097932f};
+static devConstant float32 conservativeFilter3[] = {+0.00053765f, -0.00097784f, +0.00059001f, +0.00225392f, -0.00848602f, +0.01517913f, -0.01299709f, -0.01124663f, +0.06491088f, -0.13842752f, +0.20410527f, +0.76867627f, +0.20410527f, -0.13842752f, +0.06491088f, -0.01124663f, -0.01299709f, +0.01517913f, -0.00848602f, +0.00225392f, +0.00059001f};
+static const Space conservativeFilterSrcShift = -8;
 
 //----------------------------------------------------------------
 
 #define FUNCSPACE gaussSincResampling
 
 #define PACK_SIZE 4
-#define PACK_TO_SRC_FACTOR 5
+#define PACK_TO_SRC_FACTOR 4
 
 #define FILTER0 conservativeFilter0
 #define FILTER1 conservativeFilter1
@@ -39,7 +39,7 @@ static const Space conservativeFilterSrcShift = -10;
 #define TASK_COUNT 1
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndQuarterConservative1
+#define FUNCNAME downsampleOneConservative1
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
@@ -49,7 +49,7 @@ static const Space conservativeFilterSrcShift = -10;
 #define TASK_COUNT 2
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndQuarterConservative2
+#define FUNCNAME downsampleOneConservative2
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
@@ -59,7 +59,7 @@ static const Space conservativeFilterSrcShift = -10;
 #define TASK_COUNT 3
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndQuarterConservative3
+#define FUNCNAME downsampleOneConservative3
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
@@ -69,7 +69,7 @@ static const Space conservativeFilterSrcShift = -10;
 #define TASK_COUNT 4
 
 #undef FUNCNAME
-#define FUNCNAME downsampleOneAndQuarterConservative4
+#define FUNCNAME downsampleOneConservative4
 
 # include "rationalResample/rationalResampleMultiple.inl"
 
@@ -89,12 +89,12 @@ namespace gaussSincResampling {
 
 //================================================================
 //
-// downsampleOneAndQuarterConservativeMultitask
+// downsampleOneConservativeMultitask
 //
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>              
-stdbool downsampleOneAndQuarterConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
+stdbool downsampleOneConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
 {
     REQUIRE(equalLayers(src, dst));
     auto layers = dst.layers();
@@ -108,7 +108,7 @@ stdbool downsampleOneAndQuarterConservativeMultitask(const GpuLayeredMatrix<cons
         \
         else if (layers == n) \
         { \
-            auto func = downsampleOneAndQuarterConservative##n<Src, Interm, Dst>; \
+            auto func = downsampleOneConservative##n<Src, Interm, Dst>; \
             require(func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass)); \
         }
 
@@ -134,7 +134,7 @@ stdbool downsampleOneAndQuarterConservativeMultitask(const GpuLayeredMatrix<cons
 //----------------------------------------------------------------
 
 #define TMP_MACRO(Src, Interm, Dst, _) \
-    INSTANTIATE_FUNC_EX((downsampleOneAndQuarterConservativeMultitask<Src, Interm, Dst>), Dst)
+    INSTANTIATE_FUNC_EX((downsampleOneConservativeMultitask<Src, Interm, Dst>), Dst)
 
 FOREACH_TYPE(TMP_MACRO)
 
