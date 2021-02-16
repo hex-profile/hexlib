@@ -7,7 +7,7 @@
 #include "data/spacex.h"
 #include "dataAlloc/arrayMemory.h"
 #include "errorLog/errorLog.h"
-#include "errorLog/convertAllExceptions.h"
+#include "errorLog/blockExceptions.h"
 #include "flipMatrix.h"
 #include "formattedOutput/messageFormatterStdio.h"
 #include "interfaces/fileTools.h"
@@ -421,10 +421,9 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
         auto f = table.insert(make_pair(hash, initCounter));
         Counter& counter = f.first->second;
         frameIndex = counter++;
-        returnTrue;
     };
 
-    require(convertAllExceptions(getFrameIndex()));
+    require(blockExceptionsVoid(getFrameIndex()));
 
     //----------------------------------------------------------------
     //
