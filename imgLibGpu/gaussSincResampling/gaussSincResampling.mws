@@ -662,5 +662,5 @@ ramid filter compensator in freq domain" }}}{EXCHG {PARA 0 "> " 0 ""
 o printf(\"%+.8ff, \", WinSinc(((i + 1/2) - N/2)/N)) end do; end proc:
 " }}}{EXCHG {PARA 0 "> " 0 "" {MPLTEXT 1 0 0 "" }}}{EXCHG {PARA 0 "> \+
 " 0 "" {MPLTEXT 1 0 15 "#makeFreq(255);" }}}{EXCHG {PARA 0 "> " 0 "" 
-{MPLTEXT 1 0 15 "#makeFreq(256);" }}}}{MARK "17 0 0" 0 }{VIEWOPTS 1 1 
-0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }
+{MPLTEXT 1 0 15 "#makeFreq(256);" }}}}{MARK "18 2 0" 53 }{VIEWOPTS 1 
+1 0 1 1 1803 1 1 1 1 }{PAGENUMBERS 0 1 2 33 1 1 }

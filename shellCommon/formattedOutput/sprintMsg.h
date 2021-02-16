@@ -4,7 +4,6 @@
 #include "charType/charArray.h"
 
 #include "stlString/stlString.h"
-#include "errorLog/convertAllExceptions.h"
 #include "formatting/messageFormatter.h"
 
 //================================================================

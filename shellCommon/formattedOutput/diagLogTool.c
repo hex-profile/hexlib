@@ -1,9 +1,5 @@
 #include "diagLogTool.h"
 
-#include "stdFunc/stdFunc.h"
-#include "formattedOutput/messageFormatterStdio.h"
-#include "stlString/stlString.h"
-
 //================================================================
 //
 // MsgLogByDiagLog::addMsg

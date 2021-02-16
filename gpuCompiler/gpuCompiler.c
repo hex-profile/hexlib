@@ -6,7 +6,7 @@
 #include "binaryFile/binaryFileImpl.h"
 #include "checkHeap.h"
 #include "cmdLine/cmdLine.h"
-#include "errorLog/convertAllExceptions.h"
+#include "errorLog/blockExceptions.h"
 #include "fileToolsImpl/fileToolsImpl.h"
 #include "formattedOutput/logToStdConsole.h"
 #include "formattedOutput/requireMsg.h"
@@ -1677,7 +1677,7 @@ int main(int argCount, const CharType* argStr[])
     //
     //----------------------------------------------------------------
 
-    bool ok = errorBlock(convertAllExceptions(mainFunc(argCount, argStr, stdPass)));
+    bool ok = blockExceptions(mainFunc(argCount, argStr, stdPass));
 
     ////
 
