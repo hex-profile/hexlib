@@ -555,11 +555,23 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
     //
     //----------------------------------------------------------------
 
+    BaseImageConsole* baseConsole = kit.baseImageConsole;
+
     BaseImageConsoleNull baseConsoleNull;
-    BaseImageConsole* baseConsole = &baseConsoleNull;
+
+    if_not (baseConsole)
+        baseConsole = &baseConsoleNull;
+
+    ////
+
+    BaseVideoOverlay* baseOverlay = kit.baseVideoOverlay;
 
     BaseVideoOverlayNull baseOverlayNull;
-    BaseVideoOverlay* baseOverlay = &baseOverlayNull;
+
+    if_not (baseOverlay)
+        baseOverlay = &baseOverlayNull;
+
+    ////
 
     BaseConsoleBmpThunk bmpThunk(*bmpConsole, *baseConsole, *baseOverlay, kit);
 

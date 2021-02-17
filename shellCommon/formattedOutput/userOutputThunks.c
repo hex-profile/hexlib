@@ -65,8 +65,6 @@ void ErrorLogByMsgLog::addErrorSimple(const CharType* message)
 
 void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
 {
-    TRACE_REASSEMBLE(trace);
-
     if (msgLog)
     {
         MessageBlockGuard guard(*msgLog);
@@ -75,7 +73,7 @@ void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace
 
         int32 depth = 0;
 
-        for (const TraceScope* p = &TRACE_SCOPE(trace); p != 0; p = p->prev, ++depth)
+        for (const TraceScope* p = &trace; p != 0; p = p->prev, ++depth)
         {
             if (depth < maxTraceDepth)
             {
@@ -109,7 +107,7 @@ bool ErrorLogExByMsgLog::isThreadProtected() const
 
 bool ErrorLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
 {
-    const TraceScope* p = &TRACE_SCOPE(stdTraceName);
+    const TraceScope* p = &trace;
 
     if (msgLog)
     {

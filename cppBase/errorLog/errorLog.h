@@ -56,7 +56,7 @@ class ErrorLogNull : public ErrorLog
     TRACE_AUTO_LOCATION CT(": ")
 
 #define CHECK_TRACE(condition, messageLiteral) \
-    CHECK_EX(condition, kit.errorLog.addErrorTrace(CHECK_TRACE_PREFIX messageLiteral, TRACE_PASSTHRU(stdTraceName)))
+    CHECK_EX(condition, kit.errorLog.addErrorTrace(CHECK_TRACE_PREFIX messageLiteral, TRACE_PASSTHRU(trace)))
 
 //----------------------------------------------------------------
 

@@ -17,13 +17,12 @@
 
 //================================================================
 //
-// stdTraceName
-//
-// The name of standard trace parameter.
+// TRACE_* common macros
 //
 //================================================================
 
-#define stdTraceName __trace
+#define stdTraceRoot \
+    TRACE_ROOT(trace, TRACE_AUTO_LOCATION)
 
 //================================================================
 //
@@ -35,7 +34,7 @@
 
 #define stdPars(Kit) \
     const Kit& kit, \
-    TRACE_PARAMS(stdTraceName)
+    TRACE_PARAMS(trace)
 
 //================================================================
 //
@@ -56,7 +55,7 @@
 
 #define stdPassEx(kit, location) \
     (PROFILER_FRAME_TEMPORARY(kit, location), kit), \
-    TRACE_PASS(stdTraceName, location)
+    TRACE_PASS(trace, location)
 
 //----------------------------------------------------------------
 
@@ -73,11 +72,11 @@
 
 #define stdPassThru \
     kit, \
-    TRACE_PASSTHRU(stdTraceName)
+    TRACE_PASSTHRU(trace)
 
 #define stdPassThruKit(kit) \
     kit, \
-    TRACE_PASSTHRU(stdTraceName)
+    TRACE_PASSTHRU(trace)
 
 //================================================================
 //
@@ -88,12 +87,12 @@
 //================================================================
 
 #define stdEnterEx(newLocation, elemCount, profName) \
-    TRACE_ENTER(stdTraceName, newLocation); \
-    PROFILER_FRAME_ENTER_EX(kit, TRACE_SCOPE(stdTraceName).location, elemCount, profName)
+    TRACE_ENTER(trace, newLocation); \
+    PROFILER_FRAME_ENTER_EX(kit, trace.location, elemCount, profName)
 
 #define stdEnter \
-    TRACE_ENTER(stdTraceName, TRACE_AUTO_LOCATION); \
-    PROFILER_FRAME_ENTER(kit, TRACE_SCOPE(stdTraceName).location)
+    TRACE_ENTER(trace, TRACE_AUTO_LOCATION); \
+    PROFILER_FRAME_ENTER(kit, trace.location)
 
 //----------------------------------------------------------------
 
@@ -145,7 +144,7 @@ extern const NullKit nullKit;
 
 #define stdNullPars \
     const NullKit&, \
-    TRACE_PARAMS(stdTraceName)
+    TRACE_PARAMS(trace)
 
 #define stdNullPass \
     stdPassKit(nullKit)
@@ -153,5 +152,5 @@ extern const NullKit nullKit;
 #define stdNullPassThru \
     stdPassThruKit(nullKit)
 
-#define stdNullBegin \
-    TRACE_REASSEMBLE(stdTraceName);
+#define stdNullBegin
+    

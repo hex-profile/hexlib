@@ -447,7 +447,7 @@ stdbool EmuMultiWin32::launchKernel
 
     ////
 
-    REQUIRE_EX(recordedError == 0, kit.errorLog.addErrorTrace(recordedError, TRACE_PASSTHRU(stdTraceName)));
+    REQUIRE_EX(recordedError == 0, kit.errorLog.addErrorTrace(recordedError, TRACE_PASSTHRU(trace)));
 
     returnTrue;
 }
