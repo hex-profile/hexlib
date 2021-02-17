@@ -23,6 +23,9 @@
 //
 // GpuBaseImageProvider::setImage
 //
+// Preallocates the intermediate GPU buffer assuming maximum 
+// expected CPU row byte alignment.
+//
 //================================================================
 
 stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
@@ -32,9 +35,9 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, s
 
     ////
 
-    constexpr Space maxAtRowByteAlignment = 64;
-    constexpr Space alignment = maxAtRowByteAlignment / Space(sizeof(uint8_x4));
-    COMPILE_ASSERT(alignment * sizeof(uint8_x4) == maxAtRowByteAlignment);
+    constexpr Space maxExpectedCpuRowByteAlignment = 64;
+    constexpr Space alignment = maxExpectedCpuRowByteAlignment / Space(sizeof(uint8_x4));
+    COMPILE_ASSERT(alignment * sizeof(uint8_x4) == maxExpectedCpuRowByteAlignment);
 
     COMPILE_ASSERT(alignment >= 1 && COMPILE_IS_POWER2(alignment));
     require(safeAdd(absPitch, alignment - 1, absPitch));
@@ -51,6 +54,14 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, s
 //================================================================
 //
 // GpuBaseImageProvider::saveImage
+//
+// * If the destination pitch is equal to the source pitch, copies it as an array.
+//
+// * If the destination pitch is not equal to the source one, 
+// transforms the image on GPU to the destination pitch 
+// using the preallocated intermediate buffer.
+//
+// * Doesn't do dynamic allocations based on the destination pitch.
 //
 //================================================================
 

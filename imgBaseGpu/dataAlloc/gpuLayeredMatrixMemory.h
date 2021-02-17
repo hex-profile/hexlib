@@ -138,7 +138,7 @@ public:
 
     template <typename Kit>
     sysinline stdbool realloc(Space layers, const Point<Space>& size, stdPars(Kit))
-        {return reallocEx(layers, size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
+        {return reallocEx(layers, size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:
 

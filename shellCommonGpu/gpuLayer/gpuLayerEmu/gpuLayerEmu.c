@@ -67,7 +67,7 @@ stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& propert
     properties.multiprocessorCount = 1;
     properties.clockRate = 2e9f;
     properties.totalThroughput = 2e9f;
-    properties.samplerBaseAlignment = EMU_TEX_BASE_ALIGNMENT;
+    properties.samplerAndFastTransferBaseAlignment = EMU_TEX_BASE_ALIGNMENT;
     properties.samplerRowAlignment = EMU_TEX_ROW_ALIGNMENT;
     properties.maxGroupCount = point3D(SpaceU(typeMax<Space>()));
     properties.maxThreadCount = point(EMU_MAX_THREAD_COUNT_X, EMU_MAX_THREAD_COUNT_Y);

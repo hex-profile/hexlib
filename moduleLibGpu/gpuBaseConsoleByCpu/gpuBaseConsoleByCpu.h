@@ -11,6 +11,11 @@
 //
 // GpuBaseImageProvider
 //
+// Provider that copies GPU image to CPU destination.
+//
+// On set image, preallocates intermediate GPU buffer assuming 
+// max expected CPU row byte alignment.
+//
 //================================================================
 
 class GpuBaseImageProvider : public BaseImageProvider
@@ -25,11 +30,11 @@ public:
 
 public:
 
-    Space getPitch() const
+    Space desiredPitch() const
         {return gpuImage.memPitch();}
 
-    Space baseByteAlignment() const
-        {return kit.gpuProperties.samplerBaseAlignment;}
+    Space desiredBaseByteAlignment() const
+        {return kit.gpuProperties.samplerAndFastTransferBaseAlignment;}
 
     stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars);
 

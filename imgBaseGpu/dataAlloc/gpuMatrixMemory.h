@@ -106,11 +106,11 @@ public:
 
     template <typename Kit>
     sysinline stdbool realloc(const Point<Space>& size, stdPars(Kit))
-        {return reallocEx(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
+        {return reallocEx(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
     sysinline stdbool realloc(const Point<Space>& size, Space rowByteAlignment, stdPars(Kit))
-        {return reallocEx(size, kit.gpuProperties.samplerBaseAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);}
+        {return reallocEx(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:
 

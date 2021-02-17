@@ -85,7 +85,7 @@ public:
     )
     {
         return reallocEx(scale, baseScaleFactor, baseScaleLevels, newLevels, newLayers, newBaseSize, sizeRounding, extraEdge,
-            kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);
+            kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);
     }
 
 public:

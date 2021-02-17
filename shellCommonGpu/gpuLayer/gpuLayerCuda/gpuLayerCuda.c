@@ -263,7 +263,7 @@ stdbool CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& proper
 
     int samplerBaseAlignment = 0;
     REQUIRE_CUDA(cuDeviceGetAttribute(&samplerBaseAlignment, CU_DEVICE_ATTRIBUTE_TEXTURE_ALIGNMENT, deviceId));
-    properties.samplerBaseAlignment = samplerBaseAlignment;
+    properties.samplerAndFastTransferBaseAlignment = samplerBaseAlignment;
 
     int samplerPitchAlignment = 0;
     REQUIRE_CUDA(cuDeviceGetAttribute(&samplerPitchAlignment, CU_DEVICE_ATTRIBUTE_TEXTURE_PITCH_ALIGNMENT, deviceId));
@@ -668,6 +668,20 @@ struct CudaCpuAllocCore
 {
     inline stdbool operator()(CpuAddrU& result, CpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
     {
+
+        /*
+        Test allocation alignment.
+
+        for_count (i, 16)
+        {
+            void* ptr = nullptr;
+            REQUIRE_CUDA(cuMemAllocHost(&ptr, 1));
+            printMsg(kit.msgLog, STR("cuMemAllocHost %"), ptr);
+        }
+        */
+
+        ////
+
         using AllocFunc = CUresult CUDAAPI (void** pp, size_t bytesize);
         AllocFunc* allocFunc = cuMemAllocHost; // ensure prototype with size_t
 
@@ -736,6 +750,19 @@ struct CudaGpuAllocCore
 {
     inline stdbool operator()(GpuAddrU& result, GpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
     {
+        /*
+        Test allocation alignment.
+
+        for_count (i, 16)
+        {
+            CUdeviceptr ptr = 0;
+            REQUIRE_CUDA(cuMemAlloc(&ptr, 1));
+            printMsg(kit.msgLog, STR("cuMemAlloc %"), (void*) ptr);
+        }
+        */
+
+        ////
+
         using AllocFunc = CUresult CUDAAPI (CUdeviceptr* pp, size_t bytesize);
         AllocFunc* allocFunc = cuMemAlloc; // ensure prototype
 

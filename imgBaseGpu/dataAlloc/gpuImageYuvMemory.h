@@ -69,7 +69,7 @@ public:
     template <typename Kit>
     sysinline stdbool realloc(const Point<Space>& size, Rounding sizeRounding, stdPars(Kit))
     {
-        return realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, sizeRounding, stdPassThru);
+        return realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, sizeRounding, stdPassThru);
     }
 
 };
