@@ -566,7 +566,7 @@ void serverFunc(void* param)
 
     ////
 
-    TRACE_ROOT_STD;
+    stdTraceRoot;
 
     ErrorLogDebugBreak errorLog;
     ErrorLogKit kit(errorLog);

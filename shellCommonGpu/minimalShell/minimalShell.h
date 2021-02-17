@@ -7,6 +7,7 @@
 #include "memController/memController.h"
 #include "storage/smartPtr.h"
 #include "interfaces/fileToolsKit.h"
+#include "baseImageConsole/baseImageConsole.h"
 
 namespace minimalShell {
 
@@ -44,6 +45,16 @@ KIT_CREATE4(ParamsKit, EngineModule&, engineModule, MemController&, engineMemory
 
 //================================================================
 //
+// BaseImageConsolesKit
+//
+// Pointers can be NULL.
+//
+//================================================================
+
+KIT_CREATE2(BaseImageConsolesKit, BaseImageConsole*, baseImageConsole, BaseVideoOverlay*, baseVideoOverlay);
+
+//================================================================
+//
 // MinimalShell
 //
 //================================================================
@@ -77,7 +88,7 @@ public:
 
 public:
 
-    using ProcessKit = InitKit;
+    using ProcessKit = KitCombine<InitKit, BaseImageConsolesKit>;
 
     stdbool process(EngineModule& engineModule, MemController& engineMemory, bool runExecutionPhase, bool& sysAllocHappened, stdPars(ProcessKit))
         {return processEntry(stdPassKit(kitCombine(kit, ParamsKit(engineModule, engineMemory, runExecutionPhase, sysAllocHappened))));}

@@ -1669,7 +1669,7 @@ int main(int argCount, const CharType* argStr[])
         FileToolsKit(fileTools)
     );
 
-    TRACE_ROOT(stdTraceName, TRACE_AUTO_LOCATION);
+    stdTraceRoot;
 
     //----------------------------------------------------------------
     //

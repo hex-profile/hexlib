@@ -379,7 +379,7 @@ public:
     {
         if (theStream != 0)
         {
-            TRACE_ROOT_STD;
+            stdTraceRoot;
             errorBlock(theSyncStream->waitStream(*theStream, stdNullPass));
 
             theStream = 0;

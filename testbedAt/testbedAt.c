@@ -435,7 +435,7 @@ public:
     )
     {
         AtImageProviderThunk* self = (AtImageProviderThunk*) context;
-        const TraceScope& TRACE_SCOPE(stdTraceName) = self->trace;
+        const TraceScope& trace = self->trace;
 
         COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
         return errorBlock(self->imageProvider.saveImage(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass));
@@ -465,9 +465,7 @@ public:
 
     stdbool setImage(const Point<Space>& size, bool dataProcessing, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
-        TRACE_REASSEMBLE(stdTraceName);
-
-        AtImageProviderThunk atProvider(imageProvider, TRACE_SCOPE(stdTraceName));
+        AtImageProviderThunk atProvider(imageProvider, trace);
 
         if_not (dataProcessing)
         {
@@ -522,8 +520,7 @@ public:
     virtual stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, stdNullPars)
     {
         CRITSEC_GUARD(lock);
-        TRACE_REASSEMBLE(stdTraceName);
-        AtImageProviderThunk atProvider(imageProvider, TRACE_SCOPE(stdTraceName));
+        AtImageProviderThunk atProvider(imageProvider, trace);
 
         require(base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         returnTrue;
@@ -719,7 +716,7 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const AtEn
 
     ////
 
-    TRACE_ROOT_STD;
+    stdTraceRoot;
     COMMON_KIT_IMPL(at_api_create, kit);
 
     ////
@@ -766,7 +763,7 @@ void atClientDestroy(void* instance, const at_api_destroy* api)
 
     ////
 
-    TRACE_ROOT_STD;
+    stdTraceRoot;
     COMMON_KIT_IMPL(at_api_destroy, kit);
 
     ////
@@ -831,7 +828,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
 
     ////
 
-    TRACE_ROOT_STD;
+    stdTraceRoot;
 
     COMMON_KIT_IMPL(at_api_process, baseKit);
 
