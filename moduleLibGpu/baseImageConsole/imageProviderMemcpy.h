@@ -24,10 +24,10 @@ public:
 
 public:
 
-    Space getPitch() const
+    Space desiredPitch() const
         {return source.memPitch();}
 
-    Space baseByteAlignment() const
+    Space desiredBaseByteAlignment() const
         {return cpuBaseByteAlignment;}
 
     stdbool saveImage(const Matrix<Pixel>& dest, stdNullPars);

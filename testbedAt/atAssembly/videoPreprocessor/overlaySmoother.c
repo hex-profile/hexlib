@@ -69,10 +69,10 @@ public:
     AtProviderFromCpuImage(const Matrix<ColorPixel>& cpuImage, const ErrorLogKit& kit)
         : cpuImage(cpuImage), kit(kit) {}
 
-    Space baseByteAlignment() const 
+    Space desiredBaseByteAlignment() const 
         {return cpuBaseByteAlignment;}
 
-    Space getPitch() const 
+    Space desiredPitch() const 
         {return cpuImage.memPitch();}
 
     stdbool saveImage(const Matrix<ColorPixel>& dest, stdNullPars);
@@ -160,7 +160,7 @@ inline void exchange(QueueImage& a, QueueImage& b)
 template <typename Kit>
 stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider& provider, QueueImage& dst, stdPars(Kit))
 {
-    Space desiredPitch = provider.getPitch();
+    Space desiredPitch = provider.desiredPitch();
     Space memPitch = absv(desiredPitch);
     REQUIRE(size.X <= memPitch);
 
@@ -172,7 +172,7 @@ stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider& provider, Qu
     ////
 
     if_not (memSize <= dst.memory.size())
-        require(dst.memory.realloc(memSize, provider.baseByteAlignment(), kit.malloc, stdPass));
+        require(dst.memory.realloc(memSize, provider.desiredBaseByteAlignment(), kit.malloc, stdPass));
 
     ////
 

@@ -40,7 +40,7 @@ public:
 
     template <typename Kit>
     inline stdbool realloc(Space size, stdPars(Kit))
-        {return Base::realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuFastAlloc, stdPassThru);}
+        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuFastAlloc, stdPassThru);}
 
     //
     // Cast to GpuArray

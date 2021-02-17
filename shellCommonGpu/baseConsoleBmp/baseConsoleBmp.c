@@ -377,7 +377,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     REQUIRE(safeMul(alignedPitch, imageSize.Y, sizeInPixels));
 
     ArrayMemory<Pixel> bufferArray;
-    require(bufferArray.realloc(sizeInPixels, imageProvider.baseByteAlignment(), stdPass));
+    require(bufferArray.realloc(sizeInPixels, imageProvider.desiredBaseByteAlignment(), stdPass));
 
     ARRAY_EXPOSE(bufferArray);
 

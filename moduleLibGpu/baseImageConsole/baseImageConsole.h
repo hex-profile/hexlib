@@ -40,8 +40,13 @@ struct BaseImageConsoleNull : public BaseImageConsole
 
 struct BaseImageProvider
 {
-    virtual Space getPitch() const =0;
-    virtual Space baseByteAlignment() const =0;
+    // The desired optimal pitch in elements.
+    virtual Space desiredPitch() const =0;
+
+    // The desired base address alignment in bytes.
+    virtual Space desiredBaseByteAlignment() const =0;
+
+    // Provider implementation.
     virtual stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars) =0;
 };
 

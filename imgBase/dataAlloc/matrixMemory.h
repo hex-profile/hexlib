@@ -179,7 +179,7 @@ public:
 
     template <typename Kit>
     inline stdbool reallocForGpuExch(const Point<Space>& size, stdPars(Kit))
-        {return Base::realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.cpuFastAlloc, stdPassThru);}
+        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
     inline stdbool reallocForCpuOnly(const Point<Space>& size, stdPars(Kit))

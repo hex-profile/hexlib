@@ -16,8 +16,8 @@ stdbool GpuPyramidCache::realloc(stdPars(GpuProcessKit))
 
     ////
 
-    require(cpuHolder.realloc(1, kit.gpuProperties.samplerBaseAlignment, stdPass));
-    require(gpuHolder.realloc(1, kit.gpuProperties.samplerBaseAlignment, stdPass));
+    require(cpuHolder.realloc(1, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass));
+    require(gpuHolder.realloc(1, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass));
 
     ////
 

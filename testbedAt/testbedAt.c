@@ -469,7 +469,10 @@ public:
 
         if_not (dataProcessing)
         {
-            require(atProvider.callbackFunc(&atProvider, nullptr, imageProvider.getPitch(), size.X, size.Y) != 0);
+            // Imitates the processing on counting phase. The pitch on execution phase may differ, 
+            // but the provider implementation is tolerant to it up to some maximal row alignment.
+
+            require(atProvider.callbackFunc(&atProvider, nullptr, imageProvider.desiredPitch(), size.X, size.Y) != 0);
         }
         else
         {

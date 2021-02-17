@@ -202,7 +202,7 @@ public:
 
     template <typename Kit>
     inline stdbool reallocForGpuExch(Space size, stdPars(Kit))
-        {return Base::realloc(size, kit.gpuProperties.samplerBaseAlignment, kit.cpuFastAlloc, stdPassThru);}
+        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     //
     // Cast to Array

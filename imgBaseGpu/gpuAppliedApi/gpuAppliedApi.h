@@ -47,10 +47,14 @@ struct GpuProperties
     float32 totalThroughput;
 
     // Sampler base address alignment in bytes.
-    SpaceU samplerBaseAlignment;
+    //
+    // Also serves as a base alignment for CPU and GPU 
+    // memory blocks involved in DMA transfers,
+    // like CPU pinned memory blocks and their GPU counterparts.
+    SpaceU samplerAndFastTransferBaseAlignment;
 
     // Sampler row alignment in bytes.
-    // This row alignment is >= good DRAM access alignemt.
+    // This row alignment is >= good DRAM access alignment.
     SpaceU samplerRowAlignment;
 
     // Max group count and group size
@@ -65,7 +69,7 @@ struct GpuProperties
         multiprocessorCount = 0;
         clockRate = 0;
         totalThroughput = 0;
-        samplerBaseAlignment = 0;
+        samplerAndFastTransferBaseAlignment = 0;
         samplerRowAlignment = 0;
         maxGroupCount = point3D<SpaceU>(0);
         maxThreadCount = point(0);
