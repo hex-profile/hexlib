@@ -7,7 +7,7 @@
 #include "memController/memController.h"
 #include "storage/smartPtr.h"
 #include "interfaces/fileToolsKit.h"
-#include "baseImageConsole/baseImageConsole.h"
+#include "baseInterfaces/baseImageConsole.h"
 
 namespace minimalShell {
 

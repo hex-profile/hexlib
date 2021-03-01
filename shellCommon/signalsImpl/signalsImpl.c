@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "at_client.h"
-
 namespace signalImpl {
 
 using namespace std;
@@ -76,7 +74,7 @@ class RegisterSignal : public CfgVisitor
 
 public:
 
-    inline RegisterSignal(AtSignalSet& registration)
+    inline RegisterSignal(BaseActionSetup& registration)
         : registration(registration) {}
 
     void operator()(const CfgNamespace* scope, const CfgSerializeVariable& var)
@@ -102,7 +100,7 @@ public:
             uint32 id = currentId++;
             signal.setID(id);
 
-            ensurev(registration.actsetAdd(id, name.c_str(), key.c_str(), comment.c_str()));
+            ensurev(registration.actsetAdd(id, key.c_str(), name.c_str(), comment.c_str()));
         }
         catch (const exception&) {}
     }
@@ -111,7 +109,7 @@ public:
 
 private:
 
-    AtSignalSet& registration;
+    BaseActionSetup& registration;
     uint32 currentId = signalIdBase;
 
 };
@@ -122,7 +120,7 @@ private:
 //
 //================================================================
 
-void registerSignals(CfgSerialization& serialization, const CfgNamespace* scope, AtSignalSet& registration, int32& signalCount)
+void registerSignals(CfgSerialization& serialization, const CfgNamespace* scope, BaseActionSetup& registration, int32& signalCount)
 {
     RegisterSignal r(registration);
     serialization.serialize(CfgSerializeKit(r, scope));
@@ -131,18 +129,52 @@ void registerSignals(CfgSerialization& serialization, const CfgNamespace* scope,
 
 //================================================================
 //
+// BaseActionReceiverByLambda
+//
+//================================================================
+
+template <typename Lambda>
+class BaseActionReceiverByLambda : public BaseActionReceiver
+{
+
+public:
+
+    BaseActionReceiverByLambda(const Lambda& lambda)
+        : lambda{lambda} {}
+
+    virtual void process(const Array<const BaseActionId>& actions)
+    {
+        ARRAY_EXPOSE(actions);
+
+        for_count (i, actionsSize)
+            lambda(actionsPtr[i]);
+    }
+
+private:
+
+    Lambda lambda;
+
+};
+
+//----------------------------------------------------------------
+
+template <typename Lambda>
+inline auto baseActionReceiverByLambda(const Lambda& lambda)
+    {return BaseActionReceiverByLambda<Lambda>{lambda};}
+
+//================================================================
+//
 // prepareSignalHistogram
 //
 //================================================================
 
-void prepareSignalHistogram(AtSignalTest& at, const Array<int32>& histogram, bool& anyEventsFound, bool& realEventsFound, bool& mouseSignal, bool& mouseSignalAlt)
+void prepareSignalHistogram(BaseActionReceiving& at, const Array<int32>& histogram, SignalsOverview& overview)
 {
     ARRAY_EXPOSE(histogram);
 
-    anyEventsFound = false;
-    realEventsFound = false;
-    mouseSignal = false;
-    mouseSignalAlt = false;
+    ////
+
+    overview = SignalsOverview{};
 
     //
     // Zero array
@@ -155,39 +187,51 @@ void prepareSignalHistogram(AtSignalTest& at, const Array<int32>& histogram, boo
     // Collect action counts
     //
 
-    int32 actionCount = at.actionCount();
-
-    for_count (i, actionCount)
+    auto handleAction = [&] (BaseActionId id) -> void
     {
-        AtActionId id = 0;
+        uint32 signalIndex = id - signalIdBase;
 
-        if (at.actionItem(i, id))
-        {
-            uint32 k = id - signalIdBase;
-
-            if (SpaceU(k) < SpaceU(histogramSize))
-                ++histogramPtr[k];
-        }
-
-        if (id == AT_ACTION_ID_MOUSE_LEFT_DOWN)
-            mouseSignal = true;
-
-        if (id == AT_ACTION_ID_MOUSE_RIGHT_DOWN)
-            mouseSignalAlt = true;
+        if (SpaceU(signalIndex) < SpaceU(histogramSize))
+            ++histogramPtr[signalIndex];
 
         ////
 
-        anyEventsFound = true;
+        if (id == baseActionId::MouseLeftDown)
+            overview.mouseSignal = true;
+
+        if (id == baseActionId::MouseRightDown)
+            overview.mouseSignalAlt = true;
+
+        ////
+
+        overview.anyEventsFound = true;
 
         if_not
         (
-            id == AT_ACTION_ID_MOUSE_LEFT_UP ||
-            id == AT_ACTION_ID_MOUSE_RIGHT_UP
+            id == baseActionId::MouseLeftUp ||
+            id == baseActionId::MouseRightUp
         )
         {
-            realEventsFound = true;
+            overview.realEventsFound = true;
         }
-    }
+
+        ////
+
+        if (id == baseActionId::SaveConfig)
+            overview.saveConfig = true;
+
+        if (id == baseActionId::LoadConfig)
+            overview.loadConfig = true;
+
+        if (id == baseActionId::EditConfig)
+            overview.editConfig = true;
+    };
+
+    ////
+
+    auto receiver = baseActionReceiverByLambda(handleAction);
+
+    at.getActions(receiver);
 }
 
 //----------------------------------------------------------------

@@ -17,7 +17,7 @@
 #include "flipMatrix.h"
 #include "formattedOutput/messageFormatterStdio.h"
 #include "data/spacex.h"
-#include "baseImageConsole/imageProviderMemcpy.h"
+#include "baseInterfaces/imageProviderMemcpy.h"
 #include "userOutput/paramMsg.h"
 #include "interfaces/fileTools.h"
 
@@ -610,7 +610,7 @@ stdbool AviWriter::writeImage
     //----------------------------------------------------------------
 
     REQUIRE(kit.dataProcessing);
-    require(imageProvider.saveImage(flipMatrix(bufferImage), stdPass));
+    require(imageProvider.saveBgr32(flipMatrix(bufferImage), stdPass));
 
     //----------------------------------------------------------------
     //

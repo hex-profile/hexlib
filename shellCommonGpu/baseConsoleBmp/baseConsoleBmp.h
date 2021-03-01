@@ -1,6 +1,6 @@
 #pragma once
 
-#include "baseImageConsole/baseImageConsole.h"
+#include "baseInterfaces/baseImageConsole.h"
 #include "interfaces/fileToolsKit.h"
 #include "storage/dynamicClass.h"
 #include "userOutput/diagnosticKit.h"

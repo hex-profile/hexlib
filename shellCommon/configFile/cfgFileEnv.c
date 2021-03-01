@@ -6,9 +6,12 @@
 #include <map>
 #include <algorithm>
 #include <string.h>
+#include <sstream>
 
 #include "errorLog/errorLog.h"
 #include "interfaces/fileTools.h"
+#include "errorLog/blockExceptions.h"
+#include "compileTools/blockExceptionsSilent.h"
 
 namespace cfgVarsImpl {
 
@@ -277,295 +280,338 @@ static void saveNameId(const NameID& id, basic_ostream<CharType>& stream)
 
 //================================================================
 //
-// loadFile
-//
-// Reading file and parsing
+// valueSeparator
 //
 //================================================================
 
 static const CharType valueSeparator = '=';
 
-//----------------------------------------------------------------
+//================================================================
+//
+// loadFromStream
+//
+// Reading from stream and parsing.
+// May throw exceptions.
+//
+//================================================================
 
-stdbool loadFile(const CharType* filename, Memory& memory, FileTools& fileTools, stdPars(ErrorLogKit))
+stdbool loadFromStream(basic_istream<CharType>& stream, Memory& memory, stdPars(FileEnvKit))
 {
-    try
+    //----------------------------------------------------------------
+    //
+    // Read from stream to a new container.
+    //
+    //----------------------------------------------------------------
+
+    Memory newMemory;
+
     {
 
-        String temporaryFilename = getTemporaryFilename(filename);
-
-        //----------------------------------------------------------------
         //
-        // Finish processes that could be violently interrupted when writing:
         //
-        // If there is a temporary file, this means it was not successfully written until the end, so delete it.
         //
-        //----------------------------------------------------------------
 
-        fileTools.deleteFile(temporaryFilename.c_str());
+        // block comment
+        String blockComment;
 
-        //----------------------------------------------------------------
+        // current namespace
+        NameContainer spacePrefix;
+
         //
-        // reading from file to a new container
         //
-        //----------------------------------------------------------------
+        //
 
-        Memory newMemory;
-
+        while (true)
         {
 
-            basic_ifstream<CharType> stream(filename);
-            require(!!stream);
+            //----------------------------------------------------------------
+            //
+            // reading line
+            //
+            //----------------------------------------------------------------
 
-            //
-            //
-            //
+            String s;
+            getline(stream, s);
 
-            // block comment
-            String blockComment;
+            if (!stream)
+            {
+                REQUIRE(stream.eof());
+                break;
+            }
 
-            // current namespace
-            NameContainer spacePrefix;
-            // spacePrefix.reserve(32);
+            //----------------------------------------------------------------
+            //
+            // null-terminated string for recognition
+            //
+            //----------------------------------------------------------------
 
-            //
-            //
-            //
-
-            while (true)
+            breakBlock(parseOneLine)
             {
 
+                //
+                // ignore blanks in any case
+                //
+
+                const CharType* str = s.c_str();
+                breakRequire(*str != 0);
+                while (isSpace(*str)) ++str;
+
                 //----------------------------------------------------------------
                 //
-                // reading line
+                // recognize syntax of leading comment
+                // // comment
                 //
                 //----------------------------------------------------------------
 
-                String s;
-                getline(stream, s);
-
-                if (!stream)
+                breakBlock(blockCommentSyntax)
                 {
-                    REQUIRE(stream.eof());
-                    break;
+                    const CharType* p = str;
+
+                    // comment
+                    breakRequire(*p == ';'); ++p;
+
+                    // then it can have space in our airy style
+                    if (*p == ' ') ++p;
+
+                    // successfully recognized
+                    String commentStr = p;
+
+                    if_not (blockComment.empty())
+                        blockComment += CT("\n");
+
+                    blockComment += commentStr;
                 }
 
+                if (blockCommentSyntax)
+                    breakTrue;
+
                 //----------------------------------------------------------------
                 //
-                // null-terminated string for recognition
+                // recognize the syntax of space end:
+                // }
                 //
                 //----------------------------------------------------------------
 
-                breakBlock(parseOneLine)
+                breakBlock(spaceCloseSyntax)
                 {
+                    const CharType* p = str;
+                    breakRequire(*p == '}');
+
+                    ++p;
+                    while (isSpace(*p)) ++p;
+                    breakRequire(*p == 0);
 
                     //
-                    // ignore blanks in any case
+                    // ok
                     //
 
-                    const CharType* str = s.c_str();
-                    breakRequire(*str != 0);
-                    while (isSpace(*str)) ++str;
-
-                    //----------------------------------------------------------------
-                    //
-                    // recognize syntax of leading comment
-                    // // comment
-                    //
-                    //----------------------------------------------------------------
-
-                    breakBlock(blockCommentSyntax)
-                    {
-                        const CharType* p = str;
-
-                        // comment
-                        breakRequire(*p == ';'); ++p;
-
-                        // then it can have space in our airy style
-                        if (*p == ' ') ++p;
-
-                        // successfully recognized
-                        String commentStr = p;
-
-                        if_not (blockComment.empty())
-                            blockComment += CT("\n");
-
-                        blockComment += commentStr;
-                    }
-
-                    if (blockCommentSyntax)
-                        breakTrue;
-
-                    //----------------------------------------------------------------
-                    //
-                    // recognize the syntax of space end:
-                    // }
-                    //
-                    //----------------------------------------------------------------
-
-                    breakBlock(spaceCloseSyntax)
-                    {
-                        const CharType* p = str;
-                        breakRequire(*p == '}');
-
-                        ++p;
-                        while (isSpace(*p)) ++p;
-                        breakRequire(*p == 0);
-
-                        //
-                        // ok
-                        //
-
-                        blockComment.clear();
-
-                        if (!spacePrefix.empty())
-                            spacePrefix.pop_back();
-
-                    }
-
-                    if (spaceCloseSyntax)
-                        breakTrue;
-
-                    //----------------------------------------------------------------
-                    //
-                    // recognize the syntax of space begin
-                    //
-                    //----------------------------------------------------------------
-
-                    breakBlock(spaceOpenSyntax)
-                    {
-                        const CharType* p = str;
-
-                        // spaces
-                        while (isSpace(*p)) ++p;
-
-                        breakRequire(*p == 'n'); ++p;
-                        breakRequire(*p == 'a'); ++p;
-                        breakRequire(*p == 'm'); ++p;
-                        breakRequire(*p == 'e'); ++p;
-                        breakRequire(*p == 's'); ++p;
-                        breakRequire(*p == 'p'); ++p;
-                        breakRequire(*p == 'a'); ++p;
-                        breakRequire(*p == 'c'); ++p;
-                        breakRequire(*p == 'e'); ++p;
-
-                        while (isSpace(*p)) ++p;
-
-                        // description
-                        String spaceDesc;
-                        breakRequire(parseString(p, spaceDesc));
-                        while (isSpace(*p)) ++p;
-
-                        //
-                        // successfully recognized
-                        //
-
-                        blockComment.clear();
-                        spacePrefix.push_back(NamePart(spaceDesc));
-                    }
-
-                    if (spaceOpenSyntax)
-                        breakTrue;
-
-                    //----------------------------------------------------------------
-                    //
-                    // recognize the syntax of a variable
-                    //
-                    //----------------------------------------------------------------
-
-                    breakBlock(varSyntax)
-                    {
-                        const CharType* p = str;
-
-                        // spaces
-                        while (isSpace(*p)) ++p;
-
-                        // description
-                        String nameDesc;
-                        breakRequire(parseString(p, nameDesc));
-
-                        // then " = "
-                        while (isSpace(*p)) ++p;
-                        breakRequire(*p == valueSeparator); ++p;
-                        while (isSpace(*p)) ++p;
-
-                        // string with value
-                        String varValue;
-                        breakRequire(parseString(p, varValue));
-
-                        // space
-                        while (isSpace(*p)) ++p;
-
-                        // then comment or the end of line
-                        String valueComment;
-
-                        breakBlock(getValComment)
-                        {
-                            breakRequire(*p == ';'); ++p;
-                            if (isSpace(*p)) ++p;
-
-                            const CharType* end = p + strlen(p);
-                            valueComment.assign(p, end);
-                            p = end;
-                        }
-
-                        // then spaces
-                        while (isSpace(*p)) ++p;
-
-                        // and the end of line
-                        breakRequire(*p == 0);
-
-                        //
-                        // successfully recognized
-                        //
-
-                        NameContainer varName = spacePrefix;
-                        varName.push_back(NamePart(nameDesc));
-
-                        Memory::iterator i = newMemory.find(varName);
-
-                        if (i != newMemory.end())
-                        {
-                            i->second.value = varValue;
-                            i->second.blockComment = blockComment;
-                            i->second.valueComment = valueComment;
-                        }
-                        else
-                        {
-                            Record rec;
-                            rec.value = varValue;
-                            rec.blockComment = blockComment;
-                            rec.valueComment = valueComment;
-
-                            newMemory.insert(pair<NameContainer, Record>(varName, rec));
-                        }
-
-                        blockComment.clear();
-                    }
-
-                    breakFalse;
-
-                }
-
-                //
-                // cannot parse line, reset block comment
-                //
-
-                if_not (parseOneLine)
                     blockComment.clear();
+
+                    if (!spacePrefix.empty())
+                        spacePrefix.pop_back();
+
+                }
+
+                if (spaceCloseSyntax)
+                    breakTrue;
+
+                //----------------------------------------------------------------
+                //
+                // recognize the syntax of space begin
+                //
+                //----------------------------------------------------------------
+
+                breakBlock(spaceOpenSyntax)
+                {
+                    const CharType* p = str;
+
+                    // spaces
+                    while (isSpace(*p)) ++p;
+
+                    breakRequire(*p == 'n'); ++p;
+                    breakRequire(*p == 'a'); ++p;
+                    breakRequire(*p == 'm'); ++p;
+                    breakRequire(*p == 'e'); ++p;
+                    breakRequire(*p == 's'); ++p;
+                    breakRequire(*p == 'p'); ++p;
+                    breakRequire(*p == 'a'); ++p;
+                    breakRequire(*p == 'c'); ++p;
+                    breakRequire(*p == 'e'); ++p;
+
+                    while (isSpace(*p)) ++p;
+
+                    // description
+                    String spaceDesc;
+                    breakRequire(parseString(p, spaceDesc));
+                    while (isSpace(*p)) ++p;
+
+                    //
+                    // successfully recognized
+                    //
+
+                    blockComment.clear();
+                    spacePrefix.push_back(NamePart(spaceDesc));
+                }
+
+                if (spaceOpenSyntax)
+                    breakTrue;
+
+                //----------------------------------------------------------------
+                //
+                // recognize the syntax of a variable
+                //
+                //----------------------------------------------------------------
+
+                breakBlock(varSyntax)
+                {
+                    const CharType* p = str;
+
+                    // spaces
+                    while (isSpace(*p)) ++p;
+
+                    // description
+                    String nameDesc;
+                    breakRequire(parseString(p, nameDesc));
+
+                    // then " = "
+                    while (isSpace(*p)) ++p;
+                    breakRequire(*p == valueSeparator); ++p;
+                    while (isSpace(*p)) ++p;
+
+                    // string with value
+                    String varValue;
+                    breakRequire(parseString(p, varValue));
+
+                    // space
+                    while (isSpace(*p)) ++p;
+
+                    // then comment or the end of line
+                    String valueComment;
+
+                    breakBlock(getValComment)
+                    {
+                        breakRequire(*p == ';'); ++p;
+                        if (isSpace(*p)) ++p;
+
+                        const CharType* end = p + strlen(p);
+                        valueComment.assign(p, end);
+                        p = end;
+                    }
+
+                    // then spaces
+                    while (isSpace(*p)) ++p;
+
+                    // and the end of line
+                    breakRequire(*p == 0);
+
+                    //
+                    // successfully recognized
+                    //
+
+                    NameContainer varName = spacePrefix;
+                    varName.push_back(NamePart(nameDesc));
+
+                    Memory::iterator i = newMemory.find(varName);
+
+                    if (i != newMemory.end())
+                    {
+                        i->second.value = varValue;
+                        i->second.blockComment = blockComment;
+                        i->second.valueComment = valueComment;
+                    }
+                    else
+                    {
+                        Record rec;
+                        rec.value = varValue;
+                        rec.blockComment = blockComment;
+                        rec.valueComment = valueComment;
+
+                        newMemory.insert(pair<NameContainer, Record>(varName, rec));
+                    }
+
+                    blockComment.clear();
+                }
+
+                breakFalse;
 
             }
 
+            //
+            // cannot parse line, reset block comment
+            //
+
+            if_not (parseOneLine)
+                blockComment.clear();
+
         }
 
-        //
-        // if it was able to read until this place, update the container
-        //
-
-        memory.swap(newMemory);
-
     }
-    catch (const exception&) {REQUIRE(false);}
+
+    //----------------------------------------------------------------
+    //
+    // Success.
+    //
+    // If it was able to read until this place, update the container.
+    //
+    //----------------------------------------------------------------
+
+    memory.swap(newMemory);
+
+    returnTrue;
+}
+
+//================================================================
+//
+// loadFile
+//
+//================================================================
+
+stdbool loadFile(const CharType* filename, Memory& memory, stdPars(FileEnvKit))
+{
+    String temporaryFilename = getTemporaryFilename(filename);
+
+    //----------------------------------------------------------------
+    //
+    // Finish processes that could be violently interrupted when writing:
+    //
+    // If there is a temporary file, this means it was not successfully written until the end, so delete it.
+    //
+    //----------------------------------------------------------------
+
+    kit.fileTools.deleteFile(temporaryFilename.c_str());
+
+    //----------------------------------------------------------------
+    //
+    // Read from file.
+    //
+    //----------------------------------------------------------------
+
+    basic_ifstream<CharType> stream(filename);
+    REQUIRE(!!stream);
+
+    ////
+
+    require(loadFromStream(stream, memory, stdPass));
+
+    ////
+
+    returnTrue;
+}
+
+//================================================================
+//
+// loadFromString
+//
+// May throw exceptions.
+//
+//================================================================
+
+stdbool loadFromString(const CharArray& str, Memory& memory, stdPars(FileEnvKit))
+{
+    basic_stringstream<CharType> stream(basic_string<CharType>(str.ptr, str.size));
+    REQUIRE(!!stream);
+
+    require(loadFromStream(stream, memory, stdPass));
 
     returnTrue;
 }
@@ -693,7 +739,7 @@ static void saveVar
     const NamePart* prefix,
     const NamePart& name,
     const Record& r,
-    basic_ofstream<CharType>& stream
+    basic_ostream<CharType>& stream
 )
 {
 
@@ -802,7 +848,7 @@ static void saveTree
     String& indent,
     const Tree& tree,
     const Node& root,
-    basic_ofstream<CharType>& stream,
+    basic_ostream<CharType>& stream,
     bool outerLevel = true,
     const NamePart* prefix = 0
 )
@@ -856,8 +902,6 @@ static void saveTree
             stream << indent;
             stream << CT("namespace ");
             saveString(i->first.desc, stream);
-            //stream << CT(" ; ");
-            //saveNameId(i->first.id, stream);
             stream << endl;
 
             stream << indent << CT("{") << endl;
@@ -896,63 +940,102 @@ static void saveTree
 
 //================================================================
 //
-// saveFile
+// saveToStream
+//
+// May throw exceptions.
 //
 //================================================================
 
-stdbool saveFile(const Memory& memory, const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
+stdbool saveToStream(const Memory& memory, basic_ostream<CharType>& stream, stdPars(FileEnvKit))
 {
-    try
+    //----------------------------------------------------------------
+    //
+    // Decompose into a tree
+    //
+    //----------------------------------------------------------------
+
+    Tree tree;
+
+    for (Memory::const_iterator i = memory.begin(); i != memory.end(); ++i)
+        treeAdd(tree, i->first, i->second);
+
+    //----------------------------------------------------------------
+    //
+    // Save to a stream
+    //
+    //----------------------------------------------------------------
+
+    String indent;
+
+    if (tree.size() >= 1)
+        saveTree(indent, tree, tree[0], stream);
+
+    REQUIRE(!!stream);
+
+    ////
+
+    returnTrue;
+}
+
+//================================================================
+//
+// saveFile
+//
+// May throw exceptions.
+//
+//================================================================
+
+stdbool saveFile(const Memory& memory, const CharType* filename, stdPars(FileEnvKit))
+{
+    REQUIRE(filename != 0 && *filename != 0);
+
+    String temporaryFilename = getTemporaryFilename(filename);
+
+    //----------------------------------------------------------------
+    //
+    // Save to a temporary file
+    //
+    //----------------------------------------------------------------
+
+    TmpFileEraserThunk tmpEraser(temporaryFilename, kit.fileTools);
+
+    ////
+
     {
+        basic_ofstream<CharType> tmpStream(temporaryFilename.c_str(), ios_base::openmode(ios_base::out + ios_base::trunc));
+        REQUIRE(!!tmpStream);
 
-        REQUIRE(filename != 0 && *filename != 0);
-
-        String temporaryFilename = getTemporaryFilename(filename);
-
-        //----------------------------------------------------------------
-        //
-        // Decompose onto a tree
-        //
-        //----------------------------------------------------------------
-
-        Tree tree;
-
-        for (Memory::const_iterator i = memory.begin(); i != memory.end(); ++i)
-            treeAdd(tree, i->first, i->second);
-
-        //----------------------------------------------------------------
-        //
-        // Save to a temporary file
-        //
-        //----------------------------------------------------------------
-
-        TmpFileEraserThunk tmpEraser(temporaryFilename, fileTools);
-
-        {
-            basic_ofstream<CharType> tmpStream(temporaryFilename.c_str(), ios_base::openmode(ios_base::out + ios_base::trunc));
-            REQUIRE(!!tmpStream);
-
-            String indent;
-
-            if (tree.size() >= 1)
-            {
-                saveTree(indent, tree, tree[0], tmpStream);
-            }
-
-            REQUIRE(!!tmpStream);
-        }
-
-        //----------------------------------------------------------------
-        //
-        // Rename successfully updated file to the destination file.
-        //
-        //----------------------------------------------------------------
-
-        REQUIRE(fileTools.renameFile(temporaryFilename.c_str(), filename));
-        tmpEraser.cancel();
-
+        require(saveToStream(memory, tmpStream, stdPass));
     }
-    catch (const exception&) {REQUIRE(false);}
+
+    //----------------------------------------------------------------
+    //
+    // Rename successfully updated file to the destination file.
+    //
+    //----------------------------------------------------------------
+
+    REQUIRE(kit.fileTools.renameFile(temporaryFilename.c_str(), filename));
+    tmpEraser.cancel();
+
+    returnTrue;
+}
+
+//================================================================
+//
+// saveToReceiver
+//
+// May throw exceptions.
+//
+//================================================================
+
+stdbool saveToReceiver(const Memory& memory, StringReceiver& receiver, stdPars(FileEnvKit))
+{
+    basic_stringstream<CharType> stream;
+    require(saveToStream(memory, stream, stdPass));
+    REQUIRE(!!stream);
+
+    auto str = stream.str();
+    require(receiver.receive(charArray(str.data(), str.size()), stdPass));
 
     returnTrue;
 }
@@ -963,55 +1046,69 @@ stdbool saveFile(const Memory& memory, const CharType* filename, FileTools& file
 //
 //================================================================
 
-class FileEnvSTLImpl : public FileEnv
+class FileEnvSTLImpl : public FileEnvSTL
 {
 
 public:
 
-    virtual ~FileEnvSTLImpl() {}
+    stdbool loadFromFile(const CharType* filename, stdPars(FileEnvKit))
+    {
+        require(blockExceptions(loadFile(filename, memory, stdPass)));
+        returnTrue;
+    }
+
+    stdbool saveToFile(const CharType* filename, stdPars(FileEnvKit)) const
+    {
+        require(blockExceptions(saveFile(memory, filename, stdPass)));
+        returnTrue;
+    }
 
 public:
 
-    stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
-        {return loadFile(filename, memory, fileTools, stdPassThru);}
+    stdbool loadFromString(const CharArray& str, stdPars(FileEnvKit))
+    {
+        require(blockExceptions(cfgVarsImpl::loadFromString(str, memory, stdPass)));
+        returnTrue;
+    }
 
-    stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
-        {return saveFile(memory, filename, fileTools, stdPassThru);}
+    stdbool saveToString(StringReceiver& receiver, stdPars(FileEnvKit)) const
+    {
+        require(blockExceptions(saveToReceiver(memory, receiver, stdPass)));
+        returnTrue;
+    }
+
+public:
 
     void eraseAll()
     {
-        try {memory.clear();}
-        catch (const exception&) {}
+        blockExceptionsSilentVoid(memory.clear());
     }
 
     virtual bool get(const NameContainer& name, String& value, String& valueComment, String& blockComment) const
     {
-        value.clear();
-        valueComment.clear();
-        blockComment.clear();
-
-        try
+        auto body = [&] ()
         {
-            Memory::const_iterator p = memory.find(name);
+            value.clear();
+            valueComment.clear();
+            blockComment.clear();
 
+            Memory::const_iterator p = memory.find(name);
             ensure(p != memory.end());
 
             value = p->second.value;
             valueComment = p->second.valueComment;
             blockComment = p->second.blockComment;
-        }
-        catch (const exception&) {return false;}
+            return true;
+        };
 
-        return true;
+        return blockExceptionsSilentBool(body());
     }
 
     virtual bool set(const NameContainer& name, const String& value, const String& valueComment, const String& blockComment)
     {
-        try
+        auto body = [&] ()
         {
             Memory::iterator p = memory.find(name);
-
-            ////
 
             if (p != memory.end())
                 memory.erase(p);
@@ -1023,10 +1120,10 @@ public:
             rec.valueComment = valueComment;
 
             memory.insert(pair<NameContainer, Record>(name, rec));
-        }
-        catch (const exception&) {return false;}
+        };
+        
 
-        return true;
+        return blockExceptionsSilentVoid(body());
     }
 
 private:
@@ -1035,28 +1132,10 @@ private:
 
 };
 
-//================================================================
-//
-// FileEnvSTL
-//
-//================================================================
-
-FileEnvSTL::FileEnvSTL()
-{
-    FileEnvSTLImpl* p = 0;
-
-    try {p = new (std::nothrow) FileEnvSTLImpl;}
-    catch (const exception&) {}
-
-    impl = p;
-}
-
 //----------------------------------------------------------------
 
-FileEnvSTL::~FileEnvSTL()
-{
-    delete static_cast<FileEnvSTLImpl*>(impl);
-}
+UniquePtr<FileEnvSTL> FileEnvSTL::create()
+    {return makeUnique<FileEnvSTLImpl>();}
 
 //----------------------------------------------------------------
 

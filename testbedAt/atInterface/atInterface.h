@@ -6,7 +6,8 @@
 #include "data/matrix.h"
 #include "imageConsole/imageConsole.h"
 #include "vectorTypes/vectorBase.h"
-#include "baseImageConsole/baseImageConsole.h"
+#include "baseInterfaces/baseImageConsole.h"
+#include "baseInterfaces/baseSignals.h"
 
 //================================================================
 //
@@ -22,64 +23,16 @@ struct AtVideoFrame : public Matrix<const uint8_x4>
 
 //================================================================
 //
-// AtImgConsole
-//
-//================================================================
-
-using AtImgConsole = BaseImageConsole;
-
-//================================================================
-//
-// AtImageProvider
-// AtVideoOverlay
+// BaseImageConsole
+// BaseImageProvider
+// BaseVideoOverlay
 // AtAsyncOverlay
 //
 //================================================================
 
-using AtImageProvider = BaseImageProvider;
-
-//----------------------------------------------------------------
-
-using AtVideoOverlay = BaseVideoOverlay;
-
-//----------------------------------------------------------------
-
 struct AtAsyncOverlay
 {
     virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdNullPars) =0;
-};
-
-//================================================================
-//
-// AtSignalTest
-//
-//================================================================
-
-using AtActionId = uint32;
-
-//================================================================
-//
-// AtSignalSet
-//
-//================================================================
-
-struct AtSignalSet
-{
-    virtual bool actsetClear() =0;
-    virtual bool actsetUpdate() =0;
-    virtual bool actsetAdd(AtActionId id, const CharType* name, const CharType* key, const CharType* comment) =0;
-};
-
-//================================================================
-//
-// AtSignalTest
-//
-//================================================================
-
-struct AtSignalTest
-{
-    virtual int32 actionCount() =0;
-    virtual bool actionItem(int32 index, AtActionId& id) =0;
 };
 
 //================================================================

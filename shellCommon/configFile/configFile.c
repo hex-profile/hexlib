@@ -195,30 +195,39 @@ void cfgvarResetValue(CfgSerialization& serialization)
 //
 //================================================================
 
-class ConfigFileImpl
+class ConfigFileImpl : public ConfigFile
 {
 
 public:
 
-    stdbool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
-    void unloadFile();
+    virtual stdbool loadFile(const SimpleString& cfgFilename, stdPars(Kit));
+    virtual void unloadFile();
 
-    void loadVars(CfgSerialization& serialization);
-    void saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened);
+    virtual void loadVars(CfgSerialization& serialization);
+    virtual void saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened);
 
-    stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
+    virtual stdbool updateFile(bool forceUpdate, stdPars(Kit));
+    virtual stdbool editFile(const SimpleString& configEditor, stdPars(Kit));
 
-    stdbool editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
+    virtual stdbool saveToString(StringReceiver& receiver, stdPars(Kit));
+    virtual stdbool loadFromString(const CharArray& str, stdPars(Kit));
 
 private:
 
-    FileEnvSTL memory;
-    bool memoryChanged = false;
+    UniquePtr<FileEnvSTL> memoryPtr = FileEnvSTL::create();
+    FileEnvSTL& memory = *memoryPtr;
+
+    bool memoryNotEqualToTheFile = false;
 
     SimpleString filename;
     bool updateFileEnabled = false;
 
 };
+
+//----------------------------------------------------------------
+
+UniquePtr<ConfigFile> ConfigFile::create()
+    {return makeUnique<ConfigFileImpl>();}
 
 //================================================================
 //
@@ -249,7 +258,7 @@ public:
 //
 //================================================================
 
-stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
+stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(Kit))
 {
     memory.eraseAll();
     filename.clear();
@@ -281,13 +290,13 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(CfgFil
 
     ////
 
-    if_not (errorBlock(memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass)))
+    if_not (errorBlock(memory.loadFromFile(filename.cstr(), stdPass)))
     {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
         returnFalse;
     }
 
-    memoryChanged = false;
+    memoryNotEqualToTheFile = false;
 
     returnTrue;
 }
@@ -303,7 +312,7 @@ void ConfigFileImpl::unloadFile()
     updateFileEnabled = false;
     filename.clear();
     memory.eraseAll();
-    memoryChanged = false;
+    memoryNotEqualToTheFile = false;
 }
 
 //================================================================
@@ -336,7 +345,7 @@ void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate,
         saveVarsToStringEnv(serialization, 0, memory);
         cfgvarClearChanged(serialization);
 
-        memoryChanged = true;
+        memoryNotEqualToTheFile = true;
     }
 }
 
@@ -346,21 +355,21 @@ void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate,
 //
 //================================================================
 
-stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(CfgFileKit))
+stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(Kit))
 {
     if_not (updateFileEnabled)
         returnFalse;
 
-    if_not (forceUpdate || memoryChanged)
+    if_not (forceUpdate || memoryNotEqualToTheFile)
         returnTrue;
 
     //
     // update file
     //
 
-    if (errorBlock(memory.saveToFile(filename.cstr(), kit.fileTools, stdPass)))
+    if (errorBlock(memory.saveToFile(filename.cstr(), stdPass)))
     {
-        memoryChanged = false;
+        memoryNotEqualToTheFile = false;
     }
     else
     {
@@ -396,7 +405,7 @@ stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filen
 //
 //================================================================
 
-stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
+stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(Kit))
 {
     require(updateFileEnabled);
     REQUIRE(filename.size() != 0);
@@ -414,13 +423,13 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFi
 
     ////
 
-    if_not (errorBlock(memory.loadFromFile(filename.cstr(), kit.fileTools, stdPass)))
+    if_not (errorBlock(memory.loadFromFile(filename.cstr(), stdPass)))
     {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
         returnFalse;
     }
 
-    memoryChanged = false;
+    memoryNotEqualToTheFile = false;
 
     ////
 
@@ -429,33 +438,31 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(CfgFi
 
 //================================================================
 //
-// ConfigFile::*
+// ConfigFileImpl::saveToString
 //
 //================================================================
 
-ConfigFile::ConfigFile()
-    {}
+stdbool ConfigFileImpl::saveToString(StringReceiver& receiver, stdPars(Kit))
+{
+    require(memory.saveToString(receiver, stdPass));
 
-ConfigFile::~ConfigFile()
-    {}
+    returnTrue;
+}
 
-stdbool ConfigFile::loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit))
-    {return instance->loadFile(cfgFilename, stdPassThru);}
+//================================================================
+//
+// ConfigFileImpl::loadFromString
+//
+//================================================================
 
-void ConfigFile::unloadFile()
-    {instance->unloadFile();}
+stdbool ConfigFileImpl::loadFromString(const CharArray& str, stdPars(Kit))
+{
+    require(memory.loadFromString(str, stdPass));
 
-void ConfigFile::loadVars(CfgSerialization& serialization)
-    {instance->loadVars(serialization);}
+    memoryNotEqualToTheFile = true;
 
-void ConfigFile::saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened)
-    {instance->saveVars(serialization, forceUpdate, updateHappened);}
-
-stdbool ConfigFile::updateFile(bool forceUpdate, stdPars(CfgFileKit))
-    {return instance->updateFile(forceUpdate, stdPassThru);}
-
-stdbool ConfigFile::editFile(const SimpleString& configEditor, stdPars(CfgFileKit))
-    {return instance->editFile(configEditor, stdPassThru);}
+    returnTrue;
+}
 
 //----------------------------------------------------------------
 

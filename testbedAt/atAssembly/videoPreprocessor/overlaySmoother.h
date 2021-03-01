@@ -42,7 +42,7 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
+    stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
     stdbool setImageFake(stdPars(ProcessKit)) {returnTrue;}
     stdbool updateImage(stdPars(ProcessKit));
     stdbool clearQueue(stdPars(ProcessKit));
@@ -54,7 +54,7 @@ public:
     void serialize(const ModuleSerializeKit& kit);
     void setOutputInterface(AtAsyncOverlay* output);
 
-    AtVideoOverlay* getInputInterface();
+    BaseVideoOverlay* getInputInterface();
 
 private:
 
@@ -68,7 +68,7 @@ private:
 //
 //================================================================
 
-class OverlaySmootherThunk : public AtVideoOverlay
+class OverlaySmootherThunk : public BaseVideoOverlay
 {
 
 public:
@@ -78,7 +78,7 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
         {overlayIsSet = true; return base.setImage(size, imageProvider, desc, id, textEnabled, stdPassThru);}
 
     stdbool setImageFake(stdNullPars)

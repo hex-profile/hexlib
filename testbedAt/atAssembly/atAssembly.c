@@ -480,10 +480,10 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     //
     //----------------------------------------------------------------
 
-    ConfigFile metadataConfig;
+    auto metadataConfig = ConfigFile::create();
 
     if (currentProperties.exists)
-        require(metadataConfig.loadFile(currentConfigName, stdPass));
+        require(metadataConfig->loadFile(currentConfigName, stdPass));
 
     //----------------------------------------------------------------
     //
@@ -491,10 +491,10 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     //
     //----------------------------------------------------------------
 
-    metadataConfig.loadVars(serialization);
+    metadataConfig->loadVars(serialization);
 
-    metadataConfig.saveVars(serialization, true);
-    errorBlock(metadataConfig.updateFile(true, stdPass)); // Correct the config file.
+    metadataConfig->saveVars(serialization, true);
+    errorBlock(metadataConfig->updateFile(true, stdPass)); // Correct the config file.
 
     // Update the file properties after correction.
     require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass)); 
@@ -542,11 +542,11 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
 
     ////
 
-    ConfigFile metadataConfig;
-    require(metadataConfig.loadFile(currentConfigName, stdPass));
+    auto metadataConfig = ConfigFile::create();
+    require(metadataConfig->loadFile(currentConfigName, stdPass));
 
-    metadataConfig.saveVars(serialization, false);
-    require(metadataConfig.updateFile(false, stdPass));
+    metadataConfig->saveVars(serialization, false);
+    require(metadataConfig->updateFile(false, stdPass));
 
     // Update the file properties.
     require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass)); 
@@ -595,7 +595,6 @@ private:
     // Signals support
     //
 
-    int32 lastSignalCount = 0;
     ArrayMemory<int32> signalHist;
 
     //
@@ -609,7 +608,8 @@ private:
         return result;
     }
 
-    ConfigFile configFile;
+    UniquePtr<ConfigFile> configFilePtr = ConfigFile::create();
+    ConfigFile& configFile = *configFilePtr;
     ConfigUpdateDecimator configUpdateDecimator;
     SimpleStringVar configEditor{getDefaultConfigEditor()};
     StandardSignal configEditSignal;
@@ -739,7 +739,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
 
     SimpleString configFilename; configFilename << engineModule->getName() << CT(".cfg");
     errorBlock(configFile.loadFile(configFilename, stdPassKit(kitCombine(kit, fileToolsKit))));
-    REMEMBER_CLEANUP1_EX(configFileCleanup, configFile.unloadFile(), ConfigFile&, configFile);
+    REMEMBER_CLEANUP_EX(configFileCleanup, configFile.unloadFile());
 
     configFile.loadVars(*this);
 
@@ -751,8 +751,13 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     //
 
     using namespace signalImpl;
-    registerSignals(*this, 0, kit.atSignalSet, lastSignalCount);
-    REMEMBER_CLEANUP1_EX(signalsCleanup, kit.atSignalSet.actsetClear(), const InitKit&, kit);
+
+    int32 signalCount{};
+    registerSignals(*this, 0, kit.atSignalSet, signalCount);
+
+    require(signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+
+    REMEMBER_CLEANUP_EX(signalsCleanup, {kit.atSignalSet.actsetClear(); signalHist.dealloc();});
 
     //
     // Profiler
@@ -1161,57 +1166,16 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 
     //----------------------------------------------------------------
     //
-    // Signal histogram
+    // Handle signals.
     //
     //----------------------------------------------------------------
 
     using namespace signalImpl;
 
-    if_not (signalHist.resize(lastSignalCount))
-        require(signalHist.realloc(lastSignalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+    SignalsOverview overview;
+    prepareSignalHistogram(kit.atSignalTest, signalHist, overview);
 
-    bool anyEventsFound = false;
-    bool realEventsFound = false;
-    bool mouseSignal = false;
-    bool mouseSignalAlt = false;
-    prepareSignalHistogram(kit.atSignalTest, signalHist, anyEventsFound, realEventsFound, mouseSignal, mouseSignalAlt);
-
-    //----------------------------------------------------------------
-    //
-    // Feed signals
-    //
-    //----------------------------------------------------------------
-
-    //
-    // Feed the signals
-    //
-
-    auto prevOverlayID = overlayOwnerID;
-
-    {
-        FeedSignal visitor(signalHist);
-        serialize(CfgSerializeKit(visitor, nullptr));
-    }
-
-    //
-    // Deactivate overlay
-    //
-
-    OverlayTakeoverThunk overlayTakeover(overlayOwnerID);
-
-    if (deactivateOverlay)
-        overlayOwnerID = 0;
-
-    //
-    // If overlay owner has changed, re-feed all the signals
-    // to clean outdated switches.
-    //
-
-    if (prevOverlayID != overlayOwnerID)
-    {
-        FeedSignal visitor(signalHist);
-        serialize(CfgSerializeKit(visitor, nullptr));
-    }
+    handleSignals(*this, signalHist, overlayOwnerID, deactivateOverlay);
 
     //----------------------------------------------------------------
     //
@@ -1228,7 +1192,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //
     //----------------------------------------------------------------
 
-    if_not (frameAdvance || realEventsFound || !anyEventsFound)
+    if_not (frameAdvance || overview.realEventsFound || !overview.anyEventsFound)
         returnTrue;
 
     kit.localLog.clear();
@@ -1246,7 +1210,11 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     ////
 
     PipeControl pipeControl(frameAdvance ? 0 : 1, false);
-    UserPoint userPoint(kit.atUserPointValid, kit.atUserPoint, mouseSignal, mouseSignalAlt);
+    UserPoint userPoint(kit.atUserPointValid, kit.atUserPoint, overview.mouseSignal, overview.mouseSignalAlt);
+
+    ////
+
+    OverlayTakeoverThunk overlayTakeover(overlayOwnerID);
 
     ////
 

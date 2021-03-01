@@ -1,8 +1,9 @@
 #pragma once
 
-#include "baseImageConsole/baseImageConsole.h"
+#include "baseInterfaces/baseImageConsole.h"
 #include "errorLog/errorLogKit.h"
 #include "dataAlloc/cpuDefaultAlignments.h"
+#include "errorLog/errorLog.h"
 
 //================================================================
 //
@@ -30,7 +31,10 @@ public:
     Space desiredBaseByteAlignment() const
         {return cpuBaseByteAlignment;}
 
-    stdbool saveImage(const Matrix<Pixel>& dest, stdNullPars);
+    stdbool saveBgr32(const Matrix<Pixel>& dest, stdNullPars);
+
+    stdbool saveBgr24(const Matrix<uint8>& dest, stdNullPars)
+        {REQUIRE(false); returnTrue;}
 
 private:
 

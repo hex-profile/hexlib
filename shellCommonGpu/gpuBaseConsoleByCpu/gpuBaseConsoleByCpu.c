@@ -8,6 +8,7 @@
 #include "errorLog/debugBreak.h"
 #include "gpuMatrixSet/gpuMatrixSet.h"
 #include "data/spacex.h"
+#include "gpuBaseConsoleByCpu/conversions.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -28,7 +29,7 @@
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars)
+stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const ColorPixel>& image, stdNullPars)
 {
     Space absPitch = absv(image.memPitch());
     REQUIRE(image.sizeX() <= absPitch);
@@ -36,8 +37,8 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, s
     ////
 
     constexpr Space maxExpectedCpuRowByteAlignment = 64;
-    constexpr Space alignment = maxExpectedCpuRowByteAlignment / Space(sizeof(uint8_x4));
-    COMPILE_ASSERT(alignment * sizeof(uint8_x4) == maxExpectedCpuRowByteAlignment);
+    constexpr Space alignment = maxExpectedCpuRowByteAlignment / Space(sizeof(ColorPixel));
+    COMPILE_ASSERT(alignment * sizeof(ColorPixel) == maxExpectedCpuRowByteAlignment);
 
     COMPILE_ASSERT(alignment >= 1 && COMPILE_IS_POWER2(alignment));
     require(safeAdd(absPitch, alignment - 1, absPitch));
@@ -53,7 +54,7 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, s
 
 //================================================================
 //
-// GpuBaseImageProvider::saveImage
+// GpuBaseImageProvider::saveBgr32
 //
 // * If the destination pitch is equal to the source pitch, copies it as an array.
 //
@@ -65,21 +66,21 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const uint8_x4>& image, s
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::saveImage(const Matrix<uint8_x4>& dest, stdNullPars)
+stdbool GpuBaseImageProvider::saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars)
 {
-    GpuMatrix<const uint8_x4> src = gpuImage;
-    Matrix<uint8_x4> dst = dest;
+    GpuMatrix<const ColorPixel> src = gpuImage;
+    Matrix<ColorPixel> dst = dest;
 
     ////
 
-    GpuCopyThunk copyToAtBuffer;
+    GpuCopyThunk gpuCopy;
 
     ////
 
     if (src.memPitch() == dst.memPitch())
     {
 
-        require(copyMatrixAsArray(src, dst, copyToAtBuffer, stdPass));
+        require(copyMatrixAsArray(src, dst, gpuCopy, stdPass));
 
     }
     else
@@ -94,7 +95,7 @@ stdbool GpuBaseImageProvider::saveImage(const Matrix<uint8_x4>& dest, stdNullPar
         REQUIRE(dest.sizeX() <= absPitch);
         REQUIRE(absPitch * dest.sizeY() <= bufferSize);
 
-        GpuMatrix<uint8_x4> srcProper(bufferPtr, absPitch, dest.sizeX(), dest.sizeY());
+        GpuMatrix<ColorPixel> srcProper(bufferPtr, absPitch, dest.sizeX(), dest.sizeY());
 
         ////
 
@@ -110,8 +111,68 @@ stdbool GpuBaseImageProvider::saveImage(const Matrix<uint8_x4>& dest, stdNullPar
 
         ////
 
-        require(copyMatrixAsArray(srcProper, dst, copyToAtBuffer, stdPass));
+        require(copyMatrixAsArray(srcProper, dst, gpuCopy, stdPass));
     }
+
+    returnTrue;
+}
+
+//================================================================
+//
+// GpuBaseImageProvider::saveBgr24
+//
+//================================================================
+
+stdbool GpuBaseImageProvider::saveBgr24(const Matrix<MonoPixel>& dest, stdNullPars)
+{
+    auto src = gpuImage;
+    auto dst = dest;
+
+    REQUIRE(src.sizeX() * 3 == dst.sizeX());
+    REQUIRE(src.sizeY() == dst.sizeY());
+
+    ////
+
+    GpuCopyThunk gpuCopy;
+
+    ////
+
+    Space absPitch = absv(dst.memPitch());
+    REQUIRE(dest.sizeX() <= absPitch);
+
+    ////
+
+    ARRAY_EXPOSE_UNSAFE_EX(buffer, bufferColor);
+    COMPILE_ASSERT(sizeof(ColorPixel) % sizeof(MonoPixel) == 0);
+
+    using GpuMonoPtr = GpuPtr(MonoPixel);
+
+    auto bufferPtr = GpuMonoPtr(bufferColorPtr);
+    auto bufferSize = bufferColorSize * Space{sizeof(ColorPixel) / sizeof(MonoPixel)};
+
+    ////
+
+    REQUIRE(absPitch * dest.sizeY() <= bufferSize);
+
+    GpuMatrix<MonoPixel> srcProper(bufferPtr, absPitch, dest.sizeX(), dest.sizeY());
+
+    ////
+
+    if (dst.memPitch() < 0)
+        srcProper = flipMatrix(srcProper);
+
+    //
+    // Rearrange on GPU, not very fast, but it's still 
+    // much faster than any manipulation on CPU.
+    //
+
+    require(convertBgr32ToBgr24(src, srcProper, stdPass));
+
+    ////
+
+    require(copyMatrixAsArray(srcProper, dst, gpuCopy, stdPass));
+
+    ////
 
     returnTrue;
 }

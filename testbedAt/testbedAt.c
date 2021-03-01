@@ -22,6 +22,7 @@
 #include "allocation/mallocFlatAllocator/mallocFlatAllocator.h"
 #include "compileTools/classContext.h"
 #include "kits/setBusyStatus.h"
+#include "baseInterfaces/baseSignals.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -271,7 +272,7 @@ bool SetBusyStatusByAt<AtApi>::set(const FormatOutputAtom& message)
 //================================================================
 
 template <typename AtApi>
-class AtImgConsoleImplThunk : public AtImgConsole
+class AtImgConsoleImplThunk : public BaseImageConsole
 {
 
 public:
@@ -353,12 +354,27 @@ private:
 
 //================================================================
 //
+// Check actions IDs.
+//
+//================================================================
+
+COMPILE_ASSERT(baseActionId::MouseLeftDown == AT_ACTION_ID_MOUSE_LEFT_DOWN);
+COMPILE_ASSERT(baseActionId::MouseLeftUp == AT_ACTION_ID_MOUSE_LEFT_UP);
+
+COMPILE_ASSERT(baseActionId::MouseRightDown == AT_ACTION_ID_MOUSE_RIGHT_DOWN);
+COMPILE_ASSERT(baseActionId::MouseRightUp == AT_ACTION_ID_MOUSE_RIGHT_UP);
+
+COMPILE_ASSERT(baseActionId::WheelDown == AT_ACTION_ID_WHEEL_DOWN);
+COMPILE_ASSERT(baseActionId::WheelUp == AT_ACTION_ID_WHEEL_UP);
+
+//================================================================
+//
 // AtSignalSetThunk
 //
 //================================================================
 
 template <typename AtApi>
-class AtSignalSetThunk : public AtSignalSet
+class AtSignalSetThunk : public BaseActionSetup
 {
 
 public:
@@ -369,7 +385,7 @@ public:
     bool actsetUpdate()
         {return api->actset_update(api) != 0;}
 
-    bool actsetAdd(AtActionId id, const CharType* name, const CharType* key, const CharType* comment)
+    bool actsetAdd(BaseActionId id, const CharType* key, const CharType* name, const CharType* comment)
         {return api->actset_add(api, id, key, name, comment) != 0;}
 
 public:
@@ -389,16 +405,25 @@ private:
 //
 //================================================================
 
-class AtSignalTestThunk : public AtSignalTest
+class AtSignalTestThunk : public BaseActionReceiving
 {
 
 public:
 
-    int32 actionCount()
-        {return api->action_count(api);}
+    virtual void getActions(BaseActionReceiver& receiver)
+    {
+        auto count = api->action_count(api);
 
-    bool actionItem(int32 index, AtActionId& id)
-        {return api->action_item(api, index, &id) != 0;}
+        for_count (i, count)
+        {
+            BaseActionId id{};
+
+            if_not (api->action_item(api, i, &id) != 0)
+                continue;
+
+            receiver.process(makeArray(&id, 1));
+        }
+    }
 
 public:
 
@@ -422,7 +447,7 @@ class AtImageProviderThunk
 
 public:
 
-    AtImageProviderThunk(AtImageProvider& imageProvider, const TraceScope& trace)
+    AtImageProviderThunk(BaseImageProvider& imageProvider, const TraceScope& trace)
         : imageProvider(imageProvider), trace(trace) {}
 
     static at_bool AT_CALL callbackFunc
@@ -438,13 +463,13 @@ public:
         const TraceScope& trace = self->trace;
 
         COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
-        return errorBlock(self->imageProvider.saveImage(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass));
+        return errorBlock(self->imageProvider.saveBgr32(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass));
     }
 
 private:
 
     TraceScope trace;
-    AtImageProvider& imageProvider;
+    BaseImageProvider& imageProvider;
 
 };
 
@@ -454,7 +479,7 @@ private:
 //
 //================================================================
 
-class AtVideoOverlayThunk : public AtVideoOverlay
+class AtVideoOverlayThunk : public BaseVideoOverlay
 {
 
 public:
@@ -463,7 +488,7 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         AtImageProviderThunk atProvider(imageProvider, trace);
 
@@ -520,7 +545,7 @@ class AtAsyncOverlayImpl : public AtAsyncOverlay
 
 public:
 
-    virtual stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, stdNullPars)
+    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdNullPars)
     {
         CRITSEC_GUARD(lock);
         AtImageProviderThunk atProvider(imageProvider, trace);

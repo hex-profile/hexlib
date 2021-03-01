@@ -46,8 +46,12 @@ struct BaseImageProvider
     // The desired base address alignment in bytes.
     virtual Space desiredBaseByteAlignment() const =0;
 
-    // Provider implementation.
-    virtual stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars) =0;
+    // Saves to BGR32.
+    virtual stdbool saveBgr32(const Matrix<uint8_x4>& dest, stdNullPars) =0;
+
+    // Saves to BGR24. The destination is an uint8 image
+    // with width 3 times more than the color image width.
+    virtual stdbool saveBgr24(const Matrix<uint8>& dest, stdNullPars) =0;
 };
 
 //================================================================

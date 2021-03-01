@@ -1,14 +1,17 @@
 #pragma once
 
-#include "errorLog/errorLogKit.h"
-#include "stdFunc/stdFunc.h"
-#include "userOutput/msgLogKit.h"
 #include "cfg/cfgInterfaceFwd.h"
-#include "timer/timer.h"
-#include "simpleString/simpleString.h"
 #include "configFile/cfgSerialization.h"
+#include "configFile/stringReceiver.h"
+#include "errorLog/errorLogKit.h"
 #include "interfaces/fileToolsKit.h"
+#include "simpleString/simpleString.h"
+#include "stdFunc/stdFunc.h"
 #include "storage/dynamicClass.h"
+#include "storage/smartPtr.h"
+#include "timer/timer.h"
+#include "userOutput/msgLogKit.h"
+#include "userOutput/errorLogEx.h"
 
 namespace cfgVarsImpl {
 
@@ -62,11 +65,41 @@ private:
 
 //================================================================
 //
-// CfgFileKit
+// Kit
 //
 //================================================================
 
-KIT_COMBINE3(CfgFileKit, MsgLogKit, ErrorLogKit, FileToolsKit);
+using Kit = KitCombine<MsgLogKit, ErrorLogKit, ErrorLogExKit, FileToolsKit>;
+
+//================================================================
+//
+// stringReceiverByLambda
+//
+//================================================================
+
+template <typename Lambda>
+class StringReceiverByLambda : public StringReceiver
+{
+
+public:
+
+    StringReceiverByLambda(const Lambda& lambda)
+        : lambda{lambda} {}
+
+    virtual stdbool receive(const CharArray& str, stdNullPars)
+        {return lambda(str, stdNullPass);}
+
+private:
+
+    Lambda lambda;
+
+};
+
+//----------------------------------------------------------------
+
+template <typename Lambda>
+inline auto stringReceiverByLambda(const Lambda& lambda)
+    {return StringReceiverByLambda<Lambda>{lambda};}
 
 //================================================================
 //
@@ -78,34 +111,22 @@ KIT_COMBINE3(CfgFileKit, MsgLogKit, ErrorLogKit, FileToolsKit);
 //
 //================================================================
 
-class ConfigFile
+struct ConfigFile
 {
+    static UniquePtr<ConfigFile> create();
+    virtual ~ConfigFile() {}
 
-public:
+    virtual stdbool loadFile(const SimpleString& cfgFilename, stdPars(Kit)) =0;
+    virtual void unloadFile() =0;
 
-    stdbool loadFile(const SimpleString& cfgFilename, stdPars(CfgFileKit));
-    void unloadFile();
+    virtual void loadVars(CfgSerialization& serialization) =0;
+    virtual void saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened = nullptr) =0;
 
-public:
+    virtual stdbool updateFile(bool forceUpdate, stdPars(Kit)) =0;
+    virtual stdbool editFile(const SimpleString& configEditor, stdPars(Kit)) =0;
 
-    void loadVars(CfgSerialization& serialization);
-    void saveVars(CfgSerialization& serialization, bool forceUpdate, bool* updateHappened = nullptr);
-
-    stdbool updateFile(bool forceUpdate, stdPars(CfgFileKit));
-
-public:
-
-    stdbool editFile(const SimpleString& configEditor, stdPars(CfgFileKit));
-
-public:
-
-    ConfigFile();
-    ~ConfigFile();
-
-private:
-
-    DynamicClass<class ConfigFileImpl> instance;
-
+    virtual stdbool saveToString(StringReceiver& receiver, stdPars(Kit)) =0;
+    virtual stdbool loadFromString(const CharArray& str, stdPars(Kit)) =0;
 };
 
 //----------------------------------------------------------------
@@ -113,7 +134,6 @@ private:
 }
 
 using cfgVarsImpl::ConfigFile;
-using cfgVarsImpl::CfgFileKit;
 using cfgVarsImpl::ConfigUpdateDecimator;
 using cfgVarsImpl::cfgvarChanged;
 using cfgVarsImpl::cfgvarClearChanged;
