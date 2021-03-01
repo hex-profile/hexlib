@@ -175,8 +175,19 @@ if __name__ == '__main__':
 
     if True:
 
+        gaussSincHq = 1
+
+        ###
+
+        def qualitySelect(a, b):
+            return b if gaussSincHq else a
+
         sigma = 3
         theta = 1.3
+
+        if gaussSincHq:
+            sigma = 5
+            theta = 1.2
 
         ###
 
@@ -187,43 +198,43 @@ if __name__ == '__main__':
         # 4X
         #
 
-        generateFilterPack('Gauss-Sinc Downsample 4X', 76, [1, 4], kernelConservative)
-        generateFilterPack('Gauss-Sinc Upsample 4X', 15, [4, 1], kernelBalanced)
+        #generateFilterPack('Gauss-Sinc Downsample 4X', qualitySelect(76, 112), [1, 4], kernelConservative)
+        generateFilterPack('Gauss-Sinc Upsample 4X', qualitySelect(15, 25), [4, 1], kernelBalanced)
 
         #
         # 2X
         #
 
-        generateFilterPack('Gauss-Sinc Downsample 2X', 38, [1, 2], kernelConservative)
-        generateFilterPack('Gauss-Sinc Downsample 2X packetized2', 38, [2, 4], kernelConservative)
-        generateFilterPack('Gauss-Sinc Upsample 2X', 15, [2, 1], kernelBalanced)
+        #generateFilterPack('Gauss-Sinc Downsample 2X', qualitySelect(38, 57), [1, 2], kernelConservative)
+        #generateFilterPack('Gauss-Sinc Downsample 2X packetized2', qualitySelect(38, 58), [2, 4], kernelConservative)
+        #generateFilterPack('Gauss-Sinc Upsample 2X', qualitySelect(15, 24), [2, 1], kernelBalanced)
 
         #
         # 1.5X
         #
 
-        generateFilterPack('Gauss-Sinc Downsample 1.5X', 29, [2, 3], kernelConservative)
-        generateFilterPack('Gauss-Sinc Upsample 1.5X', 16, [3, 2], kernelBalanced)
+        #generateFilterPack('Gauss-Sinc Downsample 1.5X', qualitySelect(29, 43), [2, 3], kernelConservative)
+        #generateFilterPack('Gauss-Sinc Upsample 1.5X', qualitySelect(16, 25), [3, 2], kernelBalanced)
    
         #
         # 1.333X
         #
 
-        generateFilterPack('Gauss-Sinc Downsample 1.333X', 26, [3, 4], kernelConservative)
-        generateFilterPack('Gauss-Sinc Upsample 1.333X', 15, [4, 3], kernelBalanced)
+        #generateFilterPack('Gauss-Sinc Downsample 1.333X', qualitySelect(26, 38), [3, 4], kernelConservative)
+        #generateFilterPack('Gauss-Sinc Upsample 1.333X', qualitySelect(15, 25), [4, 3], kernelBalanced)
 
-        #
-        # 1.25X
-        #
+        ##
+        ## 1.25X
+        ##
 
-        generateFilterPack('Gauss-Sinc Downsample 1.25X', 25, [4, 5], kernelConservative)
-        generateFilterPack('Gauss-Sinc Upsample 1.25X', 16, [5, 4], kernelBalanced)
+        #generateFilterPack('Gauss-Sinc Downsample 1.25X', qualitySelect(25, 37), [4, 5], kernelConservative)
+        #generateFilterPack('Gauss-Sinc Upsample 1.25X', qualitySelect(16, 25), [5, 4], kernelBalanced)
 
-        #
-        # 1X
-        #
+        ##
+        ## 1X
+        ##
 
-        generateFilterPack('Gauss-Sinc Filter Downsample 1X', 21, [4, 4], kernelConservative)
+        #generateFilterPack('Gauss-Sinc Filter Downsample 1X', qualitySelect(21, 30), [4, 4], kernelConservative)
 
     #----------------------------------------------------------------
     #
