@@ -1,11 +1,22 @@
 #pragma once
 
 #include "configFile/cfgStringEnv.h"
+#include "configFile/stringReceiver.h"
+#include "errorLog/errorLogKit.h"
 #include "interfaces/fileToolsKit.h"
 #include "stdFunc/stdFunc.h"
-#include "errorLog/errorLogKit.h"
+#include "storage/smartPtr.h"
+#include "userOutput/errorLogExKit.h"
 
 namespace cfgVarsImpl {
+
+//================================================================
+//
+// FileEnvKit
+//
+//================================================================
+
+using FileEnvKit = KitCombine<ErrorLogKit, ErrorLogExKit, FileToolsKit>;
 
 //================================================================
 //
@@ -21,17 +32,28 @@ struct FileEnv : public StringEnv
 {
 
     //
-    // Read variables from a file, returns success flag.
     // If the file cannot be open, does not clear variables in memory.
     //
 
-    virtual stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) =0;
+    virtual stdbool loadFromFile(const CharType* filename, stdPars(FileEnvKit)) =0;
 
     //
-    // Save variables to a file, returns success flag.
+    // Save variables to a file.
     //
 
-    virtual stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const =0;
+    virtual stdbool saveToFile(const CharType* filename, stdPars(FileEnvKit)) const =0;
+
+    //
+    // Load variables from a string.
+    //
+
+    virtual stdbool loadFromString(const CharArray& str, stdPars(FileEnvKit)) =0;
+
+    //
+    // Save variables to a string.
+    //
+
+    virtual stdbool saveToString(StringReceiver& receiver, stdPars(FileEnvKit)) const =0;
 
 };
 
@@ -43,45 +65,10 @@ struct FileEnv : public StringEnv
 //
 //================================================================
 
-class FileEnvSTL : public FileEnv
+struct FileEnvSTL : public FileEnv
 {
-
-public:
-
-    virtual bool get(const NameContainer& name, String& value, String& valueComment, String& blockComment) const
-        {return !impl ? false : impl->get(name, value, valueComment, blockComment);}
-
-    virtual bool set(const NameContainer& name, const String& value, const String& valueComment, const String& blockComment)
-        {return !impl ? false : impl->set(name, value, valueComment, blockComment);}
-
-    void eraseAll()
-        {if (impl) impl->eraseAll();}
-
-    stdbool loadFromFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit))
-    {
-        require(impl);
-        return impl->loadFromFile(filename, fileTools, stdPassThru);
-    }
-
-    stdbool saveToFile(const CharType* filename, FileTools& fileTools, stdPars(ErrorLogKit)) const
-    {
-        require(impl);
-        return impl->saveToFile(filename, fileTools, stdPassThru);
-    }
-
-public:
-
-    inline bool created() const {return impl != 0;}
-
-public:
-
-    FileEnvSTL();
-    ~FileEnvSTL();
-
-private:
-
-    FileEnv* impl;
-
+    virtual ~FileEnvSTL() {}
+    static UniquePtr<FileEnvSTL> create();
 };
 
 //----------------------------------------------------------------

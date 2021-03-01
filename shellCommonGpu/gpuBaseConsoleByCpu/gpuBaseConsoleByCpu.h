@@ -1,6 +1,6 @@
 #pragma once
 
-#include "baseImageConsole/baseImageConsole.h"
+#include "baseInterfaces/baseImageConsole.h"
 #include "dataAlloc/gpuArrayMemory.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "gpuProcessKit.h"
@@ -23,10 +23,15 @@ class GpuBaseImageProvider : public BaseImageProvider
 
 public:
 
+    using ColorPixel = uint8_x4;
+    using MonoPixel = uint8;
+
+public:
+
     GpuBaseImageProvider(const GpuProcessKit& kit)
         : kit(kit) {}
 
-    stdbool setImage(const GpuMatrix<const uint8_x4>& image, stdNullPars);
+    stdbool setImage(const GpuMatrix<const ColorPixel>& image, stdNullPars);
 
 public:
 
@@ -36,13 +41,14 @@ public:
     Space desiredBaseByteAlignment() const
         {return kit.gpuProperties.samplerAndFastTransferBaseAlignment;}
 
-    stdbool saveImage(const Matrix<uint8_x4>& dest, stdNullPars);
+    stdbool saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars);
+
+    stdbool saveBgr24(const Matrix<MonoPixel>& dest, stdNullPars);
 
 private:
 
-    GpuMatrix<const uint8_x4> gpuImage;
-    GpuArrayMemory<uint8_x4> buffer;
-
+    GpuMatrix<const ColorPixel> gpuImage;
+    GpuArrayMemory<ColorPixel> buffer;
     GpuProcessKit kit;
 
 };

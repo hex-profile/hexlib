@@ -6,6 +6,7 @@
 //
 // blockExceptionsSilent
 // blockExceptionsSilentVoid
+// blockExceptionsSilentBool
 //
 // Blocks all exceptions silently.
 //
@@ -13,6 +14,9 @@
 
 #define blockExceptionsSilentVoid(action) \
     blockExceptionsSilentHelper([&] () -> bool {action; return true;})
+
+#define blockExceptionsSilentBool(action) \
+    blockExceptionsSilentHelper([&] () -> bool {return action;})
 
 //----------------------------------------------------------------
 

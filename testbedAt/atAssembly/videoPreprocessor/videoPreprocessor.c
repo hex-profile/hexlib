@@ -96,12 +96,12 @@ struct ProcessReset : public ProcessInspector
 //
 //================================================================
 
-class AtOverlayMonitor : public AtVideoOverlay
+class AtOverlayMonitor : public BaseVideoOverlay
 {
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         overlayIsSet = true; 
         return base.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdNullPassThru);
@@ -120,7 +120,7 @@ public:
 
 public:
 
-    AtOverlayMonitor(AtVideoOverlay& base)
+    AtOverlayMonitor(BaseVideoOverlay& base)
         : base(base) {}
 
 public:
@@ -129,7 +129,7 @@ public:
 
 private:
 
-    AtVideoOverlay& base;
+    BaseVideoOverlay& base;
 
 };
 
@@ -512,8 +512,8 @@ stdbool VideoPreprocessorImpl::processTarget
 
     ////
 
-    AtImgConsole* atImageConsole = &kit.atImgConsole;
-    AtVideoOverlay* atVideoOverlay = &kit.atVideoOverlay;
+    BaseImageConsole* atImageConsole = &kit.atImgConsole;
+    BaseVideoOverlay* atVideoOverlay = &kit.atVideoOverlay;
 
     //----------------------------------------------------------------
     //

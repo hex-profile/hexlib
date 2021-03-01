@@ -31,9 +31,9 @@ KIT_CREATE1(AtAsyncOverlayKit, AtAsyncOverlay&, atAsyncOverlay);
 //
 //================================================================
 
-using AtVideoOverlay = struct BaseVideoOverlay;
+using BaseVideoOverlay = struct BaseVideoOverlay;
 
-KIT_CREATE1(AtVideoOverlayKit, AtVideoOverlay&, atVideoOverlay);
+KIT_CREATE1(AtVideoOverlayKit, BaseVideoOverlay&, atVideoOverlay);
 
 //================================================================
 //
@@ -41,29 +41,29 @@ KIT_CREATE1(AtVideoOverlayKit, AtVideoOverlay&, atVideoOverlay);
 //
 //================================================================
 
-using AtImgConsole = struct BaseImageConsole;
+using BaseImageConsole = struct BaseImageConsole;
 
-KIT_CREATE1(AtImgConsoleKit, AtImgConsole&, atImgConsole);
-
-//================================================================
-//
-// AtSignalSet
-//
-//================================================================
-
-struct AtSignalSet;
-
-KIT_CREATE1(AtSignalSetKit, AtSignalSet&, atSignalSet);
+KIT_CREATE1(AtImgConsoleKit, BaseImageConsole&, atImgConsole);
 
 //================================================================
 //
-// AtSignalTest
+// BaseActionSetup
 //
 //================================================================
 
-struct AtSignalTest;
+struct BaseActionSetup;
 
-KIT_CREATE1(AtSignalTestKit, AtSignalTest&, atSignalTest);
+KIT_CREATE1(AtSignalSetKit, BaseActionSetup&, atSignalSet);
+
+//================================================================
+//
+// BaseActionReceiving
+//
+//================================================================
+
+struct BaseActionReceiving;
+
+KIT_CREATE1(AtSignalTestKit, BaseActionReceiving&, atSignalTest);
 
 //================================================================
 //

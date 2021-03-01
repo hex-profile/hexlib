@@ -149,6 +149,8 @@ void SimpleStringEx<Type>::append(const Type* thatPtr, size_t thatSize)
     {
         ensurev(thatSize <= TYPE_MAX(size_t) - buffer.size()); // Subtraction is always valid.
 
+        ////
+
         SStringBuffer<Type> newBuffer;
         ensurev(newBuffer.realloc(buffer.size() + thatSize));
         Type* newPtr = newBuffer.cstr();

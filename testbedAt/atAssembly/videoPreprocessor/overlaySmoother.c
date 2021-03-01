@@ -61,7 +61,7 @@ using ColorPixel = uint8_x4;
 //
 //================================================================
 
-class AtProviderFromCpuImage : public AtImageProvider
+class AtProviderFromCpuImage : public BaseImageProvider
 {
 
 public:
@@ -75,7 +75,10 @@ public:
     Space desiredPitch() const 
         {return cpuImage.memPitch();}
 
-    stdbool saveImage(const Matrix<ColorPixel>& dest, stdNullPars);
+    stdbool saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars);
+
+    stdbool saveBgr24(const Matrix<uint8>& dest, stdNullPars)
+        {REQUIRE(false); returnTrue;}
 
 private:
 
@@ -86,11 +89,11 @@ private:
 
 //================================================================
 //
-// AtProviderFromCpuImage::saveImage
+// AtProviderFromCpuImage::saveBgr32
 //
 //================================================================
 
-stdbool AtProviderFromCpuImage::saveImage(const Matrix<ColorPixel>& dest, stdNullPars)
+stdbool AtProviderFromCpuImage::saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars)
 {
     Matrix<const ColorPixel> src = cpuImage;
     Matrix<ColorPixel> dst = dest;
@@ -158,7 +161,7 @@ inline void exchange(QueueImage& a, QueueImage& b)
 //================================================================
 
 template <typename Kit>
-stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider& provider, QueueImage& dst, stdPars(Kit))
+stdbool saveImageToQueue(const Point<Space>& size, BaseImageProvider& provider, QueueImage& dst, stdPars(Kit))
 {
     Space desiredPitch = provider.desiredPitch();
     Space memPitch = absv(desiredPitch);
@@ -190,7 +193,7 @@ stdbool saveImageToQueue(const Point<Space>& size, AtImageProvider& provider, Qu
     ////
 
     REQUIRE(kit.dataProcessing);
-    require(provider.saveImage(dstMatrix, stdPass));
+    require(provider.saveBgr32(dstMatrix, stdPass));
     dst.matrix = dstMatrix;
 
     ////
@@ -614,7 +617,7 @@ public:
 
 public:
 
-    virtual stdbool setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
+    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
     virtual stdbool updateImage(stdPars(ProcessKit));
     virtual stdbool clearQueue(stdPars(ProcessKit));
     virtual stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));
@@ -801,7 +804,7 @@ void OverlaySmootherImpl::setOutputInterface(AtAsyncOverlay* output)
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, AtImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
+stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
 {
     require(initialized && shared.running());
 
@@ -1122,7 +1125,7 @@ CLASSTHUNK_VOID1(OverlaySmoother, serialize, const ModuleSerializeKit&)
 CLASSTHUNK_BOOL_STD0(OverlaySmoother, init, InitKit);
 CLASSTHUNK_VOID0(OverlaySmoother, deinit);
 
-CLASSTHUNK_BOOL_STD5(OverlaySmoother, setImage, const Point<Space>&, AtImageProvider&, const FormatOutputAtom&, uint32, bool, ProcessKit);
+CLASSTHUNK_BOOL_STD5(OverlaySmoother, setImage, const Point<Space>&, BaseImageProvider&, const FormatOutputAtom&, uint32, bool, ProcessKit);
 CLASSTHUNK_BOOL_STD0(OverlaySmoother, updateImage, ProcessKit);
 CLASSTHUNK_BOOL_STD0(OverlaySmoother, clearQueue, ProcessKit);
 CLASSTHUNK_BOOL_STD1(OverlaySmoother, setSmoothing, bool, ProcessKit);

@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "baseImageConsole/imageProviderMemcpy.h"
+#include "baseInterfaces/imageProviderMemcpy.h"
 #include "binaryFile/binaryFileImpl.h"
 #include "data/spacex.h"
 #include "dataAlloc/arrayMemory.h"
@@ -136,7 +136,7 @@ stdbool writeImage
 
     REQUIRE(kit.dataProcessing);
 
-    require(imageProvider.saveImage(flipMatrix(bufferImage), stdPass));
+    require(imageProvider.saveBgr32(flipMatrix(bufferImage), stdPass));
 
     //----------------------------------------------------------------
     //

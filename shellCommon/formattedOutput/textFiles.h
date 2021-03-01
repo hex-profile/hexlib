@@ -54,6 +54,13 @@ public:
         if_not (ok)
             CHECK_TRACE1(stream.eof(), STR("Cannot read file %0"), openedFilename);
 
+        ////
+
+        if (s.size() && s[s.size() - 1] == '\r')
+            s = s.substr(0, s.size() - 1);
+
+        ////
+
         return ok;
     }
 
