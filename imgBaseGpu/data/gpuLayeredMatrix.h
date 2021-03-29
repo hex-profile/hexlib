@@ -179,7 +179,10 @@ public:
 
     sysinline bool isValid() const
     {
-        return 0 <= layerOrg && layerOrg <= layerEnd && layerEnd <= base.layers();
+        bool c0 = (0 <= layerOrg);
+        bool c1 = (layerOrg <= layerEnd);
+        bool c2 = (layerEnd <= base.layers());
+        return c0 && c1 && c2; // Work around GCC madness.
     }
 
 private:
