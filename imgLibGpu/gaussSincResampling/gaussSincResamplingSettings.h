@@ -13,7 +13,7 @@ namespace gaussSincResampling {
 //
 //================================================================
 
-#define GAUSS_SINC_RESAMPLING_HQ 1
+#define GAUSS_SINC_RESAMPLING_HQ 0
 
 //================================================================
 //
