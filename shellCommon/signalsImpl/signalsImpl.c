@@ -225,6 +225,11 @@ void prepareSignalHistogram(BaseActionReceiving& at, const Array<int32>& histogr
 
         if (id == baseActionId::EditConfig)
             overview.editConfig = true;
+
+        ////
+
+        if (id == baseActionId::ResetupActions)
+            overview.resetupActions = true;
     };
 
     ////

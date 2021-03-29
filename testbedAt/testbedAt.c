@@ -502,7 +502,7 @@ public:
         else
         {
             if (textEnabled) 
-                printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
+                printMsg(kit.localLog, STR("OVERLAY: %"), desc);
 
             require(api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         }

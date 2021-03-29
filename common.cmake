@@ -229,6 +229,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         target_compile_options(${projectName} PRIVATE "/wd5040")
         target_compile_options(${projectName} PRIVATE "/we4239")
         target_compile_definitions(${projectName} PRIVATE _CRT_SECURE_NO_WARNINGS=1)
+        target_compile_definitions(${projectName} PRIVATE _SCL_SECURE_NO_WARNINGS=1)
     endif()
 
     #----------------------------------------------------------------

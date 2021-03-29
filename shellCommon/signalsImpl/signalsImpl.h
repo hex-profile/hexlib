@@ -28,11 +28,15 @@ struct SignalsOverview
 {
     bool anyEventsFound;
     bool realEventsFound;
+    
     bool mouseSignal;
     bool mouseSignalAlt;
+
     bool saveConfig;
     bool loadConfig;
     bool editConfig;
+
+    bool resetupActions;
 };
 
 //================================================================
