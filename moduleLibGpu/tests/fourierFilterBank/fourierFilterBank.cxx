@@ -518,11 +518,11 @@ private:
 
     NumericVar<Point<float32>> gaborOrientSigma{point(0.f), point(16.f), point(0.f)};
 
-    NumericVar<Point<float32>> gaborCenterRange{point(0.f), point(128.f), point(0.25f)}; // in the middle between 0 (brightness invariance) and 1/2 (Nyquist)
-    NumericVar<Point<float32>> gaborSigmaRange{point(0.f), point(128.f), point(0.075f)}; // the thickest one to be zero at both 0 and 1/2 with 8 bit accuracy.
+    NumericVar<Point<float32>> gaborCenterVar{point(0.f), point(128.f), point(0.25f)}; // in the middle between 0 (brightness invariance) and 1/2 (Nyquist)
+    NumericVar<Point<float32>> gaborSigmaCenterFractionVar{point(0.f), point(128.f), point(0.3f)}; // the thickest one to be zero at both 0 and 1/2 with 8 bit accuracy.
 
-    float32 gaborCenter() {return gaborCenterRange().X;}
-    float32 gaborSigma() {return gaborSigmaRange().X;}
+    float32 gaborCenter() {return gaborCenterVar().X;}
+    float32 gaborSigma() {return gaborSigmaCenterFractionVar().X * gaborCenterVar().X;}
 
     NumericVar<Space> gaborIntraLevels{1, 128, 1};
 
@@ -559,8 +559,10 @@ void FourierFilterBankImpl::serialize(const ModuleSerializeKit& kit)
     {
         CFG_NAMESPACE("Gauss Test");
 
-        gaborCenterRange.serialize(kit, STR("Center"));
-        gaborSigmaRange.serialize(kit, STR("Sigma"));
+        gaborCenterVar.serialize(kit, STR("Center"));
+        
+        gaborSigmaCenterFractionVar.serialize(kit, STR("Sigma/Center Ratio"));
+
         gaborIntraLevels.serialize(kit, STR("Intra Levels"));
         
         gaborPyramidStart.serialize(kit, STR("Pyramid Start"));
@@ -684,8 +686,12 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
                     // intra-scale params
                     gaborIntraLevels,
-                    gaborCenterRange().X, gaborCenterRange().Y,
-                    gaborSigmaRange().X, gaborSigmaRange().Y,
+
+                    gaborCenterVar().X,
+                    gaborCenterVar().Y,
+
+                    gaborSigmaCenterFractionVar().X * gaborCenterVar().X,
+                    gaborSigmaCenterFractionVar().Y * gaborCenterVar().Y,
 
                     // inter-scale params
                     gaborPyramidStart,
