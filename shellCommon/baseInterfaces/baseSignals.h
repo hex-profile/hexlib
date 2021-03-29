@@ -32,6 +32,8 @@ namespace baseActionId
     constexpr BaseActionId SaveConfig = 0xFFFFFFF8u;
     constexpr BaseActionId LoadConfig = 0xFFFFFFF7u;
     constexpr BaseActionId EditConfig = 0xFFFFFFF6u;
+
+    constexpr BaseActionId ResetupActions = 0xFFFFFFF5u;
 }
 
 //================================================================

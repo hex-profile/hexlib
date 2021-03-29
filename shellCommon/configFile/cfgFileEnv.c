@@ -587,7 +587,7 @@ stdbool loadFile(const CharType* filename, Memory& memory, stdPars(FileEnvKit))
     //----------------------------------------------------------------
 
     basic_ifstream<CharType> stream(filename);
-    REQUIRE(!!stream);
+    require(!!stream);
 
     ////
 

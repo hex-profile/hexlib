@@ -537,7 +537,6 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
     //----------------------------------------------------------------
 
     SetBusyStatusNull setBusyStatus;
-    UserPoint userPoint{false, point(0), false, false};
 
     auto oldKit = kit;
 
@@ -545,7 +544,6 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
     (
         oldKit,
         SetBusyStatusKit{setBusyStatus},
-        UserPointKit{userPoint},
         VerbosityKit{Verbosity::On}
     );
 

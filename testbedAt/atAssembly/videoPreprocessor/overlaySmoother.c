@@ -811,7 +811,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     ////
 
     if (textEnabled)
-        printMsg(kit.localLog, STR("OVERLAY: %0"), desc);
+        printMsg(kit.localLog, STR("OVERLAY: %"), desc);
 
     //----------------------------------------------------------------
     //
