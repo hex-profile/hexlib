@@ -12,7 +12,6 @@
 template <typename Type>
 struct GpuLayeredMatrix
 {
-
     //
     // Base interface
     //
