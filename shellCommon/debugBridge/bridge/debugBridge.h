@@ -2,7 +2,7 @@
 
 //----------------------------------------------------------------
 
-#if !(defined(TRACV_PLATFORM_BUILD) || defined(TRACV_MODULE_NAME))
+#if 1 // !(defined(TRACV_PLATFORM_BUILD) || defined(TRACV_MODULE_NAME))
 
     #include "debugBridgeApi.h"
 

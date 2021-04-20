@@ -6,6 +6,7 @@
 #include "numbers/int/intType.h"
 #include "data/commonFuncs.h"
 #include "extLib/data/matrixBase.h"
+#include "numbers/safeint32/safeint32.h"
 
 //================================================================
 //
@@ -574,13 +575,13 @@ public:
     sysinline auto& element(const Point<Space>& pos) const
     {
         MATRIX_EXPOSE_EX(*this, my);
-        return MATRIX_ELEMENT_(my, pos);
+        return helpModify(MATRIX_ELEMENT_(my, pos));
     }
 
     sysinline auto& element(Space X, Space Y) const
     {
         MATRIX_EXPOSE_EX(*this, my);
-        return MATRIX_ELEMENT(my, X, Y);
+        return helpModify(MATRIX_ELEMENT(my, X, Y));
     }
 
     ////

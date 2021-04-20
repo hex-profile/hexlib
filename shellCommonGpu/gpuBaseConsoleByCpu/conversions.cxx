@@ -37,7 +37,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    auto value = *src;
+    auto value = helpRead(*src);
 
     auto dstPtr = MATRIX_POINTER(dst, monoX, monoY);
 
