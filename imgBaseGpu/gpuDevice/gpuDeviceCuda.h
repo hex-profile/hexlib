@@ -286,3 +286,33 @@ struct GpuSramPitchFor2dAccess
 //================================================================
 
 #define devWarpAll(cond) __all(cond)
+
+//================================================================
+//
+// devShuffleDown
+//
+//================================================================
+
+#if defined(__CUDA_ARCH__)
+
+    #if !(defined(CUDART_VERSION) && CUDART_VERSION > 0)
+
+        #error
+
+    #endif
+
+    ////
+
+    #if CUDART_VERSION >= 9000
+
+        #define devShuffleDown(value, delta) \
+            __shfl_down_sync(0xFFFFFFFF, value, delta)
+
+    #else
+
+        #define devShuffleDown(value, delta) \
+            __shfl_down(value, delta)
+
+    #endif
+
+#endif
