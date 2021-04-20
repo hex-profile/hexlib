@@ -203,7 +203,7 @@ stdbool BmpWriter::writeFunc(const Matrix<const Pixel>& image, const CharArray& 
 
         for (Space Y = 0; Y < srcSizeY; ++Y)
         {
-            memcpy(bufferPtr, srcPtr, srcSizeX * sizeof(Pixel));
+            memcpy(unsafePtr(bufferPtr, srcSizeX), unsafePtr(srcPtr, srcSizeX), srcSizeX * sizeof(Pixel));
             srcPtr += srcMemPitch;
             bufferPtr += bufferMemPitch;
         }
