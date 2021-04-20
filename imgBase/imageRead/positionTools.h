@@ -30,6 +30,16 @@ sysinline float32 convertIndexToPos(Space idx)
 
 //================================================================
 //
+// convertPosToIndex
+//
+//================================================================
+
+template <typename Type>
+sysinline auto convertPosToIndex(const Type& pos)
+    {return pos - 0.5f;}
+
+//================================================================
+//
 // roundPosToNearestSample
 //
 //================================================================
