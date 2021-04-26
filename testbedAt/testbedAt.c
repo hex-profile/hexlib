@@ -277,8 +277,13 @@ class AtImgConsoleImplThunk : public BaseImageConsole
 
 public:
 
-    stdbool addImage(const Matrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImage(const Matrix<const uint8>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
     {
+        if_not (dataProcessing)
+            return;
+
+        ////
+
         formatter.clear();
         hint.desc.func(hint.desc.value, formatter);
         require(formatter.valid());
@@ -298,9 +303,10 @@ public:
         returnTrue;
     }
 
-    stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
     {
-        MATRIX_EXPOSE(img);
+        if_not (dataProcessing)
+            returnTrue;
 
         ////
 
@@ -309,6 +315,8 @@ public:
         require(formatter.valid());
 
         ////
+
+        MATRIX_EXPOSE(img);
 
         const uint8_x4* imgPtr = unsafePtr(imgMemPtr, imgSizeX, imgSizeY);
         COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);

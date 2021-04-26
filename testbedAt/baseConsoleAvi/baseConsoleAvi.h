@@ -88,9 +88,9 @@ public:
 
 public:
 
-    stdbool addImage(const Matrix<const Pixel>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImage(const Matrix<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
     {
-        require(baseConsole.addImage(img, hint, stdPass));
+        require(baseConsole.addImage(img, hint, dataProcessing, stdPass));
         require(saver.saveImage(img, hint.desc, hint.id, stdPass));
         returnTrue;
     }

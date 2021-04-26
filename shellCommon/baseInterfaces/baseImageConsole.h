@@ -13,7 +13,7 @@
 
 struct BaseImageConsole
 {
-    virtual stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
+    virtual stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars) =0;
     virtual stdbool clear(stdNullPars) =0;
     virtual stdbool update(stdNullPars) =0;
 };
@@ -22,7 +22,7 @@ struct BaseImageConsole
 
 struct BaseImageConsoleNull : public BaseImageConsole
 {
-    virtual stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    virtual stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
         {returnTrue;}
 
     virtual stdbool clear(stdNullPars)

@@ -118,3 +118,23 @@ sysinline Float approxPhase(const Point<Float>& value)
 
     return result;
 }
+
+//================================================================
+//
+// circularDistance
+//
+//================================================================
+
+template <typename Float>
+sysinline Float circularDistance(Float A, Float B) // A, B in [0..1) range 
+{
+    Float distance = A - B + 1; // [0, 2)
+  
+    if (distance >= 1) 
+        distance -= 1; // [0, 1)
+
+    if (distance >= 0.5f) 
+        distance = 1 - distance; // [0, 1/2)
+
+    return distance;
+}
