@@ -223,10 +223,9 @@ stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& 
         // Output the CPU matrix
         //
 
-        if (kit.dataProcessing)
         {
             stdEnter;
-            require(baseImageConsole.addImage(cpuMatrix, hint, stdPass));
+            require(baseImageConsole.addImage(cpuMatrix, hint, kit.dataProcessing, stdPass));
         }
     }
 

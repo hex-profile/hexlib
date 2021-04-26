@@ -76,25 +76,6 @@ sysinline float32 cosShape(float32 x)
 
 //================================================================
 //
-// circularDistance
-//
-//================================================================
-
-sysinline float32 circularDistance(float32 A, float32 B) // A, B in [0..1) range 
-{
-    float32 distance = A - B + 1; // [0, 2)
-  
-    if (distance >= 1) 
-        distance -= 1; // [0, 1)
-
-    if (distance >= 0.5f) 
-        distance = 1 - distance; // [0, 1/2)
-
-    return distance;
-}
-
-//================================================================
-//
 // makeGaborFreqTest
 //
 //================================================================
