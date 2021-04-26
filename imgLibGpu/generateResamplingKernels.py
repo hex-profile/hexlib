@@ -90,7 +90,7 @@ def generateFilterPack(name, taps, factor, normalizedVectorKernel, verbose=True)
     for p in range(period):
         sumInner = np.sum(abs(kernelScaled(filterRange + startOffset[p], False)))
         sumOuter = np.sum(abs(kernelScaled(largeRange + startOffset[p], False)))
-        coverageBits = -np.log2(1 - sumInner / sumOuter)
+        coverageBits = -np.log2(np.max([1 - sumInner / sumOuter, 2.0**(-24.0)]))
         coeffs = kernelScaled(filterRange + startOffset[p], True)
         print('[%s, coverage %.2f bits] [%d] = {%s};' % (name, coverageBits, p, ', '.join(['%+.8ff' % v for v in coeffs])))
 
@@ -175,7 +175,7 @@ if __name__ == '__main__':
 
     if True:
 
-        gaussSincHq = 1
+        gaussSincHq = 0
 
         ###
 
@@ -199,7 +199,13 @@ if __name__ == '__main__':
         #
 
         #generateFilterPack('Gauss-Sinc Downsample 4X', qualitySelect(76, 112), [1, 4], kernelConservative)
-        generateFilterPack('Gauss-Sinc Upsample 4X', qualitySelect(15, 25), [4, 1], kernelBalanced)
+        #generateFilterPack('Gauss-Sinc Upsample 4X', qualitySelect(15, 25), [4, 1], kernelBalanced)
+
+        #
+        # 3X
+        #
+
+        generateFilterPack('Gauss-Sinc Upsample 3X', qualitySelect(15, 25), [3, 1], kernelBalanced)
 
         #
         # 2X
