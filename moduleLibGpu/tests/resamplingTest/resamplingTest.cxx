@@ -20,6 +20,7 @@
 #include "gaussSincResampling/gaussSincResamplingSettings.h"
 #include "gaussSincResampling/resampleFourTimes/downsampleFourTimes.h"
 #include "gaussSincResampling/resampleFourTimes/upsampleFourTimes.h"
+#include "gaussSincResampling/resampleThreeTimes/upsampleThreeTimes.h"
 #include "gaussSincResampling/resampleOneAndHalf/downsampleOneAndHalf.h"
 #include "gaussSincResampling/resampleOneAndHalf/upsampleOneAndHalf.h"
 #include "gaussSincResampling/resampleOneAndThird/downsampleOneAndThird.h"
@@ -405,6 +406,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         UpsampleOneAndThird,
         UpsampleOneAndHalf,
         UpsampleTwice,
+        UpsampleThreeTimes,
         UpsampleFourTimes,
         InterpolationBicubic,
         InterpolationUnserBspline,
@@ -425,6 +427,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         (test == Test::UpsampleOneAndQuarter) ? 5.f / 4 : 
         (test == Test::DownsampleOne) ? 1.f : 
         (test == Test::DownsampleFourTimes) ? 1/4.f :
+        (test == Test::UpsampleThreeTimes) ? 3.f :
         (test == Test::UpsampleFourTimes) ? 4.f :
         (test == Test::InterpolationBicubic) ? variableUpsampleFactor :
         (test == Test::InterpolationUnserBspline) ? variableUpsampleFactor :
@@ -461,6 +464,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         test == Test::DownsampleTwice ||
         test == Test::UpsampleTwice ||
         test == Test::DownsampleFourTimes ||
+        test == Test::UpsampleThreeTimes ||
         test == Test::UpsampleFourTimes
     )
         require(resamplePyramidModel(srcImage, dstImage, 1.f/resampleFactor, resampleFactorScalar <= 1 ? downsamplingKernel : upsamplingKernel, stdPass));
@@ -524,6 +528,11 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
 
     if (test == Test::UpsampleTwice)
         require((upsampleTwiceBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
+
+    ////
+
+    if (test == Test::UpsampleThreeTimes)
+        require((upsampleThreeTimesBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
 
     ////
 
