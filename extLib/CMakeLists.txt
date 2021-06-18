@@ -1,6 +1,6 @@
 #================================================================
 #
-# Clean base types for external interfaces.
+# Very clean base types for pure external APIs.
 #
 #================================================================
 

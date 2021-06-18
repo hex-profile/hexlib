@@ -268,13 +268,14 @@ private:
 
     ////
 
-    enum GenMode {GenNone, GenPulse, GenGrating, GenRandom, GenModeCount};
-    RingSwitch<GenMode, GenModeCount, GenNone> genMode;
+    enum class GenMode {None, Pulse, Grating, Edge, Random, COUNT};
+    RingSwitch<GenMode, GenMode::COUNT, GenMode::None> genMode;
 
     RangeValueControl<float32> genGratingPeriod{2, 2048, 6, 1.02189714865411668f, RangeValueLogscale};
     BoolSwitch<false> genGratingRectangleShape;
 
     NumericVarStatic<Space, 1, 1 << 20, 256> genPulsePeriod;
+    NumericVar<float32> genEdgeSigma{1 / 128.f, 128.f, 0.6f};
 
     ////
 
@@ -369,12 +370,13 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 
         check_flag(cropMode.serialize(kit, STR("Crop Mode"), STR("Ctrl+C")), prepParamsSteady);
         check_flag(cropSizeCfg.serialize(kit, STR("Crop Size")), prepParamsSteady);
+
         check_flag(genMode.serialize(kit, STR("Generation Mode"), STR("Ctrl+G")), prepParamsSteady);
         check_flag(rotationAngle.serialize(kit, STR("Rotation Angle"), STR("PgUp"), STR("PgDn"), STR("End")), prepParamsSteady);
         check_flag(genGratingPeriod.serialize(kit, STR("Grating Period"), STR("Del"), STR("Ins")), prepParamsSteady);
         check_flag(genGratingRectangleShape.serialize(kit, STR("Grating Has Rectangle Shape")), prepParamsSteady);
-
         check_flag(genPulsePeriod.serialize(kit, STR("Pulse Period")), prepParamsSteady);
+        check_flag(genEdgeSigma.serialize(kit, STR("Edge Sigma")), prepParamsSteady);
 
         randomizeSignal.serialize(kit, STR("Randomize"), STR("F1"));
 
@@ -759,7 +761,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     //----------------------------------------------------------------
 
     bool prepOff =
-        genMode == GenNone &&
+        genMode == GenMode::None &&
         rotationAngle == 0 &&
         !simuMotionActive() &&
         !(noiseActive && noiseSigma > 0);
@@ -776,7 +778,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     //
     //----------------------------------------------------------------
 
-    if (genMode == GenGrating)
+    if (genMode == GenMode::Grating)
         printMsgL(kit, STR("Grating Period = %0"), fltf(genGratingPeriod(), 2), msgWarn);
 
     if (rotationAngle())
@@ -825,15 +827,19 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 
         ////
 
-        if (genMode == GenPulse)
+        if (genMode == GenMode::Pulse)
         {
             require(generatePulse(processedFrameMemory, convertNearest<Space>(-motionOfs), genPulsePeriod, stdPass));
         }
-        else if (genMode == GenGrating)
+        else if (genMode == GenMode::Grating)
         {
             require(generateGrating(processedFrameMemory, genGratingPeriod, transMul, transAdd, genGratingRectangleShape(), stdPass));
         }
-        else if (genMode == GenRandom)
+        else if (genMode == GenMode::Edge)
+        {
+            require(generateEdge(processedFrameMemory, transMul, transAdd, 1.f / genEdgeSigma, stdPass));
+        }
+        else if (genMode == GenMode::Random)
         {
             require(initializeRandomStateMatrix(rndgenFrame, frameIndex, 0x113716C3, stdPass));
             require(generateRandom(processedFrameMemory, rndgenFrame, stdPass));

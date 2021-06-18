@@ -1,39 +1,16 @@
 #pragma once
 
 #include "allocation/mallocKit.h"
+#include "baseInterfaces/baseImageConsole.h"
 #include "configFile/cfgSerialization.h"
+#include "interfaces/fileToolsKit.h"
 #include "interfaces/threadManagerKit.h"
 #include "kits/moduleHeader.h"
 #include "memController/memController.h"
 #include "storage/smartPtr.h"
-#include "interfaces/fileToolsKit.h"
-#include "baseInterfaces/baseImageConsole.h"
+#include "minimalShell/minimalShellTypes.h"
 
 namespace minimalShell {
-
-//================================================================
-//
-// EngineReallocKit
-// EngineProcessKit
-//
-//================================================================
-
-using EngineReallocKit = KitCombine<GpuModuleReallocKit, GpuBlockAllocatorKit>;
-using EngineProcessKit = KitCombine<GpuModuleProcessKit, GpuBlockAllocatorKit>;
-
-//================================================================
-//
-// EngineModule
-//
-//================================================================
-
-struct EngineModule
-{
-    virtual bool reallocValid() const =0;
-    virtual stdbool realloc(stdPars(EngineReallocKit)) =0;
-
-    virtual stdbool process(stdPars(EngineProcessKit)) =0;
-};
 
 //================================================================
 //
@@ -69,15 +46,9 @@ public:
 
 public:
 
-    virtual void setImageSavingActive(bool active) =0;
-    virtual void setImageSavingDir(const CharType* dir) =0; // can be NULL
-
-    virtual void setImageSavingLockstepCounter(uint32 counter) =0;
-    virtual const CharType* getImageSavingDir() const =0;
-
-public:
-
     virtual void serialize(const CfgSerializeKit& kit) =0;
+
+    virtual Settings& settings() =0;
 
 public:
 

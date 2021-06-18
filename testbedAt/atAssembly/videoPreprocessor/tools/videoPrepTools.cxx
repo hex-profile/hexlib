@@ -128,7 +128,8 @@ GPUTOOL_2D
     PREP_EMPTY,
     ((uint8_x4, dst)),
     ((float32, period))
-    ((Point<float32>, transMul)) ((Point<float32>, transAdd))
+    ((Point<float32>, transMul))
+    ((Point<float32>, transAdd))
     ((bool, rectangleShape)),
 
     {
@@ -141,6 +142,39 @@ GPUTOOL_2D
         storeNorm(dst, vectorExtend<float32_x4>(0.5f * (value + 1)));
     }
 )
+
+//================================================================
+//
+// generateEdge
+//
+//================================================================
+
+GPUTOOL_2D_BEG
+(
+    generateEdge,
+    PREP_EMPTY,
+    ((uint8_x4, dst)),
+    ((Point<float32>, transMul))
+    ((Point<float32>, transAdd))
+    ((float32, divSigma))
+)
+#if DEVCODE
+{
+    Point<float32> srcPos = complexMul(point(Xs, Ys), transMul) + transAdd;
+    auto ofs = srcPos.X - 0.5f * vGlobSize.X;
+
+    auto blurredEdge = [=] (float32 x) 
+    {
+        auto divSqrtTwo = 0.70710678118654752f;
+        return erff(x * divSqrtTwo * divSigma);
+    };
+
+    auto value = 0.5f * blurredEdge(ofs) + 0.5f;
+
+    storeNorm(dst, vectorExtend<float32_x4>(value));
+}
+#endif
+GPUTOOL_2D_END
 
 //================================================================
 //

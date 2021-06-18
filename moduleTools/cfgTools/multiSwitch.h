@@ -194,10 +194,13 @@ public:
         // Check if somebody has taken over the control
         //
 
-        size_t id = kit.overlayTakeover.getActiveID() - baseID;
+        auto activeID = kit.overlayTakeover.getActiveID();
 
-        if_not (id < size_t(positionCount))
-            base = 0;
+        if_not (activeID == OverlayTakeover::nullID)
+        {
+            if_not (size_t(activeID - baseID) < size_t(positionCount))
+                base = 0;
+        }
 
         //
         // Apply changes
@@ -222,6 +225,20 @@ public:
 
     inline operator EnumType() const {return EnumType(base());}
     inline EnumType operator()() const {return EnumType(base());}
+
+    //
+    // operator =
+    //
+
+    inline void operator =(EnumType value)
+        {base = size_t(value);}
+
+    //
+    //
+    //
+
+    void setDefaultValue(EnumType value)
+        {base.setDefaultValue(size_t(value));}
 
     //
     // serialize functions

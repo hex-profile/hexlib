@@ -97,7 +97,7 @@ stdbool MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByt
 
     ////
 
-    BaseMatrix::assign(newPtr, alignedSizeX, sizeX, sizeY, MatrixValidityAssertion{});
+    BaseMatrix::assign(newPtr, alignedSizeX, sizeX, sizeY);
 
     returnTrue;
 }

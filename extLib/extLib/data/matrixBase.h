@@ -57,7 +57,7 @@ public:
     }
 
     template <typename OtherPointer>
-    HEXLIB_INLINE MatrixBase(OtherPointer memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion&)
+    HEXLIB_INLINE MatrixBase(OtherPointer memPtr, Space memPitch, Space sizeX, Space sizeY)
         : 
         theMemPtrUnsafe{memPtr},
         theMemPitch{memPitch},

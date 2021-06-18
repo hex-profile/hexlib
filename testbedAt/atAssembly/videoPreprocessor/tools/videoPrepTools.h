@@ -21,8 +21,24 @@ stdbool generateGrating
 (
     const GpuMatrix<uint8_x4>& dst,
     const float32& period,
-    const Point<float32>& transMul, const Point<float32>& transAdd,
+    const Point<float32>& transMul,
+    const Point<float32>& transAdd,
     const bool& rectangleShape,
+    stdPars(GpuProcessKit)
+);
+
+//================================================================
+//
+// generateEdge
+//
+//================================================================
+
+stdbool generateEdge
+(
+    const GpuMatrix<uint8_x4>& dst,
+    const Point<float32>& transMul,
+    const Point<float32>& transAdd,
+    const float32& divSigma,
     stdPars(GpuProcessKit)
 );
 

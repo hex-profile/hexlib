@@ -91,12 +91,3 @@ using ModuleProcessKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit,
 //================================================================
 
 KIT_COMBINE2(ModuleSerializeKit, CfgSerializeKit, OverlayTakeoverKit);
-
-//================================================================
-//
-// MODULE_OUTPUT_ENABLED
-//
-//================================================================
-
-#define MODULE_OUTPUT_ENABLED \
-    (kit.dataProcessing && kit.verbosity >= Verbosity::On)

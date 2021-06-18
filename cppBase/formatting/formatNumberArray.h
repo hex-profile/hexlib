@@ -18,15 +18,16 @@ struct FormatNumberArray
     const Type* arrayPtr;
     size_t arraySize;
     FormatNumberOptions options;
+    CharArray delimiter;
 
-    inline FormatNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options)
-        : arrayPtr(arrayPtr), arraySize(arraySize), options(options) {}
+    inline FormatNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options, const CharArray& delimiter)
+        : arrayPtr(arrayPtr), arraySize(arraySize), options(options), delimiter(delimiter) {}
 };
 
 //----------------------------------------------------------------
 
 template <typename Type>
-inline FormatNumberArray<Type> formatNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options)
+inline FormatNumberArray<Type> formatNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options, const CharArray& delimiter = STR(", "))
 {
-    return FormatNumberArray<Type>(arrayPtr, arraySize, options);
+    return FormatNumberArray<Type>(arrayPtr, arraySize, options, delimiter);
 }

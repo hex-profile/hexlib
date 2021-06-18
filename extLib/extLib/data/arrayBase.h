@@ -52,7 +52,7 @@ public:
     }
 
     template <typename OtherPointer>
-    HEXLIB_INLINE ArrayBase(OtherPointer ptr, Space size, const ArrayValidityAssertion&)
+    HEXLIB_INLINE ArrayBase(OtherPointer ptr, Space size)
         :
         thePtr{ptr},
         theSize{size}
