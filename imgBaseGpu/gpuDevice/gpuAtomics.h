@@ -17,13 +17,15 @@
 template <typename Type>
 inline void atomicAdd(Type* dst, Type value)
 {
-    using AtomicType = std::atomic<Type>;
+    using namespace std;
+
+    using AtomicType = atomic<Type>;
     COMPILE_ASSERT(sizeof(AtomicType) == sizeof(Type));
     auto& target = * (AtomicType*) dst;
 
     auto oldValue = target.load();
 
-    while (!target.compare_exchange_weak(oldValue, oldValue + value)) 
+    while (!target.compare_exchange_weak(oldValue, oldValue + value, memory_order_relaxed, memory_order_relaxed)) 
         ;
 }
 
@@ -42,7 +44,9 @@ inline void atomicAdd(Type* dst, Type value)
 template <typename Type>
 inline void atomicMax(Type* dst, Type value)
 {
-    using AtomicType = std::atomic<Type>;
+    using namespace std;
+
+    using AtomicType = atomic<Type>;
     COMPILE_ASSERT(sizeof(AtomicType) == sizeof(Type));
     auto& target = * (AtomicType*) dst;
 
@@ -50,7 +54,7 @@ inline void atomicMax(Type* dst, Type value)
 
     auto oldValue = target.load();
 
-    while (!target.compare_exchange_weak(oldValue, maxv(oldValue, value))) 
+    while (!target.compare_exchange_weak(oldValue, maxv(oldValue, value), memory_order_relaxed, memory_order_relaxed)) 
         ;
 }
 

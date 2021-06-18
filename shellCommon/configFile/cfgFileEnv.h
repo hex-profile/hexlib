@@ -67,8 +67,8 @@ struct FileEnv : public StringEnv
 
 struct FileEnvSTL : public FileEnv
 {
-    virtual ~FileEnvSTL() {}
     static UniquePtr<FileEnvSTL> create();
+    virtual ~FileEnvSTL() {}
 };
 
 //----------------------------------------------------------------

@@ -31,8 +31,12 @@ using namespace gpuShell;
 //
 //================================================================
 
-class MinimalShellImpl : public MinimalShell
+class MinimalShellImpl : public MinimalShell, public Settings
 {
+
+public:
+
+    virtual Settings& settings() {return *this;}
 
 public:
 

@@ -13,7 +13,7 @@
 
 #define GPU_MATRIX_SET_FOREACH(action, extra) \
     VECTOR_INT_FOREACH(action, extra) \
-    VECTOR_FLOAT_FOREACH(action, extra) \
+    VECTOR_FLOAT_FOREACH(action, extra)
 
 //================================================================
 //

@@ -10,6 +10,7 @@
 //================================================================
 
 void genCosShape(float32* arrPtr, int arrSize);
+void genCosShapeHalf(float32* arrPtr, int arrSize);
 
 //================================================================
 //

@@ -13,6 +13,7 @@
 struct OverlayTakeover
 {
     using ID = size_t;
+    static constexpr ID nullID = 0;
 
     virtual void setActiveID(const ID& id) const =0;
     virtual ID getActiveID() const =0;

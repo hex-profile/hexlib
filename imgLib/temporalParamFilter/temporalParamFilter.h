@@ -7,11 +7,11 @@ namespace temporalParamFilter {
 
 //================================================================
 //
-// defaultStageCount
+// defaultStages
 //
 //================================================================
 
-static const Space defaultStageCount = 8;
+static const Space defaultStages = 8;
 
 //================================================================
 //
@@ -93,7 +93,7 @@ private:
 //----------------------------------------------------------------
 
 template <typename Type>
-using TemporalFilterStd = TemporalFilter<Type, temporalParamFilter::defaultStageCount>;
+using TemporalFilterStd = TemporalFilter<Type, temporalParamFilter::defaultStages>;
 
 //================================================================
 //

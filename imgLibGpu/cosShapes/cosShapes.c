@@ -44,3 +44,29 @@ void genCosShape(float32* arrPtr, int arrSize)
     for_count(i, arrSize)
         arrPtr[i] *= divSum;
 }
+
+//================================================================
+//
+// genCosShapeHalf
+//
+//================================================================
+
+void genCosShapeHalf(float32* arrPtr, int arrSize)
+{
+    int lobe = arrSize - 1;
+    auto radius = lobe + 0.5f;
+    auto divRadius = nativeRecip(radius);
+
+    auto sum = float32{0};
+
+    for_count(i, arrSize)
+    {
+        arrPtr[i] = cosShape(i * divRadius);
+        sum += arrPtr[i];
+    }
+
+    auto divSum = nativeRecip(sum);
+
+    for_count(i, arrSize)
+        arrPtr[i] *= divSum;
+}

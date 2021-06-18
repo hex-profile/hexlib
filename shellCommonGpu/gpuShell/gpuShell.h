@@ -15,7 +15,7 @@ namespace gpuShell {
 //
 // GpuContextHelper
 //
-// A convenience class
+// A convenience class.
 //
 //================================================================
 
