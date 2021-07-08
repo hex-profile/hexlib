@@ -62,7 +62,7 @@ public:
     using ProcessKit = KitCombine<InitKit, BaseImageConsolesKit, UserPointKit>;
 
     stdbool process(EngineModule& engineModule, MemController& engineMemory, bool runExecutionPhase, bool& sysAllocHappened, stdPars(ProcessKit))
-        {return processEntry(stdPassKit(kitCombine(kit, ParamsKit(engineModule, engineMemory, runExecutionPhase, sysAllocHappened))));}
+        {return processEntry(stdPassThruKit(kitCombine(kit, ParamsKit(engineModule, engineMemory, runExecutionPhase, sysAllocHappened))));}
 
 public:
 

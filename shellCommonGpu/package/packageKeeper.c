@@ -121,7 +121,7 @@ void PackageKeeperImpl::serialize(const CfgSerializeKit& kit)
     ////
 
     {
-        CFG_NAMESPACE("Shell");
+        CFG_NAMESPACE("~Shell");
         deactivateOverlay.serialize(kit, STR("Deactivate Overlay"), STR("\\"));
     }
 }
@@ -156,7 +156,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
         errorBlock(configFile.loadFile(SimpleString{configName}, stdPass));
         configFile.loadVars(serialization);
         configFile.saveVars(serialization, true);
-        require(configFile.updateFile(true, stdPass));
+        errorBlock(configFile.updateFile(true, stdPass));
     }
 
     //----------------------------------------------------------------
@@ -233,7 +233,7 @@ stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebu
     if (configActive)
     {
         configFile.saveVars(serialization, true);
-        require(configFile.updateFile(false, stdPass));
+        errorBlock(configFile.updateFile(false, stdPass));
     }
 
     //----------------------------------------------------------------
@@ -378,7 +378,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         ////
 
-        auto configLoaderLambda = [&] (const db::Array<const db::Char>& config)
+        auto configLoaderLambda = [&] (db::ArrayRef<const db::Char> config)
         {
             if_not (errorBlock(configFile.loadFromString(charArray(config.ptr, config.size), stdPass)))
                 throw std::runtime_error("Config support error"); // Debug bridge uses exceptions.
@@ -455,9 +455,11 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
     UserPoint userPoint{false, point(0), false, false};
 
     {
-        debugBridge::ImagePoint userPointPos{};
-        require(blockExceptionsVoid(videoOverlay->getUserPoint(userPoint.valid, userPointPos)));
-        userPoint.position = point(userPointPos.X, userPointPos.Y);
+        debugBridge::UserPoint up{};
+        require(blockExceptionsVoid(up = videoOverlay->getUserPoint()));
+
+        userPoint.valid = up.valid;
+        userPoint.position = point(up.pos.X, up.pos.Y);
     }
 
     ////

@@ -8,7 +8,7 @@
 namespace baseImageConsoleToBridge {
 
 using debugBridge::ImagePoint;
-using debugBridge::Image;
+using debugBridge::ImageRef;
 using debugBridge::ImageSpace;
 using debugBridge::PixelRgb32;
 using debugBridge::PixelMono;
@@ -28,7 +28,7 @@ public:
     BridgeImageProviderThunk(BaseImageProvider& imageProvider, stdPars(Kit))
         : imageProvider(imageProvider), kit(kit), trace{trace} {}
 
-    virtual void saveBgr32(const Image<PixelRgb32>& dst)
+    virtual void saveBgr32(ImageRef<PixelRgb32> dst)
     {
         auto code = [&] ()
         {
@@ -41,7 +41,7 @@ public:
             throw CT("Debug bridge: Image provider: Saving image error");
     }
 
-    virtual void saveBgr24(const Image<PixelMono>& dst)
+    virtual void saveBgr24(ImageRef<PixelMono> dst)
     {
         auto code = [&] ()
         {

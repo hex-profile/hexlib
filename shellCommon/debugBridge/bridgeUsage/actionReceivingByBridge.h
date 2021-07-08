@@ -43,7 +43,7 @@ public:
     BridgeReceiverByBaseReceiver(BaseActionReceiver& receiver)
         : receiver{receiver} {}
 
-    virtual void process(const db::Array<const db::ActionId>& actions)
+    virtual void process(db::ArrayRef<const db::ActionId> actions)
         {receiver.process(makeArray(actions.ptr, actions.size));}
 
 private:
