@@ -88,11 +88,11 @@ public:
 
 public:
 
-    virtual void saveConfig(const Array<const Char>& config);
+    virtual void saveConfig(ArrayRef<const Char> config);
 
     virtual void loadConfig(ConfigReceiver& configReceiver);
 
-    virtual void editConfig(const Array<const Char>& config, ConfigReceiver& configReceiver);
+    virtual void editConfig(ArrayRef<const Char> config, ConfigReceiver& configReceiver);
 
 private:
 
@@ -110,7 +110,7 @@ private:
 //
 //================================================================
 
-void ConfigSupportTest::saveConfig(const Array<const Char>& config)
+void ConfigSupportTest::saveConfig(ArrayRef<const Char> config)
 {
     cout << "BRIDGE: Saving config to " << filename << endl;
 
@@ -154,7 +154,7 @@ void ConfigSupportTest::loadConfig(ConfigReceiver& configReceiver)
 //
 //================================================================
 
-void ConfigSupportTest::editConfig(const Array<const Char>& config, ConfigReceiver& configReceiver)
+void ConfigSupportTest::editConfig(ArrayRef<const Char> config, ConfigReceiver& configReceiver)
 {
     cout << "BRIDGE: Editing config: " << endl;
 
@@ -395,8 +395,8 @@ public:
 
     virtual void update();
 
-    virtual void getUserPoint(bool& valid, ImagePoint& pos)
-        {valid = true; pos = {1, 2};}
+    virtual UserPoint getUserPoint()
+        {return ImagePoint{1, 2};}
 
 private:
 

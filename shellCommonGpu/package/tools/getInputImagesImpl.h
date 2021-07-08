@@ -17,11 +17,11 @@ class GetInputImagesFromCpu : public GetInputImages<Pixel>
 
 public:
 
-    GetInputImagesFromCpu(const Array<const Matrix<const Pixel>>& cpuImages)
-        : cpuImages{cpuImages} {}
+    GetInputImagesFromCpu(const Array<const Matrix<const Pixel>>* cpuImages)
+        : cpuImages{*cpuImages} {}
 
-    GetInputImagesFromCpu(const Matrix<const Pixel>& cpuImage)
-        : cpuImages{makeArray(&cpuImage, 1)} {}
+    GetInputImagesFromCpu(const Matrix<const Pixel>* cpuImage)
+        : cpuImages{makeArray(cpuImage, 1)} {}
 
 public:
 

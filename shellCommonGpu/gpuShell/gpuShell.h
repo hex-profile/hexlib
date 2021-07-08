@@ -34,7 +34,7 @@ public:
 
 private:
 
-    NumericVarStatic<int32, 0, 256, 0> gpuDeviceIndex;
+    NumericVar<int32> gpuDeviceIndex{typeMin<int32>(), typeMax<int32>(), 0};
 
 };
 

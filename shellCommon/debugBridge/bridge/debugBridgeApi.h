@@ -99,7 +99,7 @@ using PixelMono = uint8_t;
 
 //================================================================
 //
-// Array<Type>
+// ArrayRef<Type>
 //
 // Array memory layout description: ptr and size.
 //
@@ -113,7 +113,7 @@ using PixelMono = uint8_t;
 //================================================================
 
 template <typename Type>
-struct Array
+struct ArrayRef
 {
     Type* ptr;
     size_t size;
@@ -121,7 +121,7 @@ struct Array
 
 //================================================================
 //
-// Image<Type>
+// ImageRef<Type>
 //
 // Image memory layout: base pointer, pitch and dimensions.
 //
@@ -141,7 +141,7 @@ struct Array
 //================================================================
 
 template <typename Pixel>
-struct Image
+struct ImageRef
 {
     Pixel* ptr;
     ImageSpace pitch;
@@ -169,7 +169,7 @@ struct Image
 
 struct ConfigReceiver : public VirtualDestructor
 {
-    virtual void receive(const Array<const Char>& config) =0;
+    virtual void receive(ArrayRef<const Char> config) =0;
 };
 
 //================================================================
@@ -187,7 +187,7 @@ public:
     ConfigReceiverByLambda(const Lambda& lambda)
         : lambda{lambda} {}
 
-    virtual void receive(const Array<const Char>& config)
+    virtual void receive(ArrayRef<const Char> config)
         {lambda(config);}
 
 private:
@@ -215,7 +215,7 @@ struct ConfigSupport : public VirtualDestructor
     // it exports the current state to a string and calls the function.
     //
 
-    virtual void saveConfig(const Array<const Char>& config) =0;
+    virtual void saveConfig(ArrayRef<const Char> config) =0;
 
     //
     // When an algo module receives a signal to load config,
@@ -239,7 +239,7 @@ struct ConfigSupport : public VirtualDestructor
     // An algo module is blocked during the call.
     //
 
-    virtual void editConfig(const Array<const Char>& config, ConfigReceiver& configReceiver) =0;
+    virtual void editConfig(ArrayRef<const Char> config, ConfigReceiver& configReceiver) =0;
 };
 
 //================================================================
@@ -434,7 +434,7 @@ struct ActionSetup : public VirtualDestructor
 
 struct ActionReceiver : public VirtualDestructor
 {
-    virtual void process(const Array<const ActionId>& actions) =0;
+    virtual void process(ArrayRef<const ActionId> actions) =0;
 };
 
 //----------------------------------------------------------------
@@ -463,12 +463,27 @@ struct ActionReceiving : public VirtualDestructor
 struct ImageProvider : public VirtualDestructor
 {
     // Saves to BGR32.
-    virtual void saveBgr32(const Image<PixelRgb32>& dst) =0;
+    virtual void saveBgr32(ImageRef<PixelRgb32> dst) =0;
 
     // Saves to BGR24. The destination is an uint8 image
     // with width 3 times more than the color image width.
     // The pitch is expressed in its own uint8 elements, as usual.
-    virtual void saveBgr24(const Image<PixelMono>& dst) =0;
+    virtual void saveBgr24(ImageRef<PixelMono> dst) =0;
+};
+
+//================================================================
+//
+// UserPoint
+//
+//================================================================
+
+struct UserPoint
+{
+    UserPoint() =default;
+    UserPoint(ImagePoint pos) : valid{true}, pos{pos} {}
+
+    bool valid = false;
+    ImagePoint pos{};
 };
 
 //================================================================
@@ -501,10 +516,10 @@ struct VideoOverlay : public VirtualDestructor
 
     //
     // The position of mouse cursor in the video image coordinates, in pixels.
-    // If the mouse cursor is not available, it may be (-1, -1).
+    // May return coordinates outside the image.
     //
 
-    virtual void getUserPoint(bool& valid, ImagePoint& pos) =0;
+    virtual UserPoint getUserPoint() =0;
 };
 
 //================================================================
@@ -547,9 +562,9 @@ struct DebugBridge : public VirtualDestructor
 
 class ConfigSupportNull : public ConfigSupport
 {
-    virtual void saveConfig(const Array<const Char>& config) {}
+    virtual void saveConfig(ArrayRef<const Char> config) {}
     virtual void loadConfig(ConfigReceiver& configReceiver) {}
-    virtual void editConfig(const Array<const Char>& config, ConfigReceiver& configReceiver) {}
+    virtual void editConfig(ArrayRef<const Char> config, ConfigReceiver& configReceiver) {}
 };
 
 //================================================================
@@ -597,7 +612,7 @@ class MessageConsoleNull : public MessageConsole
 
 class VideoOverlayNull : public VideoOverlay
 {
-    virtual void getUserPoint(bool& valid, ImagePoint& pos) {valid = false; pos = {0, 0};}
+    virtual UserPoint getUserPoint() {return {};}
     virtual void set(const ImagePoint& size, ImageProvider& imageProvider, StringPtr description) {}
     virtual void clear() {}
     virtual void update() {}

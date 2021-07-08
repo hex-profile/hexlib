@@ -23,7 +23,9 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
     // Use selected GPU device
     //
 
-    gpuDeviceIndex = clampRange(gpuDeviceIndex(), 0, gpuDeviceCount-1);
+    REQUIRE_EX(gpuDeviceIndex >= 0 && gpuDeviceIndex < gpuDeviceCount, 
+        printMsg(kit.msgLog, STR("GPU device index % cannot be selected (totally % GPUs found)"), 
+            gpuDeviceIndex(), gpuDeviceCount, msgErr));
 
     require(kit.gpuInitialization.getProperties(gpuDeviceIndex, gpuProperties, stdPass));
     REMEMBER_CLEANUP1_EX(gpuPropertiesCleanup, gpuProperties.clear(), GpuProperties&, gpuProperties);

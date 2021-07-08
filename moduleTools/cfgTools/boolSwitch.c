@@ -84,7 +84,7 @@ bool BoolSwitch<defaultBool>::serialize(const CfgSerializeKit& kit, const CharAr
 {
     int32 oldValue = base;
 
-    SerializeRingSwitchSignal serializeSignal(signal, name, STR(" On-Off"), key, comment);
+    SerializeRingSwitchSignal serializeSignal(signal, name, STR(" <>"), key, comment);
     kit.visitor(kit.scope, serializeSignal);
 
     SerializeBoolSwitchVariable serializeVar(base, name, comment, key);
