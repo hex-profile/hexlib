@@ -24,6 +24,12 @@ void DisplayParamsImpl::serialize(const CfgSerializeKit& kit, bool& prepParamsSt
     );
 
     displayFactor.serialize(kit, STR("Display Factor"), STR("Num +"), STR("Num -"), STR("Num *"));
+    
+    displayFactorDec.serialize(kit, STR("Display Factor Dec"), STR("Alt+="));
+    displayFactorInc.serialize(kit, STR("Display Factor Inc"), STR("Alt+-"));
+    displayFactorReset.serialize(kit, STR("Display Factor Inc"), STR("Alt+0"));
+    displayFactor.feedIncrements(displayFactorDec, displayFactorInc, displayFactorReset);
+
     displayInterpolation.serialize(kit, STR("Interpolation"), STR("Alt+I"));
     displayModulation.serialize(kit, STR("Modulation"), STR("Ctrl+Q"));
 

@@ -30,7 +30,9 @@ public:
     // Returns true if the value was NOT changed
     //
 
-    bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& keyDec, const CharArray& keyInc, const CharArray& keyReset = STR(""), bool* signalActivity = 0);
+    bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& keyDec, const CharArray& keyInc, const CharArray& keyReset = STR(""));
+
+    void feedIncrements(int32 sigDec, int32 sigInc, int32 sigReset);
 
 public:
 

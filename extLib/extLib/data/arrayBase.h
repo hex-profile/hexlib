@@ -59,6 +59,14 @@ public:
     {
     }
 
+public:
+
+    Pointer data() const
+        {return thePtr;}
+
+    Space size() const
+        {return theSize;}
+
 protected:
 
     Pointer thePtr = Pointer(0);

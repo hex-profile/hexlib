@@ -445,7 +445,7 @@ GPUTOOL_2D_BEG
             ofs.DIR(X, Y) = i; \
             \
             auto value = tex2D(src##k##Sampler, srcReadTexPos + convertFloat32(ofs) * src0Texstep); \
-            sum##k = complexMad(sum##k, PREP_PASTE3(GABOR_BANK, DIR(DataX, DataY), k)[i], value); \
+            sum##k = complexFma(PREP_PASTE3(GABOR_BANK, DIR(DataX, DataY), k)[i], value, sum##k); \
         }
 
     PREP_FOR(GABOR_ORIENT_COUNT, TMP_MACRO, _)
@@ -608,7 +608,7 @@ GPUTOOL_2D_BEG_EX
         for_count (i, filterSize) \
         { \
             auto value = cacheStartPtr[i * DIR(1, cacheMemPitch)]; \
-            sum##k = complexMad(sum##k, PREP_PASTE3(GABOR_BANK, DIR(DataX, DataY), k)[i], value); \
+            sum##k = complexFma(PREP_PASTE3(GABOR_BANK, DIR(DataX, DataY), k)[i], value, sum##k); \
         }
 
     PREP_FOR(GABOR_ORIENT_COUNT, TMP_MACRO, _)

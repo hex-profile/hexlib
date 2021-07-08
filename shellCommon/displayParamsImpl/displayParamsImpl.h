@@ -51,6 +51,10 @@ private:
 private:
 
     RangeValueControl<float32> displayFactor{1.f/65536.f, 65536.f, 1.f, sqrtf(sqrtf(sqrtf(2))), RangeValueLogscale};
+    StandardSignal displayFactorDec;
+    StandardSignal displayFactorInc;
+    StandardSignal displayFactorReset;
+
     BoolSwitch<true> displayInterpolation;
     BoolSwitch<false> displayModulation;
 

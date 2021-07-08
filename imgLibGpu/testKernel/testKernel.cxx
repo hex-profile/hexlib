@@ -14,9 +14,15 @@
 
 #if __CUDA_ARCH__
 
-__global__ void testKernel1(float32* value, uint32* result)
+__global__ void testKernel_float32_x2(float32_x2* aPtr, float32_x2* bPtr, float32_x2* sumPtr)
 {
-    *value = uint32(*value + 0.5f);
+    auto a = *aPtr;
+    auto b = *bPtr;
+    auto sum = *sumPtr;
+
+    sum = complexFma(a, b, sum);
+
+    *sumPtr = sum;
 }
 
 ////

@@ -241,52 +241,6 @@ sysinline Point3D<Float> quatToRodrigues(const Point4D<Float>& Q)
 
 //================================================================
 //
-// quatMixedMinus
-//
-// The quaternions should have unit length.
-//
-// Returns D such that it moves a point from A to B.
-//
-//================================================================
-
-template <typename Float>
-sysinline Point3D<Float> quatMixedMinus(const Point4D<Float>& B, const Point4D<Float>& A)
-{
-    return quatToRodrigues(B % ~A);
-}
-
-//================================================================
-//
-// quatMixedPlus
-//
-// The quaternion should have unit length.
-//
-// If D is movement from A to B, the operation returns B.
-//
-//================================================================
-
-template <typename Float>
-sysinline Point4D<Float> quatMixedPlus(const Point4D<Float>& A, const Point3D<Float>& D)
-{
-    return quatFromRodrigues(D) % A; // Apply A, then apply D.
-}
-
-//================================================================
-//
-// quatL2Diff
-//
-//================================================================
-
-template <typename Float>
-sysinline Float quatL2Diff(const Point4D<Float>& A, const Point4D<Float>& B)
-{
-    Float lenSq1 = vectorLengthSq(A - B);
-    Float lenSq2 = vectorLengthSq(A + B);
-    return fastSqrt(minv(lenSq1, lenSq2));
-}
-
-//================================================================
-//
 // quatFlipToBase
 //
 // Flips a quaternion sign to make it closer to the specified base 

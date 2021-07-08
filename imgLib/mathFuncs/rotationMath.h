@@ -48,6 +48,26 @@ sysinline Point<Float> complexMul(const Point<Float>& A, const Point<Float>& B)
 
 //================================================================
 //
+// complexFma
+//
+// Sometimes gives more efficient code on GPU.
+//
+//================================================================
+
+sysinline Point<float32> complexFma(const Point<float32>& A, const Point<float32>& B, const Point<float32>& add)
+{
+    auto result = add;
+
+    result.X += A.X * B.X;
+    result.X -= A.Y * B.Y;
+    result.Y += A.X * B.Y;
+    result.Y += A.Y * B.X;
+
+    return result;
+}
+
+//================================================================
+//
 // complexConjugate
 //
 //================================================================
