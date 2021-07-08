@@ -95,7 +95,7 @@ private:
     //
     //----------------------------------------------------------------
 
-    bool configActive = false;
+    bool configFileActive = false;
     UniquePtr<ConfigFile> configFilePtr = ConfigFile::create();
     ConfigFile& configFile = *configFilePtr;
 
@@ -147,11 +147,11 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
 
     ////
 
-    configActive = configName && *configName;
+    configFileActive = configName && *configName;
 
     ////
 
-    if (configActive)
+    if (configFileActive)
     {
         errorBlock(configFile.loadFile(SimpleString{configName}, stdPass));
         configFile.loadVars(serialization);
@@ -230,7 +230,7 @@ stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebu
 
     auto serialization = overlaySerializationThunk(target, overlayOwnerID);
 
-    if (configActive)
+    if (configFileActive)
     {
         configFile.saveVars(serialization, true);
         errorBlock(configFile.updateFile(false, stdPass));
@@ -376,7 +376,9 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
         db::ConfigSupport* configSupport = kit.debugBridge.configSupport();
         REQUIRE(configSupport);
 
-        ////
+        //
+        // Config loader. Also updates file on disk if any.
+        //
 
         auto configLoaderLambda = [&] (db::ArrayRef<const db::Char> config)
         {
@@ -384,13 +386,27 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
                 throw std::runtime_error("Config support error"); // Debug bridge uses exceptions.
 
             configFile.loadVars(serialization);
+
+            errorBlock(configFile.updateFile(true, stdPass));
         };
 
         ////
 
         auto configLoader = db::configReceiverByLambda(configLoaderLambda);
 
-        ////
+        //
+        // Update config vars. Also saves to disk if dirty.
+        //
+
+        auto configUpdateVars = [&] (stdPars(StarterDebugKit))
+        {
+            configFile.saveVars(serialization, false);
+            errorBlock(configFile.updateFile(false, stdPass));
+        };
+
+        //
+        // Save config operation.
+        //
 
         if (overview.saveConfig)
         {
@@ -404,19 +420,21 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
             ////
 
-            configFile.saveVars(serialization, false);
-
-            require(configFile.saveToString(configSaver, stdPass));
+            configUpdateVars(stdPass);
         }
 
-        ////
+        //
+        // Load config operation.
+        //
 
         if (overview.loadConfig)
         {
             require(blockExceptionsVoid(configSupport->loadConfig(configLoader)));
         }
 
-        ////
+        //
+        // Edit config operation.
+        //
 
         if (overview.editConfig)
         {
@@ -430,7 +448,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
             ////
 
-            configFile.saveVars(serialization, false);
+            configUpdateVars(stdPass);
 
             require(configFile.saveToString(configEditor, stdPass));
         }

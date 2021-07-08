@@ -92,7 +92,7 @@ stdbool BaseVideoOverlayToBridge::setImage(const Point<Space>& size, bool dataPr
             description = kit.formatter.data();
         }
 
-        // printMsg(kit.localLog, STR("OVERLAY: %"), desc);
+        printMsg(kit.localLog, STR("OVERLAY: %"), desc);
 
         require(blockExceptionsVoid(destOverlay.set(ImagePoint{size.X, size.Y}, bridgeProvider, description)));
     }

@@ -404,24 +404,32 @@ VEC4X_DEFINE_FUNC1(absv)
 //================================================================
 //
 // complexConjugate
-// complexMul
-// scalarProd
 //
 //================================================================
 
 sysinline float32_x2 complexConjugate(const float32_x2& p)
     {return make_float32_x2(p.x, -p.y);}
 
-//----------------------------------------------------------------
+//================================================================
+//
+// complexMul
+//
+//================================================================
 
 sysinline float32_x2 complexMul(const float32_x2& a, const float32_x2& b)
     {return make_float32_x2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);}
 
-//----------------------------------------------------------------
+//================================================================
+//
+// complexFma
+//
+// Sometimes gives more efficient code on GPU.
+//
+//================================================================
 
-sysinline float32_x2 complexMad(const float32_x2& sum, const float32_x2& a, const float32_x2& b)
+sysinline float32_x2 complexFma(const float32_x2& a, const float32_x2& b, const float32_x2& add)
 {
-    auto result = sum;
+    auto result = add;
 
     result.x += a.x * b.x;
     result.x -= a.y * b.y;
@@ -431,10 +439,14 @@ sysinline float32_x2 complexMad(const float32_x2& sum, const float32_x2& a, cons
     return result;
 }
 
-//----------------------------------------------------------------
+//================================================================
+//
+// scalarProd
+//
+//================================================================
 
 sysinline float32 scalarProd(const float32_x2& a, const float32_x2& b)
-    {return a.x*b.x + a.y*b.y;}
+    {return a.x * b.x + a.y * b.y;}
 
 //================================================================
 //

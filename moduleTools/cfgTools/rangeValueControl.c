@@ -4,32 +4,20 @@
 
 //================================================================
 //
-// RangeValueControl::serialize
+// RangeValueControl<Type>::feedIncrements
 //
 //================================================================
 
 template <typename Type>
-bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& keyDec, const CharArray& keyInc, const CharArray& keyReset, bool* signalActivity)
+void RangeValueControl<Type>::feedIncrements(int32 sigDec, int32 sigInc, int32 sigReset)
 {
-    Type oldValue = value;
-
-    ////
-
-    value.serialize(kit, name);
-
-    signalDec.serialize(kit, STR(""), keyDec);
-    signalInc.serialize(kit, STR(""), keyInc);
-    signalReset.serialize(kit, STR(""), keyReset);
-
-    ////
-
     if (controlType == RangeValueLinear)
     {
-        for_count (i, signalInc())
-            value = value + increment;
-
-        for_count (i, signalDec())
+        for_count (i, sigDec)
             value = value - increment;
+
+        for_count (i, sigInc)
+            value = value + increment;
     }
 
     ////
@@ -38,11 +26,11 @@ bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharAr
     {
         Type tmpValue = value;
 
-        for_count (i, signalInc())
-            tmpValue += increment;
-
-        for_count (i, signalDec())
+        for_count (i, sigDec)
             tmpValue -= increment;
+
+        for_count (i, sigInc)
+            tmpValue += increment;
 
         Type period = value.maxValue() - value.minValue();
     
@@ -64,23 +52,42 @@ bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharAr
             Type incFactor = increment;
             Type decFactor = 1 / increment;
 
-            for_count (i, signalInc())
-                value = value * incFactor;
-
-            for_count (i, signalDec())
+            for_count (i, sigDec)
                 value = value * decFactor;
+
+            for_count (i, sigInc)
+                value = value * incFactor;
         }
     }
   
     ////
 
-    if (signalReset)
+    if (sigReset)
         value = value.defaultValue();
+}
+
+//================================================================
+//
+// RangeValueControl::serialize
+//
+//================================================================
+
+template <typename Type>
+bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& keyDec, const CharArray& keyInc, const CharArray& keyReset)
+{
+    Type oldValue = value;
 
     ////
 
-    bool activity = signalDec || signalInc || signalReset;
-    if (signalActivity) *signalActivity = activity;
+    value.serialize(kit, name);
+
+    signalDec.serialize(kit, STR(""), keyDec);
+    signalInc.serialize(kit, STR(""), keyInc);
+    signalReset.serialize(kit, STR(""), keyReset);
+
+    ////
+
+    feedIncrements(signalDec, signalInc, signalReset);
 
     ////
 

@@ -34,17 +34,21 @@ inline bool memoryUsageReport
     stdPars(Kit)
 )
 {
+    bool sysAlloc = (stateActivity.sysAllocCount || tempActivity.sysAllocCount);
+    bool fastAlloc = stateActivity.fastAllocCount != 0;
+
     return printMsg
     (
         kit.localLog,
-        STR("%: GPU %M / %M, CPU %M / %M"),
+        STR("%: GPU %M / %M, CPU %M / %M%"),
         name,
         fltf(ldexpv(float32(stateUsage.gpuMemSize), -20), 1),
         fltf(ldexpv(float32(tempUsage.gpuMemSize), -20), 1),
         fltf(ldexpv(float32(stateUsage.cpuMemSize), -20), 1),
         fltf(ldexpv(float32(tempUsage.cpuMemSize), -20), 1),
 
-        (stateActivity.sysAllocCount || tempActivity.sysAllocCount) ? msgErr :
-        (stateActivity.fastAllocCount) ? msgWarn : msgInfo
+        sysAlloc ? STR(": System Realloc") : STR(""),
+
+        (sysAlloc || fastAlloc) ? msgWarn : msgInfo
     );
 }
