@@ -86,7 +86,7 @@ private:
 
     ArrayMemory<int32> signalHist;
 
-    OverlayTakeover::ID overlayOwnerID = 0;
+    OverlayTakeoverID overlayOwnerID = OverlayTakeoverID::undefined();
     StandardSignal deactivateOverlay;
 
     //----------------------------------------------------------------
