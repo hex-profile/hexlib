@@ -99,7 +99,7 @@ private:
 //================================================================
 
 template <typename Assembly>
-inline void handleSignals(Assembly& that, const Array<const int32>& signalHist, OverlayTakeover::ID& overlayOwnerID, StandardSignal& deactivateOverlay)
+inline void handleSignals(Assembly& that, const Array<const int32>& signalHist, OverlayTakeoverID& overlayOwnerID, StandardSignal& deactivateOverlay)
 {
     auto prevOverlayID = overlayOwnerID;
 
@@ -113,14 +113,14 @@ inline void handleSignals(Assembly& that, const Array<const int32>& signalHist, 
     //
 
     if (deactivateOverlay)
-        overlayOwnerID = 0;
+        overlayOwnerID = OverlayTakeoverID::cancelled();
 
     //
     // If overlay owner has changed, re-feed all the signals
     // to clean outdated switches.
     //
 
-    if (prevOverlayID != overlayOwnerID)
+    if_not (prevOverlayID == overlayOwnerID)
     {
         FeedSignal visitor(signalHist);
         that.serialize(CfgSerializeKit(visitor, nullptr));

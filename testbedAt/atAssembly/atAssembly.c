@@ -618,7 +618,7 @@ private:
     //
     //
 
-    OverlayTakeover::ID overlayOwnerID = 0;
+    OverlayTakeoverID overlayOwnerID = OverlayTakeoverID::undefined();
     StandardSignal deactivateOverlay;
 
     BoolSwitch<false> displayMemoryUsage;

@@ -196,9 +196,9 @@ public:
 
         auto activeID = kit.overlayTakeover.getActiveID();
 
-        if_not (activeID == OverlayTakeover::nullID)
+        if_not (activeID == OverlayTakeoverID::undefined())
         {
-            if_not (size_t(activeID - baseID) < size_t(positionCount))
+            if_not (size_t(activeID.get() - baseID) < size_t(positionCount))
                 base = 0;
         }
 
@@ -214,7 +214,7 @@ public:
         //
 
         if (base != prevValue && base != 0) // changed?
-            kit.overlayTakeover.setActiveID(baseID + base());
+            kit.overlayTakeover.setActiveID(OverlayTakeoverID{baseID + base()});
 
         return (base == prevValue);
     }
