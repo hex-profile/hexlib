@@ -40,8 +40,8 @@ public:
 
 private:
 
-    BoolSwitch<false> waitActive;
-    BoolVarStatic<false> displayTime;
+    BoolSwitch waitActive{false};
+    BoolVar displayTime{false};
 
     bool lastOutputInit = false;
     TimeMoment lastOutput;

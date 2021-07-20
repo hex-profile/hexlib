@@ -79,8 +79,7 @@ public:
 //
 //================================================================
 
-template <bool defaultBool>
-bool BoolSwitch<defaultBool>::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key, const CharArray& comment)
+bool BoolSwitch::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key, const CharArray& comment)
 {
     int32 oldValue = base;
 
@@ -98,11 +97,6 @@ bool BoolSwitch<defaultBool>::serialize(const CfgSerializeKit& kit, const CharAr
 
     return base == oldValue;
 }
-
-//----------------------------------------------------------------
-
-template class BoolSwitch<false>;
-template class BoolSwitch<true>;
 
 //================================================================
 //

@@ -638,8 +638,8 @@ private:
 
     ////
 
-    BoolVarStatic<true> displayFrameRate;
-    BoolVarStatic<false> displayInfo;
+    BoolVar displayFrameRate{true};
+    BoolVar displayInfo{false};
     NumericVar<float32> cfgMaxOutputRate;
 
     ////

@@ -8,7 +8,7 @@
 
 Point<*> {preview(#("{", $e.X, ", ", $e.Y, "}"))}
 
-BoolSwitch<*> {preview($e.value.value)}
+BoolSwitch {preview($e.value.value)}
 NumericVar<*> {preview($e.value)}
 NumericVarStatic<*,*,*,*> {preview($e.value)}
 

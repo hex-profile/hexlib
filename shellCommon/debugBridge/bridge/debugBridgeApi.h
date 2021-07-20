@@ -9,7 +9,7 @@ namespace debugBridge {
 //
 // Errors are returned via exceptions (!)
 //
-// Usage: A client uses tool API instance in its create/destroy/process functions.
+// Usage: A client uses a debug bridge provider in its create/destroy/process functions.
 //
 //================================================================
 
@@ -117,6 +117,12 @@ struct ArrayRef
 {
     Type* ptr;
     size_t size;
+
+    // Range-based "for" support.
+    inline Type* begin() const {return ptr;}
+    inline Type* end() const {return ptr + size;}
+
+    inline Type& operator[] (size_t i) const {return ptr[i];}
 };
 
 //================================================================
@@ -267,15 +273,42 @@ enum class MessageKind
 
 //================================================================
 //
+// MessageRef
+//
+//================================================================
+
+struct MessageRef
+{
+    const Char* text;
+    MessageKind kind;
+};
+
+//================================================================
+//
 // MessageConsole
 //
 //================================================================
 
 struct MessageConsole : public VirtualDestructor
 {
-    virtual void add(const Char* text, MessageKind kind) =0;
+    virtual void add(ArrayRef<const MessageRef> messages) =0;
+
+    inline void add(const Char* text, MessageKind kind)
+    {
+        MessageRef msg{text, kind};
+        add({&msg, 1});
+    }
+};
+
+//================================================================
+//
+// StatusConsole
+//
+//================================================================
+
+struct StatusConsole : public MessageConsole
+{
     virtual void clear() =0;
-    virtual void update() =0;
 };
 
 //================================================================
@@ -323,6 +356,8 @@ namespace actionId
     constexpr ActionId EditConfig = 0xFFFFFFF6u;
 
     constexpr ActionId ResetupActions = 0xFFFFFFF5u;
+
+    constexpr ActionId MouseMove = 0xFFFFFFF4u;
 }
 
 //================================================================
@@ -385,11 +420,11 @@ using ActionName = StringPtr;
 
 //================================================================
 //
-// ActionAddFunc
+// ActionParamsRef
 //
 //================================================================
 
-struct ActionParams
+struct ActionParamsRef
 {
     // Action ID. There are special predefined IDs.
     // See ActionId definition for details.
@@ -416,9 +451,54 @@ struct ActionParams
 
 struct ActionSetup : public VirtualDestructor
 {
-    virtual void add(const ActionParams& action) =0;
     virtual void clear() =0;
-    virtual void update() =0;
+
+    virtual void add(ArrayRef<const ActionParamsRef> actions) =0;
+};
+
+//================================================================
+//
+// MousePos
+//
+//================================================================
+
+class MousePos
+{
+
+public:
+
+    MousePos() =default;
+
+    inline MousePos(ImagePoint pos) 
+        : posX(pos.X), posY(pos.Y) {}
+
+    inline bool valid() const
+        {return posX >= 0 && posY >= 0;}
+
+    inline ImagePoint pos()
+        {return ImagePoint{posX, posY};}
+
+private:
+
+    int16_t posX = -1;
+    int16_t posY = -1;
+
+};
+
+//================================================================
+//
+// ActionRec
+//
+//================================================================
+
+struct ActionRec
+{
+    // ID
+    ActionId id;
+
+    // Mouse position in the coordinate system of the main image,
+    // expressed in pixels of the main image.
+    MousePos mousePos;
 };
 
 //================================================================
@@ -434,7 +514,7 @@ struct ActionSetup : public VirtualDestructor
 
 struct ActionReceiver : public VirtualDestructor
 {
-    virtual void process(ArrayRef<const ActionId> actions) =0;
+    virtual void process(ArrayRef<const ActionRec> actions) =0;
 };
 
 //----------------------------------------------------------------
@@ -473,21 +553,6 @@ struct ImageProvider : public VirtualDestructor
 
 //================================================================
 //
-// UserPoint
-//
-//================================================================
-
-struct UserPoint
-{
-    UserPoint() =default;
-    UserPoint(ImagePoint pos) : valid{true}, pos{pos} {}
-
-    bool valid = false;
-    ImagePoint pos{};
-};
-
-//================================================================
-//
 // VideoOverlay
 //
 //================================================================
@@ -495,53 +560,59 @@ struct UserPoint
 struct VideoOverlay : public VirtualDestructor
 {
     //
-    // Replaces the video image.
-    //
-
-    virtual void set(const ImagePoint& size, ImageProvider& imageProvider, StringPtr description) =0;
-
-    //
     // Clears the video image.
     //
 
     virtual void clear() =0;
 
     //
-    // Updates the video image. This is done automatically after a client
-    // finishes processing; the function allows to do it in 
-    // the middle of processing.
+    // Replaces the video image.
     //
 
-    virtual void update() =0;
-
-    //
-    // The position of mouse cursor in the video image coordinates, in pixels.
-    // May return coordinates outside the image.
-    //
-
-    virtual UserPoint getUserPoint() =0;
+    virtual void set(const ImagePoint& size, ImageProvider& imageProvider, StringPtr description) =0;
 };
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
-// Client toolkit.
+// Debug bridge.
 //
 //----------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
+// DebugBridge
+//
 //================================================================
 
 struct DebugBridge : public VirtualDestructor
 {
     virtual bool active() =0;
 
+    // Flush all changes.
+    virtual void commit() =0;
+
     virtual ConfigSupport* configSupport() =0;
     virtual ActionSetup* actionSetup() =0;
     virtual ActionReceiving* actionReceiving() =0;
-    virtual MessageConsole* globalConsole() =0;
-    virtual MessageConsole* localConsole() =0;
+    virtual MessageConsole* messageConsole() =0;
+    virtual StatusConsole* statusConsole() =0;
     virtual VideoOverlay* videoOverlay() =0;
+};
+
+//================================================================
+//
+// DebugBridgeProvider
+//
+//================================================================
+
+struct DebugBridgeProvider : public VirtualDestructor
+{
+    // If there are no active users, returns nullptr.
+    virtual DebugBridge* debugBridge() =0;
 };
 
 //================================================================
@@ -576,8 +647,7 @@ class ConfigSupportNull : public ConfigSupport
 class ActionSetupNull : public ActionSetup
 {
     virtual void clear() {}
-    virtual void add(const ActionParams& action) {}
-    virtual void update() {}
+    virtual void add(ArrayRef<const ActionParamsRef> actions) {}
 };
 
 //================================================================
@@ -593,15 +663,14 @@ struct ActionReceivingNull : public ActionReceiving
 
 //================================================================
 //
-// MessageConsoleNull
+// StatusConsoleNull
 //
 //================================================================
 
-class MessageConsoleNull : public MessageConsole
+class StatusConsoleNull : public StatusConsole
 {
     virtual void clear() {}
-    virtual void add(const Char* text, MessageKind kind) {}
-    virtual void update() {}
+    virtual void add(ArrayRef<const MessageRef> messages) {}
 };
 
 //================================================================
@@ -612,10 +681,8 @@ class MessageConsoleNull : public MessageConsole
 
 class VideoOverlayNull : public VideoOverlay
 {
-    virtual UserPoint getUserPoint() {return {};}
     virtual void set(const ImagePoint& size, ImageProvider& imageProvider, StringPtr description) {}
     virtual void clear() {}
-    virtual void update() {}
 };
 
 //================================================================
@@ -630,12 +697,13 @@ class DebugBridgeNull : public DebugBridge
 public:
 
     virtual bool active() {return false;}
+    virtual void commit() {}
 
     virtual ConfigSupport* configSupport() {return &configSupportNull;}
     virtual ActionSetup* actionSetup() {return &actionSetupNull;}
     virtual ActionReceiving* actionReceiving() {return &actionReceivingNull;}
-    virtual MessageConsole* globalConsole() {return &globalConsoleNull;}
-    virtual MessageConsole* localConsole() {return &localConsoleNull;}
+    virtual MessageConsole* messageConsole() {return &messageConsoleNull;}
+    virtual StatusConsole* statusConsole() {return &statusConsoleNull;}
     virtual VideoOverlay* videoOverlay() {return &videoOverlayNull;}
 
 private:
@@ -643,11 +711,36 @@ private:
     ConfigSupportNull configSupportNull;
     ActionSetupNull actionSetupNull;
     ActionReceivingNull actionReceivingNull;
-    MessageConsoleNull globalConsoleNull;
-    MessageConsoleNull localConsoleNull;
+    StatusConsoleNull messageConsoleNull;
+    StatusConsoleNull statusConsoleNull;
     VideoOverlayNull videoOverlayNull;
 
 };
+
+//================================================================
+//
+// DebugBridgeProviderNull
+//
+//================================================================
+
+class DebugBridgeProviderNull : public DebugBridgeProvider
+{
+
+public:
+
+    virtual DebugBridge* debugBridge() {return &debugBridgeImpl;}
+
+private:
+
+    DebugBridgeNull debugBridgeImpl;
+};
+
+//----------------------------------------------------------------
+
+inline auto debugBridgeNullTest()
+{
+    return DebugBridgeProviderNull{};
+}
 
 //----------------------------------------------------------------
 

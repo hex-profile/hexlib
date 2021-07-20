@@ -115,7 +115,7 @@ private:
     StandardSignal gpuEnqueueModeCycle;
     NumericVarStatic<int, 0, 2, 0> gpuEnqueueModeVar;
 
-    BoolSwitch<false> gpuCoverageModeVar;
+    BoolSwitch gpuCoverageModeVar{false};
     NumericVarStatic<int32, 4, 16384, 1024> coverageQueueCapacity;
 
 };

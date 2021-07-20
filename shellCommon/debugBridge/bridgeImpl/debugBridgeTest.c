@@ -201,11 +201,11 @@ struct MessageRec
 
 //================================================================
 //
-// MessageConsoleTest
+// StatusConsoleTest
 //
 //================================================================
 
-class MessageConsoleTest : public MessageConsole
+class StatusConsoleTest : public StatusConsole
 {
 
 public:
@@ -216,9 +216,10 @@ public:
         buffer.clear();
     }
 
-    void add(const Char* text, MessageKind kind)
+    void add(ArrayRef<const MessageRef> messages)
     {
-        buffer.emplace_back(text, kind);
+        for (auto& v: messages)
+            buffer.emplace_back(v.text, v.kind);
     }
 
     void update();
@@ -234,11 +235,11 @@ private:
 
 //================================================================
 //
-// MessageConsoleTest::update
+// StatusConsoleTest::update
 //
 //================================================================
 
-void MessageConsoleTest::update()
+void StatusConsoleTest::update()
 {
     for (auto& message: buffer)
         (message.kind == MessageKind::Info ? cout: cerr) << "BRIDGE: " << message.text << endl;
@@ -261,11 +262,11 @@ void MessageConsoleTest::update()
 
 //================================================================
 //
-// ActionRec
+// ActionRecord
 //
 //================================================================
 
-struct ActionRec
+struct ActionRecord
 {
     ActionId id;
     String key;
@@ -290,9 +291,10 @@ public:
         buffer.clear();
     }
 
-    void add(const ActionParams& action)
+    void add(ArrayRef<const ActionParamsRef> actions)
     {
-        buffer.emplace_back(ActionRec{action.id, action.key, action.name, action.description});
+        for (auto& action: actions)
+            buffer.emplace_back(ActionRecord{action.id, action.key, action.name, action.description});
     }
 
     void update();
@@ -300,11 +302,11 @@ public:
 private:
 
     bool clearHappened = false;
-    deque<ActionRec> buffer;
+    deque<ActionRecord> buffer;
 
 private:
 
-    deque<ActionRec> actualBuffer;
+    deque<ActionRecord> actualBuffer;
 
 };
 
@@ -353,15 +355,15 @@ public:
 
     virtual void getActions(ActionReceiver& receiver) 
     {
-        ActionId actions[] = 
+        ActionRec actions[] = 
         {
-            0x3111BAE9, 
-            actionId::MouseLeftDown,
-            actionId::EditConfig,
-            actionId::ResetupActions
+            {0x3111BAE9, {}},
+            {actionId::MouseLeftDown, {}},
+            {actionId::EditConfig, {}},
+            {actionId::ResetupActions, {}}
         };
 
-        receiver.process({actions, sizeof(actions) / sizeof(ActionId)});
+        receiver.process({actions, sizeof(actions) / sizeof(actions[0])});
     }
 
 private:
@@ -394,9 +396,6 @@ public:
     virtual void clear();
 
     virtual void update();
-
-    virtual UserPoint getUserPoint()
-        {return ImagePoint{1, 2};}
 
 private:
 
@@ -478,11 +477,19 @@ public:
 
     virtual bool active() {return true;}
 
+    virtual void commit() 
+    {
+        actionSetupTest.update();
+        messageConsoleTest.update();
+        statusConsoleTest.update();
+        videoOverlayTest.update();
+    }
+
     virtual ConfigSupport* configSupport() {return &configSupportTest;}
     virtual ActionSetup* actionSetup() {return &actionSetupTest;}
     virtual ActionReceiving* actionReceiving() {return &actionReceivingTest;}
-    virtual MessageConsole* globalConsole() {return &globalConsoleTest;}
-    virtual MessageConsole* localConsole() {return &localConsoleTest;}
+    virtual MessageConsole* messageConsole() {return &messageConsoleTest;}
+    virtual StatusConsole* statusConsole() {return &statusConsoleTest;}
     virtual VideoOverlay* videoOverlay() {return &videoOverlayTest;}
 
 private:
@@ -490,8 +497,8 @@ private:
     ConfigSupportTest configSupportTest;
     ActionSetupTest actionSetupTest;
     ActionReceivingTest actionReceivingTest;
-    MessageConsoleTest globalConsoleTest;
-    MessageConsoleTest localConsoleTest;
+    StatusConsoleTest messageConsoleTest;
+    StatusConsoleTest statusConsoleTest;
     VideoOverlayTest videoOverlayTest;
 
 };

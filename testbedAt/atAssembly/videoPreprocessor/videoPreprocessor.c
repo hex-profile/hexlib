@@ -156,7 +156,7 @@ public:
     // Output to AVI
     //
 
-    BoolSwitch<false> savingActive;
+    BoolSwitch savingActive{false};
     NumericVarStatic<int32, 1, 1024, 30> outputFps;
     SimpleStringVar outputDir{STR("")};
     SimpleStringVar outputCodec{STR("DIB ")};
@@ -255,7 +255,7 @@ private:
 
 private:
 
-    BoolSwitch<false> displayFrameSize;
+    BoolSwitch displayFrameSize{false};
 
     ////
 
@@ -263,7 +263,7 @@ private:
 
     ////
 
-    BoolSwitch<false> cropMode;
+    BoolSwitch cropMode{false};
     NumericVar<Point<Space>> cropSizeCfg{point(0), point(8192), point(1280, 720)};
 
     ////
@@ -272,7 +272,7 @@ private:
     RingSwitch<GenMode, GenMode::COUNT, GenMode::None> genMode;
 
     RangeValueControl<float32> genGratingPeriod{2, 2048, 6, 1.02189714865411668f, RangeValueLogscale};
-    BoolSwitch<false> genGratingRectangleShape;
+    BoolSwitch genGratingRectangleShape{false};
 
     NumericVarStatic<Space, 1, 1 << 20, 256> genPulsePeriod;
     NumericVar<float32> genEdgeSigma{1 / 128.f, 128.f, 0.6f};
@@ -287,7 +287,7 @@ private:
 
     StandardSignal randomizeSignal;
 
-    BoolSwitch<false> simuMotionOn;
+    BoolSwitch simuMotionOn{false};
     NumericVarStaticEx<Point<float32>, int, -512, +512, 0> simuMotionSpeedCfg;
 
     Point<float32> simuMotionSpeed() const {return !simuMotionOn ? point(0.f) : simuMotionSpeedCfg;}
@@ -298,7 +298,7 @@ private:
     // Noise addition
     //
 
-    BoolSwitch<false> noiseActive;
+    BoolSwitch noiseActive{false};
     NumericVar<float32> noiseSigma{0, 1, 0.01f};
 
 private:
@@ -320,7 +320,7 @@ private:
 private:
 
 #if USE_OVERLAY_SMOOTHER
-    BoolSwitch<true> overlaySmootherEnabled;
+    BoolSwitch overlaySmootherEnabled{true};
     bool overlaySmootherTried = false;
     bool overlaySmootherInit = false;
     overlaySmoother::OverlaySmoother overlaySmoother;

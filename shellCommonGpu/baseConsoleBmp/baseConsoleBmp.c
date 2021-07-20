@@ -288,7 +288,7 @@ public:
 
 private:
 
-    BoolSwitch<false> savingActive;
+    BoolSwitch savingActive{false};
     SimpleStringVar outputDir{getDefaultImageDir()};
 
 private:

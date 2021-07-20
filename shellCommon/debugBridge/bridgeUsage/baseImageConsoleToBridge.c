@@ -121,8 +121,6 @@ stdbool BaseVideoOverlayToBridge::setImageFake(stdNullPars)
 
 stdbool BaseVideoOverlayToBridge::updateImage(stdNullPars) 
 {
-    REQUIRE(blockExceptionsVoid(destOverlay.update()));
-
     returnTrue;
 }
 

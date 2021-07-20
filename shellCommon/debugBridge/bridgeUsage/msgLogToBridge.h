@@ -19,7 +19,7 @@ public:
     inline MsgLogToDiagLogAndBridge
     (
         MessageFormatter& formatter,
-        bool flushEveryMessage,
+        bool const flushEveryMessage,
         DiagLog& diagLog,
         bool bridgeActive,
         debugBridge::MessageConsole& bridgeLog

@@ -132,26 +132,14 @@ struct StarterDebugKitMaker
         debugBridgePtr{debugBridgePtr},
         dumpParams{dumpParams}
     {
-        auto clear = [&] ()
-        {
-            debugBridge.localConsole()->clear();
-        };
-
-        blockExceptionsSilentVoid(clear());
+        blockExceptionsSilentVoid(debugBridge.statusConsole()->clear());
     }
 
     ////
 
     ~StarterDebugKitMaker()
     {
-        auto update = [&] ()
-        {
-            debugBridge.globalConsole()->update();
-            debugBridge.localConsole()->update();
-            debugBridge.videoOverlay()->update();
-        };
-
-        blockExceptionsSilentVoid(update());
+        blockExceptionsSilentVoid(debugBridge.commit());
     }
 
     ////
@@ -173,8 +161,8 @@ struct StarterDebugKitMaker
 
     ////
 
-    MsgLogToDiagLogAndBridge msgLog{formatter, flushEveryMessage, diagLog, debugBridge.active(), *debugBridge.globalConsole()};
-    MsgLogToDiagLogAndBridge localLog{formatter, flushEveryMessage, diagLog, debugBridge.active(), *debugBridge.localConsole()};
+    MsgLogToDiagLogAndBridge msgLog{formatter, flushEveryMessage, diagLog, debugBridge.active(), *debugBridge.messageConsole()};
+    MsgLogToDiagLogAndBridge localLog{formatter, flushEveryMessage, diagLog, debugBridge.active(), *debugBridge.statusConsole()};
 
     ////
 

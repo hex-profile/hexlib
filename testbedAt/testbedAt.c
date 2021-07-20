@@ -422,6 +422,21 @@ public:
     {
         auto count = api->action_count(api);
 
+        ////
+
+        BaseMousePos mousePos;
+
+        if (count)
+        {
+            at_image_space posX = 0;
+            at_image_space posY = 0;
+
+            if (api->get_cursor(api, &posX, &posY) != 0)
+                mousePos = point(posX, posY);
+        }
+
+        ////
+
         for_count (i, count)
         {
             BaseActionId id{};
@@ -429,7 +444,9 @@ public:
             if_not (api->action_item(api, i, &id) != 0)
                 continue;
 
-            receiver.process(makeArray(&id, 1));
+            BaseActionRec rec{id, mousePos};
+
+            receiver.process(makeArray(&rec, 1));
         }
     }
 

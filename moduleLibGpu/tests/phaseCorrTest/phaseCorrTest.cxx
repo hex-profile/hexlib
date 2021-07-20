@@ -666,9 +666,9 @@ private:
 
     ExclusiveMultiSwitch<DisplayType, DisplayCount, 0xFA775B03> displaySwitch;
 
-    BoolSwitch<false> useMagnitude;
-    BoolSwitch<false> dataWeightType;
-    BoolSwitch<false> freqWeightType;
+    BoolSwitch useMagnitude{false};
+    BoolSwitch dataWeightType{false};
+    BoolSwitch freqWeightType{false};
 
     NumericVar<float32> corrDisplayedHardMax;
     NumericVar<Space> cfgTestSize;

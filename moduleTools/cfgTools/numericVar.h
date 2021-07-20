@@ -70,8 +70,13 @@ public:
     inline void setDefaultValue(TypePar value)
     {
         auto fixValue = clampRange(value, minVal, maxVal);
-        this->defaultVal = fixValue;
-        this->value = fixValue;
+
+        if_not (this->defaultVal == fixValue && this->value == fixValue)
+        {
+            this->defaultVal = fixValue;
+            this->value = fixValue;
+            this->changed = true;
+        }
     }
 
 public:
@@ -83,7 +88,7 @@ public:
 
         Type newValue = clampRange(X, minVal, maxVal);
 
-        if_not (allv(newValue == value))
+        if_not (newValue == value)
         {
             value = newValue;
             changed = true;
@@ -292,7 +297,7 @@ private:
 
 //================================================================
 //
-// BoolVarStatic
+// BoolVar
 //
 //================================================================
 
@@ -314,52 +319,6 @@ public:
     {
         Base::operator=(int32(value));
         return *this;
-    }
-
-    inline bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment = STR(""), const CharArray& blockComment = STR(""))
-    {
-        int32 oldValue = Base::operator()();
-
-        SerializeBoolVar serializeVar(*this, name, comment, blockComment);
-        kit.visitor(kit.scope, serializeVar);
-
-        return Base::operator()() == oldValue;
-    }
-
-};
-
-//================================================================
-//
-// BoolVarStatic
-//
-//================================================================
-
-template <bool defaultBool>
-class BoolVarStatic : public NumericVarStatic<int32, 0, 1, defaultBool>
-{
-
-    using Base = NumericVarStatic<int32, 0, 1, defaultBool>;
-
-public:
-
-    inline operator bool () const {return Base::operator()() != 0;}
-
-    inline BoolVarStatic() =default;
-
-    inline BoolVarStatic(bool value)
-    {
-        Base::operator=(int32(value));
-    }
-
-    inline auto& operator=(bool value)
-    {
-        Base::operator=(int32(value));
-        return *this;
-    }
-
-    inline void setDefaultValue(bool value)
-    {
-        Base::setDefaultValue(value);
     }
 
     inline bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment = STR(""), const CharArray& blockComment = STR(""))

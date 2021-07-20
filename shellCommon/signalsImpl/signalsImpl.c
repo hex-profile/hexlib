@@ -142,7 +142,7 @@ public:
     BaseActionReceiverByLambda(const Lambda& lambda)
         : lambda{lambda} {}
 
-    virtual void process(const Array<const BaseActionId>& actions)
+    virtual void process(const Array<const BaseActionRec>& actions)
     {
         ARRAY_EXPOSE(actions);
 
@@ -187,8 +187,17 @@ void prepareSignalHistogram(BaseActionReceiving& at, const Array<int32>& histogr
     // Collect action counts
     //
 
-    auto handleAction = [&] (BaseActionId id) -> void
+    auto handleAction = [&] (const BaseActionRec& rec) -> void
     {
+        auto id = rec.id;
+
+        ////
+
+        if (rec.mousePos.valid())
+            overview.mousePos = rec.mousePos;
+
+        ////
+
         uint32 signalIndex = id - signalIdBase;
 
         if (SpaceU(signalIndex) < SpaceU(histogramSize))

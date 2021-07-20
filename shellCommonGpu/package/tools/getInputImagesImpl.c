@@ -152,7 +152,7 @@ stdbool GetMonoImages::getImages
     ////
 
     for_count (k, images.size())
-        require(convertColorPixelToMonoPixel(colorImages[k], dest[k], stdPass));
+        require(convertBgr32ToMono(colorImages[k], dest[k], stdPass));
 
     ////
 

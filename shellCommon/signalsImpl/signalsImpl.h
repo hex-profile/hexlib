@@ -28,7 +28,8 @@ struct SignalsOverview
 {
     bool anyEventsFound;
     bool realEventsFound;
-    
+
+    BaseMousePos mousePos;
     bool mouseSignal;
     bool mouseSignalAlt;
 

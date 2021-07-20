@@ -1,14 +1,14 @@
 #include "gpuBaseConsoleByCpu.h"
 
+#include "colorConversions/colorConversions.h"
 #include "copyMatrixAsArray.h"
+#include "data/spacex.h"
+#include "dataAlloc/gpuArrayMemory.h"
 #include "dataAlloc/gpuMatrixMemory.h"
 #include "dataAlloc/matrixMemory.h"
-#include "dataAlloc/gpuArrayMemory.h"
-#include "gpuMatrixCopy/gpuMatrixCopy.h"
 #include "errorLog/debugBreak.h"
+#include "gpuMatrixCopy/gpuMatrixCopy.h"
 #include "gpuMatrixSet/gpuMatrixSet.h"
-#include "data/spacex.h"
-#include "gpuBaseConsoleByCpu/conversions.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

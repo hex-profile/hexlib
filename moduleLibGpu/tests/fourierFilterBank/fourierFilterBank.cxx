@@ -493,7 +493,7 @@ private:
     NumericVarStatic<Space, 2, 128, 6> orientationCount;
     NumericVarStaticEx<float32, Space, 0, 1, 0> orientationOffset;
     StandardSignal generateFilterBank;
-    BoolSwitch<false> pyramidFilterCompensation;
+    BoolSwitch pyramidFilterCompensation{false};
 
     NumericVarStaticEx<float32, Space, 1, 16, 4> displayUpsampleFactor;
 
@@ -512,8 +512,8 @@ private:
     NumericVar<int> gaborPyramidLevels{0, 64, 5};
     NumericVar<int> gaborPyramidMode{0, 2, 0};
 
-    BoolVarStatic<true> displayFreqFilter;
-    BoolVarStatic<true> displaySpaceFilter;
+    BoolVar displayFreqFilter{true};
+    BoolVar displaySpaceFilter{true};
 
     NumericVar<float32> displayFactor{0, typeMax<float32>(), 1};
     NumericVar<float32> displayFreqFactor{0, typeMax<float32>(), 1};

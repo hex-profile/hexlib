@@ -40,8 +40,8 @@ private:
 
 private:
 
-    BoolSwitch<false> theAlternativeVersion;
-    BoolSwitch<false> theAlternativeVersionPrintAlways;
+    BoolSwitch theAlternativeVersion{false};
+    BoolSwitch theAlternativeVersionPrintAlways{false};
 
 private:
 
@@ -55,11 +55,11 @@ private:
     StandardSignal displayFactorInc;
     StandardSignal displayFactorReset;
 
-    BoolSwitch<true> displayInterpolation;
-    BoolSwitch<false> displayModulation;
+    BoolSwitch displayInterpolation{true};
+    BoolSwitch displayModulation{false};
 
     RangeValueControl<int32> viewIndex{0, 32, 0, 1, RangeValueLinear};
-    BoolSwitch<false> viewIndexDisplayAll;
+    BoolSwitch viewIndexDisplayAll{false};
 
     RangeValueControl<int32> temporalIndex{-32, +32, 0, 1, RangeValueLinear};
     RangeValueControl<int32> circularIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};

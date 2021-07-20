@@ -9,16 +9,20 @@
 //
 //================================================================
 
-template <bool defaultBool>
 class BoolSwitch
 {
+
+public:
+
+    inline BoolSwitch(bool value)
+        : base(value) {}
 
 public:
 
     inline operator bool() const {return base != 0;}
     inline bool operator() () const {return base != 0;}
 
-    inline BoolSwitch<defaultBool>& operator =(bool value)
+    inline BoolSwitch& operator =(bool value)
         {base = value; return *this;}
 
     inline void setDefaultValue(bool value)
@@ -28,7 +32,7 @@ public:
 
 private:
 
-    BoolVarStatic<defaultBool> base;
+    BoolVar base;
     StandardSignal signal;
 
 };
@@ -85,6 +89,6 @@ public:
 
     inline operator EnumType() const {return (EnumType) getValue();}
     inline EnumType operator()() const {return (EnumType) getValue();}
-    inline void operator =(EnumType newValue) {setValue(newValue);}
+    inline void operator =(EnumType newValue) {setValue(int32(newValue));}
 
 };

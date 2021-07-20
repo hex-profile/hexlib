@@ -43,8 +43,11 @@ public:
     BridgeReceiverByBaseReceiver(BaseActionReceiver& receiver)
         : receiver{receiver} {}
 
-    virtual void process(db::ArrayRef<const db::ActionId> actions)
-        {receiver.process(makeArray(actions.ptr, actions.size));}
+    virtual void process(db::ArrayRef<const db::ActionRec> actions)
+    {
+        auto arr = makeArray(actions.ptr, actions.size);
+        receiver.process(recastElement<const BaseActionRec>(arr));
+    }
 
 private:
 

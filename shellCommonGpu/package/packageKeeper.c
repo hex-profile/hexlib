@@ -85,6 +85,7 @@ private:
     //----------------------------------------------------------------
 
     ArrayMemory<int32> signalHist;
+    BaseMousePos signalMousePos;
 
     OverlayTakeoverID overlayOwnerID = OverlayTakeoverID::undefined();
     StandardSignal deactivateOverlay;
@@ -172,7 +173,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
 
     ////
 
-    REMEMBER_CLEANUP_EX(signalsCleanup, {actionSetup.actsetClear(); signalHist.dealloc();});
+    REMEMBER_CLEANUP_EX(signalsCleanup, {actionSetup.actsetClear(); signalHist.dealloc(); signalMousePos = BaseMousePos{};});
 
     ////
 
@@ -472,15 +473,11 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
     UserPoint userPoint{false, point(0), false, false};
 
-    {
-        debugBridge::UserPoint up{};
-        require(blockExceptionsVoid(up = videoOverlay->getUserPoint()));
+    if (overview.mousePos.valid())
+        signalMousePos = overview.mousePos;
 
-        userPoint.valid = up.valid;
-        userPoint.position = point(up.pos.X, up.pos.Y);
-    }
-
-    ////
+    userPoint.valid = signalMousePos.valid();
+    userPoint.position = signalMousePos.pos();
 
     userPoint.signal = overview.mouseSignal;
     userPoint.signalAlt = overview.mouseSignalAlt;

@@ -63,7 +63,7 @@ private:
 
 private:
 
-    BoolSwitch<false> profilerActive;
+    BoolSwitch profilerActive{false};
     bool profilerActiveSteady = false;
     StandardSignal profilerResetSignal;
 
@@ -92,7 +92,7 @@ private:
 
     ////
 
-    BoolSwitch<false> displayFrameTime;
+    BoolSwitch displayFrameTime{false};
     static const Space frameTimeHistCapacity = 128;
     HistoryObjectStatic<float32, frameTimeHistCapacity> frameTimeHist;
 

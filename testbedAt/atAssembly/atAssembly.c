@@ -621,8 +621,8 @@ private:
     OverlayTakeoverID overlayOwnerID = OverlayTakeoverID::undefined();
     StandardSignal deactivateOverlay;
 
-    BoolSwitch<false> displayMemoryUsage;
-    BoolSwitch<false> debugBreakOnErrors;
+    BoolSwitch displayMemoryUsage{false};
+    BoolSwitch debugBreakOnErrors{false};
 
     //
     // Frame change

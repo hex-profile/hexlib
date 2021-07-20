@@ -26,15 +26,15 @@ public:
 
 private:
 
-    BoolVarStatic<false> active;
+    BoolVar active{false};
 
     uint32 runCount = 0;
     uint32 writeCount = 0;
 
     RndgenState rndgenState = 0xB632009B;
 
-    BoolVarStatic<false> fixedGroupSize;
-    BoolVarStatic<false> fixedImageRatio;
+    BoolVar fixedGroupSize{false};
+    BoolVar fixedImageRatio{false};
     NumericVarStatic<Space, 1, 65536, 1000> reliabilityFactor;
     NumericVarStatic<Space, 1, 32, 16> fixedGroupWarps;
 

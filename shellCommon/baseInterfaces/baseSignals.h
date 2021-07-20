@@ -3,6 +3,7 @@
 #include "numbers/int/intBase.h"
 #include "charType/charType.h"
 #include "data/array.h"
+#include "point/pointBase.h"
 
 //================================================================
 //
@@ -51,6 +52,47 @@ struct BaseActionSetup
 
 //================================================================
 //
+// BaseMousePos
+//
+//================================================================
+
+class BaseMousePos
+{
+
+public:
+
+    BaseMousePos() =default;
+
+    inline BaseMousePos(const Point<Space>& pos) 
+        : posX(pos.X), posY(pos.Y) {}
+
+    inline bool valid() const
+        {return posX >= 0 && posY >= 0;}
+
+    inline Point<Space> pos()
+        {return Point<Space>{posX, posY};}
+
+private:
+
+    int16 posX = -1;
+    int16 posY = -1;
+
+};
+
+//================================================================
+//
+// ActionRec
+//
+//================================================================
+
+struct BaseActionRec
+{
+    BaseActionId id;
+    BaseMousePos mousePos;
+};
+
+//================================================================
+//
 // BaseActionReceiving
 //
 // Gets actions that happened from the previous action receiving.
@@ -60,7 +102,7 @@ struct BaseActionSetup
 
 struct BaseActionReceiver
 {
-    virtual void process(const Array<const BaseActionId>& actions) =0;
+    virtual void process(const Array<const BaseActionRec>& actions) =0;
 };
 
 //----------------------------------------------------------------

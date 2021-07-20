@@ -134,8 +134,8 @@ private:
     //
     //----------------------------------------------------------------
 
-    BoolSwitch<false> displayMemoryUsage;
-    BoolSwitch<false> debugBreakOnErrors;
+    BoolSwitch displayMemoryUsage{false};
+    BoolSwitch debugBreakOnErrors{false};
 
     DisplayParamsImpl displayParams;
 
