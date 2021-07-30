@@ -10,6 +10,73 @@
 namespace packageImpl {
 
 //================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
+//
+// GetInputImagesFromCpu
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
+// copyImageFromCpu
+//
+//================================================================
+
+template <typename Pixel>
+stdbool copyImageFromCpu
+(
+    const Matrix<const Pixel> srcImage,
+    GpuArrayMemory<Pixel>& memory,
+    GpuMatrix<const Pixel>& dst,
+    GpuCopyThunk& gpuCopier,
+    stdPars(GpuModuleProcessKit)
+)
+{
+    auto src = srcImage;
+
+    ////
+
+    bool inverted = false;
+
+    if (src.memPitch() < 0)
+        {src = flipMatrix(src); inverted = true;}
+
+    ////
+
+    MATRIX_EXPOSE_UNSAFE(src);
+
+    Array<const Pixel> srcArray;
+    REQUIRE(srcMemPitch >= srcSizeX);
+    srcArray.assign(srcMemPtr, srcMemPitch * srcSizeY);
+
+    auto& dstArray = memory;
+    require(dstArray.realloc(srcArray.size(), stdPass));
+
+    ////
+
+    require(gpuCopier(srcArray, dstArray, stdPass));
+
+    ////
+
+    REQUIRE(dst.assign(dstArray.ptr(), srcMemPitch, srcSizeX, srcSizeY));
+
+    if (inverted)
+        dst = flipMatrix(dst);
+
+    ////
+
+    returnTrue;
+}
+
+//----------------------------------------------------------------
+
+INSTANTIATE_FUNC(copyImageFromCpu<uint8>);
+INSTANTIATE_FUNC(copyImageFromCpu<uint8_x4>);
+
+//================================================================
 //
 // GetInputImagesFromCpu<Pixel>::getImageSizes
 //
@@ -51,44 +118,12 @@ stdbool GetInputImagesFromCpu<Pixel>::getImages
 
     ////
 
-    GpuCopyThunk copyCpuBuffers; // Wait before releasing CPU buffers.
+    GpuCopyThunk gpuCopier; // Wait before releasing CPU buffers.
 
     ////
 
     for_count (k, imageCount)
-    {
-        auto src = cpuImages[k];
-        auto& dst = images[k];
-
-        ////
-
-        bool inverted = false;
-
-        if (src.memPitch() < 0)
-            {src = flipMatrix(src); inverted = true;}
-
-        ////
-
-        MATRIX_EXPOSE_UNSAFE(src);
-
-        Array<const Pixel> srcArray;
-        REQUIRE(srcMemPitch >= srcSizeX);
-        srcArray.assign(srcMemPtr, srcMemPitch * srcSizeY);
-
-        auto& dstArray = memories[k];
-        require(dstArray.realloc(srcArray.size(), stdPass));
-
-        ////
-
-        require(copyCpuBuffers(srcArray, dstArray, stdPass));
-
-        ////
-
-        REQUIRE(dst.assign(dstArray.ptr(), srcMemPitch, srcSizeX, srcSizeY));
-
-        if (inverted)
-            dst = flipMatrix(dst);
-    }
+        require(copyImageFromCpu(cpuImages[k], memories[k], images[k], gpuCopier, stdPass));
 
     returnTrue;
 }
@@ -99,12 +134,22 @@ template class GetInputImagesFromCpu<uint8>;
 template class GetInputImagesFromCpu<uint8_x4>;
 
 //================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
 //
-// GetMonoImages::getImages
+// GetMonoImagesFromBgr32
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
+// GetMonoImagesFromBgr32::getImages
 //
 //================================================================
 
-stdbool GetMonoImages::getImages
+stdbool GetMonoImagesFromBgr32::getImages
 (
     const Array<GpuArrayMemory<MonoPixel>>& memories,
     const Array<GpuMatrix<const MonoPixel>>& images,
@@ -125,7 +170,7 @@ stdbool GetMonoImages::getImages
 
     ////
 
-    for_count (k, images.size())
+    for_count (k, imageCount)
     {
         auto size = imageSizes[k];
         Space memPitch = 0;
@@ -151,7 +196,7 @@ stdbool GetMonoImages::getImages
 
     ////
 
-    for_count (k, images.size())
+    for_count (k, imageCount)
         require(convertBgr32ToMono(colorImages[k], dest[k], stdPass));
 
     ////

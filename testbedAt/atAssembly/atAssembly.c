@@ -692,7 +692,9 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
             }
 
             profilerShell.serialize(kit);
+            
             gpuShell.serialize(kit);
+            gpuContextHelper.serialize(kit);
 
             deactivateOverlay.serialize(kit, STR("Deactivate Overlay"), STR("\\"));
             displayMemoryUsage.serialize(kit, STR("Display Memory Usage"), STR("Ctrl+Shift+U"));

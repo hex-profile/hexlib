@@ -1171,7 +1171,7 @@ GPUTOOL_2D_BEG
 #if DEVCODE
 {
     auto srcValue = loadNorm(src);
-    auto dstValue = convertYPbPrToBgr(srcValue.x, srcValue.y, srcValue.z);
+    auto dstValue = convertYPbPrToBgr<true>(srcValue.x, srcValue.y, srcValue.z);
     storeNorm(dst, dstValue);
 }
 #endif

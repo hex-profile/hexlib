@@ -346,6 +346,10 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         ////
 
+        printMsgL(kit, STR("Actions resetup"), msgWarn);
+
+        ////
+
         require(actionSetup.actsetClear());
 
         ////

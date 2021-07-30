@@ -25,7 +25,9 @@ class GpuContextHelper
 public:
 
     bool serialize(const CfgSerializeKit& kit)
-        {return gpuDeviceIndex.serialize(kit, STR("GPU Device Index"));}
+    {
+        return gpuDeviceIndex.serialize(kit, STR("GPU Device Index"));
+    }
 
 public:
 

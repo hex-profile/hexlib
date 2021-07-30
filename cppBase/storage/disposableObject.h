@@ -64,6 +64,17 @@ public:
         constructorCalled = true;
     }
 
+    template <typename... Params>
+    inline DisposableObject<Type>& operator =(Params&&... params)
+    {
+        destroy();
+
+        constructParamsVariadic(* (Type*) &rawMemory, params...);
+        constructorCalled = true;
+
+        return *this;
+    }
+
     inline void destroy()
     {
         if (constructorCalled)

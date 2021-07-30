@@ -174,10 +174,10 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
 
     #if CONVERT == CONVERT_RGB
 
-        auto r00 = convertYPbPrToBgr(y00, u00, v00);
-        auto r01 = convertYPbPrToBgr(y01, u01, v01);
-        auto r10 = convertYPbPrToBgr(y10, u10, v10);
-        auto r11 = convertYPbPrToBgr(y11, u11, v11);
+        auto r00 = convertYPbPrToBgr<true>(y00, u00, v00);
+        auto r01 = convertYPbPrToBgr<true>(y01, u01, v01);
+        auto r10 = convertYPbPrToBgr<true>(y10, u10, v10);
+        auto r11 = convertYPbPrToBgr<true>(y11, u11, v11);
 
     #elif CONVERT == CONVERT_YUV
 

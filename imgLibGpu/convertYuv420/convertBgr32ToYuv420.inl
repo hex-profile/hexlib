@@ -75,7 +75,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
             auto bgrValue = tex2D(srcSampler, o.srcTransform(point(srcBaseXs + tX, srcBaseYs + tY))); \
             \
             float32 Yf, Pb, Pr; \
-            convertBgrToYPbPr(bgrValue, Yf, Pb, Pr); \
+            convertBgrToYPbPr<true>(bgrValue, Yf, Pb, Pr); \
             \
             SRC_BUFFER_U(tX + devThreadX, tY + devThreadY) = Pb; \
             SRC_BUFFER_V(tX + devThreadX, tY + devThreadY) = Pr; \

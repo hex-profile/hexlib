@@ -150,7 +150,7 @@ static BitmapQuad staticPalette[256] =
 //================================================================
 
 template <typename Pixel>
-stdbool BmpWriter::writeFunc(const Matrix<const Pixel>& image, const CharArray& filename, stdPars(Kit))
+stdbool BmpWriter::writeFunc(const Matrix<const Pixel>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
 {
 
     auto src = flipMatrix(image);
@@ -184,6 +184,8 @@ stdbool BmpWriter::writeFunc(const Matrix<const Pixel>& image, const CharArray& 
 
     if_not (srcMemPitch == requiredPitch)
     {
+        REQUIRE(!disableSlowdown);
+
         if_not (size_t(requiredSizeInBytes) <= memorySize)
         {
             auto newPtr = realloc(memoryPtr, clampMin(requiredSizeInBytes, 1));
@@ -301,11 +303,11 @@ stdbool BmpWriter::writeFunc(const Matrix<const Pixel>& image, const CharArray& 
 //
 //================================================================
 
-stdbool BmpWriter::write(const Matrix<const uint8>& image, const CharArray& filename, stdPars(Kit))
-    {return writeFunc(image, filename, stdPass);}
+stdbool BmpWriter::write(const Matrix<const uint8>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
+    {return writeFunc(image, filename, disableSlowdown, stdPass);}
 
-stdbool BmpWriter::write(const Matrix<const uint8_x4>& image, const CharArray& filename, stdPars(Kit))
-    {return writeFunc(image, filename, stdPass);}
+stdbool BmpWriter::write(const Matrix<const uint8_x4>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
+    {return writeFunc(image, filename, disableSlowdown, stdPass);}
 
 //----------------------------------------------------------------
 

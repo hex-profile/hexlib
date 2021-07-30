@@ -18,7 +18,7 @@ class DisplayParamsImpl
 
 public:
 
-    void serialize(const CfgSerializeKit& kit, bool& prepParamsSteady);
+    void serialize(const CfgSerializeKit& kit, bool& altVersionSteady);
 
 public:
 
@@ -31,9 +31,6 @@ public:
     bool alternative() const
         {return theAlternativeVersion;}
 
-    bool alternativeVersionPrintAlways() const
-        {return theAlternativeVersionPrintAlways;}
-
 private:
 
     friend class DisplayParamsThunk;
@@ -41,7 +38,6 @@ private:
 private:
 
     BoolSwitch theAlternativeVersion{false};
-    BoolSwitch theAlternativeVersionPrintAlways{false};
 
 private:
 

@@ -40,6 +40,7 @@
 #include "userOutput/printMsgEx.h"
 #include "displayParamsImpl/displayParamsImpl.h"
 #include "atInterface/atInterface.h"
+#include "timer/changesMonitor.h"
 
 ////
 
@@ -316,6 +317,7 @@ private:
 private:
 
     DisplayParamsImpl displayParams;
+    ChangesMonitor altVersionMonitor;
 
 private:
 
@@ -352,7 +354,10 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
     {
         CFG_NAMESPACE("Display Params");
 
-        displayParams.serialize(kit, prepParamsSteady);
+        bool altVersionSteady = true;
+        displayParams.serialize(kit, altVersionSteady);
+        altVersionMonitor.touch(!altVersionSteady);
+        check_flag(altVersionSteady, prepParamsSteady);
     }
 
     {
@@ -1009,13 +1014,10 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     bool alternative = displayParams.alternative();
 
-    if (displayParams.alternativeVersionPrintAlways())
+    ////
+
+    if (altVersionMonitor.active(5.f, kit))
         printMsgL(kit, STR("Alternative Version: %"), alternative, alternative ? msgWarn : msgInfo);
-    else
-    {
-        if (alternative)
-            printMsgL(kit, STR("Alternative Version!"), alternative, msgWarn);
-    }
 
     //----------------------------------------------------------------
     //

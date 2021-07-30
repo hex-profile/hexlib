@@ -30,8 +30,8 @@ public:
 
 public:
 
-    stdbool write(const Matrix<const uint8>& image, const CharArray& filename, stdPars(Kit));
-    stdbool write(const Matrix<const uint8_x4>& image, const CharArray& filename, stdPars(Kit));
+    stdbool write(const Matrix<const uint8>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit));
+    stdbool write(const Matrix<const uint8_x4>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit));
 
 public:
 
@@ -40,7 +40,7 @@ public:
 private:
 
     template <typename Pixel>
-    stdbool writeFunc(const Matrix<const Pixel>& image, const CharArray& filename, stdPars(Kit));
+    stdbool writeFunc(const Matrix<const Pixel>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit));
 
 private:
 

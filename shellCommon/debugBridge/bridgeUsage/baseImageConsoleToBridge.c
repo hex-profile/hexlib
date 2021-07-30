@@ -4,6 +4,7 @@
 #include "errorLog/errorLog.h"
 #include "userOutput/printMsg.h"
 #include "formatting/messageFormatter.h"
+#include "charType/strUtils.h"
 
 namespace baseImageConsoleToBridge {
 
@@ -90,9 +91,10 @@ stdbool BaseVideoOverlayToBridge::setImage(const Point<Space>& size, bool dataPr
             formatOutput(desc, kit.formatter);
             REQUIRE(kit.formatter.valid());
             description = kit.formatter.data();
-        }
 
-        printMsg(kit.localLog, STR("OVERLAY: %"), desc);
+            if (!strEqual(description, "Result"))
+                printMsg(kit.localLog, STR("OVERLAY: %"), description);
+        }
 
         require(blockExceptionsVoid(destOverlay.set(ImagePoint{size.X, size.Y}, bridgeProvider, description)));
     }

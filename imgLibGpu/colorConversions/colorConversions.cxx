@@ -22,8 +22,30 @@ GPUTOOL_2D_BEG
 #if DEVCODE
 {
     float32 Y, Pb, Pr;
-    convertBgrToYPbPr(loadNorm(src), Y, Pb, Pr);
-    storeNorm(dst, 0.5f * Y + 0.5f); // from [-1, +1] to [0, 1].
+    convertBgrToYPbPr<false>(loadNorm(src), Y, Pb, Pr);
+    storeNorm(dst, Y); // from [-1, +1] to [0, 1].
+}
+#endif    
+GPUTOOL_2D_END
+
+//================================================================
+//
+// convertMonoToBgr32
+//
+//================================================================
+
+GPUTOOL_2D_BEG
+(
+    convertMonoToBgr32,
+    PREP_EMPTY,
+    ((const uint8, src))
+    ((uint8_x4, dst)),
+    PREP_EMPTY
+)
+#if DEVCODE
+{
+    auto value = *src;
+    *dst = make_uint8_x4(value, value, value, 0);
 }
 #endif    
 GPUTOOL_2D_END
@@ -36,7 +58,7 @@ GPUTOOL_2D_END
 
 GPUTOOL_2D_BEG
 (
-    convertBgr32ToBgr24,
+    convertBgr32ToBgr24Func,
     PREP_EMPTY,
     ((const uint8_x4, src)),
     ((GpuMatrix<uint8>, dst))
@@ -72,15 +94,27 @@ GPUTOOL_2D_BEG
 #endif    
 GPUTOOL_2D_END
 
+//----------------------------------------------------------------
+
+#if HOSTCODE
+
+stdbool convertBgr32ToBgr24(const GpuMatrix<const uint8_x4>& src, const GpuMatrix<uint8>& dst, stdPars(GpuProcessKit))
+{
+    REQUIRE(src.sizeX() * 3 == dst.sizeX());
+    return convertBgr32ToBgr24Func(src, dst, stdPassThru);
+}
+
+#endif
+
 //================================================================
 //
-// convertBgr24ToBgr32Kernel
+// convertBgr24ToBgr32
 //
 //================================================================
 
 GPUTOOL_2D_BEG
 (
-    convertBgr24ToBgr32Kernel,
+    convertBgr24ToBgr32Func,
     PREP_EMPTY,
     ((uint8_x4, dst)),
     ((GpuMatrix<const uint8>, src))
@@ -104,3 +138,64 @@ GPUTOOL_2D_BEG
 }
 #endif    
 GPUTOOL_2D_END
+
+//----------------------------------------------------------------
+
+#if HOSTCODE
+
+stdbool convertBgr24ToBgr32(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
+{
+    REQUIRE(src.sizeX() == dst.sizeX() * 3);
+    return convertBgr24ToBgr32Func(dst, src, stdPassThru);
+}
+
+#endif
+
+//================================================================
+//
+// convertBgr24ToMono
+//
+//================================================================
+
+GPUTOOL_2D_BEG
+(
+    convertBgr24ToMonoFunc,
+    PREP_EMPTY,
+    ((uint8, dst)),
+    ((GpuMatrix<const uint8>, src))
+)
+#if DEVCODE
+{
+    MATRIX_EXPOSE(src);
+
+    auto monoX = 3 * X;
+    auto monoY = Y;
+
+    uint8 result = 0;
+
+    if (monoX + 3 <= srcSizeX && monoY < srcSizeY)
+    {
+        auto ptr = MATRIX_POINTER(src, monoX, monoY);
+
+        auto src = make_float32_x4(ptr[0], ptr[1], ptr[2], 0);
+        float32 Y, Pb, Pr;
+        convertBgrToYPbPr<false>(src, Y, Pb, Pr);
+        result = convertRoundSaturate<uint8>(Y);
+    }
+
+    *dst = result;
+}
+#endif    
+GPUTOOL_2D_END
+
+//----------------------------------------------------------------
+
+#if HOSTCODE
+
+stdbool convertBgr24ToMono(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8>& dst, stdPars(GpuProcessKit))
+{
+    REQUIRE(src.sizeX() == dst.sizeX() * 3);
+    return convertBgr24ToMonoFunc(dst, src, stdPassThru);
+}
+
+#endif

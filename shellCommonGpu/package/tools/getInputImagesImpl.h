@@ -1,9 +1,26 @@
 #pragma once
 
 #include "package/tools/getInputImages.h"
-#include "extLib/types/vectorBase.h"
+#include "gpuAppliedApi/gpuAppliedApi.h"
+#include "vectorTypes/vectorBase.h"
 
 namespace packageImpl {
+
+//================================================================
+//
+// copyImageFromCpu
+//
+//================================================================
+
+template <typename Pixel>
+stdbool copyImageFromCpu
+(
+    const Matrix<const Pixel> srcImage,
+    GpuArrayMemory<Pixel>& memory,
+    GpuMatrix<const Pixel>& dst,
+    GpuCopyThunk& gpuCopier,
+    stdPars(GpuModuleProcessKit)
+);
 
 //================================================================
 //
@@ -46,11 +63,11 @@ private:
 
 //================================================================
 //
-// GetMonoImages
+// GetMonoImagesFromBgr32
 //
 //================================================================
 
-class GetMonoImages : public GetInputImages<uint8>
+class GetMonoImagesFromBgr32 : public GetInputImages<uint8>
 {
 
 public:
@@ -61,7 +78,7 @@ public:
 
 public:
 
-    GetMonoImages(GetInputImages<ColorPixel>& getColorImages)
+    GetMonoImagesFromBgr32(GetInputImages<ColorPixel>& getColorImages)
         : getColorImages(getColorImages) {}
 
 public:
