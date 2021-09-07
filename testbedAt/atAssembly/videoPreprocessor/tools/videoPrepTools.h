@@ -39,6 +39,7 @@ stdbool generateEdge
     const Point<float32>& transMul,
     const Point<float32>& transAdd,
     const float32& divSigma,
+    const bool& pulse,
     stdPars(GpuProcessKit)
 );
 

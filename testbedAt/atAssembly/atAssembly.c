@@ -568,6 +568,58 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
 
 //================================================================
 //
+// AtEngineTestWrapper
+//
+//================================================================
+
+class AtEngineTestWrapper : public AtEngine
+{
+
+public:
+
+    AtEngineTestWrapper(UniquePtr<AtEngine> base)
+        : base{move(base)} {}
+
+    virtual CharType* getName() const
+        {return base->getName();}
+
+    virtual void setInputResolution(const Point<Space>& frameSize)
+        {base->setInputResolution(frameSize);}
+
+    virtual void serialize(const ModuleSerializeKit& kit)
+    {
+        base->serialize(kit);
+        testShell->serialize(kit);
+    }
+
+    virtual void inputMetadataSerialize(const InputMetadataSerializeKit& kit)
+        {base->inputMetadataSerialize(kit);}
+
+    virtual bool reallocValid() const
+        {return base->reallocValid();}
+
+    virtual stdbool realloc(stdPars(AtEngineReallocKit))
+        {return base->realloc(stdPassThru);}
+
+    virtual void inspectProcess(ProcessInspector& inspector)
+        {return base->inspectProcess(inspector);}
+
+    virtual stdbool process(stdPars(AtEngineProcessKit))
+    {
+        auto processLambda = [&] (stdNullPars) {return base->process(stdPass);};
+        auto processApi = testShell::processByLambda(processLambda);
+        return testShell->process(processApi, stdPassThru);
+    }
+
+private:
+
+    UniquePtr<AtEngine> base;
+    UniquePtr<TestShell> testShell = TestShell::create();
+
+};
+
+//================================================================
+//
 // AtAssemblyImpl
 //
 //================================================================
@@ -725,7 +777,8 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     // Create engine
     //
 
-    engineModule = testShell::testShellCreate(engineFactory.create());
+    engineModule = makeUnique<AtEngineTestWrapper>(engineFactory.create());
+
     REQUIRE(!!engineModule);
 
     //

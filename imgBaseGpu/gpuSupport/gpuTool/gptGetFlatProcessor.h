@@ -10,6 +10,7 @@
     \
     COMPILE_ASSERT(vCellSizeX == 1 && vCellSizeY == 1); \
     \
-    Space threadIndex = vTileMemberX + vTileMemberY * vTileSizeX; \
-    static constexpr Space threadCount = vTileSizeX * vTileSizeY;
-    
+    constexpr Space threadCount = vTileSizeX * vTileSizeY; MAKE_VARIABLE_USED(threadCount); \
+    \
+    const Space threadIndex = vTileMemberX + vTileMemberY * vTileSizeX; \
+    const Space threadIsMain = (threadIndex == 0)

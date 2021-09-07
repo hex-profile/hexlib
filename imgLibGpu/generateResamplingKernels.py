@@ -173,7 +173,7 @@ if __name__ == '__main__':
     #
     #----------------------------------------------------------------
 
-    if True:
+    if False:
 
         gaussSincHq = 0
 
@@ -284,18 +284,18 @@ if __name__ == '__main__':
     #
     #----------------------------------------------------------------
 
-    if False:
+    if True:
 
         for i in range(5):
             f = 1.25**i
-            targetSigma = 0.6 * f
-            taps = [5, 7, 7, 9, 11][i]
+            targetSigma = 1.5 * f
+            taps = [11, 15, 17, 23, 27][i]
 
             #gradKernelDog = lambda x, normalized: -dog(x, targetSigma, normalized)
             gradKernelDiff = lambda x, normalized: -gaussDiff(x, targetSigma, normalized)
             gaussKernel = lambda x, normalized: gauss(x, targetSigma, normalized)
 
-            generateFilterPack('Gauss Differ Sigma %.2f' % targetSigma, taps, [1, 1], gradKernelDiff)
+            # generateFilterPack('Gauss Differ Sigma %.2f' % targetSigma, taps, [1, 1], gradKernelDiff)
             generateFilterPack('Gauss Smooth Sigma %.2f' % targetSigma, taps, [1, 1], gaussKernel)
 
     if False:

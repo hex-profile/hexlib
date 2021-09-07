@@ -1,13 +1,14 @@
 #pragma once
 
-#include "gpuSupport/gpuMixedCode.h"
-#include "gpuDevice/devSampler/devSampler.h"
-#include "imageRead/interpType.h"
-#include "imageRead/borderMode.h"
-#include "prepTools/prepList.h"
-#include "vectorTypes/vectorType.h"
-#include "gpuDevice/gpuDevice.h"
 #include "data/gpuMatrix.h"
+#include "gpuDevice/devSampler/devSampler.h"
+#include "gpuDevice/gpuDevice.h"
+#include "gpuSupport/gpuMixedCode.h"
+#include "imageRead/borderMode.h"
+#include "imageRead/interpType.h"
+#include "prepTools/prepList.h"
+#include "prepTools/prepIf.h"
+#include "vectorTypes/vectorType.h"
 
 #if HOSTCODE
 #include "numbers/divRound.h"

@@ -7,6 +7,7 @@
 #include "tests/rotation3dTest/rotation3dTest.h"
 #include "tests/gaussPresentationTest/gaussPresentationTest.h"
 #include "tests/fourierFilterBank/fourierFilterBank.h"
+#include "tests/mallocTest/mallocTest.h"
 
 namespace testShell {
 
@@ -16,56 +17,25 @@ namespace testShell {
 //
 //================================================================
 
-class TestShellImpl : public AtEngine
+class TestShellImpl : public TestShell
 {
 
 public:
 
-    TestShellImpl(UniquePtr<AtEngine> base)
-        : base(move(base)) {}
-
-public:
-
-    CharType* getName() const
-        {return base->getName();}
-
-    void setInputResolution(const Point<Space>& frameSize)
-        {return base->setInputResolution(frameSize);}
-
     void serialize(const ModuleSerializeKit& kit);
-
-    void inputMetadataSerialize(const InputMetadataSerializeKit& kit)
-        {return base->inputMetadataSerialize(kit);}
-
-    bool reallocValid() const
-        {return base->reallocValid();}
-
-    stdbool realloc(stdPars(AtEngineReallocKit))
-        {return base->realloc(stdPassThru);}
-
-    void inspectProcess(ProcessInspector& inspector)
-        {return base->inspectProcess(inspector);}
-
-    stdbool process(stdPars(AtEngineProcessKit));
-
-private:
-
-    UniquePtr<AtEngine> base;
+    stdbool process(const Process& base, stdPars(ProcessKit));
 
 private:
 
     fourierFilterBank::FourierFilterBank fourierFilterBank;
     gaussPresentationTest::GaussPresentationTest gaussPresentationTest;
-
     resamplingTest::ResamplingTest resamplingTest;
     Rotation3DTest rotation3dTest;
+    UniquePtr<MallocTest> mallocTest = MallocTest::create();
 
 };
 
-//----------------------------------------------------------------
-
-UniquePtr<AtEngine> testShellCreate(UniquePtr<AtEngine> base)
-    {return makeUnique<TestShellImpl>(move(base));}
+UniquePtr<TestShell> TestShell::create() {return makeUnique<TestShellImpl>();}
 
 //================================================================
 //
@@ -75,10 +45,6 @@ UniquePtr<AtEngine> testShellCreate(UniquePtr<AtEngine> base)
 
 void TestShellImpl::serialize(const ModuleSerializeKit& kit)
 {
-    base->serialize(kit);
-
-    ////
-
     {
         CFG_NAMESPACE("~Tests");
 
@@ -101,6 +67,11 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
             CFG_NAMESPACE("Rotation 3D Test");
             rotation3dTest.serialize(kit);
         }
+
+        {
+            CFG_NAMESPACE("Malloc Test");
+            mallocTest->serialize(kit);
+        }
     }
 }
 
@@ -110,7 +81,7 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool TestShellImpl::process(stdPars(AtEngineProcessKit))
+stdbool TestShellImpl::process(const Process& base, stdPars(ProcessKit))
 {
 
     //----------------------------------------------------------------
@@ -143,13 +114,19 @@ stdbool TestShellImpl::process(stdPars(AtEngineProcessKit))
         returnTrue;
     }
 
+    if (mallocTest->active())
+    {
+        require(mallocTest->process(stdPass));
+        returnTrue;
+    }
+
     //----------------------------------------------------------------
     //
     // Process.
     //
     //----------------------------------------------------------------
 
-    require(base->process(stdPass));
+    require(base.process(stdPass));
 
     ////
 

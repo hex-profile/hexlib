@@ -42,13 +42,18 @@ sysinline auto convertPosToIndex(const Type& pos)
 //
 // roundPosToNearestSample
 //
+// result = indexToPos(round(posToIndex(pos)))
+// result = round(pos - 0.5) + 0.5
+// result = floor(pos - 0.5 + 0.5) + 0.5
+// result = floor(pos) + 0.5
+//
 //================================================================
 
-sysinline Point<float32> roundPosToNearestSample(const Point<float32>& pos)
-    {return convertIndexToPos(convertToNearestIndex(pos));}
-
 sysinline float32 roundPosToNearestSample(float32 pos)
-    {return convertIndexToPos(convertToNearestIndex(pos));}
+    {return floorf(pos) + 0.5f;}
+
+sysinline Point<float32> roundPosToNearestSample(const Point<float32>& pos)
+    {return point(roundPosToNearestSample(pos.X), roundPosToNearestSample(pos.Y));}
 
 //================================================================
 //

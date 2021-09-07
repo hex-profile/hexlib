@@ -167,7 +167,7 @@ public:
             paramMsg(deviceMode ? STR("Device %0%%") : (pureTime ? STR("Body") : STR("Time")), fltf(deviceFraction * 1e2f, 0)), // 2
             fltf(timePercentage, 1), // 3
             paramMsg(!perCycleCountImportant ? STR("%0 ms") : STR("%0 ms x %1 fraction"), fltf(avgTimeMs, 3), fltf(avgPerCycleCount, 1)), // 4
-            paramMsg(avgElemTime == 0 ? STR("") : STR(" (%0 clocks/elem at %1 square)"), prettyNumber(fltg(avgElemTime * processingThroughput, 3)), fltf(sqrtf(avgElemCount), 0))
+            paramMsg(avgElemTime == 0 ? STR("") : STR(" (%0 us/elem)"), prettyNumber(fltg(avgElemTime * 1e6f, 3)), fltf(sqrtf(avgElemCount), 0))
         );
 
         ////

@@ -23,7 +23,7 @@ GPUTOOL_2D_BEG
 {
     float32 Y, Pb, Pr;
     convertBgrToYPbPr<false>(loadNorm(src), Y, Pb, Pr);
-    storeNorm(dst, Y); // from [-1, +1] to [0, 1].
+    storeNorm(dst, Y);
 }
 #endif    
 GPUTOOL_2D_END
@@ -46,6 +46,29 @@ GPUTOOL_2D_BEG
 {
     auto value = *src;
     *dst = make_uint8_x4(value, value, value, 0);
+}
+#endif    
+GPUTOOL_2D_END
+
+//================================================================
+//
+// convertBgr32ToMonoBgr32
+//
+//================================================================
+
+GPUTOOL_2D_BEG
+(
+    convertBgr32ToMonoBgr32,
+    PREP_EMPTY,
+    ((const uint8_x4, src))
+    ((uint8_x4, dst)),
+    PREP_EMPTY
+)
+#if DEVCODE
+{
+    float32 Y, Pb, Pr;
+    convertBgrToYPbPr<false>(loadNorm(src), Y, Pb, Pr);
+    storeNorm(dst, make_float32_x4(Y, Y, Y, 0.f));
 }
 #endif    
 GPUTOOL_2D_END

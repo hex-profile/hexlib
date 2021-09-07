@@ -4,6 +4,8 @@
     #include <atomic>
 #endif
 
+#include "compileTools/compileTools.h"
+
 //================================================================
 //
 // atomicAdd
@@ -15,7 +17,7 @@
 #if !defined(__CUDA_ARCH__)
 
 template <typename Type>
-inline void atomicAdd(Type* dst, Type value)
+sysinline void atomicAdd(Type* dst, Type value)
 {
     using namespace std;
 
@@ -42,7 +44,7 @@ inline void atomicAdd(Type* dst, Type value)
 #if !defined(__CUDA_ARCH__)
 
 template <typename Type>
-inline void atomicMax(Type* dst, Type value)
+sysinline void atomicMax(Type* dst, Type value)
 {
     using namespace std;
 
@@ -57,5 +59,30 @@ inline void atomicMax(Type* dst, Type value)
     while (!target.compare_exchange_weak(oldValue, maxv(oldValue, value), memory_order_relaxed, memory_order_relaxed)) 
         ;
 }
+
+#endif
+
+//================================================================
+//
+// atomicMaxNonneg
+//
+// Slow, but correct for x86.
+//
+//================================================================
+
+#if !defined(__CUDA_ARCH__)
+
+    sysinline void atomicMaxNonneg(float32* dst, float32 value)
+    {
+        return atomicMax(dst, value);
+    }
+
+#else
+
+    sysinline void atomicMaxNonneg(float32* dst, float32 value)
+    {
+        int32* dstInt = &recastEqualLayout<int32>(*dst);
+        atomicMax(dstInt, __float_as_int(value));
+    }
 
 #endif

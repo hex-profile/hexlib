@@ -277,6 +277,7 @@ private:
 
     NumericVarStatic<Space, 1, 1 << 20, 256> genPulsePeriod;
     NumericVar<float32> genEdgeSigma{1 / 128.f, 128.f, 0.6f};
+    BoolSwitch genEdgePulse{false};
 
     ////
 
@@ -382,6 +383,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         check_flag(genGratingRectangleShape.serialize(kit, STR("Grating Has Rectangle Shape")), prepParamsSteady);
         check_flag(genPulsePeriod.serialize(kit, STR("Pulse Period")), prepParamsSteady);
         check_flag(genEdgeSigma.serialize(kit, STR("Edge Sigma")), prepParamsSteady);
+        check_flag(genEdgePulse.serialize(kit, STR("Edge Pulse")), prepParamsSteady);
 
         randomizeSignal.serialize(kit, STR("Randomize"), STR("F1"));
 
@@ -842,7 +844,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
         }
         else if (genMode == GenMode::Edge)
         {
-            require(generateEdge(processedFrameMemory, transMul, transAdd, 1.f / genEdgeSigma, stdPass));
+            require(generateEdge(processedFrameMemory, transMul, transAdd, 1.f / genEdgeSigma, genEdgePulse, stdPass));
         }
         else if (genMode == GenMode::Random)
         {

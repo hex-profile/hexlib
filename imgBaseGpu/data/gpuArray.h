@@ -71,3 +71,12 @@ sysinline const GpuArray<Dst>& recastElement(const GpuArray<Src>& array)
     COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
     return recastEqualLayout<const GpuArray<Dst>>(array);
 }
+
+//================================================================
+//
+// equalSize support
+//
+//================================================================
+
+template <typename Type>
+GET_SIZE_DEFINE(GpuArray<Type>, value.size())

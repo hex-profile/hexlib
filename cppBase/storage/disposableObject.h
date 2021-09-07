@@ -47,7 +47,6 @@ public:
 
     inline DisposableObject()
     {
-        overwriteMemory();
     }
 
     inline ~DisposableObject()
@@ -81,7 +80,6 @@ public:
         {
             destruct(* (Type*) (&rawMemory));
             constructorCalled = false;
-            overwriteMemory();
         }
     }
 
@@ -93,11 +91,6 @@ public:
     inline bool constructed() const
     {
         return constructorCalled;
-    }
-
-    inline void overwriteMemory()
-    {
-        memset(&rawMemory, 0xCC, sizeof(rawMemory));
     }
 
 private:

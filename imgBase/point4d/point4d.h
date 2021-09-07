@@ -418,3 +418,13 @@ sysinline void vectorDecompose(const Point4D<Float>& vec, Float& vectorLengthSq,
         vectorDir.W = 0;
     }
 }
+
+//================================================================
+//
+// scalarProd
+//
+//================================================================
+
+template <typename Float>
+sysinline Float scalarProd(const Point4D<Float>& A, const Point4D<Float>& B)
+    {return A.X * B.X + A.Y * B.Y + A.Z * B.Z + A.W * B.W;}

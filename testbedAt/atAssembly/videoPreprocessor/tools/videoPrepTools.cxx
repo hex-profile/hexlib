@@ -157,6 +157,7 @@ GPUTOOL_2D_BEG
     ((Point<float32>, transMul))
     ((Point<float32>, transAdd))
     ((float32, divSigma))
+    ((bool, pulse))
 )
 #if DEVCODE
 {
@@ -169,7 +170,12 @@ GPUTOOL_2D_BEG
         return erff(x * divSqrtTwo * divSigma);
     };
 
-    auto value = 0.5f * blurredEdge(ofs) + 0.5f;
+    auto value = float32{0};
+
+    if (pulse)
+        value = expf(-0.5f * square(ofs * divSigma));
+    else
+        value = 0.5f * blurredEdge(ofs) + 0.5f;
 
     storeNorm(dst, vectorExtend<float32_x4>(value));
 }

@@ -3,6 +3,7 @@
 #include "rndgen/rndgenBase.h"
 #include "numbers/float/floatBase.h"
 #include "point/pointBase.h"
+#include "numbers/mathIntrinsics.h"
 
 //================================================================
 //

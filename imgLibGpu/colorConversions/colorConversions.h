@@ -12,6 +12,8 @@
 stdbool convertBgr32ToMono(const GpuMatrix<const uint8_x4>& src, const GpuMatrix<uint8>& dst, stdPars(GpuProcessKit));
 stdbool convertMonoToBgr32(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
 
+stdbool convertBgr32ToMonoBgr32(const GpuMatrix<const uint8_x4>& src, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
+
 //================================================================
 //
 // convertBgr32ToBgr24

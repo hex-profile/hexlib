@@ -27,7 +27,7 @@ struct FormatNumberArray
 //----------------------------------------------------------------
 
 template <typename Type>
-inline FormatNumberArray<Type> formatNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options, const CharArray& delimiter = STR(", "))
+inline FormatNumberArray<Type> formatNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options = {}, const CharArray& delimiter = STR(", "))
 {
     return FormatNumberArray<Type>(arrayPtr, arraySize, options, delimiter);
 }

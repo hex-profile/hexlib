@@ -9,7 +9,8 @@
 //================================================================
 
 template <size_t maxSize = actionHolder::defaultMaxSize>
-class CleanupHolder {
+class CleanupHolder 
+{
 
 public:
 
