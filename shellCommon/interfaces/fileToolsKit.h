@@ -10,4 +10,4 @@
 
 struct FileTools;
 
-KIT_CREATE1(FileToolsKit, FileTools&, fileTools);
+KIT_CREATE(FileToolsKit, FileTools&, fileTools);

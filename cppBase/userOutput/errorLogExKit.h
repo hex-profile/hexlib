@@ -13,4 +13,4 @@
 
 struct ErrorLogEx;
 
-KIT_CREATE1(ErrorLogExKit, ErrorLogEx&, errorLogEx);
+KIT_CREATE(ErrorLogExKit, ErrorLogEx&, errorLogEx);

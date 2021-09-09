@@ -157,8 +157,8 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
         // Reallocate everything.
         //
 
-        AllocatorObject<CpuAddrU> cpuAllocObject(nullState, cpuAllocator);
-        AllocatorObject<GpuAddrU> gpuAllocObject(nullState, gpuAllocator);
+        AllocatorObject<CpuAddrU> cpuAllocObject{nullState, cpuAllocator};
+        AllocatorObject<GpuAddrU> gpuAllocObject{nullState, gpuAllocator};
 
         auto reallocKit = kitCombine
         (
@@ -213,8 +213,8 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     ////
 
-    AllocatorObject<CpuAddrU> cpuCounterObject(cpuCounterState, cpuCounterInterface);
-    AllocatorObject<GpuAddrU> gpuCounterObject(gpuCounterState, gpuCounterInterface);
+    AllocatorObject<CpuAddrU> cpuCounterObject{cpuCounterState, cpuCounterInterface};
+    AllocatorObject<GpuAddrU> gpuCounterObject{gpuCounterState, gpuCounterInterface};
 
     {
         auto reallocKit = kitCombine
@@ -317,8 +317,8 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     ////
 
-    AllocatorObject<CpuAddrU> cpuDistributorObject(cpuDistributorState, cpuDistributorInterface);
-    AllocatorObject<GpuAddrU> gpuDistributorObject(gpuDistributorState, gpuDistributorInterface);
+    AllocatorObject<CpuAddrU> cpuDistributorObject{cpuDistributorState, cpuDistributorInterface};
+    AllocatorObject<GpuAddrU> gpuDistributorObject{gpuDistributorState, gpuDistributorInterface};
 
     {
         auto reallocKit = kitCombine
@@ -398,8 +398,8 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 
     ////
 
-    AllocatorObject<CpuAddrU> cpuCounterObject(cpuCounterState, cpuCounterInterface);
-    AllocatorObject<GpuAddrU> gpuCounterObject(gpuCounterState, gpuCounterInterface);
+    AllocatorObject<CpuAddrU> cpuCounterObject{cpuCounterState, cpuCounterInterface};
+    AllocatorObject<GpuAddrU> gpuCounterObject{gpuCounterState, gpuCounterInterface};
 
     {
         auto processKit = kitCombine
@@ -550,8 +550,8 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
         FlatToSpaceAllocatorThunk<GpuAddrU> gpuAllocator(alloc.gpuSystemAllocator, kit);
         GpuTextureAllocFail gpuTextureAllocator(kit);
 
-        AllocatorObject<CpuAddrU> cpuAllocObject(nullState, cpuAllocator);
-        AllocatorObject<GpuAddrU> gpuAllocObject(nullState, gpuAllocator);
+        AllocatorObject<CpuAddrU> cpuAllocObject{nullState, cpuAllocator};
+        AllocatorObject<GpuAddrU> gpuAllocObject{nullState, gpuAllocator};
 
         ////
 
@@ -602,8 +602,8 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
     //
     //----------------------------------------------------------------
 
-    AllocatorObject<CpuAddrU> cpuDistributorObject(cpuDistributorState, cpuDistributorInterface);
-    AllocatorObject<GpuAddrU> gpuDistributorObject(gpuDistributorState, gpuDistributorInterface);
+    AllocatorObject<CpuAddrU> cpuDistributorObject{cpuDistributorState, cpuDistributorInterface};
+    AllocatorObject<GpuAddrU> gpuDistributorObject{gpuDistributorState, gpuDistributorInterface};
 
     auto processKit = kitCombine
     (

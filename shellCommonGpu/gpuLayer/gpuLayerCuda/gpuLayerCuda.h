@@ -15,7 +15,7 @@
 //
 //================================================================
 
-KIT_COMBINE2(CudaInitApiThunkKit, DiagnosticKit, MallocKit);
+using CudaInitApiThunkKit = KitCombine<DiagnosticKit, MallocKit>;
 
 //================================================================
 //
@@ -194,7 +194,7 @@ private:
 //
 //================================================================
 
-KIT_COMBINE3(CudaExecApiThunkKit, DiagnosticKit, TimerKit, ProfilerKit);
+using CudaExecApiThunkKit = KitCombine<DiagnosticKit, TimerKit, ProfilerKit>;
 
 //================================================================
 //

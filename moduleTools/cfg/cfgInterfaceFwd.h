@@ -11,4 +11,8 @@
 class CfgNamespace;
 struct CfgVisitor;
 
-KIT_CREATE2(CfgSerializeKit, CfgVisitor&, visitor, const CfgNamespace*, scope);
+struct CfgSerializeKit
+{
+    CfgVisitor& visitor; 
+    const CfgNamespace* scope;
+};

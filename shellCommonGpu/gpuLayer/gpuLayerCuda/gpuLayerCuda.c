@@ -911,7 +911,7 @@ void CudaInitApiThunk::destroyTexture(GpuTextureDeallocContext& deallocContext)
 //
 //================================================================
 
-KIT_COMBINE2(GpuCoverageKit, ErrorLogKit, ErrorLogExKit);
+using GpuCoverageKit = KitCombine<ErrorLogKit, ErrorLogExKit>;
 
 //================================================================
 //
@@ -1096,7 +1096,7 @@ class CoverageQueue
 
 public:
 
-    KIT_COMBINE2(AllocKit, MallocKit, ErrorLogKit);
+    using AllocKit = KitCombine<MallocKit, ErrorLogKit>;
 
 public:
 
@@ -1266,7 +1266,7 @@ struct StreamEx
 
 public:
 
-    KIT_COMBINE3(AllocKit, MallocKit, ErrorLogKit, ErrorLogExKit);
+    using AllocKit = KitCombine<MallocKit, ErrorLogKit, ErrorLogExKit>;
 
     ~StreamEx() {destroy();}
 

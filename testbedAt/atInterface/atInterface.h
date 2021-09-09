@@ -41,12 +41,12 @@ struct AtAsyncOverlay
 //
 //================================================================
 
-KIT_CREATE6(
-    AtVideoInfo,
-    CharArray, videofileName,
-    Space, frameIndex,
-    Space, frameCount,
-    bool, interlacedMode,
-    bool, interlacedLower,
-    Point<Space>, frameSize
-);
+struct AtVideoInfo
+{
+    CharArray videofileName;
+    Space frameIndex;
+    Space frameCount;
+    bool interlacedMode;
+    bool interlacedLower;
+    Point<Space> frameSize;
+};

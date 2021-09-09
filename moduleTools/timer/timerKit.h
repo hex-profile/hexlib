@@ -10,4 +10,4 @@
 
 struct Timer;
 
-KIT_CREATE1(TimerKit, Timer&, timer);
+KIT_CREATE(TimerKit, Timer&, timer);

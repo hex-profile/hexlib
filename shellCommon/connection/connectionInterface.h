@@ -12,7 +12,7 @@ namespace connection {
 //
 //================================================================
 
-KIT_COMBINE2(Kit, DiagnosticKit, ProfilerKit);
+using Kit = KitCombine<DiagnosticKit, ProfilerKit>;
 
 //================================================================
 //

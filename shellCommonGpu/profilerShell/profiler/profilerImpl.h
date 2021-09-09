@@ -17,7 +17,7 @@
 //
 //================================================================
 
-KIT_COMBINE2(ProfilerDeviceKit, GpuCurrentStreamKit, GpuStreamWaitingKit);
+using ProfilerDeviceKit = KitCombine<GpuCurrentStreamKit, GpuStreamWaitingKit>;
 
 //================================================================
 //
@@ -40,7 +40,7 @@ class ProfilerImpl
 
 public:
 
-    KIT_COMBINE2(AllocKit, ErrorLogKit, MallocKit);
+    using AllocKit = KitCombine<ErrorLogKit, MallocKit>;
 
 public:
 

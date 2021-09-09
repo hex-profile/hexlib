@@ -27,7 +27,7 @@ using StarterKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, 
 //
 //================================================================
 
-KIT_CREATE1(DumpParamsKit, const DumpParams&, dumpParams);
+KIT_CREATE(DumpParamsKit, const DumpParams&, dumpParams);
 
 using StarterDebugKit = KitCombine<StarterKit, DebugBridgeKit, DumpParamsKit>;
 

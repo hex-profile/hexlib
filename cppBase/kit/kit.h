@@ -59,18 +59,6 @@ struct Kit_FieldTag {};
 
 //================================================================
 //
-// KIT__TYPENAME_YES
-// KIT__TYPENAME_NO
-//
-//================================================================
-
-#define KIT__TYPENAME_YES() \
-    typename
-
-#define KIT__TYPENAME_NO()
-
-//================================================================
-//
 // Kit_IsConvertible
 //
 // Is source type pointer is convertible to destination type pointer?
@@ -163,24 +151,6 @@ sysinline BaseKit kitReplace(const BaseKit& baseKit, const NewKit& newKit)
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-#define KIT_CREATE0(Kit) \
-    \
-    struct Kit \
-    { \
-        sysinline Kit() \
-            {} \
-        \
-        template <typename OtherKit> \
-        sysinline Kit(const OtherKit& otherKit) \
-            {} \
-        \
-        template <typename OldKit, typename NewKit> \
-        sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
-            {} \
-    }
-
-//----------------------------------------------------------------
-
 template <typename Type>
 struct Kit_ValueReader
 {
@@ -193,52 +163,45 @@ struct Kit_ValueReader
 
 //----------------------------------------------------------------
 
-#define KIT__CREATE1(Kit, Type0, name0, typenameWord) \
+#define KIT_CREATE(Kit, Field, name) \
     \
     struct Kit \
         : \
-        Kit_FieldTag<struct name0##_Tag> \
+        Kit_FieldTag<struct name##_Tag> \
     { \
         \
-        Type0 name0; \
-        \
+        Field name; \
         \
         template <typename Kit> \
         struct Kit_FieldReader \
         { \
-            static sysinline Type0 func(const Kit& kit) \
-                {return kit.name0;} \
+            static sysinline Field func(const Kit& kit) \
+                {return kit.name;} \
         }; \
         \
         template <typename Type> \
         struct Kit_ReaderSelector \
         { \
-            static constexpr bool isKit = Kit_IsConvertible<Type, Kit_FieldTag<name0##_Tag>>::value; \
+            static constexpr bool isKit = Kit_IsConvertible<Type, Kit_FieldTag<name##_Tag>>::value; \
             using T = TYPE_SELECT(isKit, Kit_FieldReader<Type>, Kit_ValueReader<Type>); \
         }; \
         \
         template <typename Type> \
         sysinline Kit(Type& value) \
-            : name0(Kit_ReaderSelector<Type>::T::func(value)) {} \
+            : name(Kit_ReaderSelector<Type>::T::func(value)) {} \
         \
         template <typename Type> \
         sysinline Kit(const Type& value) \
-            : name0(Kit_ReaderSelector<Type>::T::func(value)) {} \
+            : name(Kit_ReaderSelector<Type>::T::func(value)) {} \
         \
         template <typename OldKit, typename NewKit> \
         sysinline Kit(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit) \
             : \
-            name0(Kit_Replacer<OldKit, NewKit, name0##_Tag>::func(&oldKit, &newKit)->name0) \
+            name(Kit_Replacer<OldKit, NewKit, name##_Tag>::func(&oldKit, &newKit)->name) \
         { \
         } \
     }
     
-#define KIT_CREATE1(Kit, Type0, name0) \
-    KIT__CREATE1(Kit, Type0, name0, KIT__TYPENAME_NO)
-
-#define KIT_CREATE1_(Kit, Type0, name0) \
-    KIT__CREATE1(Kit, Type0, name0, KIT__TYPENAME_YES)
-
 //----------------------------------------------------------------
 
 # include "kitCreate.inl"
@@ -247,7 +210,8 @@ struct Kit_ValueReader
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
-// KIT_COMBINE
+// KitCombine
+// kitCombine
 //
 //----------------------------------------------------------------
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -288,41 +252,3 @@ struct KitCombine
 template <typename... Types>
 sysinline auto kitCombine(const Types&... values)
     {return KitCombine<Types...>(Kit_CombineConstructor(), values...);}
-
-//----------------------------------------------------------------
-
-#define KIT_COMBINE1(Kit, T0) \
-    using Kit = KitCombine<T0>
-
-#define KIT_COMBINE2(Kit, T0, T1) \
-    using Kit = KitCombine<T0, T1>
-
-#define KIT_COMBINE3(Kit, T0, T1, T2) \
-    using Kit = KitCombine<T0, T1, T2>
-
-#define KIT_COMBINE4(Kit, T0, T1, T2, T3) \
-    using Kit = KitCombine<T0, T1, T2, T3>
-
-#define KIT_COMBINE5(Kit, T0, T1, T2, T3, T4) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4>
-
-#define KIT_COMBINE6(Kit, T0, T1, T2, T3, T4, T5) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4, T5>
-
-#define KIT_COMBINE7(Kit, T0, T1, T2, T3, T4, T5, T6) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4, T5, T6>
-
-#define KIT_COMBINE8(Kit, T0, T1, T2, T3, T4, T5, T6, T7) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4, T5, T6, T7>
-
-#define KIT_COMBINE9(Kit, T0, T1, T2, T3, T4, T5, T6, T7, T8) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4, T5, T6, T7, T8>
-
-#define KIT_COMBINE10(Kit, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>
-
-#define KIT_COMBINE11(Kit, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
-
-#define KIT_COMBINE12(Kit, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11) \
-    using Kit = KitCombine<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>

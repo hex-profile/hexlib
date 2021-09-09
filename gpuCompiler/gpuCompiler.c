@@ -55,7 +55,7 @@ using namespace std;
 //
 //================================================================
 
-KIT_COMBINE2(CompilerKit, DiagnosticKit, FileToolsKit);
+using CompilerKit = KitCombine<DiagnosticKit, FileToolsKit>;
 
 //================================================================
 //

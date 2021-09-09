@@ -94,7 +94,7 @@ class EmuWin32 : public EmuKernelTools
 
 public:
 
-    KIT_COMBINE2(CreateKit, ErrorLogKit, MallocKit);
+    using CreateKit = KitCombine<ErrorLogKit, MallocKit>;
 
     stdbool create(stdPars(CreateKit));
     void destroy();

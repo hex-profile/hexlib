@@ -10,7 +10,7 @@ namespace gaussPresentationTest {
 //
 //================================================================
 
-KIT_CREATE0(ProcessParams);
+struct ProcessParams {};
 
 //================================================================
 //

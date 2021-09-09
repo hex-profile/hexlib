@@ -12,8 +12,8 @@
 //
 //================================================================
 
-KIT_CREATE1(CpuBlockAllocatorKit, BlockAllocatorInterface<CpuAddrU>&, cpuBlockAlloc);
-KIT_CREATE1(GpuBlockAllocatorKit, BlockAllocatorInterface<GpuAddrU>&, gpuBlockAlloc);
+KIT_CREATE(CpuBlockAllocatorKit, BlockAllocatorInterface<CpuAddrU>&, cpuBlockAlloc);
+KIT_CREATE(GpuBlockAllocatorKit, BlockAllocatorInterface<GpuAddrU>&, gpuBlockAlloc);
 
 //================================================================
 //
@@ -24,5 +24,5 @@ KIT_CREATE1(GpuBlockAllocatorKit, BlockAllocatorInterface<GpuAddrU>&, gpuBlockAl
 //
 //================================================================
 
-KIT_COMBINE2(GpuModuleReallocKit, ModuleReallocKit, GpuAppExecKit);
-KIT_COMBINE3(GpuModuleProcessKit, ModuleProcessKit, GpuAppExecKit, GpuImageConsoleKit);
+using GpuModuleReallocKit = KitCombine<ModuleReallocKit, GpuAppExecKit>;
+using GpuModuleProcessKit = KitCombine<ModuleProcessKit, GpuAppExecKit, GpuImageConsoleKit>;

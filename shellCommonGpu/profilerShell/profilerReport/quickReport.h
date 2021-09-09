@@ -11,7 +11,7 @@ namespace profilerQuickReport {
 //
 //================================================================
 
-KIT_COMBINE2(ReportKit, ErrorLogKit, MsgLogKit);
+using ReportKit = KitCombine<ErrorLogKit, MsgLogKit>;
 
 //================================================================
 //

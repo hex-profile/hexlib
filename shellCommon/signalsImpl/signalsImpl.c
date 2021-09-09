@@ -123,7 +123,7 @@ private:
 void registerSignals(CfgSerialization& serialization, const CfgNamespace* scope, BaseActionSetup& registration, int32& signalCount)
 {
     RegisterSignal r(registration);
-    serialization.serialize(CfgSerializeKit(r, scope));
+    serialization.serialize(CfgSerializeKit{r, scope});
     signalCount = r.count();
 }
 

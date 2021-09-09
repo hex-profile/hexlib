@@ -20,7 +20,7 @@ using InitKit = ErrorLogKit;
 //
 //================================================================
 
-KIT_COMBINE2(ProcessKit, ModuleProcessKit, MallocKit);
+using ProcessKit = KitCombine<ModuleProcessKit, MallocKit>;
 
 //================================================================
 //

@@ -425,7 +425,7 @@ public:
 void saveVarsToStringEnv(CfgSerialization& serialization, const CfgNamespace* scope, StringEnv& stringEnv)
 {
     SaveVar saveVar(stringEnv);
-    CfgSerializeKit kit(saveVar, scope);
+    CfgSerializeKit kit{saveVar, scope};
     serialization.serialize(kit);
 }
 
@@ -438,7 +438,7 @@ void saveVarsToStringEnv(CfgSerialization& serialization, const CfgNamespace* sc
 void loadVarsFromStringEnv(CfgSerialization& serialization, const CfgNamespace* scope, StringEnv& stringEnv)
 {
     LoadVar loadVar(stringEnv);
-    CfgSerializeKit kit(loadVar, scope);
+    CfgSerializeKit kit{loadVar, scope};
     serialization.serialize(kit);
 }
 

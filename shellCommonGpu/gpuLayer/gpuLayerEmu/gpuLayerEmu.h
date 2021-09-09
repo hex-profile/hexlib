@@ -42,8 +42,8 @@ private:
 //
 //================================================================
 
-KIT_COMBINE3(EmuInitApiToolkit, ErrorLogKit, ErrorLogExKit, MallocKit);
-KIT_COMBINE2(EmuExecApiToolkit, ErrorLogKit, ErrorLogExKit);
+using EmuInitApiToolkit = KitCombine<ErrorLogKit, ErrorLogExKit, MallocKit>;
+using EmuExecApiToolkit = KitCombine<ErrorLogKit, ErrorLogExKit>;
 
 //================================================================
 //

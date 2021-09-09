@@ -59,4 +59,4 @@ struct OverlayTakeover
 //
 //================================================================
 
-KIT_CREATE1(OverlayTakeoverKit, const OverlayTakeover&, overlayTakeover);
+KIT_CREATE(OverlayTakeoverKit, const OverlayTakeover&, overlayTakeover);

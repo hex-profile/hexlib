@@ -29,19 +29,18 @@ static const Space maxRollbackCount = 8;
 //
 //================================================================
 
-KIT_CREATE2(
-    PipeControl,
-
+struct PipeControl
+{
     // The number of input frames to roll back BEFORE processing
-    Space, rollbackFrames,
+    Space rollbackFrames;
 
     // Re-roll realization
-    bool, randomize
-);
+    bool randomize;
+};
 
 //----------------------------------------------------------------
 
-KIT_CREATE1(PipeControlKit, const PipeControl&, pipeControl);
+KIT_CREATE(PipeControlKit, const PipeControl&, pipeControl);
 
 //================================================================
 //
@@ -63,7 +62,7 @@ enum class Verbosity
 
 //----------------------------------------------------------------
 
-KIT_CREATE1(VerbosityKit, Verbosity, verbosity);
+KIT_CREATE(VerbosityKit, Verbosity, verbosity);
 
 //----------------------------------------------------------------
 
@@ -90,4 +89,4 @@ using ModuleProcessKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit,
 //
 //================================================================
 
-KIT_COMBINE2(ModuleSerializeKit, CfgSerializeKit, OverlayTakeoverKit);
+using ModuleSerializeKit = KitCombine<CfgSerializeKit, OverlayTakeoverKit>;

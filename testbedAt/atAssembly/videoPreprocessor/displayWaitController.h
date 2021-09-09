@@ -17,7 +17,7 @@ struct DisplayDelayer
 
 //----------------------------------------------------------------
 
-KIT_CREATE1(DisplayDelayerKit, DisplayDelayer&, displayDelayer);
+KIT_CREATE(DisplayDelayerKit, DisplayDelayer&, displayDelayer);
 
 //================================================================
 //
@@ -30,7 +30,7 @@ class DisplayWaitController
 
 public:
 
-    KIT_COMBINE2(Kit, TimerKit, MsgLogsKit);
+    using Kit = KitCombine<TimerKit, MsgLogsKit>;
 
 public:
 

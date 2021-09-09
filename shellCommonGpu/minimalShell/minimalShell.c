@@ -455,7 +455,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
         // Pipe control on memory counting stage: advance 1 frame
         //
 
-        PipeControl pipeControl(0, false);
+        PipeControl pipeControl{0, false};
         auto kitEx = kitCombine(kit, PipeControlKit(pipeControl));
 
         ////
@@ -506,7 +506,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
         // Pipe control on execution stage: advance 0 frames (rollback 1 frame)
         //
 
-        PipeControl pipeControl(1, false);
+        PipeControl pipeControl{1, false};
         auto kitEx = kitCombine(kit, PipeControlKit(pipeControl));
 
         ////

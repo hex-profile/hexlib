@@ -53,7 +53,7 @@ class GpuModuleKeeper
 
 public:
 
-    KIT_COMBINE4(CreateKit, ErrorLogKit, ErrorLogExKit, GpuInitKit, MallocKit);
+    using CreateKit = KitCombine<ErrorLogKit, ErrorLogExKit, GpuInitKit, MallocKit>;
 
     //----------------------------------------------------------------
     //

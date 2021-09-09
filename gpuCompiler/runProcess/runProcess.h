@@ -10,7 +10,7 @@
 //
 //================================================================
 
-KIT_COMBINE3(RunProcessKit, ErrorLogKit, MsgLogKit, ErrorLogExKit);
+using RunProcessKit = KitCombine<ErrorLogKit, MsgLogKit, ErrorLogExKit>;
 
 //================================================================
 //

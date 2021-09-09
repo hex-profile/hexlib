@@ -97,7 +97,7 @@ class ContextEx
 
 private:
 
-    KIT_COMBINE2(CreateKit, ErrorLogKit, MallocKit);
+    using CreateKit = KitCombine<ErrorLogKit, MallocKit>;
 
     //----------------------------------------------------------------
     //
@@ -540,12 +540,12 @@ void EmuInitApiThunk::destroyStream(GpuStreamDeallocContext& deallocContext)
 //
 //================================================================
 
-KIT_CREATE3(
-    CopyArrayParams,
-    ArrayPtr(Byte), srcPtr,
-    ArrayPtr(Byte), dstPtr,
-    Space, byteSize
-);
+struct CopyArrayParams
+{
+    ArrayPtr(Byte) srcPtr;
+    ArrayPtr(Byte) dstPtr;
+    Space byteSize;
+};
 
 //================================================================
 //
@@ -616,7 +616,7 @@ inline stdbool genericArrayCopy
     auto srcPtr = ArrayPtrCreate(Byte, (Byte*) srcAddr, byteSize, DbgptrArrayPreconditions());
     auto dstPtr = ArrayPtrCreate(Byte, (Byte*) dstAddr, byteSize, DbgptrArrayPreconditions());
 
-    CopyArrayParams params(srcPtr, dstPtr, byteSize);
+    CopyArrayParams params{srcPtr, dstPtr, byteSize};
 
     ////
 
@@ -667,12 +667,17 @@ TMP_MACRO(copyArrayGpuGpu, GpuAddrU, GpuAddrU);
 //
 //================================================================
 
-KIT_CREATE6(
-    CopyMatrixParams,
-    CpuAddrU, srcPtr, Space, srcBytePitch,
-    CpuAddrU, dstPtr, Space, dstBytePitch,
-    Space, byteSizeX, Space, sizeY
-);
+struct CopyMatrixParams
+{
+    CpuAddrU srcPtr; 
+    Space srcBytePitch;
+
+    CpuAddrU dstPtr; 
+    Space dstBytePitch;
+
+    Space byteSizeX; 
+    Space sizeY;
+};
 
 //================================================================
 //
@@ -716,7 +721,7 @@ inline stdbool genericMatrixCopy
     stdPars(ErrorLogKit)
 )
 {
-    CopyMatrixParams params(srcPtr, srcBytePitch, dstPtr, dstBytePitch, byteSizeX, sizeY);
+    CopyMatrixParams params{srcPtr, srcBytePitch, dstPtr, dstBytePitch, byteSizeX, sizeY};
 
     require
     (

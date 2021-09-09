@@ -14,7 +14,7 @@ namespace profilerReport {
 //================================================================
 
 using ReportKit = DiagnosticKit;
-KIT_COMBINE2(ReportFileKit, ReportKit, FileToolsKit);
+using ReportFileKit = KitCombine<ReportKit, FileToolsKit>;
 
 //================================================================
 //
@@ -22,15 +22,14 @@ KIT_COMBINE2(ReportFileKit, ReportKit, FileToolsKit);
 //
 //================================================================
 
-KIT_CREATE5
-(
-    MakeReportParams,
-    ProfilerNode*, rootNode,
-    float32, divTicksPerSec,
-    uint32, cycleCount,
-    float32, processingThroughput,
-    const CharType*, outputDir
-);
+struct MakeReportParams
+{
+    ProfilerNode* rootNode;
+    float32 divTicksPerSec;
+    uint32 cycleCount;
+    float32 processingThroughput;
+    const CharType* outputDir;
+};
 
 //================================================================
 //

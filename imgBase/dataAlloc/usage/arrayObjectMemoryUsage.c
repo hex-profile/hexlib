@@ -32,7 +32,7 @@ private:
 //
 //================================================================
 
-KIT_COMBINE3(TestKit, CpuFastAllocKit, ErrorLogKit, DataProcessingKit);
+using TestKit = KitCombine<CpuFastAllocKit, ErrorLogKit, DataProcessingKit>;
 
 //================================================================
 //

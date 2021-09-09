@@ -26,7 +26,7 @@ Space getCpuCount();
 //
 //================================================================
 
-KIT_COMBINE2(CreateKit, ErrorLogKit, MallocKit);
+using CreateKit = KitCombine<ErrorLogKit, MallocKit>;
 
 //================================================================
 //

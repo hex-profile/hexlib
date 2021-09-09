@@ -12,4 +12,4 @@
 
 struct ErrorLog;
 
-KIT_CREATE1(ErrorLogKit, ErrorLog&, errorLog);
+KIT_CREATE(ErrorLogKit, ErrorLog&, errorLog);

@@ -23,8 +23,8 @@ namespace atStartup {
 //
 //================================================================
 
-KIT_COMBINE6(InitKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtCommonKit, MallocKit, SetBusyStatusKit);
-KIT_COMBINE6(ProcessKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtProcessKit, MallocKit, SetBusyStatusKit);
+using InitKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtCommonKit, MallocKit, SetBusyStatusKit>;
+using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtProcessKit, MallocKit, SetBusyStatusKit>;
 
 //================================================================
 //

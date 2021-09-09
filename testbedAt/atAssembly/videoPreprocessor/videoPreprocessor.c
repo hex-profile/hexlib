@@ -184,7 +184,7 @@ public:
 //
 //================================================================
 
-KIT_COMBINE4(ProcessExKit, ProcessKit, GpuImageConsoleKit, AlternativeVersionKit, DisplayParamsKit);
+using ProcessExKit = KitCombine<ProcessKit, GpuImageConsoleKit, AlternativeVersionKit, DisplayParamsKit>;
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -950,7 +950,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     if_not (userPoint >= 0 && userPoint < cropSize)
         userPointValid = false;
 
-    UserPoint newUserPoint(userPointValid, userPoint, kit.userPoint.signal, kit.userPoint.signalAlt);
+    UserPoint newUserPoint{userPointValid, userPoint, kit.userPoint.signal, kit.userPoint.signalAlt};
     UserPointKit newUserPointKit(newUserPoint);
 
     ////
@@ -1149,7 +1149,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
                 REQUIRE(f != 0);
 
                 bool randomize = (randomizeSignal != 0) && !kit.dataProcessing;
-                PipeControl pipeControl = (k == histSize-1) ? PipeControl(initialRollback, randomize) : PipeControl(0, false);
+                PipeControl pipeControl = (k == histSize-1) ? PipeControl{initialRollback, randomize} : PipeControl{0, false};
                 PipeControlKit pipelineControlKit(pipeControl);
 
                 VerbosityKit outputKit(k == 0 ? kit.verbosity : Verbosity::Off);

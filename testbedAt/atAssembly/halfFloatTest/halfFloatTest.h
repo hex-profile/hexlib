@@ -11,9 +11,9 @@ namespace halfFloatTest {
 //
 //================================================================
 
-KIT_CREATE0(Process);
-KIT_COMBINE2(ProcessKit, ModuleProcessKit, GpuAppExecKit);
-KIT_COMBINE2(ReallocKit, ModuleReallocKit, GpuAppExecKit);
+struct Process {};
+using ProcessKit = KitCombine<ModuleProcessKit, GpuAppExecKit>;
+using ReallocKit = KitCombine<ModuleReallocKit, GpuAppExecKit>;
 
 //================================================================
 //

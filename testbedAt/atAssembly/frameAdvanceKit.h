@@ -8,4 +8,4 @@
 //
 //================================================================
 
-KIT_CREATE1(FrameAdvanceKit, bool, frameAdvance);
+KIT_CREATE(FrameAdvanceKit, bool, frameAdvance);

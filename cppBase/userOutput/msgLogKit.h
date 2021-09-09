@@ -16,4 +16,4 @@ struct MsgLog;
 //
 //================================================================
 
-KIT_CREATE1(MsgLogKit, MsgLog&, msgLog);
+KIT_CREATE(MsgLogKit, MsgLog&, msgLog);

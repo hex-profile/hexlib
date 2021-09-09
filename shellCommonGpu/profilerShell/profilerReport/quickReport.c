@@ -39,13 +39,13 @@ struct NodeVisitor
 //
 //================================================================
 
-KIT_CREATE4(
-    DisplayReportParams,
-    float32, tickFactor,
-    uint32, cycleCount,
-    float32, fullRunTime,
-    NodeVisitor&, visitor
-);
+struct DisplayReportParams
+{
+    float32 tickFactor;
+    uint32 cycleCount;
+    float32 fullRunTime;
+    NodeVisitor& visitor;
+};
 
 //================================================================
 //
@@ -246,7 +246,7 @@ stdbool namedNodesReport
     ////
 
     PrintNode visitor(processingThroughput, kit);
-    DisplayReportParams o(tickFactor, cycleCount, fullRunTime, visitor);
+    DisplayReportParams o{tickFactor, cycleCount, fullRunTime, visitor};
     require(displayProfilerTree(*rootNode, o, 0, 0, stdPass));
 
     returnTrue;

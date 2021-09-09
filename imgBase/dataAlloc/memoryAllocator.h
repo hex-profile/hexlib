@@ -77,4 +77,8 @@ struct BlockAllocatorInterface
 //================================================================
 
 template <typename AddrU>
-KIT_CREATE2_(AllocatorObject, AllocatorState&, state, AllocatorInterface<AddrU>&, func);
+struct AllocatorObject
+{
+    AllocatorState& state; 
+    AllocatorInterface<AddrU>& func;
+};

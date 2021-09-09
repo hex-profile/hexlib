@@ -361,7 +361,7 @@ public:
 
 public:
 
-    KIT_COMBINE4(Kit, GpuProcessKit, MsgLogsKit, UserPointKit, VerbosityKit);
+    using Kit = KitCombine<GpuProcessKit, MsgLogsKit, UserPointKit, VerbosityKit>;
 
 public:
 

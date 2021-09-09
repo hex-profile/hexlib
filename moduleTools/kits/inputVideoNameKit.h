@@ -9,4 +9,4 @@
 //
 //================================================================
 
-KIT_CREATE1(InputVideoNameKit, CharArray, inputVideoName);
+KIT_CREATE(InputVideoNameKit, CharArray, inputVideoName);

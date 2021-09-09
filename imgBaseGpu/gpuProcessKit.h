@@ -11,4 +11,4 @@
 //
 //================================================================
 
-KIT_COMBINE2(GpuProcessKit, CpuFuncKit, GpuAppExecKit);
+using GpuProcessKit = KitCombine<CpuFuncKit, GpuAppExecKit>;

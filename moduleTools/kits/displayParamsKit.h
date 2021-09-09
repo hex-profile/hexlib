@@ -292,4 +292,4 @@ struct DisplayParams
 //
 //================================================================
 
-KIT_CREATE1(DisplayParamsKit, const DisplayParams&, display);
+KIT_CREATE(DisplayParamsKit, const DisplayParams&, display);

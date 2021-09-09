@@ -16,4 +16,4 @@ class RndPool;
 //
 //================================================================
 
-KIT_CREATE1(RndPoolKit, RndPool&, rndgenPool);
+KIT_CREATE(RndPoolKit, RndPool&, rndgenPool);

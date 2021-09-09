@@ -44,7 +44,7 @@ class FrameChangeDetector
 
 public:
 
-    KIT_COMBINE2(Kit, ErrorLogKit, MallocKit);
+    using Kit = KitCombine<ErrorLogKit, MallocKit>;
 
     void reset();
     stdbool check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit));

@@ -10,7 +10,7 @@
 //================================================================
 
 struct GpuInitialization;
-KIT_CREATE1(GpuInitializationKit, GpuInitialization&, gpuInitialization);
+KIT_CREATE(GpuInitializationKit, GpuInitialization&, gpuInitialization);
 
 //================================================================
 //
@@ -19,7 +19,7 @@ KIT_CREATE1(GpuInitializationKit, GpuInitialization&, gpuInitialization);
 //================================================================
 
 struct GpuContextCreation;
-KIT_CREATE1(GpuContextCreationKit, GpuContextCreation&, gpuContextCreation);
+KIT_CREATE(GpuContextCreationKit, GpuContextCreation&, gpuContextCreation);
 
 //================================================================
 //
@@ -28,7 +28,7 @@ KIT_CREATE1(GpuContextCreationKit, GpuContextCreation&, gpuContextCreation);
 //================================================================
 
 struct GpuModuleCreation;
-KIT_CREATE1(GpuModuleCreationKit, GpuModuleCreation&, gpuModuleCreation);
+KIT_CREATE(GpuModuleCreationKit, GpuModuleCreation&, gpuModuleCreation);
 
 //================================================================
 //
@@ -37,7 +37,7 @@ KIT_CREATE1(GpuModuleCreationKit, GpuModuleCreation&, gpuModuleCreation);
 //================================================================
 
 struct GpuKernelLoading;
-KIT_CREATE1(GpuKernelLoadingKit, GpuKernelLoading&, gpuKernelLoading);
+KIT_CREATE(GpuKernelLoadingKit, GpuKernelLoading&, gpuKernelLoading);
 
 //================================================================
 //
@@ -46,7 +46,7 @@ KIT_CREATE1(GpuKernelLoadingKit, GpuKernelLoading&, gpuKernelLoading);
 //================================================================
 
 struct GpuSamplerLoading;
-KIT_CREATE1(GpuSamplerLoadingKit, GpuSamplerLoading&, gpuSamplerLoading);
+KIT_CREATE(GpuSamplerLoadingKit, GpuSamplerLoading&, gpuSamplerLoading);
 
 //================================================================
 //
@@ -55,7 +55,7 @@ KIT_CREATE1(GpuSamplerLoadingKit, GpuSamplerLoading&, gpuSamplerLoading);
 //================================================================
 
 struct GpuMemoryAllocation;
-KIT_CREATE1(GpuMemoryAllocationKit, GpuMemoryAllocation&, gpuMemoryAllocation);
+KIT_CREATE(GpuMemoryAllocationKit, GpuMemoryAllocation&, gpuMemoryAllocation);
 
 //================================================================
 //
@@ -64,7 +64,7 @@ KIT_CREATE1(GpuMemoryAllocationKit, GpuMemoryAllocation&, gpuMemoryAllocation);
 //================================================================
 
 struct GpuStreamCreation;
-KIT_CREATE1(GpuStreamCreationKit, GpuStreamCreation&, gpuStreamCreation);
+KIT_CREATE(GpuStreamCreationKit, GpuStreamCreation&, gpuStreamCreation);
 
 //================================================================
 //
@@ -73,7 +73,7 @@ KIT_CREATE1(GpuStreamCreationKit, GpuStreamCreation&, gpuStreamCreation);
 //================================================================
 
 struct GpuBenchmarkingControl;
-KIT_CREATE1(GpuBenchmarkingControlKit, GpuBenchmarkingControl&, gpuBenchmarkingControl);
+KIT_CREATE(GpuBenchmarkingControlKit, GpuBenchmarkingControl&, gpuBenchmarkingControl);
 
 //================================================================
 //
@@ -82,8 +82,8 @@ KIT_CREATE1(GpuBenchmarkingControlKit, GpuBenchmarkingControl&, gpuBenchmarkingC
 //
 //================================================================
 
-KIT_COMBINE9(GpuInitKit, GpuInitializationKit, GpuContextCreationKit, GpuModuleCreationKit,
-    GpuKernelLoadingKit, GpuSamplerLoadingKit, GpuMemoryAllocationKit, GpuTextureAllocKit, GpuStreamCreationKit, GpuEventAllocKit);
+using GpuInitKit = KitCombine<GpuInitializationKit, GpuContextCreationKit, GpuModuleCreationKit,
+    GpuKernelLoadingKit, GpuSamplerLoadingKit, GpuMemoryAllocationKit, GpuTextureAllocKit, GpuStreamCreationKit, GpuEventAllocKit>;
 
-KIT_COMBINE7(GpuExecKit, GpuTransferKit, GpuSamplerSetupKit, GpuKernelCallingKit, GpuStreamWaitingKit,
-    GpuEventRecordingKit, GpuEventWaitingKit, GpuBenchmarkingControlKit);
+using GpuExecKit = KitCombine<GpuTransferKit, GpuSamplerSetupKit, GpuKernelCallingKit, GpuStreamWaitingKit,
+    GpuEventRecordingKit, GpuEventWaitingKit, GpuBenchmarkingControlKit>;

@@ -16,4 +16,4 @@ struct MessageFormatter;
 //
 //================================================================
 
-KIT_CREATE1(MessageFormatterKit, MessageFormatter&, formatter);
+KIT_CREATE(MessageFormatterKit, MessageFormatter&, formatter);

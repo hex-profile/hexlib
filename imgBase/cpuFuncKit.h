@@ -12,4 +12,4 @@
 //
 //================================================================
 
-KIT_COMBINE4(CpuFuncKit, ErrorLogKit, ProfilerKit, CpuFastAllocKit, DataProcessingKit);
+using CpuFuncKit = KitCombine<ErrorLogKit, ProfilerKit, CpuFastAllocKit, DataProcessingKit>;

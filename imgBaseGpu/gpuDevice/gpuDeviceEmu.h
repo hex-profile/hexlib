@@ -45,13 +45,13 @@ struct EmuKernelTools
 //
 //================================================================
 
-KIT_CREATE4(
-    EmuSharedParams,
-    Point<Space>, threadCount,
-    Point3D<Space>, groupIdx,
-    Point3D<Space>, groupCount,
-    EmuKernelTools&, kernelTools
-);
+struct EmuSharedParams
+{
+    Point<Space> threadCount;
+    Point3D<Space> groupIdx;
+    Point3D<Space> groupCount;
+    EmuKernelTools& kernelTools;
+};
 
 //================================================================
 //

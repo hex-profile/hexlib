@@ -27,13 +27,13 @@ using InputPixel = MemFloat;
 
 //----------------------------------------------------------------
 
-KIT_CREATE4(
-    Process,
-    const GpuMatrix<const InputPixel>&, oldImage,
-    const GpuMatrix<const InputPixel>&, newImage,
-    const Point<float32>&, baseVector,
-    const Point<float32>&, userPoint
-);
+struct Process
+{
+    const GpuMatrix<const InputPixel>& oldImage;
+    const GpuMatrix<const InputPixel>& newImage;
+    const Point<float32>& baseVector;
+    const Point<float32>& userPoint;
+};
 
 //================================================================
 //

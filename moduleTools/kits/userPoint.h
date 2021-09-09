@@ -10,6 +10,12 @@
 //
 //================================================================
 
-KIT_CREATE4(UserPoint, bool, valid, Point<Space>, position, bool, signal, bool, signalAlt);
+struct UserPoint
+{
+    bool valid; 
+    Point<Space> position; 
+    bool signal; 
+    bool signalAlt;
+};
 
-KIT_CREATE1(UserPointKit, const UserPoint&, userPoint);
+KIT_CREATE(UserPointKit, const UserPoint&, userPoint);

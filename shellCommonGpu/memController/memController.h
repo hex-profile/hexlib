@@ -13,7 +13,7 @@ namespace memController {
 //
 //================================================================
 
-KIT_COMBINE5(FastAllocToolkit, DataProcessingKit, CpuFastAllocKit, CpuBlockAllocatorKit, GpuFastAllocKit, GpuBlockAllocatorKit);
+using FastAllocToolkit = KitCombine<DataProcessingKit, CpuFastAllocKit, CpuBlockAllocatorKit, GpuFastAllocKit, GpuBlockAllocatorKit>;
 
 //================================================================
 //
@@ -117,7 +117,7 @@ KIT_CREATE3(
 //
 //================================================================
 
-KIT_COMBINE4(ProcessKit, ErrorLogKit, ErrorLogExKit, ProfilerKit, MsgLogsKit);
+using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, ProfilerKit, MsgLogsKit>;
 
 //================================================================
 //

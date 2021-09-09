@@ -12,4 +12,4 @@
 
 struct SetBusyStatus;
 
-KIT_CREATE1(SetBusyStatusKit, SetBusyStatus&, setBusyStatus);
+KIT_CREATE(SetBusyStatusKit, SetBusyStatus&, setBusyStatus);

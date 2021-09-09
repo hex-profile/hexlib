@@ -125,7 +125,7 @@ public:
 
 public:
 
-    KIT_COMBINE2(Kit, GpuProcessKit, MsgLogsKit);
+    using Kit = KitCombine<GpuProcessKit, MsgLogsKit>;
 
     inline GpuBaseConsoleByCpuThunk(BaseImageConsole& baseImageConsole, BaseVideoOverlay& baseVideoOverlay, const Kit& kit)
         : baseImageConsole(baseImageConsole), baseVideoOverlay(baseVideoOverlay), kit(kit) {}

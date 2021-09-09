@@ -92,13 +92,13 @@ stdbool TestShellImpl::process(const Process& base, stdPars(ProcessKit))
 
     if (fourierFilterBank.active())
     {
-        require(fourierFilterBank.process(0, stdPass));
+        require(fourierFilterBank.process({}, stdPass));
         returnTrue;
     }
 
     if (gaussPresentationTest.active())
     {
-        require(gaussPresentationTest.process(0, stdPass));
+        require(gaussPresentationTest.process({}, stdPass));
         returnTrue;
     }
 

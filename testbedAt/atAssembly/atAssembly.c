@@ -38,11 +38,11 @@ namespace atStartup {
 //
 //================================================================
 
-KIT_COMBINE7(ProcessProfilerKit, ProcessKit, TimerKit, OverlayTakeoverKit, UserPointKit, FileToolsKit, FrameAdvanceKit, ProfilerKit);
-KIT_COMBINE2(ProcessFinalKit, ProcessProfilerKit, gpuShell::GpuShellKit);
+using ProcessProfilerKit = KitCombine<ProcessKit, TimerKit, OverlayTakeoverKit, UserPointKit, FileToolsKit, FrameAdvanceKit, ProfilerKit>;
+using ProcessFinalKit = KitCombine<ProcessProfilerKit, gpuShell::GpuShellKit>;
 
 using TargetReallocKit = ProcessFinalKit;
-KIT_COMBINE2(TargetProcessKit, ProcessFinalKit, PipeControlKit);
+using TargetProcessKit = KitCombine<ProcessFinalKit, PipeControlKit>;
 
 //================================================================
 //
@@ -138,7 +138,7 @@ private:
 //
 //================================================================
 
-KIT_COMBINE7(EngineBaseKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit, OverlayTakeoverKit, ProfilerKit, gpuShell::GpuShellKit);
+using EngineBaseKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit, OverlayTakeoverKit, ProfilerKit, gpuShell::GpuShellKit>;
 
 //================================================================
 //
@@ -370,7 +370,7 @@ class InputMetadataHandler
 
 public:
 
-    KIT_COMBINE3(UpdateKit, DiagnosticKit, LocalLogKit, FileToolsKit);
+    using UpdateKit = KitCombine<DiagnosticKit, LocalLogKit, FileToolsKit>;
 
     stdbool checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit));
     stdbool reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit));
@@ -982,7 +982,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         // if input frame is repeated, rollback 1 frame (advance 0 frames), else rollback 0 frames (advance 1 frame).
         //
 
-        PipeControl pipeControl(frameRepetition, false);
+        PipeControl pipeControl{frameRepetition, false};
         TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl));
 
         ////
@@ -1040,7 +1040,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         // was made on successful counting stage.
         //
 
-        PipeControl pipeControl(1, false);
+        PipeControl pipeControl{1, false};
         TargetProcessKit kitEx = kitCombine(kit, PipeControlKit(pipeControl));
 
         ////
@@ -1264,8 +1264,8 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 
     ////
 
-    PipeControl pipeControl(frameAdvance ? 0 : 1, false);
-    UserPoint userPoint(kit.atUserPointValid, kit.atUserPoint, overview.mouseSignal, overview.mouseSignalAlt);
+    PipeControl pipeControl{frameAdvance ? 0 : 1, false};
+    UserPoint userPoint{kit.atUserPointValid, kit.atUserPoint, overview.mouseSignal, overview.mouseSignalAlt};
 
     ////
 

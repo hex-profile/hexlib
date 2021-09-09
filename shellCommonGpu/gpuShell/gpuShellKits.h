@@ -25,7 +25,7 @@ KIT_CREATE3(
 //
 //================================================================
 
-KIT_COMBINE6(GpuShellKit, GpuInitKit, GpuExecKit, GpuSystemAllocatorsKit, GpuCurrentContextKit, GpuPropertiesKit, GpuCurrentStreamKit);
+using GpuShellKit = KitCombine<GpuInitKit, GpuExecKit, GpuSystemAllocatorsKit, GpuCurrentContextKit, GpuPropertiesKit, GpuCurrentStreamKit>;
 
 //----------------------------------------------------------------
 

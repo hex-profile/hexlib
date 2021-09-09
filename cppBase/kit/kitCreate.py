@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
             write('//----------------------------------------------------------------')
             write('')
-            writes('#define KIT__CREATE%d(Kit, %s, typenameWord)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
+            writes('#define KIT__CREATE%d(Kit, %s)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
 
             with Indent(level):
 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
                     writes('sysinline Kit')
                     writes('(')
                     with Indent(level):
-                        [writes('typenameWord() ParamType<Type%d>::T name%d%s' % (i, i, '' if i == n-1 and n != 1 else ',')) for i in range(n)]
+                        [writes('ParamType<Type%d>::T name%d%s' % (i, i, '' if i == n-1 and n != 1 else ',')) for i in range(n)]
                     writes(')')
 
                     with Indent(level):
@@ -140,12 +140,8 @@ if __name__ == '__main__':
 
             writes('#define KIT_CREATE%d(Kit, %s)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
             with Indent(level):
-                write('KIT__CREATE%d(Kit, %s, KIT__TYPENAME_NO)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
+                write('KIT__CREATE%d(Kit, %s)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
 
             write('')
-
-            writes('#define KIT_CREATE%d_(Kit, %s)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
-            with Indent(level):
-                write('KIT__CREATE%d(Kit, %s, KIT__TYPENAME_YES)' % (n, ", ".join(['Type%d, name%d' % (i, i) for i in range(0, n)])))
 
             write('')

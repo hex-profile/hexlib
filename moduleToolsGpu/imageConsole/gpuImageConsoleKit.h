@@ -11,4 +11,4 @@
 
 struct GpuImageConsole;
 
-KIT_CREATE1(GpuImageConsoleKit, GpuImageConsole&, gpuImageConsole);
+KIT_CREATE(GpuImageConsoleKit, GpuImageConsole&, gpuImageConsole);

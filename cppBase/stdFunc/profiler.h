@@ -75,7 +75,7 @@ struct Profiler
 //
 //================================================================
 
-KIT_CREATE1(ProfilerKit, Profiler*, profiler);
+KIT_CREATE(ProfilerKit, Profiler*, profiler);
 
 //================================================================
 //

@@ -17,8 +17,8 @@
 //
 //================================================================
 
-KIT_COMBINE2(AtEngineReallocKit, GpuModuleReallocKit, GpuBlockAllocatorKit);
-KIT_COMBINE2(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit);
+using AtEngineReallocKit = KitCombine<GpuModuleReallocKit, GpuBlockAllocatorKit>;
+using AtEngineProcessKit = KitCombine<GpuModuleProcessKit, GpuRgbFrameKit>;
 
 //================================================================
 //
@@ -26,7 +26,7 @@ KIT_COMBINE2(AtEngineProcessKit, GpuModuleProcessKit, GpuRgbFrameKit);
 //
 //================================================================
 
-KIT_COMBINE2(InputMetadataSerializeKit, CfgSerializeKit, InputVideoNameKit);
+using InputMetadataSerializeKit = KitCombine<CfgSerializeKit, InputVideoNameKit>;
 
 //================================================================
 //

@@ -9,4 +9,4 @@
 //
 //================================================================
 
-KIT_CREATE1(DebugBridgeKit, DebugBridge&, debugBridge);
+KIT_CREATE(DebugBridgeKit, DebugBridge&, debugBridge);

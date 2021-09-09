@@ -890,7 +890,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     //----------------------------------------------------------------
 
     MallocMonitorThunk<CpuAddrU> mallocMonitor(baseKit.malloc.func);
-    AllocatorObject<CpuAddrU> mallocMonitorObject(baseKit.malloc.state, mallocMonitor);
+    AllocatorObject<CpuAddrU> mallocMonitorObject{baseKit.malloc.state, mallocMonitor};
 
     auto kit = kitReplace(baseKit, MallocKit(mallocMonitorObject));
 
@@ -956,12 +956,12 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     ARRAY_EXPOSE_UNSAFE_EX(client->videofileName, videofileName);
 
     AtVideoInfo atVideoInfo
-    (
+    {
         charArrayFromPtr(videofileNamePtr),
         frameIndex, frameCount,
         interlacedMode, interlacedLower,
         frame.size()
-    );
+    };
 
     ////
 

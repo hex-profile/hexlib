@@ -160,7 +160,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
         kit,
         initKit,
         execKit,
-        GpuSystemAllocatorsKit(cpuFlatAllocator, gpuFlatAllocator, kit.gpuInitApi.getKit().gpuTextureAlloc)
+        GpuSystemAllocatorsKit{cpuFlatAllocator, gpuFlatAllocator, kit.gpuInitApi.getKit().gpuTextureAlloc}
     );
 
     //----------------------------------------------------------------

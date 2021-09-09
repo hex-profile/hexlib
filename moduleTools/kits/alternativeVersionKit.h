@@ -8,4 +8,4 @@
 //
 //================================================================
 
-KIT_CREATE1(AlternativeVersionKit, bool, alternative);
+KIT_CREATE(AlternativeVersionKit, bool, alternative);

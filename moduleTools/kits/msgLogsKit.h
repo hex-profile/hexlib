@@ -12,8 +12,7 @@
 //
 //================================================================
 
-KIT_CREATE1(LocalLogKit, MsgLog&, localLog);
-
+KIT_CREATE(LocalLogKit, MsgLog&, localLog);
 KIT_CREATE2(LocalLogAuxKit, bool, localLogAuxAvailable, MsgLog&, localLogAux);
 
-KIT_COMBINE4(MsgLogsKit, MessageFormatterKit, MsgLogKit, LocalLogKit, LocalLogAuxKit);
+using MsgLogsKit = KitCombine<MessageFormatterKit, MsgLogKit, LocalLogKit, LocalLogAuxKit>;

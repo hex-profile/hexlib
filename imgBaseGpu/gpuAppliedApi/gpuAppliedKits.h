@@ -12,7 +12,7 @@
 
 struct GpuProperties;
 
-KIT_CREATE1(GpuPropertiesKit, const GpuProperties&, gpuProperties);
+KIT_CREATE(GpuPropertiesKit, const GpuProperties&, gpuProperties);
 
 //================================================================
 //
@@ -20,7 +20,7 @@ KIT_CREATE1(GpuPropertiesKit, const GpuProperties&, gpuProperties);
 //
 //================================================================
 
-KIT_CREATE1(GpuFastAllocKit, AllocatorObject<GpuAddrU>&, gpuFastAlloc);
+KIT_CREATE(GpuFastAllocKit, AllocatorObject<GpuAddrU>&, gpuFastAlloc);
 
 //================================================================
 //
@@ -32,7 +32,7 @@ KIT_CREATE1(GpuFastAllocKit, AllocatorObject<GpuAddrU>&, gpuFastAlloc);
 
 struct GpuContext;
 
-KIT_CREATE1(GpuCurrentContextKit, const GpuContext&, gpuCurrentContext);
+KIT_CREATE(GpuCurrentContextKit, const GpuContext&, gpuCurrentContext);
 
 //================================================================
 //
@@ -44,7 +44,7 @@ KIT_CREATE1(GpuCurrentContextKit, const GpuContext&, gpuCurrentContext);
 
 struct GpuStream;
 
-KIT_CREATE1(GpuCurrentStreamKit, const GpuStream&, gpuCurrentStream);
+KIT_CREATE(GpuCurrentStreamKit, const GpuStream&, gpuCurrentStream);
 
 //================================================================
 //
@@ -54,7 +54,7 @@ KIT_CREATE1(GpuCurrentStreamKit, const GpuStream&, gpuCurrentStream);
 
 struct GpuTransfer;
 
-KIT_CREATE1(GpuTransferKit, GpuTransfer&, gpuTransfer);
+KIT_CREATE(GpuTransferKit, GpuTransfer&, gpuTransfer);
 
 //================================================================
 //
@@ -64,7 +64,7 @@ KIT_CREATE1(GpuTransferKit, GpuTransfer&, gpuTransfer);
 
 struct GpuStreamWaiting;
 
-KIT_CREATE1(GpuStreamWaitingKit, GpuStreamWaiting&, gpuStreamWaiting);
+KIT_CREATE(GpuStreamWaitingKit, GpuStreamWaiting&, gpuStreamWaiting);
 
 //================================================================
 //
@@ -74,7 +74,7 @@ KIT_CREATE1(GpuStreamWaitingKit, GpuStreamWaiting&, gpuStreamWaiting);
 
 struct GpuEventAllocator;
 
-KIT_CREATE1(GpuEventAllocKit, GpuEventAllocator&, gpuEventAlloc);
+KIT_CREATE(GpuEventAllocKit, GpuEventAllocator&, gpuEventAlloc);
 
 //================================================================
 //
@@ -84,7 +84,7 @@ KIT_CREATE1(GpuEventAllocKit, GpuEventAllocator&, gpuEventAlloc);
 
 struct GpuEventRecording;
 
-KIT_CREATE1(GpuEventRecordingKit, GpuEventRecording&, gpuEventRecording);
+KIT_CREATE(GpuEventRecordingKit, GpuEventRecording&, gpuEventRecording);
 
 //================================================================
 //
@@ -94,7 +94,7 @@ KIT_CREATE1(GpuEventRecordingKit, GpuEventRecording&, gpuEventRecording);
 
 struct GpuEventWaiting;
 
-KIT_CREATE1(GpuEventWaitingKit, GpuEventWaiting&, gpuEventWaiting);
+KIT_CREATE(GpuEventWaitingKit, GpuEventWaiting&, gpuEventWaiting);
 
 //================================================================
 //
@@ -104,7 +104,7 @@ KIT_CREATE1(GpuEventWaitingKit, GpuEventWaiting&, gpuEventWaiting);
 
 struct GpuKernelCalling;
 
-KIT_CREATE1(GpuKernelCallingKit, GpuKernelCalling&, gpuKernelCalling);
+KIT_CREATE(GpuKernelCallingKit, GpuKernelCalling&, gpuKernelCalling);
 
 //================================================================
 //
@@ -114,7 +114,7 @@ KIT_CREATE1(GpuKernelCallingKit, GpuKernelCalling&, gpuKernelCalling);
 
 struct GpuSamplerSetup;
 
-KIT_CREATE1(GpuSamplerSetupKit, GpuSamplerSetup&, gpuSamplerSetting);
+KIT_CREATE(GpuSamplerSetupKit, GpuSamplerSetup&, gpuSamplerSetting);
 
 //================================================================
 //
@@ -124,7 +124,7 @@ KIT_CREATE1(GpuSamplerSetupKit, GpuSamplerSetup&, gpuSamplerSetting);
 
 struct GpuTextureAllocator;
 
-KIT_CREATE1(GpuTextureAllocKit, GpuTextureAllocator&, gpuTextureAlloc);
+KIT_CREATE(GpuTextureAllocKit, GpuTextureAllocator&, gpuTextureAlloc);
 
 //================================================================
 //
@@ -132,10 +132,10 @@ KIT_CREATE1(GpuTextureAllocKit, GpuTextureAllocator&, gpuTextureAlloc);
 //
 //================================================================
 
-KIT_COMBINE9(GpuAppExecKitWithoutFastAlloc, GpuCurrentContextKit, GpuPropertiesKit, GpuCurrentStreamKit, GpuTransferKit, GpuSamplerSetupKit, GpuKernelCallingKit,
-    GpuStreamWaitingKit, GpuEventRecordingKit, GpuEventWaitingKit);
+using GpuAppExecKitWithoutFastAlloc = KitCombine<GpuCurrentContextKit, GpuPropertiesKit, GpuCurrentStreamKit, GpuTransferKit, GpuSamplerSetupKit, GpuKernelCallingKit,
+    GpuStreamWaitingKit, GpuEventRecordingKit, GpuEventWaitingKit>;
 
-KIT_COMBINE2(GpuAppExecKit, GpuAppExecKitWithoutFastAlloc, GpuFastAllocKit);
+using GpuAppExecKit = KitCombine<GpuAppExecKitWithoutFastAlloc, GpuFastAllocKit>;
 
 //================================================================
 //
@@ -143,7 +143,7 @@ KIT_COMBINE2(GpuAppExecKit, GpuAppExecKitWithoutFastAlloc, GpuFastAllocKit);
 //
 //================================================================
 
-KIT_COMBINE2(GpuAppAllocKit, GpuTextureAllocKit, GpuEventAllocKit);
+using GpuAppAllocKit = KitCombine<GpuTextureAllocKit, GpuEventAllocKit>;
 
 #define GPU_APP_ALLOC_KIT_LIST \
     (GpuTextureAllocKit) (GpuEventAllocKit)
@@ -154,4 +154,4 @@ KIT_COMBINE2(GpuAppAllocKit, GpuTextureAllocKit, GpuEventAllocKit);
 //
 //================================================================
 
-KIT_COMBINE2(GpuAppFullKit, GpuAppExecKit, GpuAppAllocKit);
+using GpuAppFullKit = KitCombine<GpuAppExecKit, GpuAppAllocKit>;

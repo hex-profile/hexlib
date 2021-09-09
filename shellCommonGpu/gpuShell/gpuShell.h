@@ -30,7 +30,7 @@ public:
 
 public:
 
-    KIT_COMBINE3(InitKit, GpuInitKit, ErrorLogKit, MsgLogKit);
+    using InitKit = KitCombine<GpuInitKit, ErrorLogKit, MsgLogKit>;
     stdbool createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit));
 
 private:
@@ -83,7 +83,7 @@ private:
 
 KIT_CREATE2(GpuApiImplKit, GpuInitApiImpl&, gpuInitApi, GpuExecApiImpl&, gpuExecApi);
 
-KIT_COMBINE5(ExecCyclicToolkit, GpuApiImplKit, GpuPropertiesKit, GpuCurrentContextKit, GpuCurrentStreamKit, LocalLogKit);
+using ExecCyclicToolkit = KitCombine<GpuApiImplKit, GpuPropertiesKit, GpuCurrentContextKit, GpuCurrentStreamKit, LocalLogKit>;
 
 //================================================================
 //

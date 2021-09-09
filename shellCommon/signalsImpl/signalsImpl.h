@@ -106,7 +106,7 @@ inline void handleSignals(Assembly& that, const Array<const int32>& signalHist, 
 
     {
         FeedSignal visitor(signalHist);
-        that.serialize(CfgSerializeKit(visitor, nullptr));
+        that.serialize(CfgSerializeKit{visitor, nullptr});
     }
 
     //
@@ -124,7 +124,7 @@ inline void handleSignals(Assembly& that, const Array<const int32>& signalHist, 
     if_not (prevOverlayID == overlayOwnerID)
     {
         FeedSignal visitor(signalHist);
-        that.serialize(CfgSerializeKit(visitor, nullptr));
+        that.serialize(CfgSerializeKit{visitor, nullptr});
     }
 }
 

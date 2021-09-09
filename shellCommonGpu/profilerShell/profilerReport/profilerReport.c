@@ -585,12 +585,12 @@ StlString trimRightSpaces(const StlString& str)
 //
 //================================================================
 
-KIT_CREATE3
-(
-    CodeBlockParams,
-    Space, simpleCutRadius,
-    Space, smartMaxScanRows, Space, smartMaxRows
-);
+struct CodeBlockParams
+{
+    Space simpleCutRadius;
+    Space smartMaxScanRows; 
+    Space smartMaxRows;
+};
 
 //================================================================
 //
@@ -778,14 +778,13 @@ struct Timing
 //
 //================================================================
 
-KIT_CREATE4
-(
-    TimingParams,
-    bool, deviceTimingMode,
-    float32, tickFactor,
-    float32, divCycleCount,
-    float32, processingThroughput
-);
+struct TimingParams
+{
+    bool deviceTimingMode;
+    float32 tickFactor;
+    float32 divCycleCount;
+    float32 processingThroughput;
+};
 
 //================================================================
 //
@@ -966,18 +965,18 @@ inline bool factorIsEqual(float32 a, float32 b, float32 tolerance)
 //
 //================================================================
 
-KIT_CREATE9(
-    DisplayParams,
-    float32, timeThresholdFraction,
-    float32, timeThresholdMin,
-    float32, timeThresholdMax,
-    int32, timeMsDigits,
-    float32, factorTolerance,
-    int32, factorDigits,
-    int32, maxSourceLineLength,
-    uint32, maxCallstackFullyExpanded,
-    uint32, minCallstackExpanded
-);
+struct DisplayParams
+{
+    float32 timeThresholdFraction;
+    float32 timeThresholdMin;
+    float32 timeThresholdMax;
+    int32 timeMsDigits;
+    float32 factorTolerance;
+    int32 factorDigits;
+    int32 maxSourceLineLength;
+    uint32 maxCallstackFullyExpanded;
+    uint32 minCallstackExpanded;
+};
 
 //================================================================
 //
@@ -985,15 +984,15 @@ KIT_CREATE9(
 //
 //================================================================
 
-KIT_CREATE6(
-    HtmlReportParams,
-    const TimingParams&, timingParams,
-    const CodeBlockParams&, codeBlockParams,
-    const DisplayParams&, displayParams,
-    const StlString&, outputDirPrefix,
-    const StlString&, reportCreationTime,
-    SourceCache&, sourceCache
-);
+struct HtmlReportParams
+{
+    const TimingParams& timingParams;
+    const CodeBlockParams& codeBlockParams;
+    const DisplayParams& displayParams;
+    const StlString& outputDirPrefix;
+    const StlString& reportCreationTime;
+    SourceCache& sourceCache;
+};
 
 //================================================================
 //
@@ -1824,7 +1823,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
 
         ////
 
-        TimingParams timingParams(deviceTimingMode, tickFactor, 1.f/o.cycleCount, o.processingThroughput);
+        TimingParams timingParams{deviceTimingMode, tickFactor, 1.f/o.cycleCount, o.processingThroughput};
 
         NodeInfo rootInfo;
         computeNodeTiming(*rootNode, timingParams, rootInfo.timing);
@@ -1840,7 +1839,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
         StlString outputDirPrefix = StlString(o.outputDir) + CT("/");
         require(writeStylesheet(outputDirPrefix, stdPass));
 
-        CodeBlockParams codeBlockParams((simpleMaxRows | 1) / 2, smartMaxScanRows, smartMaxRows);
+        CodeBlockParams codeBlockParams{(simpleMaxRows | 1) / 2, smartMaxScanRows, smartMaxRows};
 
         float32 timeThresholdFraction = timeThresholdParentFractionInPercents * 0.01f;
         float32 timeThresholdMin = powf(10.f, -float32(timeMsDigits + 3)) / 2; // Minimal visible time with given precision.
@@ -1850,7 +1849,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
             timeThresholdMin = timeThresholdMax = 0;
 
         DisplayParams displayParams
-        (
+        {
             timeThresholdFraction, timeThresholdMin, timeThresholdMax,
             timeMsDigits,
             powf(10.f, -float32(factorDigits)) / 2,
@@ -1858,9 +1857,9 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
             maxSourceLineLength,
             maxCallstackFullyExpanded,
             minCallstackExpanded
-        );
+        };
 
-        HtmlReportParams params(timingParams, codeBlockParams, displayParams, outputDirPrefix, timeStr, sourceCacheThunk);
+        HtmlReportParams params{timingParams, codeBlockParams, displayParams, outputDirPrefix, timeStr, sourceCacheThunk};
         require(generateHtmlForTree(*rootNode, rootInfo, StlString(), params, stdPass));
 
     }

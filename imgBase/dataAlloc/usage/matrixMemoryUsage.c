@@ -9,7 +9,7 @@
 //
 //================================================================
 
-KIT_COMBINE2(TestKit, CpuFastAllocKit, ErrorLogKit);
+using TestKit = KitCombine<CpuFastAllocKit, ErrorLogKit>;
 
 //----------------------------------------------------------------
 

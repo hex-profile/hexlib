@@ -133,7 +133,7 @@ struct CheckCfgvarsChanged : public CfgVisitor
 bool cfgvarChanged(CfgSerialization& serialization)
 {
     CheckCfgvarsChanged visitor;
-    serialization.serialize(CfgSerializeKit(visitor, nullptr));
+    serialization.serialize(CfgSerializeKit{visitor, nullptr});
     return visitor.anyChange;
 }
 
@@ -159,7 +159,7 @@ struct CfgvarClearChanged : public CfgVisitor
 void cfgvarClearChanged(CfgSerialization& serialization)
 {
     CfgvarClearChanged visitor;
-    CfgSerializeKit kit(visitor, 0);
+    CfgSerializeKit kit{visitor, 0};
     serialization.serialize(kit);
 }
 
@@ -185,7 +185,7 @@ struct CfgvarSetDefaultValue : public CfgVisitor
 void cfgvarResetValue(CfgSerialization& serialization)
 {
     CfgvarSetDefaultValue visitor;
-    CfgSerializeKit kit(visitor, 0);
+    CfgSerializeKit kit{visitor, 0};
     serialization.serialize(kit);
 }
 

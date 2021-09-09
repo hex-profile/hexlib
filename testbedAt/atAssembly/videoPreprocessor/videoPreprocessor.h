@@ -21,7 +21,7 @@ namespace videoPreprocessor {
 //
 //================================================================
 
-KIT_COMBINE8(ProcessTargetKit, GpuImageConsoleKit, GpuRgbFrameKit, PipeControlKit, AlternativeVersionKit, VerbosityKit, DisplayParamsKit, UserPointKit, SetBusyStatusKit);
+using ProcessTargetKit = KitCombine<GpuImageConsoleKit, GpuRgbFrameKit, PipeControlKit, AlternativeVersionKit, VerbosityKit, DisplayParamsKit, UserPointKit, SetBusyStatusKit>;
 
 //================================================================
 //
@@ -42,10 +42,10 @@ struct VideoPrepTarget
 //
 //================================================================
 
-KIT_COMBINE3(ReallocKit, ModuleReallocKit, GpuAppExecKit, AtCommonKit);
+using ReallocKit = KitCombine<ModuleReallocKit, GpuAppExecKit, AtCommonKit>;
 
-KIT_COMBINE9(ProcessBaseKit_, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, VerbosityKit, UserPointKit, SetBusyStatusKit);
-KIT_COMBINE6(ProcessKit, ProcessBaseKit_, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit);
+using ProcessKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, VerbosityKit, 
+    UserPointKit, SetBusyStatusKit, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit>;
 
 //================================================================
 //

@@ -251,12 +251,12 @@ EmuError EmuWin32::launchKernel
     //
 
     EmuSharedParams sharedParams
-    (
+    {
         threadCount,
         point3D(0), // groupIdx
         convertExact<Space>(groupCount),
         *this
-    );
+    };
 
     ////
 

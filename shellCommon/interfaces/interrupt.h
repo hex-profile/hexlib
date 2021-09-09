@@ -19,4 +19,4 @@ struct Interrupt
 //
 //================================================================
 
-KIT_CREATE1(InterruptKit, Interrupt&, interrupt);
+KIT_CREATE(InterruptKit, Interrupt&, interrupt);

@@ -11,4 +11,4 @@
 //
 //================================================================
 
-KIT_COMBINE4(DiagnosticKit, MessageFormatterKit, MsgLogKit, ErrorLogKit, ErrorLogExKit);
+using DiagnosticKit = KitCombine<MessageFormatterKit, MsgLogKit, ErrorLogKit, ErrorLogExKit>;

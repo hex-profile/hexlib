@@ -16,7 +16,7 @@
 //
 //================================================================
 
-KIT_CREATE1(DataProcessingKit, bool, dataProcessing);
+KIT_CREATE(DataProcessingKit, bool, dataProcessing);
 
 //================================================================
 //
@@ -33,4 +33,4 @@ struct AllocatorObject;
 //
 //================================================================
 
-KIT_CREATE1(CpuFastAllocKit, AllocatorObject<CpuAddrU>&, cpuFastAlloc);
+KIT_CREATE(CpuFastAllocKit, AllocatorObject<CpuAddrU>&, cpuFastAlloc);
