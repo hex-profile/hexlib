@@ -150,7 +150,7 @@ struct GpuEventOwner : public GpuEvent
 
 struct GpuEventAllocator
 {
-    virtual stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars) =0;
+    virtual stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars) =0;
 };
 
 //================================================================

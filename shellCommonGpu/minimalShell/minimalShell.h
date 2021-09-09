@@ -4,7 +4,6 @@
 #include "baseInterfaces/baseImageConsole.h"
 #include "configFile/cfgSerialization.h"
 #include "interfaces/fileToolsKit.h"
-#include "interfaces/threadManagerKit.h"
 #include "kits/moduleHeader.h"
 #include "memController/memController.h"
 #include "storage/smartPtr.h"
@@ -54,7 +53,7 @@ public:
 
     virtual bool isInitialized() const =0;
 
-    using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, ThreadManagerKit, FileToolsKit>;
+    using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit, FileToolsKit>;
     virtual stdbool init(stdPars(InitKit)) =0;
 
 public:

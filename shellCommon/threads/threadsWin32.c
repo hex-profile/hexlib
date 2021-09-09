@@ -1,6 +1,6 @@
 #if defined(_WIN32)
 
-#include "threadManagerWin32.h"
+#include "threads.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -36,23 +36,23 @@
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-class CriticalSectionWin32 : public CriticalSectionInterface
+class MutexWin32 : public MutexInterface
 {
 
 public:
 
-    void enter()
+    void lock()
         {EnterCriticalSection(&section);}
 
-    void leave()
+    void unlock()
         {LeaveCriticalSection(&section);}
 
-    bool tryEnter()
+    bool tryLock()
         {return TryEnterCriticalSection(&section) != 0;}
 
 public:
 
-    inline CriticalSectionWin32()
+    inline MutexWin32()
     {
         InitializeCriticalSection(&section);
         DEBUG_ONLY(testPtr = malloc(5);)
@@ -60,7 +60,7 @@ public:
 
 public:
 
-    inline ~CriticalSectionWin32()
+    inline ~MutexWin32()
     {
         DeleteCriticalSection(&section);
         DEBUG_ONLY(free(testPtr); testPtr = 0;)
@@ -78,15 +78,15 @@ private:
 
 //================================================================
 //
-// ThreadManagerWin32::createCriticalSection
+// mutexCreate
 //
 //================================================================
 
-stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
+stdbool mutexCreate(Mutex& section, stdPars(ThreadToolKit))
 {
     section.clear();
 
-    auto& sectionEx = section.data.recast<CriticalSectionWin32>();
+    auto& sectionEx = section.data.recast<MutexWin32>();
 
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
@@ -104,7 +104,7 @@ stdbool ThreadManagerWin32::createCriticalSection(CriticalSection& section, stdP
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-class EventWin32 : public DestructibleInterface<Event>
+class EventWin32 : public EventInterface
 {
 
 public:
@@ -138,13 +138,13 @@ public:
 
 public:
 
-    stdbool create(bool manualReset, stdPars(ThreadToolKit))
+    stdbool create(stdPars(ThreadToolKit))
     {
         clear();
 
         ////
 
-        handle = CreateEvent(NULL, manualReset, false, NULL);
+        handle = CreateEvent(NULL, false, false, NULL);
         REQUIRE(handle != 0);
 
         ////
@@ -183,11 +183,11 @@ private:
 
 //================================================================
 //
-// ThreadManagerWin32::createEvent
+// eventCreate
 //
 //================================================================
 
-stdbool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
+stdbool eventCreate(EventOwner& event, stdPars(ThreadToolKit))
 {
     event.clear();
 
@@ -196,7 +196,7 @@ stdbool ThreadManagerWin32::createEvent(bool manualReset, EventOwner& event, std
     auto& eventEx = event.data.recast<EventWin32>();
 
     constructDefault(eventEx);
-    require(eventEx.create(manualReset, stdPass));
+    require(eventEx.create(stdPass));
 
     event.intrface = &eventEx;
 
@@ -366,11 +366,11 @@ public:
 
 //================================================================
 //
-// ThreadManagerWin32::createThread
+// threadCreate
 //
 //================================================================
 
-stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
 
@@ -391,11 +391,11 @@ stdbool ThreadManagerWin32::createThread(ThreadFunc* threadFunc, void* threadPar
 
 //================================================================
 //
-// ThreadManagerWin32::getCurrentThread
+// threadGetCurrent
 //
 //================================================================
 
-stdbool ThreadManagerWin32::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
 

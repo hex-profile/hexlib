@@ -1665,7 +1665,7 @@ public:
 
 public:
 
-    KIT_COMBINE1(Kit, DiagnosticKit);
+    using Kit = DiagnosticKit;
 
     SourceCacheThunk(SourceCacheImpl& impl, const StringArray& searchPath, const Kit& kit)
         : impl(impl), searchPath(searchPath), kit(kit) {}

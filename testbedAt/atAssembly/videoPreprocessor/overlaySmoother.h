@@ -3,7 +3,6 @@
 #include "kits/moduleHeader.h"
 #include "atInterface/atInterface.h"
 #include "allocation/mallocKit.h"
-#include "interfaces/threadManagerKit.h"
 
 namespace overlaySmoother {
 
@@ -13,7 +12,7 @@ namespace overlaySmoother {
 //
 //================================================================
 
-KIT_COMBINE2(InitKit, ErrorLogKit, ThreadManagerKit);
+using InitKit = ErrorLogKit;
 
 //================================================================
 //

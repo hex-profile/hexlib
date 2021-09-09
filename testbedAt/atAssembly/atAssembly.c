@@ -41,7 +41,7 @@ namespace atStartup {
 KIT_COMBINE7(ProcessProfilerKit, ProcessKit, TimerKit, OverlayTakeoverKit, UserPointKit, FileToolsKit, FrameAdvanceKit, ProfilerKit);
 KIT_COMBINE2(ProcessFinalKit, ProcessProfilerKit, gpuShell::GpuShellKit);
 
-KIT_COMBINE1(TargetReallocKit, ProcessFinalKit);
+using TargetReallocKit = ProcessFinalKit;
 KIT_COMBINE2(TargetProcessKit, ProcessFinalKit, PipeControlKit);
 
 //================================================================

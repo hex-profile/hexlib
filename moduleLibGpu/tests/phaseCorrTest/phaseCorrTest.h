@@ -13,7 +13,7 @@ namespace phaseCorrTest {
 //
 //================================================================
 
-KIT_COMBINE1(ProcessKit, GpuModuleProcessKit);
+using ProcessKit = GpuModuleProcessKit;
 
 //================================================================
 //

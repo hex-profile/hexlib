@@ -8,7 +8,6 @@
 #include "gpuLayer/gpuLayerEmu/emuMultiProc.h"
 #include "allocation/mallocFlatAllocator/mallocFlatAllocator.h"
 #include "allocation/mallocKit.h"
-#include "interfaces/threadManagerKit.h"
 
 //================================================================
 //
@@ -43,7 +42,7 @@ private:
 //
 //================================================================
 
-KIT_COMBINE4(EmuInitApiToolkit, ErrorLogKit, ErrorLogExKit, MallocKit, ThreadManagerKit);
+KIT_COMBINE3(EmuInitApiToolkit, ErrorLogKit, ErrorLogExKit, MallocKit);
 KIT_COMBINE2(EmuExecApiToolkit, ErrorLogKit, ErrorLogExKit);
 
 //================================================================
@@ -130,7 +129,7 @@ public:
     // Event creation
     //
 
-    stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
+    stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
     {
         result.clear();
         returnTrue;

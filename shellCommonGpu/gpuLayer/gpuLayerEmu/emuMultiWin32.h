@@ -5,7 +5,6 @@
 #include "kit/kit.h"
 #include "allocation/mallocKit.h"
 #include "point3d/point3dBase.h"
-#include "interfaces/threadManagerKit.h"
 
 namespace emuMultiWin32 {
 
@@ -27,7 +26,7 @@ Space getCpuCount();
 //
 //================================================================
 
-KIT_COMBINE3(CreateKit, ErrorLogKit, MallocKit, ThreadManagerKit);
+KIT_COMBINE2(CreateKit, ErrorLogKit, MallocKit);
 
 //================================================================
 //

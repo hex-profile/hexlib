@@ -1,6 +1,6 @@
 #if defined(__linux__)
 
-#include "threadManagerLinux.h"
+#include "threads.h"
 
 #include <mutex>
 
@@ -31,35 +31,35 @@
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-class CriticalSectionLinux : public CriticalSectionInterface
+class MutexLinux : public MutexInterface
 {
 
 public:
 
-    void enter()
+    void lock()
     {
         mutex.lock();
     }
 
-    void leave()
+    void unlock()
     {
         mutex.unlock();
     }
 
-    bool tryEnter()
+    bool tryLock()
     {
         return mutex.try_lock();
     }
 
 public:
 
-    inline CriticalSectionLinux()
+    inline MutexLinux()
     {
     }
 
 public:
 
-    inline ~CriticalSectionLinux()
+    inline ~MutexLinux()
     {
     }
 
@@ -72,15 +72,15 @@ private:
 
 //================================================================
 //
-// ThreadManagerLinux::createCriticalSection
+// mutexCreate
 //
 //================================================================
 
-stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdPars(ThreadToolKit))
+stdbool mutexCreate(Mutex& section, stdPars(ThreadToolKit))
 {
     section.clear();
 
-    auto& sectionEx = section.data.recast<CriticalSectionLinux>();
+    auto& sectionEx = section.data.recast<MutexLinux>();
 
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
@@ -100,11 +100,11 @@ stdbool ThreadManagerLinux::createCriticalSection(CriticalSection& section, stdP
 
 //================================================================
 //
-// ThreadManagerLinux::createEvent
+// eventCreate
 //
 //================================================================
 
-stdbool ThreadManagerLinux::createEvent(bool manualReset, EventOwner& event, stdPars(ThreadToolKit))
+stdbool eventCreate(EventOwner& event, stdPars(ThreadToolKit))
 {
     event.clear();
 
@@ -129,11 +129,11 @@ stdbool ThreadManagerLinux::createEvent(bool manualReset, EventOwner& event, std
 
 //================================================================
 //
-// ThreadManagerLinux::createThread
+// threadCreate
 //
 //================================================================
 
-stdbool ThreadManagerLinux::createThread(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
     REQUIRE(false); // not impl
@@ -142,11 +142,11 @@ stdbool ThreadManagerLinux::createThread(ThreadFunc* threadFunc, void* threadPar
 
 //================================================================
 //
-// ThreadManagerLinux::getCurrentThread
+// threadGetCurrent
 //
 //================================================================
 
-stdbool ThreadManagerLinux::getCurrentThread(ThreadControl& threadControl, stdPars(ThreadToolKit))
+stdbool threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
     REQUIRE(false); // not impl

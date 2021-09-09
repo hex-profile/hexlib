@@ -5,7 +5,6 @@
 #include "atInterface/atInterfaceKit.h"
 #include "gpuModuleHeader.h"
 #include "interfaces/fileToolsKit.h"
-#include "interfaces/threadManagerKit.h"
 #include "kits/alternativeVersionKit.h"
 #include "kits/displayParamsKit.h"
 #include "kits/gpuRgbFrameKit.h"
@@ -46,7 +45,7 @@ struct VideoPrepTarget
 KIT_COMBINE3(ReallocKit, ModuleReallocKit, GpuAppExecKit, AtCommonKit);
 
 KIT_COMBINE9(ProcessBaseKit_, CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, VerbosityKit, UserPointKit, SetBusyStatusKit);
-KIT_COMBINE7(ProcessKit, ProcessBaseKit_, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit, ThreadManagerKit);
+KIT_COMBINE6(ProcessKit, ProcessBaseKit_, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit);
 
 //================================================================
 //

@@ -97,6 +97,14 @@ constexpr inline auto makeKey(const Literal& str)
 //----------------------------------------------------------------
 
 template <typename Iterator>
+inline auto makeIndex(Index index)
+{
+    return Key<Iterator>{{{}, {}}, index};
+}
+
+//----------------------------------------------------------------
+
+template <typename Iterator>
 inline bool operator ==(const Key<Iterator>& A, const Key<Iterator>& B)
 {
     return 

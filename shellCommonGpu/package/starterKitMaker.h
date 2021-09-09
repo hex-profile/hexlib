@@ -7,7 +7,6 @@
 #include "formattedOutput/diagLogTool.h"
 #include "formattedOutput/messageFormatterStdio.h"
 #include "package/starterKit.h"
-#include "threading/threadManagerImpl.h"
 #include "timerImpl/timerImpl.h"
 
 namespace packageImpl {
@@ -78,8 +77,6 @@ struct StarterKitMaker
     ErrorLogKit errorLogKit{errorLog};
     MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit);
 
-    ThreadManagerImpl threadManager;
-
     ////
 
     StarterKit kit = kitCombine
@@ -92,8 +89,7 @@ struct StarterKitMaker
         LocalLogAuxKit(false, localLog),
         TimerKit(timer),
         FileToolsKit(fileTools),
-        MallocKit(mallocAllocator), 
-        ThreadManagerKit(threadManager)
+        MallocKit(mallocAllocator)
     );
 };
 
@@ -179,8 +175,6 @@ struct StarterDebugKitMaker
     ErrorLogKit errorLogKit{errorLog};
     MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit);
 
-    ThreadManagerImpl threadManager;
-
     ////
 
     StarterDebugKit kit = kitCombine
@@ -194,7 +188,6 @@ struct StarterDebugKitMaker
         TimerKit{timer},
         FileToolsKit{fileTools},
         MallocKit{mallocAllocator}, 
-        ThreadManagerKit{threadManager},
         DebugBridgeKit{debugBridge},
         DumpParamsKit{dumpParams}
     );

@@ -2,7 +2,6 @@
 
 #include "allocation/mallocKit.h"
 #include "atInterface/atInterfaceKit.h"
-#include "interfaces/threadManagerKit.h"
 #include "kits/moduleHeader.h"
 #include "storage/dynamicClass.h"
 #include "atEngine/atEngine.h"
@@ -24,8 +23,8 @@ namespace atStartup {
 //
 //================================================================
 
-KIT_COMBINE7(InitKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtCommonKit, MallocKit, ThreadManagerKit, SetBusyStatusKit);
-KIT_COMBINE7(ProcessKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtProcessKit, MallocKit, ThreadManagerKit, SetBusyStatusKit);
+KIT_COMBINE6(InitKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtCommonKit, MallocKit, SetBusyStatusKit);
+KIT_COMBINE6(ProcessKit, ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtProcessKit, MallocKit, SetBusyStatusKit);
 
 //================================================================
 //

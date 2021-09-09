@@ -1164,12 +1164,12 @@ stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& c
 
         for_count (k, coverageMultiplier)
         {
-            require(gpuEventAlloc.createEvent(context, true, r->events[k].startEvent, stdPass));
-            require(gpuEventAlloc.createEvent(context, true, r->events[k].stopEvent, stdPass));
+            require(gpuEventAlloc.eventCreate(context, true, r->events[k].startEvent, stdPass));
+            require(gpuEventAlloc.eventCreate(context, true, r->events[k].stopEvent, stdPass));
         }
 
         if (coverageTotalTrapCount)
-            require(gpuEventAlloc.createEvent(context, false, r->trapEvent, stdPass));
+            require(gpuEventAlloc.eventCreate(context, false, r->trapEvent, stdPass));
     }
 
     ////
@@ -1632,11 +1632,11 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
 
 //================================================================
 //
-// CudaInitApiThunk::createEvent
+// CudaInitApiThunk::eventCreate
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
+stdbool CudaInitApiThunk::eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
 {
     result.clear();
 

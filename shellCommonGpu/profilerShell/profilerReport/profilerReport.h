@@ -13,7 +13,7 @@ namespace profilerReport {
 //
 //================================================================
 
-KIT_COMBINE1(ReportKit, DiagnosticKit);
+using ReportKit = DiagnosticKit;
 KIT_COMBINE2(ReportFileKit, ReportKit, FileToolsKit);
 
 //================================================================

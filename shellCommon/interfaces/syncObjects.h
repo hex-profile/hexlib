@@ -3,37 +3,45 @@
 #include "storage/opaqueStruct.h"
 #include "prepTools/prepBase.h"
 #include "dataAlloc/deallocInterface.h"
-#include "storage/destructibleInterface.h"
 #include "storage/constructDestruct.h"
 
 //================================================================
 //
-// CriticalSection
+// Mutex
+//
+// * Fast, works only inside a single process, like critical section.
+// * Second lock from the same thread may NOT be supported!
 //
 //================================================================
 
-using CriticalSectionData = OpaqueStruct<64>;
+using MutexData = OpaqueStruct<64>;
 
 //----------------------------------------------------------------
 
-struct CriticalSectionInterface
+struct MutexInterface
 {
-    virtual void enter() =0;
-    virtual void leave() =0;
-    virtual bool tryEnter() =0;
+    virtual void lock() =0;
+    virtual void unlock() =0;
+    virtual bool tryLock() =0;
 
-    virtual ~CriticalSectionInterface() {}
+    virtual ~MutexInterface() {}
 };
 
 //----------------------------------------------------------------
 
-struct CriticalSection
+struct Mutex
 {
 
 public:
 
-    inline CriticalSectionInterface* operator->()
-        {return intrface;}
+    inline void lock() 
+        {return intrface->lock();}
+
+    inline void unlock() 
+        {return intrface->unlock();}
+
+    inline bool tryLock()
+        {return intrface->tryLock();}
 
 public:
 
@@ -41,51 +49,51 @@ public:
         {return intrface != 0;}
 
     inline void clear()
-        {if (intrface) intrface->~CriticalSectionInterface(); intrface = 0;}
+        {if (intrface) intrface->~MutexInterface(); intrface = 0;}
 
-    inline CriticalSection()
+    inline Mutex()
         : intrface(0) {}
 
-    inline ~CriticalSection()
+    inline ~Mutex()
         {clear();}
 
 public:
 
-    CriticalSectionInterface* intrface;
-    CriticalSectionData data;
+    MutexInterface* intrface;
+    MutexData data;
 
 };
 
 //================================================================
 //
-// CritsecGuard
+// MutexGuard
 //
 //================================================================
 
-class CritsecGuard
+class MutexGuard
 {
 
-    CriticalSection& section;
+    Mutex& base;
 
 public:
 
-    inline CritsecGuard(CriticalSection& section)
+    inline MutexGuard(Mutex& base)
         :
-        section(section)
+        base(base)
     {
-        section->enter();
+        base.lock();
     }
 
-    inline ~CritsecGuard()
+    inline ~MutexGuard()
     {
-        section->leave();
+        base.unlock();
     }
 };
 
 //----------------------------------------------------------------
 
-#define CRITSEC_GUARD(section) \
-    CritsecGuard PREP_PASTE2(__guard_, __LINE__)(section)
+#define MUTEX_GUARD(base) \
+    MutexGuard PREP_PASTE2(__guard_, __LINE__)(base)
 
 //================================================================
 //
@@ -99,13 +107,13 @@ using EventData = OpaqueStruct<24>;
 
 //----------------------------------------------------------------
 
-struct Event
+struct EventInterface
 {
     virtual void set() =0;
-    virtual void reset() =0;
-
     virtual void wait() =0;
     virtual bool waitWithTimeout(uint32 timeMs) =0;
+
+    virtual ~EventInterface() {}
 };
 
 //----------------------------------------------------------------
@@ -115,19 +123,13 @@ struct EventOwner
 
 public:
 
-    inline operator Event& ()
-        {return *intrface;}
-
     inline void set()
-        {intrface->set();}
-
-    inline void reset()
-        {intrface->reset();}
+        {return intrface->set();}
 
     inline void wait()
-        {intrface->wait();}
+        {return intrface->wait();}
 
-    inline bool waitWithTimeout(uint32 timeMs)
+    bool waitWithTimeout(uint32 timeMs)
         {return intrface->waitWithTimeout(timeMs);}
 
 public:
@@ -136,7 +138,7 @@ public:
         {return intrface != 0;}
 
     inline void clear()
-        {if (intrface) destruct(*intrface); intrface = 0;}
+        {if (intrface) intrface->~EventInterface(); intrface = 0;}
 
     inline EventOwner()
         : intrface(0) {}
@@ -146,7 +148,7 @@ public:
 
 public:
 
-    DestructibleInterface<Event>* intrface;
+    EventInterface* intrface;
     EventData data;
 
 };

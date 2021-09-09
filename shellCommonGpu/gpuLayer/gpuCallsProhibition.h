@@ -251,7 +251,7 @@ class GpuEventAllocatorSupressor : public GpuEventAllocator
 
 public:
 
-    stdbool createEvent(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
+    stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
     {
         result.clear();
         returnTrue;

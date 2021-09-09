@@ -12,7 +12,7 @@ namespace floatRangesTest {
 //
 //================================================================
 
-KIT_COMBINE1(ProcessKit, DiagnosticKit);
+using ProcessKit = DiagnosticKit;
 
 //================================================================
 //

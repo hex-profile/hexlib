@@ -11,8 +11,8 @@
 //================================================================
 
 #define GUARD_IF_LOCK_CREATED \
-    if (lock.created()) lock->enter(); \
-    REMEMBER_CLEANUP1(if (lock.created()) lock->leave(), CriticalSection&, lock)
+    if (lock.created()) lock.lock(); \
+    REMEMBER_CLEANUP1(if (lock.created()) lock.unlock(), Mutex&, lock)
 
 //----------------------------------------------------------------
 
@@ -52,17 +52,17 @@ public:
     bool multithreaded() const
         {return lock.created();}
 
-    CriticalSection& getLock()
+    Mutex& getLock()
         {return lock;}
 
 public:
 
-    LogBufferMtThunk(CriticalSection& lock, LogBufferWriting& baseWriter, LogBufferReading& baseReader)
+    LogBufferMtThunk(Mutex& lock, LogBufferWriting& baseWriter, LogBufferReading& baseReader)
         : lock(lock), baseWriter(baseWriter), baseReader(baseReader) {}
 
 private:
 
-    CriticalSection& lock;
+    Mutex& lock;
 
     LogBufferWriting& baseWriter;
     LogBufferReading& baseReader;

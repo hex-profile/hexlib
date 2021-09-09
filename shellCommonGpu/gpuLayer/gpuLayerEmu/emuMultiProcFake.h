@@ -38,7 +38,7 @@ const Space EMU_MAX_SRAM_SIZE = 65536;
 //
 //================================================================
 
-KIT_COMBINE1(CreateKit, ErrorLogKit);
+using CreateKit = ErrorLogKit;
 
 //================================================================
 //

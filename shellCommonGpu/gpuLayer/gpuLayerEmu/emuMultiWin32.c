@@ -15,7 +15,7 @@
 #include "numbers/safeuint32/safeuint32.h"
 #include "point3d/point3d.h"
 #include "interfaces/syncObjects.h"
-#include "interfaces/threadManager.h"
+#include "threads/threads.h"
 
 namespace emuMultiWin32 {
 
@@ -227,10 +227,10 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     // Allocate events
     //
 
-    require(kit.threadManager.createEvent(false, tools.startEvent, stdPass));
+    require(eventCreate(tools.startEvent, stdPass));
     REMEMBER_CLEANUP1_EX(startEventCleanup, tools.startEvent.clear(), ServerTools&, tools);
 
-    require(kit.threadManager.createEvent(false, tools.finishEvent, stdPass));
+    require(eventCreate(tools.finishEvent, stdPass));
     REMEMBER_CLEANUP1_EX(finishEventCleanup, tools.finishEvent.clear(), ServerTools&, tools);
 
     tools.coreEmulator = &coreEmulator;
@@ -241,7 +241,7 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     //
 
     ServerMemory* serverMemory = this;
-    require(kit.threadManager.createThread(serverFunc, serverMemory, 65536, threadControl, stdPass));
+    require(threadCreate(serverFunc, serverMemory, 65536, threadControl, stdPass));
 
     //
     // Record success

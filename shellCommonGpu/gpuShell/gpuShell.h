@@ -4,7 +4,6 @@
 #include "cfgTools/numericVar.h"
 #include "kits/moduleKit.h"
 #include "gpuShell/gpuShellKits.h"
-#include "interfaces/threadManagerKit.h"
 #include "gpuLayer/gpuLayer.h"
 #include "allocation/mallocKit.h"
 #include "gpuLayer/gpuLayerImpl.h"

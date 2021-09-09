@@ -19,7 +19,7 @@
 #include "cfgTools/multiSwitch.h"
 #include "userOutput/printMsgEx.h"
 #include "errorLog/debugBreak.h"
-#include "interfaces/threadManager.h"
+#include "threads/threads.h"
 #include "tfiltParam.h"
 #include "timer/timer.h"
 #include "timerImpl/timerImpl.h"
@@ -219,7 +219,7 @@ struct SharedStruct
     // Shared variables
     //
 
-    CriticalSection varLock;
+    Mutex varLock;
 
     bool varShutdown = false;
 
@@ -227,7 +227,7 @@ struct SharedStruct
 
     bool running()
     {
-        CRITSEC_GUARD(varLock);
+        MUTEX_GUARD(varLock);
         return varRunning;
     }
 
@@ -235,7 +235,7 @@ struct SharedStruct
 
     bool smoothing()
     {
-        CRITSEC_GUARD(varLock);
+        MUTEX_GUARD(varLock);
         return varSmoothing;
     }
 
@@ -247,14 +247,14 @@ struct SharedStruct
     // Queue
     //
 
-    CriticalSection queueLock; // queue lock first, output lock second!
+    Mutex queueLock; // queue lock first, output lock second!
     HistoryObjectStatic<QueueImage, queueCapacity> queue;
 
     //
     // Output interface
     //
 
-    CriticalSection outputLock;
+    Mutex outputLock;
     AtAsyncOverlay* outputInterface;
 
     ////
@@ -319,14 +319,14 @@ struct SharedStruct
 
         ////
 
-        require(kit.threadManager.createCriticalSection(varLock, stdPass));
-        require(kit.threadManager.createCriticalSection(queueLock, stdPass));
-        require(kit.threadManager.createCriticalSection(outputLock, stdPass));
+        require(mutexCreate(varLock, stdPass));
+        require(mutexCreate(queueLock, stdPass));
+        require(mutexCreate(outputLock, stdPass));
 
         ////
 
-        require(kit.threadManager.createEvent(false, serverWake, stdPass));
-        require(kit.threadManager.createEvent(false, clientWake, stdPass));
+        require(eventCreate(serverWake, stdPass));
+        require(eventCreate(clientWake, stdPass));
 
         ////
 
@@ -405,7 +405,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
         float32 targetDelay = 0;
 
         {
-            CRITSEC_GUARD(shared.varLock);
+            MUTEX_GUARD(shared.varLock);
             targetSmoothing = shared.varSmoothing;
             targetDelay = shared.varTargetDelay;
         }
@@ -425,8 +425,8 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
     //----------------------------------------------------------------
 
     {
-        CRITSEC_GUARD(shared.queueLock);
-        CRITSEC_GUARD(shared.outputLock);
+        MUTEX_GUARD(shared.queueLock);
+        MUTEX_GUARD(shared.outputLock);
 
         Space queueSize = shared.queue.size();
 
@@ -452,7 +452,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
         ////
 
         {
-            CRITSEC_GUARD(shared.varLock);
+            MUTEX_GUARD(shared.varLock);
 
             if (lastOutputDefined && outputFrameCount >= 8)
             {
@@ -501,7 +501,7 @@ stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
     {
 
         {
-            CRITSEC_GUARD(shared.varLock);
+            MUTEX_GUARD(shared.varLock);
 
             if (shared.varShutdown)
                 break;
@@ -558,7 +558,7 @@ void serverFunc(void* param)
         signalAbort,
         {
             {
-                CRITSEC_GUARD(shared.varLock);
+                MUTEX_GUARD(shared.varLock);
                 shared.varRunning = false;
             }
 
@@ -703,7 +703,7 @@ void OverlaySmootherImpl::deinit()
     //
 
     {
-        CRITSEC_GUARD(shared.varLock);
+        MUTEX_GUARD(shared.varLock);
 
         shared.varShutdown = true;
     }
@@ -750,7 +750,7 @@ stdbool OverlaySmootherImpl::init(stdPars(InitKit))
     // Launch thread (should be the last)
     //
 
-    require(kit.threadManager.createThread(serverFunc, &shared, 65536, workerThread, stdPass));
+    require(threadCreate(serverFunc, &shared, 65536, workerThread, stdPass));
     REQUIRE(workerThread->setPriority(ThreadPriorityPlus1));
 
     ////
@@ -791,7 +791,7 @@ void OverlaySmootherImpl::setOutputInterface(AtAsyncOverlay* output)
     ensurev(initialized && shared.running());
 
     {
-        CRITSEC_GUARD(shared.outputLock);
+        MUTEX_GUARD(shared.outputLock);
         shared.outputInterface = output;
 
         shared.serverWake.set();
@@ -838,7 +838,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     for (;;)
     {
         {
-            CRITSEC_GUARD(shared.queueLock);
+            MUTEX_GUARD(shared.queueLock);
 
             if (shared.queue.size() < queueCapacity)
                 break; // found place
@@ -881,7 +881,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     Space queueSize = 0;
 
     {
-        CRITSEC_GUARD(shared.queueLock);
+        MUTEX_GUARD(shared.queueLock);
         queueSize = shared.queue.size();
     }
 
@@ -899,7 +899,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     float32 targetDelay = computeTargetDelay(inputDelayFilter(), queueOccupancyFilter(), cfgMaxOutputRate);
 
     {
-        CRITSEC_GUARD(shared.varLock);
+        MUTEX_GUARD(shared.varLock);
         shared.varTargetDelay = targetDelay;
     }
 
@@ -913,7 +913,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     float32 maxActualDelay = 0;
 
     {
-        CRITSEC_GUARD(shared.varLock);
+        MUTEX_GUARD(shared.varLock);
 
         Space count = shared.varActualDelays.size();
 
@@ -940,7 +940,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     float32 maxRenderDelay = 0;
 
     {
-        CRITSEC_GUARD(shared.varLock);
+        MUTEX_GUARD(shared.varLock);
 
         Space count = shared.varRenderDelays.size();
 
@@ -1000,7 +1000,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     //----------------------------------------------------------------
 
     {
-        CRITSEC_GUARD(shared.queueLock);
+        MUTEX_GUARD(shared.queueLock);
 
         REQUIRE(shared.queue.size() < queueCapacity);
 
@@ -1044,7 +1044,7 @@ stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
     require(initialized && shared.running());
 
     {
-        CRITSEC_GUARD(shared.queueLock);
+        MUTEX_GUARD(shared.queueLock);
         shared.queue.clear();
     }
 
@@ -1062,13 +1062,13 @@ stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
     require(initialized && shared.running());
 
     {
-        CRITSEC_GUARD(shared.varLock);
+        MUTEX_GUARD(shared.varLock);
         shared.varSmoothing = smoothing;
     }
 
     if_not (smoothing)
     {
-        CRITSEC_GUARD(shared.queueLock);
+        MUTEX_GUARD(shared.queueLock);
 
         if_not (smoothing)
             shared.queue.clear();
@@ -1096,7 +1096,7 @@ stdbool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
     for (;;)
     {
         {
-            CRITSEC_GUARD(shared.queueLock);
+            MUTEX_GUARD(shared.queueLock);
 
             if (shared.queue.size() == 0)
                 break;

@@ -15,7 +15,6 @@
 #include "formattedOutput/messageFormatterStdio.h"
 #include "atAssembly/atAssembly.h"
 #include "dataAlloc/arrayMemory.h"
-#include "threading/threadManagerImpl.h"
 #include "errorLog/debugBreak.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/printMsg.h"
@@ -23,6 +22,7 @@
 #include "compileTools/classContext.h"
 #include "kits/setBusyStatus.h"
 #include "baseInterfaces/baseSignals.h"
+#include "threads/threads.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -572,7 +572,7 @@ public:
 
     virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdNullPars)
     {
-        CRITSEC_GUARD(lock);
+        MUTEX_GUARD(lock);
         AtImageProviderThunk atProvider(imageProvider, trace);
 
         require(base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
@@ -598,17 +598,17 @@ public:
 
 public:
 
-    KIT_COMBINE2(InitKit, ThreadManagerKit, ThreadToolKit);
+    using InitKit = ThreadToolKit;
 
     stdbool init(stdPars(InitKit))
     {
-        require(kit.threadManager.createCriticalSection(lock, stdPass));
+        require(mutexCreate(lock, stdPass));
         returnTrue;
     }
 
 private:
 
-    CriticalSection lock;
+    Mutex lock;
     at_async_overlay base;
 
 };
@@ -638,7 +638,6 @@ private:
     AtImgConsoleImplThunk<AtApi> imgConsole(api, formatter); \
     \
     AtSignalSetThunk<AtApi> signalSet(api); \
-    ThreadManagerImpl threadManager; \
     \
     SetBusyStatusByAt<AtApi> setBusyStatus(api, formatter); \
     \
@@ -653,7 +652,6 @@ private:
         AtImgConsoleKit(imgConsole), \
         AtSignalSetKit(signalSet), \
         MallocKit(mallocAllocator), \
-        ThreadManagerKit(threadManager), \
         SetBusyStatusKit(setBusyStatus) \
     );
 

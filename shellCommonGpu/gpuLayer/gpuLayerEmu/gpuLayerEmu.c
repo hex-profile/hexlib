@@ -12,7 +12,7 @@
 #include "errorLog/debugBreak.h"
 #include "storage/rememberCleanup.h"
 #include "interfaces/syncObjects.h"
-#include "interfaces/threadManager.h"
+#include "threads/threads.h"
 #include "data/spacex.h"
 
 //================================================================
@@ -97,7 +97,7 @@ class ContextEx
 
 private:
 
-    KIT_COMBINE3(CreateKit, ErrorLogKit, MallocKit, ThreadManagerKit);
+    KIT_COMBINE2(CreateKit, ErrorLogKit, MallocKit);
 
     //----------------------------------------------------------------
     //
@@ -117,8 +117,8 @@ public:
         require(emulator.create(cpuCount, stdPassThru));
         REMEMBER_CLEANUP1_EX(emulatorCleanup, emulator.destroy(), emuMultiProc::EmuMultiProc&, emulator);
 
-        require(kit.threadManager.createCriticalSection(emuLock, stdPass));
-        REMEMBER_CLEANUP1_EX(emuLockCleanup, emuLock.clear(), CriticalSection&, emuLock);
+        require(mutexCreate(emuLock, stdPass));
+        REMEMBER_CLEANUP1_EX(emuLockCleanup, emuLock.clear(), Mutex&, emuLock);
 
         this->gpuProperties = gpuProperties;
         emulatorThreadCount = cpuCount;
@@ -146,7 +146,7 @@ public:
         stdPars(ErrorLogKit)
     )
     {
-        CRITSEC_GUARD(emuLock);
+        MUTEX_GUARD(emuLock);
         return emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru);
 
         returnTrue;
@@ -162,7 +162,7 @@ public:
 private:
 
     GpuProperties gpuProperties;
-    CriticalSection emuLock;
+    Mutex emuLock;
 
     emuMultiProc::EmuMultiProc emulator;
     Space emulatorThreadCount = 0;

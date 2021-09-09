@@ -6,8 +6,11 @@
 #include "dataAlloc/arrayMemory.h"
 #include "dataAlloc/arrayObjectMemory.h"
 #include "allocation/mallocKit.h"
+#include "fibers/fibers.h"
 
 namespace emuWin32 {
+
+using namespace fibers;
 
 //================================================================
 //
@@ -36,11 +39,11 @@ public:
 
     EmuWin32ThreadConverter();
     ~EmuWin32ThreadConverter();
-    bool created() {return fiber != 0;}
+    bool created() const {return fiberIsCreated(fiber);}
 
 private:
 
-    void* fiber;
+    Fiber fiber;
 
 };
 
@@ -53,14 +56,6 @@ private:
 //================================================================
 
 using GroupSpace = uint32;
-
-//================================================================
-//
-// FiberFunc
-//
-//================================================================
-
-typedef void __stdcall FiberFunc(void* param);
 
 //================================================================
 //
@@ -80,11 +75,11 @@ public:
     bool create(FiberFunc* func, void* param);
     void destroy();
 
-    operator void* () const {return fiber;}
+    operator Fiber& () {return fiber;}
 
 private:
 
-    void* fiber = 0;
+    Fiber fiber;
 
 };
 
@@ -140,7 +135,7 @@ private:
 
 private:
 
-    friend void __stdcall fiberFunc(void* parameter);
+    friend void FIBER_CONVENTION fiberFunc(void* parameter);
 
 private:
 

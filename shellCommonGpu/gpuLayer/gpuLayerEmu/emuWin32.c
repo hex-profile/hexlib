@@ -2,9 +2,6 @@
 
 #include "emuWin32.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include "errorLog/debugBreak.h"
 #include "storage/rememberCleanup.h"
 #include "dataAlloc/arrayObjectMemory.inl"
@@ -20,13 +17,13 @@ namespace emuWin32 {
 
 EmuWin32ThreadConverter::EmuWin32ThreadConverter()
 {
-    fiber = ConvertThreadToFiber(0);
+    fiberConvertThreadToFiber(fiber);
 }
 
 EmuWin32ThreadConverter::~EmuWin32ThreadConverter()
 {
-    if (fiber != 0)
-        DEBUG_BREAK_CHECK(ConvertFiberToThread() != 0);
+    if (fiberIsCreated(fiber))
+        DEBUG_BREAK_CHECK(fiberConvertFiberToThread());
 }
 
 //================================================================
@@ -39,7 +36,7 @@ struct FiberTask
 {
     EmuKernelFunc* kernelFunc;
     const void* kernelParams;
-    void* mainFiber;
+    Fiber mainFiber;
     EmuWin32* emuSupport;
 
     EmuParams emuParams;
@@ -51,7 +48,7 @@ struct FiberTask
 //
 //================================================================
 
-static void __stdcall fiberFunc(void* parameter)
+static void FIBER_CONVENTION fiberFunc(void* parameter)
 {
 
     //
@@ -60,12 +57,12 @@ static void __stdcall fiberFunc(void* parameter)
 
     for (;;)
     {
-
         FiberTask& task = * (FiberTask*) parameter;
         EmuParams& emuParams = task.emuParams;
         EmuWin32& that = *task.emuSupport;
 
         Space fiberIdx = emuParams.fiberIdx;
+        ARRAY_EXPOSE_EX(that.fibers, fibers);
 
         if (!that.fiberException) // may be already set by preceding fibers in this call
         {
@@ -91,11 +88,9 @@ static void __stdcall fiberFunc(void* parameter)
         ++that.fiberExitCount;
 
         if (that.fiberExitCount == that.fiberCount) // is it the last fiber?
-            SwitchToFiber(task.mainFiber);
+            fiberSwitch(fibersPtr[fiberIdx], task.mainFiber);
         else
-        {
             that.switchToNextFiber(fiberIdx);
-        }
 
     }
 
@@ -108,23 +103,19 @@ static void __stdcall fiberFunc(void* parameter)
 //
 //================================================================
 
-bool FiberOwner::create(LPFIBER_START_ROUTINE func, void* param)
+bool FiberOwner::create(FiberFunc* func, void* param)
 {
     destroy();
 
     // Windows doesn't want to allocate less than 64 kilobytes of stack.
-    fiber = CreateFiberEx(0, 64*1024, 0, func, param);
-
-    return (fiber != 0);
+    return fiberCreate(func, param, 64*1024, fiber);
 }
+
+//----------------------------------------------------------------
 
 void FiberOwner::destroy()
 {
-    if (fiber != 0)
-    {
-        DeleteFiber(fiber);
-        fiber = 0;
-    }
+    fiberDestroy(fiber);
 }
 
 //================================================================
@@ -146,7 +137,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     //
 
     require(fiberTasks.realloc(EMU_MAX_THREAD_COUNT, cpuBaseByteAlignment, kit.malloc, stdPass));
-    REMEMBER_CLEANUP1_EX(fiberTasksCleanup, fiberTasks.dealloc(), ArrayMemory<FiberTask>&, fiberTasks);
+    REMEMBER_CLEANUP_EX(fiberTasksCleanup, fiberTasks.dealloc());
     ARRAY_EXPOSE(fiberTasks);
 
     //
@@ -154,7 +145,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     //
 
     require(fibers.realloc(EMU_MAX_THREAD_COUNT, kit.malloc, true, stdPass));
-    REMEMBER_CLEANUP1_EX(fibersCleanup, fibers.dealloc(), ArrayObjectMemory<FiberOwner>&, fibers);
+    REMEMBER_CLEANUP_EX(fibersCleanup, fibers.dealloc());
     ARRAY_EXPOSE(fibers);
 
     for_count (i, fibersSize) // can be interrupted in the middle by error
@@ -167,7 +158,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
 
     COMPILE_ASSERT(EMU_MAX_SRAM_SIZE % maxNaturalAlignment == 0);
     require(sramHolder.realloc(EMU_MAX_SRAM_SIZE, maxNaturalAlignment, kit.malloc, stdPass));
-    REMEMBER_CLEANUP1_EX(sramCleanup, sramHolder.dealloc(), ArrayMemory<Byte>&, sramHolder);
+    REMEMBER_CLEANUP_EX(sramCleanup, sramHolder.dealloc());
 
     //
     // Record success.
@@ -273,6 +264,7 @@ EmuError EmuWin32::launchKernel
     CHECK_RETURN_DBG(threadCountArea <= fiberTasksSize);
 
     CHECK_RETURN(threadConverter.created());
+    auto& mainFiber = threadConverter.fiber;
 
     for_count (Y, threadCount.Y)
     {
@@ -283,7 +275,7 @@ EmuError EmuWin32::launchKernel
             FiberTask& task = fiberTasksPtr[i];
             task.kernelFunc = kernelFunc;
             task.kernelParams = userParams;
-            task.mainFiber = threadConverter.fiber;
+            task.mainFiber = mainFiber;
             task.emuSupport = this;
 
             task.emuParams.sharedParams = &sharedParams;
@@ -329,7 +321,7 @@ EmuError EmuWin32::launchKernel
         }
 
         resetState(threadCountArea);
-        SwitchToFiber(fibersPtr[0]);
+        fiberSwitch(mainFiber, fibersPtr[0]);
 
         CHECK_RETURN_DBG(fiberExitCount == fiberCount);
         CHECK_RETURN_EX(fiberException == 0, fiberException);
@@ -348,13 +340,14 @@ EmuError EmuWin32::launchKernel
 
 inline void EmuWin32::switchToNextFiber(Space fiberIdx)
 {
-    Space k = fiberIdx;
+    auto nextIdx = fiberIdx + 1;
 
-    if (++k == fiberCount)
-        k = 0;
+    if (nextIdx == fiberCount)
+        nextIdx = 0;
 
     ARRAY_EXPOSE(fibers);
-    SwitchToFiber(fibersPtr[k]);
+
+    fiberSwitch(fibersPtr[fiberIdx], fibersPtr[nextIdx]);
 }
 
 //================================================================
@@ -428,4 +421,3 @@ void EmuWin32::fatalError(EmuError errMsg)
 }
 
 #endif
-
