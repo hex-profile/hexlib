@@ -6,14 +6,14 @@
 //
 //================================================================
 
-void PyramidScaleArray::configure(float32 levelFactor)
+void PyramidScaleArray::configure(float32 baseFactor)
 {
     uint32 hash = 0;
 
-    for (Space i = -maxLevel; i <= +maxLevel; ++i)
+    for (Space i = -maxScale; i <= +maxScale; ++i)
     {
-        float32 factor = powf(levelFactor, float32(i));
-        scaleArray[maxLevel + i] = factor;
+        float32 factor = powf(baseFactor, float32(i));
+        scaleArray[maxScale + i] = factor;
 
         hash ^= recastEqualLayout<uint32>(factor);
     }
@@ -32,10 +32,10 @@ PyramidScaleArray& PyramidScaleArray::operator =(const PyramidScale& that)
 {
     uint32 hash = 0;
 
-    for (Space i = -maxLevel; i <= +maxLevel; ++i)
+    for (Space i = -maxScale; i <= +maxScale; ++i)
     {
         float32 factor = that(i);
-        scaleArray[maxLevel + i] = factor;
+        scaleArray[maxScale + i] = factor;
         hash ^= recastEqualLayout<uint32>(factor);
     }
 

@@ -156,7 +156,7 @@ stdbool writeImage
 
     ////
 
-    BitmapFullHeader header;
+    BitmapHeaderWithPalette header;
 
     ////
 

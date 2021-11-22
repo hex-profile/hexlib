@@ -244,7 +244,7 @@ stdbool BmpWriter::writeFunc(const Matrix<const Pixel>& image, const CharArray& 
 
     ////
 
-    BitmapFullHeader header;
+    BitmapHeaderWithPalette header;
 
     ////
 

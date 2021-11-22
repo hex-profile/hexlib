@@ -18,6 +18,10 @@ static constexpr Space gpuPyramidMemoryMaxLevels = 32;
 //
 // GpuPyramidMemory<Type>
 //
+//----------------------------------------------------------------
+//
+// Allocation parameters are documented at PyramidConfigOptions class.
+//
 //================================================================
 
 template <typename Type>
@@ -52,14 +56,12 @@ public:
 
     stdbool reallocEx
     (
-        const PyramidScale& scale,
-        const Point<float32>& baseScaleFactor,
-        const Point<Space>& baseScaleLevels,
+        const Point<Space>& newBaseSize,
         Space newLevels,
         Space newLayers,
-        const Point<Space>& newBaseSize,
+        const PyramidScale& scale,
         Rounding sizeRounding,
-        const Point<Space>& extraEdge,
+        const PyramidConfigOptions& options,
         Space baseByteAlignment,
         Space rowByteAlignment,
         AllocatorObject<GpuAddrU>& allocator,
@@ -71,29 +73,39 @@ public:
 public:
 
     template <typename Kit>
-    inline stdbool reallocEx
+    inline stdbool realloc
     (
-        const PyramidScale& scale,
-        const Point<float32>& baseScaleFactor,
-        const Point<Space>& baseScaleLevels,
+        const Point<Space>& newBaseSize,
         Space newLevels,
         Space newLayers,
-        const Point<Space>& newBaseSize,
+        const PyramidScale& scale,
         Rounding sizeRounding,
-        const Point<Space>& extraEdge,
+        const PyramidConfigOptions& options,
         stdPars(Kit)
     )
     {
-        return reallocEx(scale, baseScaleFactor, baseScaleLevels, newLevels, newLayers, newBaseSize, sizeRounding, extraEdge,
-            kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);
+        return reallocEx
+        (
+            newBaseSize, newLevels, newLayers, scale, sizeRounding, options,
+            kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc,
+            stdPassThru
+        );
     }
 
 public:
 
     template <typename Kit>
-    inline stdbool realloc(const PyramidScale& scale, Space newLevels, Space newLayers, const Point<Space>& newBaseSize, Rounding sizeRounding, stdPars(Kit))
+    inline stdbool realloc
+    (
+        const Point<Space>& newBaseSize,
+        Space newLevels,
+        Space newLayers,
+        const PyramidScale& scale,
+        Rounding sizeRounding, 
+        stdPars(Kit)
+    )
     {
-        return reallocEx(scale, point(1.f), point(0), newLevels, newLayers, newBaseSize, sizeRounding, point(0), stdPassThru);
+        return realloc(newBaseSize, newLevels, newLayers, scale, sizeRounding, PyramidConfigOptions{}, stdPassThru);
     }
 
 private:

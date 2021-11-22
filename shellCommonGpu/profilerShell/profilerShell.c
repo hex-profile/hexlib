@@ -110,7 +110,7 @@ stdbool ProfilerShell::makeHtmlReport(float32 processingThroughput, stdPars(Repo
 
     TimeMoment reportBegin = kit.timer.moment();
     
-    auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
+    auto kitEx = kit; // kitReplace(kit, MsgLogKit(kit.localLog));
 
     require(htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
         cycleCount, processingThroughput, outputDir.cstr()}, stdPassKit(kitEx)));

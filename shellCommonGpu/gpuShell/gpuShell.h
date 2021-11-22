@@ -7,6 +7,7 @@
 #include "gpuLayer/gpuLayer.h"
 #include "allocation/mallocKit.h"
 #include "gpuLayer/gpuLayerImpl.h"
+#include "cfgTools/multiSwitch.h"
 
 namespace gpuShell {
 
@@ -23,10 +24,7 @@ class GpuContextHelper
 
 public:
 
-    bool serialize(const CfgSerializeKit& kit)
-    {
-        return gpuDeviceIndex.serialize(kit, STR("GPU Device Index"));
-    }
+    bool serialize(const CfgSerializeKit& kit);
 
 public:
 
@@ -36,6 +34,8 @@ public:
 private:
 
     NumericVar<int32> gpuDeviceIndex{typeMin<int32>(), typeMax<int32>(), 0};
+
+    MultiSwitch<GpuScheduling, GpuScheduling::COUNT, GpuScheduling::Spin> gpuScheduling;
 
 };
 

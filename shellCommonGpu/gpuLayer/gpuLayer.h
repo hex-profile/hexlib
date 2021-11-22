@@ -3,6 +3,7 @@
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "allocation/flatMemoryAllocator.h"
 #include "gpuLayer/gpuLayerKits.h"
+#include "gpuLayer/gpuScheduling.h"
 
 //================================================================
 //
@@ -43,7 +44,7 @@ struct GpuContextOwner : public GpuContext
 
 struct GpuContextCreation
 {
-    virtual stdbool createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars) =0;
+    virtual stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars) =0;
     virtual stdbool setThreadContext(const GpuContext& context, stdNullPars) =0;
 };
 

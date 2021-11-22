@@ -84,7 +84,7 @@ public:
     // Context
     //
 
-    stdbool createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars);
+    stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars);
     static void destroyContext(GpuContextDeallocContext& deallocContext);
     stdbool setThreadContext(const GpuContext& context, stdNullPars);
 

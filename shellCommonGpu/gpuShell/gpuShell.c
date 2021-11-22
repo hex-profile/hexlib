@@ -8,6 +8,31 @@ namespace gpuShell {
 
 //================================================================
 //
+// GpuContextHelper::serialize
+//
+//================================================================
+
+bool GpuContextHelper::serialize(const CfgSerializeKit& kit)
+{
+    bool indexSteady = gpuDeviceIndex.serialize(kit, STR("GPU Device Index"));
+        
+    bool schedulingSteady = gpuScheduling.serialize
+    (
+        kit, STR("GPU Scheduling"),
+
+        {STR("Spin"), STR("")},
+        {STR("Yield"), STR("")},
+        {STR("Block"), STR("")},
+        {STR("Auto"), STR("")},
+
+        false
+    );
+
+    return schedulingSteady && schedulingSteady;
+}
+
+//================================================================
+//
 // GpuContextHelper::createContext
 //
 //================================================================
@@ -35,7 +60,7 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
     //
 
     void* baseContext = 0;
-    require(kit.gpuContextCreation.createContext(gpuDeviceIndex, gpuContext, baseContext, stdPass));
+    require(kit.gpuContextCreation.createContext(gpuDeviceIndex, gpuScheduling(), gpuContext, baseContext, stdPass));
     REMEMBER_CLEANUP1_EX(gpuContextCleanup, gpuContext.clear(), GpuContextOwner&, gpuContext);
 
     ////

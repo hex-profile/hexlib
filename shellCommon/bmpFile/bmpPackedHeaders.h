@@ -80,11 +80,27 @@ COMPILE_ASSERT(alignof(BitmapPalette) == 1);
 
 //================================================================
 //
-// BitmapFullHeader
+// BitmapHeaderWithoutPalette
 //
 //================================================================
 
-struct BitmapFullHeader
+struct BitmapHeaderWithoutPalette
+    : 
+    public BitmapFileHeader, 
+    public BitmapInfoHeader
+{
+};
+
+COMPILE_ASSERT(sizeof(BitmapHeaderWithoutPalette) == sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader));
+COMPILE_ASSERT(alignof(BitmapHeaderWithoutPalette) == 1);
+
+//================================================================
+//
+// BitmapHeaderWithPalette
+//
+//================================================================
+
+struct BitmapHeaderWithPalette
     : 
     public BitmapFileHeader, 
     public BitmapInfoHeader,
@@ -92,8 +108,8 @@ struct BitmapFullHeader
 {
 };
 
-COMPILE_ASSERT(sizeof(BitmapFullHeader) == sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + sizeof(BitmapPalette));
-COMPILE_ASSERT(alignof(BitmapFullHeader) == 1);
+COMPILE_ASSERT(sizeof(BitmapHeaderWithPalette) == sizeof(BitmapFileHeader) + sizeof(BitmapInfoHeader) + sizeof(BitmapPalette));
+COMPILE_ASSERT(alignof(BitmapHeaderWithPalette) == 1);
 
 //----------------------------------------------------------------
 

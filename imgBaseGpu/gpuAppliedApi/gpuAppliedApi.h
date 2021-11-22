@@ -485,11 +485,6 @@ public:
     sysinline GroupCount(const Point<Space>& p)
         : Point3D<Space>(point3D(p.X, p.Y, 1)) {}
 
-public:
-
-    sysinline operator Point3D<Space> () const
-        {return *this;}
-
 };
 
 //================================================================

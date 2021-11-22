@@ -355,7 +355,6 @@ struct GpuImageConsoleNull : public GpuImageConsole
     // Basic output interaces.
     //
 
-    stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars) {returnTrue;}
     stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) {returnTrue;}
 
 

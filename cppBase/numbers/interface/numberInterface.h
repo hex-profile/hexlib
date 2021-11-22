@@ -466,7 +466,7 @@ TMP_MACRO_CAN2(safeShr, OpShr)
 //
 //================================================================
 
-enum Rounding {RoundUp, RoundDown, RoundNearest, RoundExact};
+enum Rounding {RoundUp, RoundDown, RoundNearest, RoundExact, Round_COUNT};
 
 //================================================================
 //

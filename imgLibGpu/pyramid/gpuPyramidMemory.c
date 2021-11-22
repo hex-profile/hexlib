@@ -32,14 +32,12 @@ void GpuPyramidMemory<Type>::dealloc()
 template <typename Type>
 stdbool GpuPyramidMemory<Type>::reallocEx
 (
-    const PyramidScale& scale,
-    const Point<float32>& baseScaleFactor,
-    const Point<Space>& baseScaleLevels,
+    const Point<Space>& newBaseSize,
     Space newLevels,
     Space newLayers,
-    const Point<Space>& newBaseSize,
+    const PyramidScale& scale,
     Rounding sizeRounding,
-    const Point<Space>& extraEdge,
+    const PyramidConfigOptions& options,
     Space baseByteAlignment,
     Space rowByteAlignment,
     AllocatorObject<GpuAddrU>& allocator,
@@ -64,11 +62,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
 
     ////
 
-    Point<Space> (*scaleFunc)(const Point<Space>& size, const Point<float32>& factor) = 0;
-    if (sizeRounding == RoundDown) scaleFunc = scaleImageSize<RoundDown>;
-    if (sizeRounding == RoundUp) scaleFunc = scaleImageSize<RoundUp>;
-    if (sizeRounding == RoundNearest) scaleFunc = scaleImageSize<RoundNearest>;
-    REQUIRE(scaleFunc != 0);
+    PyramidLevelSize pyramidLevelSize;
 
     ////
 
@@ -76,7 +70,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
 
     for_count (i, newLevels)
     {
-        Point<Space> size = scaleFunc(newBaseSize, baseScaleFactor * scale(-i + baseScaleLevels)) + extraEdge;
+        auto size = pyramidLevelSize(newBaseSize, i, scale, sizeRounding, options);
         require(pyramidArrayPtr[i].reallocEx(newLayers, size, baseByteAlignment, rowByteAlignment, allocator, stdPass));
     }
 

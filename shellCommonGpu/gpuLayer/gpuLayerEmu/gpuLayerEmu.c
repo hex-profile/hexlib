@@ -186,7 +186,7 @@ inline ContextEx& uncast(const GpuContext& context)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars)
+stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars)
 {
     result.clear();
     baseContext = 0;

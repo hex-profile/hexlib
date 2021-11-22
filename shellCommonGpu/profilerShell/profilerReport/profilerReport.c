@@ -18,6 +18,7 @@
 #include "storage/rememberCleanup.h"
 #include "userOutput/errorLogEx.h"
 #include "userOutput/paramMsg.h"
+#include "formattedOutput/requireMsg.h"
 
 namespace profilerReport {
 
@@ -1115,7 +1116,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
                     Timing timing;
                     computeNodeTiming(*p, o.timingParams, timing);
 
-                    if (timing.totalTime > maxChildTime)
+                    if (timing.totalTime >= maxChildTime)
                         {maxChildTime = timing.totalTime; maxChild = p;}
                 }
 
@@ -1157,26 +1158,26 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         ////
 
-        info.filename = sprintMsg(kit, STR("%0%1.html"), hex(info.hash.A), hex(info.hash.B));
-
-        ////
-
-        /*
         float32 totalChildrenTime = 0;
 
         for (ProfilerNode* p = node->lastChild; p != 0; p = p->prevBrother)
         {
             Timing timing;
-            computeNodeTiming(*p, o.timingParams, timing); // not very efficient
+            computeNodeTiming(*p, o.timingParams, timing);
+
             totalChildrenTime += timing.totalTime;
         }
-        */
+
+        ////
+
+        info.filename = sprintMsg(kit, STR("%0%1.html"), hex(info.hash.A), hex(info.hash.B));
 
         ////
 
         info.expandFlag =
             (node->lastChild != 0) &&
-            (info.timing.totalTime > thisNodeTimeThreshold);
+            (info.timing.totalTime > thisNodeTimeThreshold) &&
+            (totalChildrenTime > maxLostTime);
 
     }
 
@@ -1398,8 +1399,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
                 if (k != locationsBegin)
                 {
                     printMsg(log, STR(""));
-                    printMsg(log, STR("&mdash;&mdash;&mdash;&mdash;&mdash;"));
-                    printMsg(log, STR(""));
+                    printMsg(log, STR("<hr>"));
                 }
 
                 for (StringArray::const_iterator i = k->code.begin(); i != k->code.end(); ++i)
@@ -1436,8 +1436,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
                 {
                     {
                         if (k != startIter) printMsg(log, STR(""));
-                        printMsg(log, STR("&mdash;&mdash;&mdash;&mdash;&mdash;"));
-                        printMsg(log, STR(""));
+                        printMsg(log, STR("<hr>"));
                     }
 
                     for (StringArray::const_iterator i = k->code.begin(); i != k->code.end(); ++i)
@@ -1576,10 +1575,14 @@ public:
 
 private:
 
-    using Memory = map<StlString, StringArray>;
-    Memory memory;
+    struct FileCache
+    {
+        bool ok = false;
+        StringArray content;
+    };
 
-    StringArray emptyArray;
+    using Memory = map<StlString, FileCache>;
+    Memory memory;
 
 };
 
@@ -1599,11 +1602,16 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
     // If a file fails to open, the next calls with its name return empty list without file operations.
     //
 
-    pair<Memory::iterator, bool> seachResult = memory.insert(make_pair(filename, StringArray()));
-    result = &seachResult.first->second;
+    pair<Memory::iterator, bool> seachResult = memory.insert(make_pair(filename, FileCache{}));
+    auto& searchValue = seachResult.first->second;
+
+    result = &searchValue.content;
 
     if (!seachResult.second)
+    {
+        require(searchValue.ok);
         returnTrue;
+    }
 
     //
     // Try to read file
@@ -1611,9 +1619,9 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
 
     basic_ifstream<CharType> stream;
 
-    for (StringArray::const_iterator i = searchPath.begin(); i != searchPath.end(); ++i)
+    for (auto i : searchPath)
     {
-        StlString fullName = *i + filename;
+        auto fullName = i + filename;
 
         stream.clear();
         stream.open(fullName.c_str());
@@ -1624,7 +1632,7 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
 
     ////
 
-    REQUIRE_TRACE1(!!stream, STR("Cannot find file %0"), filename);
+    REQUIRE_MSG1(!!stream, STR("Cannot find file %0"), filename);
 
     ////
 
@@ -1636,12 +1644,16 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
         if (!stream)
             break;
 
-        result->push_back(s);
+        searchValue.content.push_back(s);
     }
 
     ////
 
     REQUIRE_TRACE1(stream.eof(), STR("Cannot read file %0"), filename);
+
+    ////
+
+    searchValue.ok = true;
 
     ////
 

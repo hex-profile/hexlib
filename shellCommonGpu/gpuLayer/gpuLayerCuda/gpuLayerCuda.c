@@ -49,10 +49,17 @@ void formatOutput(const CUresult& value, FormatOutputStream& outputStream)
 
     ////
 
-    if (textDesc)
-        formatOutput(textDesc, outputStream);
-    else
+    if_not (textDesc)
+    {
         formatOutput(int32(value), outputStream);
+    }
+    else
+    {
+        formatOutput(textDesc, outputStream);
+        formatOutput(STR(" (code "), outputStream);
+        formatOutput(int32(value), outputStream);
+        formatOutput(STR(")"), outputStream);
+    }
 }
 
 //================================================================
@@ -317,7 +324,7 @@ class ContextEx
 public:
 
     ~ContextEx() {destroy();}
-    stdbool create(int32 deviceIndex, const GpuProperties& gpuProperties, void*& baseContext, stdPars(ErrorLogExKit));
+    stdbool create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(ErrorLogExKit));
     void destroy();
 
     //----------------------------------------------------------------
@@ -368,7 +375,7 @@ public:
 //
 //================================================================
 
-stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, void*& baseContext, stdPars(ErrorLogExKit))
+stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(ErrorLogExKit))
 {
     destroy();
     baseContext = 0;
@@ -378,7 +385,24 @@ stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties,
     CUdevice deviceId = 0;
     REQUIRE_CUDA(cuDeviceGet(&deviceId, deviceIndex));
 
-    REQUIRE_CUDA(cuCtxCreate(&cuContext, CU_CTX_SCHED_SPIN, deviceId));
+    ////
+
+    unsigned flags = 0;
+
+    if (gpuScheduling == GpuScheduling::Spin)
+        flags = CU_CTX_SCHED_SPIN;
+    else if (gpuScheduling == GpuScheduling::Yield)
+        flags = CU_CTX_SCHED_YIELD;
+    else if (gpuScheduling == GpuScheduling::Block)
+        flags = CU_CTX_SCHED_BLOCKING_SYNC;
+    else if (gpuScheduling == GpuScheduling::Auto)
+        flags = CU_CTX_SCHED_AUTO;
+    else
+        REQUIRE_TRACE(false, STR("Unknown GPU scheduling value"));
+    
+    ////
+
+    REQUIRE_CUDA(cuCtxCreate(&cuContext, flags, deviceId));
     REMEMBER_CLEANUP1_EX(cuContextCleanup, DEBUG_BREAK_CHECK(cuCtxDestroy(cuContext) == CUDA_SUCCESS), CUcontext, cuContext);
 
     ////
@@ -431,7 +455,7 @@ inline const ContextEx& uncast(const GpuContext& context)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& result, void*& baseContext, stdNullPars)
+stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars)
 {
     result.clear();
     baseContext = 0;
@@ -447,7 +471,7 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuContextOwner& resu
     REQUIRE(ctx != 0);
     REMEMBER_CLEANUP1_EX(contextAllocCleanup, delete ctx, ContextEx*, ctx);
 
-    require(ctx->create(deviceIndex, tmpProperties, baseContext, stdPass));
+    require(ctx->create(deviceIndex, tmpProperties, gpuScheduling, baseContext, stdPass));
 
     ////
 
@@ -1834,6 +1858,11 @@ TMP_MACRO(copyMatrixGpuGpu, GpuAddrU, GpuAddrU, CU_MEMORYTYPE_DEVICE, CU_MEMORYT
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
+#if defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 //================================================================
 //
 // cudaAddrMode
@@ -2043,6 +2072,12 @@ stdbool CudaExecApiThunk::setSamplerArray
 
     returnTrue;
 }
+
+//----------------------------------------------------------------
+
+#if defined(__GNUC__)
+    #pragma GCC diagnostic pop
+#endif
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
