@@ -57,7 +57,7 @@ private:
     RangeValueControl<int32> viewIndex{0, 32, 0, 1, RangeValueLinear};
     BoolSwitch viewIndexDisplayAll{false};
 
-    RangeValueControl<int32> temporalIndex{-32, +32, 0, 1, RangeValueLinear};
+    RangeValueControl<int32> temporalIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
     RangeValueControl<int32> circularIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
     RangeValueControl<int32> scaleIndex{-32, +128, 0, 1, RangeValueLinear};
     RangeValueControl<int32> stageIndex{-32, +32, 0, 1, RangeValueLinear};

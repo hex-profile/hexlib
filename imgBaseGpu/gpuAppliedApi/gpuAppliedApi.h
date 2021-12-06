@@ -34,49 +34,28 @@
 
 struct GpuProperties
 {
-    // Real GPU or software emulation?
-    bool gpuHardware;
+    // The number of threads required to saturate the whole GPU.
+    int32 occupancyThreadsGood{};
+    int32 occupancyThreadsMax{};
 
-    // The number of multiprocessors
-    int32 multiprocessorCount;
-
-    // Processor clock in Hz
-    float32 clockRate;
-
-    // Total GPU throughput in instr/sec
-    float32 totalThroughput;
+    // Total GPU throughput in instructions per second.
+    float32 totalThroughput{};
 
     // Sampler base address alignment in bytes.
     //
     // Also serves as a base alignment for CPU and GPU 
     // memory blocks involved in DMA transfers,
     // like CPU pinned memory blocks and their GPU counterparts.
-    SpaceU samplerAndFastTransferBaseAlignment;
+    SpaceU samplerAndFastTransferBaseAlignment{};
 
     // Sampler row alignment in bytes.
     // This row alignment is >= good DRAM access alignment.
-    SpaceU samplerRowAlignment;
+    SpaceU samplerRowAlignment{};
 
     // Max group count and group size
-    Point3D<SpaceU> maxGroupCount;
-    Point<Space> maxThreadCount;
-    Space maxGroupArea;
-
-    // Reset
-    inline void clear()
-    {
-        gpuHardware = false;
-        multiprocessorCount = 0;
-        clockRate = 0;
-        totalThroughput = 0;
-        samplerAndFastTransferBaseAlignment = 0;
-        samplerRowAlignment = 0;
-        maxGroupCount = point3D<SpaceU>(0);
-        maxThreadCount = point(0);
-        maxGroupArea = 0;
-    }
-
-    inline GpuProperties() {clear();}
+    Point3D<SpaceU> maxGroupCount{};
+    Point<Space> maxThreadCount{};
+    Space maxGroupArea{};
 };
 
 //================================================================

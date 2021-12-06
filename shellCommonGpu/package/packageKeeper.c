@@ -426,6 +426,8 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
             ////
 
             configUpdateVars(stdPass);
+
+            require(configFile.saveToString(configSaver, stdPass));
         }
 
         //

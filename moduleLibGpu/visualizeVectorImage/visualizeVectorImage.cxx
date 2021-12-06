@@ -162,10 +162,13 @@ GPUTOOL_2D_BEG
 {
     VECTOR_DECOMPOSE_EX(vec, vectorValue);
 
-    ////
+    //
+    // For orientation mode, un-double-fold the direction,
+    // and optionally rotate 90 degrees to show along contours.
+    //
 
     if (orientationMode)
-        vecDir = circleCCW(0.5f * getPhase(vecDir)/* + 0.25f*/);
+        vecDir = circleCCW(0.5f * getPhase(vecDir) + 1 * 0.25f);
 
     ////
 

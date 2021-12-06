@@ -63,9 +63,8 @@ stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& propert
 
     REQUIRE(deviceIndex == 0);
 
-    properties.gpuHardware = false;
-    properties.multiprocessorCount = 1;
-    properties.clockRate = 2e9f;
+    properties.occupancyThreadsGood = 2048 * 32;
+    properties.occupancyThreadsMax = 2048 * 64;
     properties.totalThroughput = 2e9f;
     properties.samplerAndFastTransferBaseAlignment = EMU_TEX_BASE_ALIGNMENT;
     properties.samplerRowAlignment = EMU_TEX_ROW_ALIGNMENT;

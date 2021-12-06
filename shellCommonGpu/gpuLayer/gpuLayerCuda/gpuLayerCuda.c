@@ -246,23 +246,52 @@ stdbool CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& proper
     int multiprocessorCount = 0;
     REQUIRE_CUDA(cuDeviceGetAttribute(&multiprocessorCount, CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, deviceId));
 
+    ////
+
     int clockRate = 0;
     REQUIRE_CUDA(cuDeviceGetAttribute(&clockRate, CU_DEVICE_ATTRIBUTE_CLOCK_RATE, deviceId));
+
+    ////
 
     int ccMajor = 0;
     int ccMinor = 0;
     REQUIRE_CUDA(cuDeviceGetAttribute(&ccMajor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, deviceId));
     REQUIRE_CUDA(cuDeviceGetAttribute(&ccMinor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, deviceId));
 
-    properties.gpuHardware = true;
-    properties.multiprocessorCount = multiprocessorCount;
-    properties.clockRate = float32(clockRate) * 1e3f;
-
     int coresPerProcessor = getCudaCoresPerMultiprocessor(ccMajor * 0x10 + ccMinor);
     REQUIRE(coresPerProcessor >= 1);
 
-    float32 totalCores = float32(multiprocessorCount) * float32(coresPerProcessor);
-    properties.totalThroughput = float32(clockRate) * 1e3f * totalCores;
+    ////
+
+    int32 totalCores{};
+    REQUIRE(safeMul(int32{multiprocessorCount}, int32{coresPerProcessor}, totalCores));
+
+    ////
+
+    int warpSize = 0;
+    REQUIRE_CUDA(cuDeviceGetAttribute(&warpSize, CU_DEVICE_ATTRIBUTE_WARP_SIZE, deviceId));
+    REQUIRE(warpSize >= 1);
+
+    ////
+
+    int maxThreadsPerMultiprocessor = 0;
+    REQUIRE_CUDA(cuDeviceGetAttribute(&maxThreadsPerMultiprocessor, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_MULTIPROCESSOR, deviceId));
+    REQUIRE(maxThreadsPerMultiprocessor >= 1);
+
+    REQUIRE(maxThreadsPerMultiprocessor % warpSize == 0);
+    int maxWarpsPerMultiprocessor = maxThreadsPerMultiprocessor / warpSize;
+
+    // Max warps is the best, but 32 warps is also ok.
+    int goodWarpsPerMultiprocessor = clampMax(32, maxWarpsPerMultiprocessor); 
+
+    ////
+
+    REQUIRE(safeMul(multiprocessorCount, goodWarpsPerMultiprocessor * warpSize, properties.occupancyThreadsGood));
+    REQUIRE(safeMul(multiprocessorCount, maxWarpsPerMultiprocessor * warpSize, properties.occupancyThreadsMax));
+
+    ////
+
+    properties.totalThroughput = clockRate * 1e3f * totalCores;
 
     //
     //
@@ -424,7 +453,7 @@ stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties,
 void ContextEx::destroy()
 {
 
-    gpuProperties.clear();
+    gpuProperties = GpuProperties{};
     moduleKeeper.destroy();
 
     ////
