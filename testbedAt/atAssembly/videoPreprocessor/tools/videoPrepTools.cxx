@@ -89,7 +89,8 @@ stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& 
 
     ////
 
-    require(kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastElement<const uint32>(tmpSrc), BORDER_ZERO, false, false, false, stdPass));
+    require(kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastElement<const uint32>(tmpSrc), BORDER_ZERO, 
+        LinearInterpolation{false}, ReadNormalizedFloat{false}, NormalizedCoords{false}, stdPass));
 
     ////
 

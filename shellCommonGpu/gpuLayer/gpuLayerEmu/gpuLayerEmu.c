@@ -806,9 +806,9 @@ stdbool EmuExecApiThunk::setSamplerArray
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     const GpuContext& context,
     stdNullPars
 )
@@ -832,9 +832,9 @@ stdbool EmuExecApiThunk::setSamplerImage
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     const GpuContext& context,
     stdNullPars
 )

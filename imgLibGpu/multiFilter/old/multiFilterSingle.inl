@@ -283,7 +283,7 @@ stdbool FUNCNAME
     //----------------------------------------------------------------
 
     const GpuSamplerLink* srcSampler = (srcRank == 1) ? soft_cast<const GpuSamplerLink*>(&PREP_PASTE(FUNCNAME, srcSampler_x1)) : &PREP_PASTE(FUNCNAME, srcSampler_x2);
-    require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, borderMode, false, true, true, stdPass));
+    require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, borderMode, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
 
     ////
 
@@ -329,7 +329,8 @@ stdbool FUNCNAME
             if (srcRank == 1) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##_x1); \
             if (srcRank == 2) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##_x2); \
             REQUIRE(sampler != 0); \
-            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k)), borderMode, false, true, true, stdPass)); \
+            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k)), borderMode, \
+                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
         }
 
     PREP_FOR(FILTER_COUNT, TMP_MACRO, _)

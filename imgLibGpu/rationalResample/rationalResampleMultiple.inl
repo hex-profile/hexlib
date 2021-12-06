@@ -286,7 +286,9 @@ stdbool FUNCNAME
     OUTPUT_FACTOR_ONLY(intermParams.outputFactor = outputFactor.DIR(X, Y));
 
     #define TMP_MACRO(t, _) \
-        require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler##t, src##t, borderMode, false, true, true, stdPass)); \
+        require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler##t, src##t, borderMode, \
+            LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
+        \
         intermParams.dst[t] = interm##t;
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
@@ -329,7 +331,9 @@ stdbool FUNCNAME
     
 
     #define TMP_MACRO(t, _) \
-        require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler##t, makeConst(interm##t), borderMode, false, true, true, stdPass)); \
+        require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler##t, makeConst(interm##t), borderMode, \
+            LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
+        \
         finalParams.dst[t] = dst##t;
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)

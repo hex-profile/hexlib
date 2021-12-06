@@ -20,9 +20,9 @@ stdbool emuSetSamplerArray
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 );
 
@@ -41,9 +41,9 @@ stdbool emuSetSamplerImage
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 );
 

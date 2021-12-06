@@ -1934,9 +1934,9 @@ stdbool CudaExecApiThunk::setSamplerImage
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     const GpuContext& context,
     stdNullPars
 )
@@ -1993,7 +1993,7 @@ stdbool CudaExecApiThunk::setSamplerImage
     // Filter mode
     //
 
-    REQUIRE_CUDA(cuTexRefSetFilterMode(texref, linearInterpolation ? CU_TR_FILTER_MODE_LINEAR : CU_TR_FILTER_MODE_POINT));
+    REQUIRE_CUDA(cuTexRefSetFilterMode(texref, linearInterpolation.on() ? CU_TR_FILTER_MODE_LINEAR : CU_TR_FILTER_MODE_POINT));
 
     //
     // Flags
@@ -2001,10 +2001,10 @@ stdbool CudaExecApiThunk::setSamplerImage
 
     uint32 flags = 0;
 
-    if_not (readNormalizedFloat)
+    if_not (readNormalizedFloat.on())
         flags |= CU_TRSF_READ_AS_INTEGER;
 
-    if (normalizedCoords)
+    if (normalizedCoords.on())
         flags |= CU_TRSF_NORMALIZED_COORDINATES;
 
     REQUIRE_CUDA(cuTexRefSetFlags(texref, flags));
@@ -2028,9 +2028,9 @@ stdbool CudaExecApiThunk::setSamplerArray
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     const GpuContext& context,
     stdNullPars
 )
@@ -2081,7 +2081,7 @@ stdbool CudaExecApiThunk::setSamplerArray
     // Filter mode
     //
 
-    REQUIRE_CUDA(cuTexRefSetFilterMode(texref, linearInterpolation ? CU_TR_FILTER_MODE_LINEAR : CU_TR_FILTER_MODE_POINT));
+    REQUIRE_CUDA(cuTexRefSetFilterMode(texref, linearInterpolation.on() ? CU_TR_FILTER_MODE_LINEAR : CU_TR_FILTER_MODE_POINT));
 
     //
     // Flags
@@ -2089,10 +2089,10 @@ stdbool CudaExecApiThunk::setSamplerArray
 
     uint32 flags = 0;
 
-    if_not (readNormalizedFloat)
+    if_not (readNormalizedFloat.on())
         flags |= CU_TRSF_READ_AS_INTEGER;
 
-    if (normalizedCoords)
+    if (normalizedCoords.on())
         flags |= CU_TRSF_NORMALIZED_COORDINATES;
 
     REQUIRE_CUDA(cuTexRefSetFlags(texref, flags));

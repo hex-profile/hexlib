@@ -194,7 +194,7 @@ stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Ds
     if (srcRank == 4) srcSampler = &srcSampler4;
     REQUIRE(srcSampler);
 
-    require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, BORDER_CLAMP, false, true, false, stdPass));
+    require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, BORDER_CLAMP, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{false}, stdPass));
 
     ////
 

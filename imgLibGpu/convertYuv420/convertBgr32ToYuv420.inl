@@ -268,9 +268,9 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
             srcSampler,
             srcCorrect,
             BORDER_MIRROR,
-            false,
-            true,
-            true,
+            LinearInterpolation{false},
+            ReadNormalizedFloat{true},
+            NormalizedCoords{true},
             stdPass
         )
     );

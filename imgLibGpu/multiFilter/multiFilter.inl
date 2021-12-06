@@ -290,7 +290,9 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
     #define TMP_MACRO(t, _) \
         { \
             const GpuSamplerLink* srcSampler = &PREP_PASTE3(SIGNATURE, srcSampler, t); \
-            require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src##t, borderMode, false, true, true, stdPass)); \
+            \
+            require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src##t, borderMode, \
+                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
         }
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
@@ -340,7 +342,9 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
     #define TMP_MACRO(t, k, _) \
         { \
             const GpuSamplerLink* sampler = &PREP_PASTE4(SIGNATURE, intermSampler, k, t); \
-            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k + t * FILTER_COUNT)), borderMode, false, true, true, stdPass)); \
+            \
+            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k + t * FILTER_COUNT)), borderMode, \
+                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
         }
 
     PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)

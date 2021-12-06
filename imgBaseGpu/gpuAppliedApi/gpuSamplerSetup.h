@@ -92,6 +92,54 @@ struct GpuSamplerLink;
 
 //================================================================
 //
+// SamplerOption
+//
+//================================================================
+
+template <typename Type>
+class SamplerOption
+{
+
+public:
+
+    inline SamplerOption(bool value)
+        : value{value} {}
+
+    inline bool on() const 
+        {return value;}
+
+private:
+
+    bool value;
+
+};
+
+//================================================================
+//
+// LinearInterpolation
+//
+//================================================================
+
+using LinearInterpolation = SamplerOption<class LinearInterpolationKind>;
+
+//================================================================
+//
+// ReadNormalizedFloat
+//
+//================================================================
+
+using ReadNormalizedFloat = SamplerOption<class ReadNormalizedFloatKind>;
+
+//================================================================
+//
+// NormalizedCoords
+//
+//================================================================
+
+using NormalizedCoords = SamplerOption<class NormalizedCoordsKind>;
+
+//================================================================
+//
 // GpuSamplerSetup
 //
 //================================================================
@@ -111,9 +159,9 @@ struct GpuSamplerSetup
         GpuChannelType chanType,
         int rank,
         BorderMode borderMode,
-        bool linearInterpolation,
-        bool readNormalizedFloat,
-        bool normalizedCoords,
+        LinearInterpolation linearInterpolation,
+        ReadNormalizedFloat readNormalizedFloat,
+        NormalizedCoords normalizedCoords,
         const GpuContext& context,
         stdNullPars
     )
@@ -125,9 +173,9 @@ struct GpuSamplerSetup
         const GpuSamplerLink& sampler,
         const GpuArray<const Type>& array,
         BorderMode borderMode,
-        bool linearInterpolation,
-        bool readNormalizedFloat,
-        bool normalizedCoords,
+        LinearInterpolation linearInterpolation,
+        ReadNormalizedFloat readNormalizedFloat,
+        NormalizedCoords normalizedCoords,
         stdPars(Kit)
     )
     {
@@ -160,9 +208,9 @@ struct GpuSamplerSetup
         GpuChannelType chanType,
         int rank,
         BorderMode borderMode,
-        bool linearInterpolation,
-        bool readNormalizedFloat,
-        bool normalizedCoords,
+        LinearInterpolation linearInterpolation,
+        ReadNormalizedFloat readNormalizedFloat,
+        NormalizedCoords normalizedCoords,
         const GpuContext& context,
         stdNullPars
     )
@@ -174,9 +222,9 @@ struct GpuSamplerSetup
         const GpuSamplerLink& sampler,
         const GpuMatrix<const Type>& image,
         BorderMode borderMode,
-        bool linearInterpolation,
-        bool readNormalizedFloat,
-        bool normalizedCoords,
+        LinearInterpolation linearInterpolation,
+        ReadNormalizedFloat readNormalizedFloat,
+        NormalizedCoords normalizedCoords,
         stdPars(Kit)
     )
     {

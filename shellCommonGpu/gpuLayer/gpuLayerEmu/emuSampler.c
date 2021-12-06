@@ -359,9 +359,9 @@ static stdbool setupSamplerImage
     Space imageBytePitch,
     const Point<Space>& imageSize,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 )
 {
@@ -379,9 +379,9 @@ static stdbool setupSamplerImage
     using MemChannel = VECTOR_BASE(MemType);
 
     if (TYPE_IS_BUILTIN_FLOAT(MemChannel))
-        readNormalizedFloat = false;
+        readNormalizedFloat = ReadNormalizedFloat{false};
 
-    if (readNormalizedFloat)
+    if (readNormalizedFloat.on())
         REQUIRE(TYPE_IS_BUILTIN_INT(MemChannel) && sizeof(MemChannel) <= sizeof(uint16));
 
     //
@@ -390,7 +390,7 @@ static stdbool setupSamplerImage
 
     info.coordScale = point(1.f);
 
-    if (normalizedCoords)
+    if (normalizedCoords.on())
         info.coordScale = convertFloat32(clampMin(imageSize, 1));
 
     //
@@ -399,9 +399,9 @@ static stdbool setupSamplerImage
 
     EmuSamplerTex2D* func = 0;
 
-    if (linearInterpolation)
+    if (linearInterpolation.on())
     {
-        REQUIRE(readNormalizedFloat || TYPE_IS_BUILTIN_FLOAT(MemChannel));
+        REQUIRE(readNormalizedFloat.on() || TYPE_IS_BUILTIN_FLOAT(MemChannel));
 
         #define TMP_MACRO(borderConst, _) \
             if (borderMode == borderConst) \
@@ -417,7 +417,7 @@ static stdbool setupSamplerImage
             if (borderMode == borderConst) \
                 func = emuSamplerRead2D<MemType, borderConst, normalizedFloat>;
 
-        if (readNormalizedFloat)
+        if (readNormalizedFloat.on())
         {
             BORDER_MODE_FOREACH(TMP_MACRO, true)
         }
@@ -452,9 +452,9 @@ using SetupEmuSamplerImage = stdbool
     Space imageBytePitch,
     const Point<Space>& imageSize,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 );
 
@@ -473,9 +473,9 @@ stdbool emuSetSamplerImage
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 )
 {
@@ -589,9 +589,9 @@ static stdbool setupSamplerArray
     GpuAddrU arrayAddr,
     Space arrayByteSize,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 )
 {
@@ -611,7 +611,7 @@ static stdbool setupSamplerArray
 
     using MemChannel = VECTOR_BASE(MemType);
 
-    if (readNormalizedFloat)
+    if (readNormalizedFloat.on())
         REQUIRE(TYPE_IS_BUILTIN_INT(MemChannel) && sizeof(MemChannel) <= sizeof(uint16));
 
     //
@@ -620,7 +620,7 @@ static stdbool setupSamplerArray
 
     info.coordScale = 1.f;
 
-    if (normalizedCoords)
+    if (normalizedCoords.on())
         info.coordScale = convertFloat32(clampMin(arraySize, 1));
 
     //
@@ -629,7 +629,7 @@ static stdbool setupSamplerArray
 
     EmuSamplerTex1Dfetch* func = 0;
 
-    if (readNormalizedFloat)
+    if (readNormalizedFloat.on())
     {
         func = emuSamplerRead1Dfetch<MemType, true>;
     }
@@ -660,9 +660,9 @@ using SetupEmuSamplerArray = stdbool
     GpuAddrU arrayAddr,
     Space arrayByteSize,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 );
 
@@ -680,9 +680,9 @@ stdbool emuSetSamplerArray
     GpuChannelType chanType,
     int rank,
     BorderMode borderMode,
-    bool linearInterpolation,
-    bool readNormalizedFloat,
-    bool normalizedCoords,
+    LinearInterpolation linearInterpolation,
+    ReadNormalizedFloat readNormalizedFloat,
+    NormalizedCoords normalizedCoords,
     stdPars(ErrorLogKit)
 )
 {

@@ -195,9 +195,9 @@ stdbool visualizeScalarMatrix
                 *sampler,
                 src,
                 borderMode,
-                upsampleType == INTERP_LINEAR,
-                true,
-                true,
+                LinearInterpolation{upsampleType == INTERP_LINEAR},
+                ReadNormalizedFloat{true},
+                NormalizedCoords{true},
                 stdPass
             )
         );
@@ -423,9 +423,9 @@ stdbool upconvertValueMatrix
                 *sampler,
                 src,
                 borderMode,
-                upsampleType == INTERP_LINEAR,
-                true,
-                true,
+                LinearInterpolation{upsampleType == INTERP_LINEAR},
+                ReadNormalizedFloat{true},
+                NormalizedCoords{true},
                 stdPass
             )
         );

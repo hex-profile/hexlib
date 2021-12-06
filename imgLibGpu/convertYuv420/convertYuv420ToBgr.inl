@@ -319,16 +319,16 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     //
     //----------------------------------------------------------------
 
-    require(kit.gpuSamplerSetting.setSamplerImage(lumaSampler, srcLuma, BORDER_MIRROR, false, true, true, stdPass));
+    require(kit.gpuSamplerSetting.setSamplerImage(lumaSampler, srcLuma, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
 
     ////
 
     if (chromaIsPacked)
-        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerPacked, srcChromaPacked, BORDER_MIRROR, false, true, true, stdPass));
+        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerPacked, srcChromaPacked, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
     else
     {
-        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerU, srcChromaU, BORDER_MIRROR, false, true, true, stdPass));
-        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerV, srcChromaV, BORDER_MIRROR, false, true, true, stdPass));
+        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerU, srcChromaU, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
+        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerV, srcChromaV, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
     }
 
     ////
