@@ -22,15 +22,13 @@
     <Type Name="PointerEmulator&lt;*, *&gt;">
         <DisplayString>{size_t(addr), Xb}</DisplayString>
     </Type>
-    
+
     <Type Name="Array&lt;*&gt;">
         <AlternativeType Name="ArrayEx&lt;*&gt;"/>
         <AlternativeType Name="ArrayMemory&lt;*&gt;"/>
         <AlternativeType Name="ArrayMemoryEx&lt;*&gt;"/>
         <AlternativeType Name="ArrayObjectMemory&lt;*&gt;"/>
         <AlternativeType Name="ArrayObjectMemoryStatic&lt;*, *&gt;"/>
-        <AlternativeType Name="GpuArray&lt;*&gt;"/>
-        <AlternativeType Name="GpuArrayMemory&lt;*&gt;"/>
 
         <DisplayString>[{theSize}] {thePtr,[theSize]na}</DisplayString>
         <Expand>
@@ -40,6 +38,11 @@
                 <ValuePointer>thePtr</ValuePointer>
             </ArrayItems>
         </Expand>
+    </Type>
+
+    <Type Name="GpuArray&lt;*&gt;">
+        <AlternativeType Name="GpuArrayMemory&lt;*&gt;"/>
+        <DisplayString>[{theSize}]</DisplayString>
     </Type>
 
     <Type Name="Matrix&lt;*&gt;">
