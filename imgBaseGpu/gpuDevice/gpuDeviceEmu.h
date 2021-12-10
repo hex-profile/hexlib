@@ -25,6 +25,15 @@ using EmuError = const CharType*;
 
 //================================================================
 //
+// emuThrowError
+//
+//================================================================
+
+[[noreturn]]
+void emuThrowError(EmuError error);
+
+//================================================================
+//
 // EmuKernelTools
 //
 // Special interface functions, available inside kernel code.
@@ -313,7 +322,7 @@ struct GpuKernelLink
 //================================================================
 
 #define devDebugCheck(condition) \
-    if (allv(condition)) ; else throw EMU_ERRMSG(condition)
+    if (allv(condition)) ; else emuThrowError(EMU_ERRMSG(condition))
 
 //================================================================
 //
@@ -324,7 +333,7 @@ struct GpuKernelLink
 //================================================================
 
 #define devAbortCheck(condition) \
-    if (allv(condition)) ; else throw EMU_ERRMSG(condition)
+    if (allv(condition)) ; else emuThrowError(EMU_ERRMSG(condition))
 
 //================================================================
 //

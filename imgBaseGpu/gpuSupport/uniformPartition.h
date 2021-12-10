@@ -14,25 +14,27 @@ class UniformPartition
 
 public:
 
-    UniformPartition(const Type& size, const Type& count)
+    sysinline UniformPartition() =default;
+
+    sysinline UniformPartition(const Type& size, const Type& count)
     {
         baseSize = size / count;
         baseRem = size - baseSize * count;
     }
 
-    Type nthOrg(const Type& index) const
+    sysinline Type nthOrg(const Type& index) const
     {
         return index * baseSize + clampMax(index, baseRem);
     }
 
-    Type nthSize(const Type& index)
+    sysinline Type nthSize(const Type& index) const
     {
         return baseSize + convertExact<Type>(index < baseRem);
     }
 
 private:
 
-    Type baseSize;
-    Type baseRem;
+    Type baseSize = 0;
+    Type baseRem = 0;
 
 };

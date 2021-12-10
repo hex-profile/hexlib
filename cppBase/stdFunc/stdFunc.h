@@ -70,6 +70,12 @@
 
 //----------------------------------------------------------------
 
+#define stdPassNoProfiling \
+    kit, \
+    TRACE_PASS(trace, TRACE_AUTO_LOCATION)
+
+//----------------------------------------------------------------
+
 #define stdPassThru \
     kit, \
     TRACE_PASSTHRU(trace)

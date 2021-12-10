@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "errorLog/errorLog.h"
-#include "gpuLayer/gpuLayerEmu/uniformPartition.h"
+#include "gpuSupport/uniformPartition.h"
 #include "gpuLayer/gpuLayerEmu/emuSampler.h"
 #include "dataAlloc/matrixMemory.h"
 #include "errorLog/debugBreak.h"

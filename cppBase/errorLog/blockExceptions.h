@@ -14,14 +14,14 @@
 //================================================================
 
 #define blockExceptionsVoid(action) \
-    blockExceptionsVerboseHelper([&] () -> bool {action; return true;}, stdPass)
+    blockExceptionsVerboseHelper([&] () -> bool {action; return true;}, stdPassNoProfiling)
 
 //----------------------------------------------------------------
 
 #if HEXLIB_ERROR_HANDLING == 0
 
     #define blockExceptions(action) \
-        blockExceptionsVerboseHelper([&] () -> bool {return errorBlock(action);}, stdPass)
+        blockExceptionsVerboseHelper([&] () -> bool {return errorBlock(action);}, stdPassNoProfiling)
 
 #elif HEXLIB_ERROR_HANDLING == 1
 

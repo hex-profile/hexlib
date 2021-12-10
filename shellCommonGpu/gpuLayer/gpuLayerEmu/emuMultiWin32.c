@@ -7,7 +7,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#include "gpuLayer/gpuLayerEmu/uniformPartition.h"
 #include "errorLog/debugBreak.h"
 #include "dataAlloc/arrayObjectMemory.inl"
 #include "storage/rememberCleanup.h"
@@ -16,6 +15,7 @@
 #include "point3d/point3d.h"
 #include "interfaces/syncObjects.h"
 #include "threads/threads.h"
+#include "gpuSupport/uniformPartition.h"
 
 namespace emuMultiWin32 {
 
