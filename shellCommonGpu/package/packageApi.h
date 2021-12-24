@@ -31,12 +31,13 @@ struct DumpParams
 
 struct PackageDebugKit
 {
-    // Use nullptr to disable.
-    DiagLog* const log;
+    // API for text output. Use nullptr to disable.
+    DiagLog* log = nullptr;
 
-    // Use nullptr to disable.
-    DebugBridge* const debugBridge;
+    // API for debug output. Use nullptr to disable.
+    DebugBridge* debugBridge = nullptr;
 
+    // Additional dump settings.
     DumpParams dumpParams;
 
     PackageDebugKit(DiagLog* log, DebugBridge* debugBridge, const DumpParams& dumpParams)
@@ -51,8 +52,8 @@ struct PackageDebugKit
 
 struct PackageKit
 {
-    // Use nullptr to disable.
-    DiagLog* const log;
+    // API for text output. Use nullptr to disable.
+    DiagLog* log = nullptr;
 
     PackageKit(DiagLog* log)
         : log{log} {}

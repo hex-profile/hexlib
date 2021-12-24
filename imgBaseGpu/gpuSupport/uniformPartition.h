@@ -14,7 +14,9 @@ class UniformPartition
 
 public:
 
-    sysinline UniformPartition() =default;
+    sysinline UniformPartition() 
+    {
+    }
 
     sysinline UniformPartition(const Type& size, const Type& count)
     {

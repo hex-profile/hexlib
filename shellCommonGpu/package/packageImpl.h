@@ -22,17 +22,29 @@ inline Array<Type> uncast(const ArrayBase<Type>& arr)
 template <typename Type>
 inline Matrix<Type> uncast(const MatrixBase<Type>& mat)
 {
-    COMPILE_ASSERT_EQUAL_LAYOUT(MatrixBase<Type>, Matrix<Type>);
     return recastEqualLayout<Matrix<Type>>(mat);
+}
+
+//================================================================
+//
+// uncastRef
+//
+// Only because of GCC bugs.
+//
+//================================================================
+
+template <typename Type>
+inline const Array<Type>& uncastRef(const ArrayBase<Type>& arr)
+{
+    return recastEqualLayout<Array<Type>>(arr);
 }
 
 //----------------------------------------------------------------
 
 template <typename Type>
-inline Array<const Matrix<Type>> uncast(const ArrayBase<const MatrixBase<Type>>& arr)
+inline const Matrix<Type>& uncastRef(const MatrixBase<Type>& mat)
 {
-    COMPILE_ASSERT_EQUAL_LAYOUT(MatrixBase<Type>, Matrix<Type>);
-    return recastEqualLayout<Array<const Matrix<Type>>>(arr);
+    return recastEqualLayout<Matrix<Type>>(mat);
 }
 
 //----------------------------------------------------------------

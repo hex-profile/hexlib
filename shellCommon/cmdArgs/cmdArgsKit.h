@@ -9,4 +9,4 @@
 //
 //================================================================
 
-KIT_CREATE2(CmdArgsKit, int, argCount, const CharType**, argStr);
+KIT_CREATE2(CmdArgsKit, int, argCount, const CharType* const*, argStr);

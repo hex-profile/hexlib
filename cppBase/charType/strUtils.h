@@ -3,6 +3,8 @@
 #include <string.h>
 #include <wchar.h>
 
+#include "compileTools/compileTools.h"
+
 //================================================================
 //
 // strLen

@@ -70,7 +70,7 @@ private:
 
     //----------------------------------------------------------------
     //
-    // Engine memory & minimal shell, construction order is important.
+    // The engine memory & the minimal shell, the order of construction is important.
     //
     //----------------------------------------------------------------
 

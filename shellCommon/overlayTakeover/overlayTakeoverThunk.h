@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cfgTools/overlayTakeover.h"
+#include "configFile/cfgSerialization.h"
 
 //================================================================
 //
