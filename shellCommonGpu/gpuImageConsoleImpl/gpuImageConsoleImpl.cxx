@@ -751,11 +751,6 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
         auto msg = hint.desc;
 
-        //auto bits = -nativeLog2(maxVal - minVal);
-
-        //auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
-        //    hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
-
         require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, msg, stdPass));
     }
     else
@@ -1272,12 +1267,7 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
             ScalarVisualizationParams<Type>{img, 0, coordBack, valueTransform, upsampleType, borderMode, displayMode == DisplayMode::Centered}, 
             colorMode, kit
         };
-
-        //auto bits = -nativeLog2(maxVal - minVal);
-        //
-        //auto msg = paramMsg(bits >= 0 ? STR("%0 [%1, %2] %3b") : STR("%0 [%1, %2]"), 
-        //    hint.desc, prettyNumber(fltg(minVal, 3)), prettyNumber(fltg(maxVal, 3)), fltf(bits, 1));
-
+        
         require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, hint.desc, stdPass));
     }
 

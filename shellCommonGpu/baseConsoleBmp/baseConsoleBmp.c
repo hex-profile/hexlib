@@ -431,9 +431,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     //
     //----------------------------------------------------------------
 
-    auto filenameMsg = paramMsg(STR("%/%--%.bmp"), outputDir(), dec(frameIndex, 8), descArray());
-
-    require(formatAtomToBuffer(filenameMsg, filenameArray, stdPass));
+    require(formatAtomToBuffer(paramMsg(STR("%/%--%.bmp"), outputDir(), dec(frameIndex, 8), descArray()), filenameArray, stdPass));
 
     ARRAY_EXPOSE_UNSAFE(filenameArray);
     CharArray filenameStr(filenameArrayPtr, filenameArraySize);

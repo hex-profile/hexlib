@@ -842,8 +842,7 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
         //
         //----------------------------------------------------------------
 
-        auto basenameMsg = paramMsg(STR("%/%"), currentOutputDir.c_str(), descArray());
-        require(formatAtomToBuffer(basenameMsg, basenameArray, stdPass));
+        require(formatAtomToBuffer(paramMsg(STR("%/%"), currentOutputDir.c_str(), descArray()), basenameArray, stdPass));
 
         ARRAY_EXPOSE_UNSAFE(basenameArray);
         String basenameStr(basenameArrayPtr, basenameArraySize);

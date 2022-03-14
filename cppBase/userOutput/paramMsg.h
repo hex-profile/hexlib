@@ -83,6 +83,16 @@ inline ParamMsg0 paramMsg(const CharArray& format)
     } \
     \
     template <PREP_ENUM_INDEXED(n, typename T)> \
+    inline ParamStruct<PREP_ENUM_INDEXED(n, T)> paramMsgSafe \
+    ( \
+        const CharArray& format, \
+        PREP_ENUM_INDEXED_PAIR(n, const T, *v) \
+    ) \
+    { \
+        return ParamStruct<PREP_ENUM_INDEXED(n, T)>(format, PREP_ENUM_INDEXED(n, *v)); \
+    } \
+    \
+    template <PREP_ENUM_INDEXED(n, typename T)> \
     struct FormatOutputFunc<ParamStruct<PREP_ENUM_INDEXED(n, T)>> \
     { \
         typedef void FuncType(const ParamMsg& value, FormatOutputStream& outputStream); \
