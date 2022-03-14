@@ -55,6 +55,11 @@ public:
         setup(zero, zero, zero);
     }
 
+    inline explicit NumericVar(TypePar defaultVal)
+    {
+        setup(typeMin<Type>(), typeMax<Type>(), defaultVal);
+    }
+
     inline void setup(TypePar minVal, TypePar maxVal, TypePar defaultVal)
     {
         Type fixedMinVal = minVal;

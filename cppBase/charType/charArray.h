@@ -47,6 +47,7 @@ sysinline auto charArray(const Type* ptr, size_t size)
 //----------------------------------------------------------------
 
 using CharArray = CharArrayEx<CharType>;
+using CharArrayChar = CharArrayEx<char>;
 
 //================================================================
 //
