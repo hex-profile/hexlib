@@ -118,11 +118,14 @@ struct ArrayRef
     Type* ptr;
     size_t size;
 
-    // Range-based "for" support.
-    inline Type* begin() const {return ptr;}
-    inline Type* end() const {return ptr + size;}
+    inline Type* begin() const
+        {return ptr;}
 
-    inline Type& operator[] (size_t i) const {return ptr[i];}
+    inline Type* end() const 
+        {return ptr + size;}
+
+    inline Type& operator[](size_t i) const
+        {return ptr[i];}
 };
 
 //================================================================
@@ -193,7 +196,7 @@ public:
     ConfigReceiverByLambda(const Lambda& lambda)
         : lambda{lambda} {}
 
-    virtual void receive(ArrayRef<const Char> config)
+    virtual void receive(ArrayRef<const Char> config) 
         {lambda(config);}
 
 private:
@@ -206,7 +209,9 @@ private:
 
 template <typename Lambda>
 inline auto configReceiverByLambda(const Lambda& lambda)
-    {return ConfigReceiverByLambda<Lambda>{lambda};}
+{
+    return ConfigReceiverByLambda<Lambda>{lambda};
+}
 
 //================================================================
 //
@@ -264,12 +269,7 @@ struct ConfigSupport : public VirtualDestructor
 //
 //================================================================
 
-enum class MessageKind
-{
-    Info,
-    Warning,
-    Error
-};
+enum class MessageKind {Info, Warning, Error};
 
 //================================================================
 //
@@ -340,25 +340,24 @@ using ActionId = uint32_t;
 
 //----------------------------------------------------------------
 
-namespace actionId 
-{
-    constexpr ActionId MouseLeftDown = 0xFFFFFFFEu;
-    constexpr ActionId MouseLeftUp = 0xFFFFFFFDu;
+namespace actionId {
+constexpr ActionId MouseLeftDown = 0xFFFFFFFEu;
+constexpr ActionId MouseLeftUp = 0xFFFFFFFDu;
 
-    constexpr ActionId MouseRightDown = 0xFFFFFFFCu;
-    constexpr ActionId MouseRightUp = 0xFFFFFFFBu;
+constexpr ActionId MouseRightDown = 0xFFFFFFFCu;
+constexpr ActionId MouseRightUp = 0xFFFFFFFBu;
 
-    constexpr ActionId WheelDown = 0xFFFFFFFAu;
-    constexpr ActionId WheelUp = 0xFFFFFFF9u;
+constexpr ActionId WheelDown = 0xFFFFFFFAu;
+constexpr ActionId WheelUp = 0xFFFFFFF9u;
 
-    constexpr ActionId SaveConfig = 0xFFFFFFF8u;
-    constexpr ActionId LoadConfig = 0xFFFFFFF7u;
-    constexpr ActionId EditConfig = 0xFFFFFFF6u;
+constexpr ActionId SaveConfig = 0xFFFFFFF8u;
+constexpr ActionId LoadConfig = 0xFFFFFFF7u;
+constexpr ActionId EditConfig = 0xFFFFFFF6u;
 
-    constexpr ActionId ResetupActions = 0xFFFFFFF5u;
+constexpr ActionId ResetupActions = 0xFFFFFFF5u;
 
-    constexpr ActionId MouseMove = 0xFFFFFFF4u;
-}
+constexpr ActionId MouseMove = 0xFFFFFFF4u;
+}  // namespace actionId
 
 //================================================================
 //
@@ -467,12 +466,12 @@ class MousePos
 
 public:
 
-    MousePos() =default;
+    MousePos() = default;
 
     inline MousePos(ImagePoint pos) 
         : posX(pos.X), posY(pos.Y) {}
 
-    inline bool valid() const
+    inline bool valid() const 
         {return posX >= 0 && posY >= 0;}
 
     inline ImagePoint pos()
@@ -507,7 +506,7 @@ struct ActionRec
 //
 // Gets actions that happened from the previous action receiving.
 //
-// Actions are transferred to the client, so they are passed 
+// Actions are transferred to the client, so they are passed
 // to the client only once.
 //
 //================================================================
@@ -633,9 +632,14 @@ struct DebugBridgeProvider : public VirtualDestructor
 
 class ConfigSupportNull : public ConfigSupport
 {
-    virtual void saveConfig(ArrayRef<const Char> config) {}
-    virtual void loadConfig(ConfigReceiver& configReceiver) {}
-    virtual void editConfig(ArrayRef<const Char> config, ConfigReceiver& configReceiver) {}
+    void saveConfig(ArrayRef<const Char> config) override
+        {(void) config;}
+    
+    void loadConfig(ConfigReceiver&) override
+        {}
+
+    void editConfig(ArrayRef<const Char> config, ConfigReceiver&) override
+        {(void) config;}
 };
 
 //================================================================
@@ -646,8 +650,11 @@ class ConfigSupportNull : public ConfigSupport
 
 class ActionSetupNull : public ActionSetup
 {
-    virtual void clear() {}
-    virtual void add(ArrayRef<const ActionParamsRef> actions) {}
+    void clear() override 
+        {}
+
+    void add(ArrayRef<const ActionParamsRef> actions) override 
+        {(void) actions;}
 };
 
 //================================================================
@@ -658,7 +665,8 @@ class ActionSetupNull : public ActionSetup
 
 struct ActionReceivingNull : public ActionReceiving
 {
-    virtual void getActions(ActionReceiver& receiver) {}
+    void getActions(ActionReceiver&) override
+        {}
 };
 
 //================================================================
@@ -669,8 +677,11 @@ struct ActionReceivingNull : public ActionReceiving
 
 class StatusConsoleNull : public StatusConsole
 {
-    virtual void clear() {}
-    virtual void add(ArrayRef<const MessageRef> messages) {}
+    void clear() override
+        {}
+
+    void add(ArrayRef<const MessageRef> messages) override
+        {(void) messages;}
 };
 
 //================================================================
@@ -681,8 +692,11 @@ class StatusConsoleNull : public StatusConsole
 
 class VideoOverlayNull : public VideoOverlay
 {
-    virtual void set(const ImagePoint& size, ImageProvider& imageProvider, StringPtr description) {}
-    virtual void clear() {}
+    void set(const ImagePoint& size, ImageProvider&, StringPtr description) override
+        {(void) size; (void) description;}
+
+    void clear() override
+        {}
 };
 
 //================================================================
@@ -696,15 +710,18 @@ class DebugBridgeNull : public DebugBridge
 
 public:
 
-    virtual bool active() {return false;}
-    virtual void commit() {}
+    bool active() override
+        {return false;}
 
-    virtual ConfigSupport* configSupport() {return &configSupportNull;}
-    virtual ActionSetup* actionSetup() {return &actionSetupNull;}
-    virtual ActionReceiving* actionReceiving() {return &actionReceivingNull;}
-    virtual MessageConsole* messageConsole() {return &messageConsoleNull;}
-    virtual StatusConsole* statusConsole() {return &statusConsoleNull;}
-    virtual VideoOverlay* videoOverlay() {return &videoOverlayNull;}
+    void commit() override
+        {}
+
+    ConfigSupport* configSupport() override {return &configSupportNull;}
+    ActionSetup* actionSetup() override {return &actionSetupNull;}
+    ActionReceiving* actionReceiving() override {return &actionReceivingNull;}
+    MessageConsole* messageConsole() override {return &messageConsoleNull;}
+    StatusConsole* statusConsole() override {return &statusConsoleNull;}
+    VideoOverlay* videoOverlay() override {return &videoOverlayNull;}
 
 private:
 
@@ -728,19 +745,17 @@ class DebugBridgeProviderNull : public DebugBridgeProvider
 
 public:
 
-    virtual DebugBridge* debugBridge() {return &debugBridgeImpl;}
+    DebugBridge* debugBridge() override {return &debugBridgeImpl;}
 
 private:
 
     DebugBridgeNull debugBridgeImpl;
+
 };
 
 //----------------------------------------------------------------
 
-inline auto debugBridgeNullTest()
-{
-    return DebugBridgeProviderNull{};
-}
+inline auto debugBridgeNullTest() {return DebugBridgeProviderNull{};}
 
 //----------------------------------------------------------------
 
