@@ -353,14 +353,6 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
     //----------------------------------------------------------------
     //
-    // Set the current thread GPU context.
-    //
-    //----------------------------------------------------------------
-
-    require(kit.gpuContextCreation.setThreadContext(kit.gpuCurrentContext, stdPass));
-
-    //----------------------------------------------------------------
-    //
     // Give GPU control to the profiler.
     //
     //----------------------------------------------------------------

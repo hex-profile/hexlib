@@ -45,7 +45,28 @@ struct GpuContextOwner : public GpuContext
 struct GpuContextCreation
 {
     virtual stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars) =0;
-    virtual stdbool setThreadContext(const GpuContext& context, stdNullPars) =0;
+};
+
+//================================================================
+//
+// GpuContextSetting
+//
+//================================================================
+
+struct GpuThreadContextSave : public OpaqueStruct<8> {};
+
+//----------------------------------------------------------------
+
+struct GpuContextSetting
+{
+    virtual stdbool threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdNullPars) =0;
+    virtual stdbool threadContextRestore(const GpuThreadContextSave& save, stdNullPars) =0;
+
+    inline stdbool threadContextSet(const GpuContext& context, stdNullPars)
+    {
+        GpuThreadContextSave tmp;
+        return threadContextSet(context, tmp, stdNullPass);
+    }
 };
 
 //================================================================
@@ -224,6 +245,7 @@ struct GpuInitApi
     :
     public GpuInitialization,
     public GpuContextCreation,
+    public GpuContextSetting,
     public GpuModuleCreation,
     public GpuKernelLoading,
     public GpuSamplerLoading,

@@ -545,22 +545,51 @@ void CudaInitApiThunk::destroyContext(GpuContextDeallocContext& deallocContext)
 
 //================================================================
 //
-// CudaInitApiThunk::setThreadContext
+// CudaInitApiThunk::threadContextSet
 //
 //================================================================
 
-stdbool CudaInitApiThunk::setThreadContext(const GpuContext& context, stdNullPars)
+stdbool CudaInitApiThunk::threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdNullPars)
 {
     const ContextEx& ctx = uncast(context);
     REQUIRE(ctx.isCreated());
     auto newContext = ctx.getBaseContext();
 
+    ////
+
     CUcontext currentContext = nullptr;
     REQUIRE_CUDA(cuCtxGetCurrent(&currentContext));
+
+    save.recast<CUcontext>() = currentContext;
+
+    ////
 
     if (newContext != currentContext)
         REQUIRE_CUDA(cuCtxSetCurrent(newContext));
 
+    returnTrue;
+}
+
+//================================================================
+//
+// CudaInitApiThunk::threadContextRestore
+//
+//================================================================
+
+stdbool CudaInitApiThunk::threadContextRestore(const GpuThreadContextSave& save, stdNullPars)
+{
+    auto newContext = save.recast<CUcontext>();
+
+    ////
+
+    CUcontext currentContext = nullptr;
+    REQUIRE_CUDA(cuCtxGetCurrent(&currentContext));
+
+    ////
+
+    if (newContext != currentContext)
+        REQUIRE_CUDA(cuCtxSetCurrent(newContext));
+    
     returnTrue;
 }
 

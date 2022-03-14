@@ -23,6 +23,15 @@ KIT_CREATE(GpuContextCreationKit, GpuContextCreation&, gpuContextCreation);
 
 //================================================================
 //
+// GpuContextSettingKit
+//
+//================================================================
+
+struct GpuContextSetting;
+KIT_CREATE(GpuContextSettingKit, GpuContextSetting&, gpuContextSetting);
+
+//================================================================
+//
 // GpuModuleCreationKit
 //
 //================================================================
@@ -82,8 +91,9 @@ KIT_CREATE(GpuBenchmarkingControlKit, GpuBenchmarkingControl&, gpuBenchmarkingCo
 //
 //================================================================
 
-using GpuInitKit = KitCombine<GpuInitializationKit, GpuContextCreationKit, GpuModuleCreationKit,
-    GpuKernelLoadingKit, GpuSamplerLoadingKit, GpuMemoryAllocationKit, GpuTextureAllocKit, GpuStreamCreationKit, GpuEventAllocKit>;
+using GpuInitKit = KitCombine<GpuInitializationKit, GpuContextCreationKit, GpuContextSettingKit,
+    GpuModuleCreationKit, GpuKernelLoadingKit, GpuSamplerLoadingKit, GpuMemoryAllocationKit, GpuTextureAllocKit, 
+    GpuStreamCreationKit, GpuEventAllocKit>;
 
 using GpuExecKit = KitCombine<GpuTransferKit, GpuSamplerSetupKit, GpuKernelCallingKit, GpuStreamWaitingKit,
     GpuEventRecordingKit, GpuEventWaitingKit, GpuBenchmarkingControlKit>;

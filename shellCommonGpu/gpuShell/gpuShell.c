@@ -3,6 +3,7 @@
 #include "storage/rememberCleanup.h"
 #include "userOutput/printMsg.h"
 #include "userOutput/paramMsg.h"
+#include "errorLog/debugBreak.h"
 
 namespace gpuShell {
 
@@ -62,10 +63,6 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
     void* baseContext = 0;
     require(kit.gpuContextCreation.createContext(gpuDeviceIndex, gpuScheduling(), gpuContext, baseContext, stdPass));
     REMEMBER_CLEANUP1_EX(gpuContextCleanup, gpuContext.clear(), GpuContextOwner&, gpuContext);
-
-    ////
-
-    require(kit.gpuContextCreation.setThreadContext(gpuContext, stdPass));
 
     ////
 
@@ -136,7 +133,22 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
 {
     GpuInitKit initKit = kit.gpuInitApi.getKit();
 
-    ////
+    //----------------------------------------------------------------
+    //
+    // Set the current thread GPU context.
+    //
+    //----------------------------------------------------------------
+
+    GpuThreadContextSave contextSave;
+
+    require(kit.gpuInitApi.threadContextSet(kit.gpuCurrentContext, contextSave, stdPass));
+    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(errorBlock(kit.gpuInitApi.threadContextRestore(contextSave, stdPass))));
+
+    //----------------------------------------------------------------
+    //
+    // Allocators.
+    //
+    //----------------------------------------------------------------
 
     GpuAllocatorJoinContextThunk<CpuAddrU> cpuFlatAllocator;
     cpuFlatAllocator.setup(initKit.gpuMemoryAllocation.cpuAllocator(), kit.gpuCurrentContext);

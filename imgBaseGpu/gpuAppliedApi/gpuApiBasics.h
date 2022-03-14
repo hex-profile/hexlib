@@ -9,7 +9,7 @@
 // Concurrent thread usage of a context:
 //
 // * Concurrect context destroying NOT allowed.
-// * Concurrent setThreadContext allowed.
+// * Concurrent threadContextSet allowed.
 // * Concurrent module create/destroy in the same context allowed.
 // * Concurrent CPU/GPU memory alloc/dealloc in the same context allowed.
 // * Concurrent texture create/destroy in the same context allowed.

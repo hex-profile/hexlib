@@ -86,7 +86,10 @@ public:
 
     stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars);
     static void destroyContext(GpuContextDeallocContext& deallocContext);
-    stdbool setThreadContext(const GpuContext& context, stdNullPars);
+    
+    using GpuInitApi::threadContextSet;
+    stdbool threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdNullPars);
+    stdbool threadContextRestore(const GpuThreadContextSave& save, stdNullPars);
 
     //
     // Module
@@ -169,6 +172,7 @@ public:
         (
             GpuInitializationKit(*this),
             GpuContextCreationKit(*this),
+            GpuContextSettingKit(*this),
             GpuModuleCreationKit(*this),
             GpuKernelLoadingKit(*this),
             GpuSamplerLoadingKit(*this),
