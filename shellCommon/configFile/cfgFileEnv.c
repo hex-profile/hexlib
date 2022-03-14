@@ -1086,7 +1086,7 @@ public:
 
     virtual bool get(const NameContainer& name, String& value, String& valueComment, String& blockComment) const
     {
-        auto body = [&] ()
+        auto body = [&] () -> bool
         {
             value.clear();
             valueComment.clear();

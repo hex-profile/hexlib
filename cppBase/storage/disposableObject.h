@@ -26,22 +26,22 @@ class DisposableObject
 public:
 
     inline operator Type* ()
-        {return constructorCalled ? (Type*) (&rawMemory) : 0;}
+        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
     inline operator const Type* () const
-        {return constructorCalled ? (const Type*) (&rawMemory) : 0;}
+        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
     inline Type* operator()()
-        {return constructorCalled ? (Type*) (&rawMemory) : 0;}
+        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
     inline const Type* operator()() const
-        {return constructorCalled ? (const Type*) (&rawMemory) : 0;}
+        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
     inline Type* operator ->()
-        {return constructorCalled ? (Type*) (&rawMemory) : 0;}
+        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
     inline const Type* operator ->() const
-        {return constructorCalled ? (const Type*) (&rawMemory) : 0;}
+        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
 public:
 
@@ -54,21 +54,53 @@ public:
         destroy();
     }
 
+    inline DisposableObject(const DisposableObject<Type>& that)
+    {
+        if (that.constructed())
+        {
+            constructCopy(memory.template recast<Type>(), *that);
+            constructorCalled = true;
+        }
+    }
+
+    inline auto& operator =(const DisposableObject<Type>& that)
+    {
+        if (this != &that)
+        {
+            destroy();
+
+            if (that.constructed())
+            {
+                constructCopy(memory.template recast<Type>(), *that);
+                constructorCalled = true;
+            }
+        }
+
+        return *this;
+    }
+
+    template <typename That>
+    inline DisposableObject(const That& that)
+    {
+        constructParamsVariadic(* (Type*) &memory, that);
+        constructorCalled = true;
+    }
+
     template <typename... Params>
     inline void create(Params&&... params)
     {
         destroy();
 
-        constructParamsVariadic(* (Type*) &rawMemory, params...);
+        constructParamsVariadic(memory.template recast<Type>(), params...);
         constructorCalled = true;
     }
 
-    template <typename... Params>
-    inline DisposableObject<Type>& operator =(Params&&... params)
+    template <typename That>
+    inline auto& operator =(const That& that)
     {
         destroy();
 
-        constructParamsVariadic(* (Type*) &rawMemory, params...);
+        constructParamsVariadic(memory.template recast<Type>(), that);
         constructorCalled = true;
 
         return *this;
@@ -78,7 +110,7 @@ public:
     {
         if (constructorCalled)
         {
-            destruct(* (Type*) (&rawMemory));
+            destruct(memory.template recast<Type>());
             constructorCalled = false;
         }
     }
@@ -95,8 +127,8 @@ public:
 
 private:
 
-    bool constructorCalled = false;
+    OpaqueStruct<sizeof(Type)> memory;
 
-    OpaqueStruct<sizeof(Type)> rawMemory;
+    bool constructorCalled = false;
 
 };

@@ -113,19 +113,13 @@ sysinline bool anyv(const void* value)
 //
 // Checks a condition; if the condition is not true, returns false;
 //
-// require is for bool functions;
-// ensurev is for void functions;
-//
 //================================================================
 
 #define ensure(condition) \
-    if (allv(condition)) ; else return false
+    if (allv(condition)) ; else return {}
 
 #define ensurev(condition) \
     if (allv(condition)) ; else return
-
-#define ensure_ex(condition, returnValue) \
-    if (allv(condition)) ; else return (returnValue)
 
 //================================================================
 //

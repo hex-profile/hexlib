@@ -209,15 +209,15 @@ public:
         Type* result = 0;
 
         ARRAY_EXPOSE(buffer);
-        ensure_ex(bufferSize != 0, nullptr);
+        ensure(bufferSize != 0);
 
         Space I = -index-1;
-        ensure_ex(-storedCount <= I && I < 0, nullptr);
+        ensure(-storedCount <= I && I < 0);
 
         Space relativeIndex = storedEnd + I; // only to the left, minimum -bufferSize
         if (relativeIndex < 0) relativeIndex += bufferSize; // [0, bufferSize - 1]
 
-        ensure_ex(relativeIndex >= 0 && relativeIndex < bufferSize, nullptr);
+        ensure(relativeIndex >= 0 && relativeIndex < bufferSize);
         result = &bufferPtr[relativeIndex];
 
         return result;
