@@ -36,7 +36,7 @@ bool MsgLogToDiagLogAndBridge::addMsg(const FormatOutputAtom& v, MsgKind msgKind
     bool diagOk = true;
     
     {
-        diagLog.addMsg(formatter.data(), msgKind);
+        diagLog.addMsg(formatter.cstr(), msgKind);
 
         if (flushEveryMessage)
             diagOk = diagOk && diagLog.update();
@@ -46,7 +46,7 @@ bool MsgLogToDiagLogAndBridge::addMsg(const FormatOutputAtom& v, MsgKind msgKind
 
     auto bridgeCode = [&] ()
     {
-        bridgeLog.add(formatter.data(), toMessageKind(msgKind));
+        bridgeLog.add(formatter.cstr(), toMessageKind(msgKind));
     };
 
     bool bridgeOk = true;

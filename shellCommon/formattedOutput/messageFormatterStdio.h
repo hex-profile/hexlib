@@ -8,6 +8,8 @@
 //
 // MessageFormatterStdio
 //
+// Always keeps buffer with NUL character at the end.
+//
 //================================================================
 
 class MessageFormatterStdio : public MessageFormatter
@@ -41,7 +43,7 @@ public:
     virtual size_t size() 
         {return usedSize;}
 
-    virtual CharType* data() 
+    virtual const CharType* cstr() 
         {return memoryArray;}
 
     virtual CharArray charArray()

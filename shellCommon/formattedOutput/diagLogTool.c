@@ -12,5 +12,5 @@ bool MsgLogByDiagLog::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     v.func(v.value, formatter);
     ensure(formatter.valid());
 
-    return base.addMsg(formatter.data(), msgKind);
+    return base.addMsg(formatter.cstr(), msgKind);
 }

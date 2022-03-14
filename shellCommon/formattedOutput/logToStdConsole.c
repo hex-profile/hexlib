@@ -33,13 +33,13 @@ bool LogToStdConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
         if (useStdErr && msgKind >= msgWarn) 
             screenStream = stderr;
 
-        ensure(fwrite(formatter.data(), sizeof(CharType), formatter.size(), screenStream) == formatter.size());
+        ensure(fwrite(formatter.cstr(), sizeof(CharType), formatter.size(), screenStream) == formatter.size());
         ensure(fflush(screenStream) == 0);
 
     #if defined(_WIN32)
 
         if (useDebugOutput)
-            OutputDebugString(formatter.data());
+            OutputDebugString(formatter.cstr());
 
     #endif
 

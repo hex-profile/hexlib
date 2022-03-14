@@ -64,6 +64,9 @@ public:
     Pointer data() const
         {return thePtr;}
 
+    Pointer ptr() const
+        {return thePtr;}
+
     Space size() const
         {return theSize;}
 

@@ -83,20 +83,10 @@ stdbool BaseVideoOverlayToBridge::setImage(const Point<Space>& size, bool dataPr
     }
     else
     {
-        const Char* description = "";
-
         if (textEnabled)
-        {
-            kit.formatter.clear();
-            formatOutput(desc, kit.formatter);
-            REQUIRE(kit.formatter.valid());
-            description = kit.formatter.data();
+            printMsg(kit.localLog, STR("OVERLAY: %"), desc);
 
-            if (!strEqual(description, "Result"))
-                printMsg(kit.localLog, STR("OVERLAY: %"), description);
-        }
-
-        require(blockExceptionsVoid(destOverlay.set(ImagePoint{size.X, size.Y}, bridgeProvider, description)));
+        require(blockExceptionsVoid(destOverlay.set(ImagePoint{size.X, size.Y}, bridgeProvider, "")));
     }
 
     ////

@@ -266,7 +266,7 @@ public:
         formatter.write(CT("\n"), 1);
         ensure(formatter.valid());
 
-        file.write(formatter.data(), formatter.size());
+        file.write(formatter.cstr(), formatter.size());
 
         errorExit.cancel();
         return true;

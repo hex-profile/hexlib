@@ -32,5 +32,5 @@ inline StlString sprintMsg(const Kit& kit, const CharArray& format, const Types&
     if_not (kit.formatter.valid())
         throw std::bad_alloc();
    
-    return StlString{kit.formatter.data()};
+    return StlString(kit.formatter.cstr());
 }

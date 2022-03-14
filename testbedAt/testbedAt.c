@@ -191,10 +191,10 @@ bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     v.func(v.value, formatter);
     ensure(formatter.valid());
 
-    ensure(func.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
+    ensure(func.print(api, formatter.cstr(), at_msg_kind(msgKind)) != 0);
 
     if (aux.print)
-        ensure(aux.print(api, formatter.data(), at_msg_kind(msgKind)) != 0);
+        ensure(aux.print(api, formatter.cstr(), at_msg_kind(msgKind)) != 0);
 
 #if defined(_WIN32)
 
@@ -202,7 +202,7 @@ bool OutputLogByAt<AtApi>::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
     {
         formatter.write(CT("\n"), 1);
         ensure(formatter.valid());
-        OutputDebugString(formatter.data());
+        OutputDebugString(formatter.cstr());
     }
 
 #endif
@@ -256,7 +256,7 @@ bool SetBusyStatusByAt<AtApi>::set(const FormatOutputAtom& message)
     message.func(message.value, formatter);
     ensure(formatter.valid());
 
-    ensure(api->set_busy_status(api, formatter.data()) != 0);
+    ensure(api->set_busy_status(api, formatter.cstr()) != 0);
 
     return true;
 }
@@ -294,10 +294,14 @@ public:
 
         require
         (
-            api->outimg_gray8(api, unsafePtr(imgMemPtr, imgSizeX, imgSizeY),
-                imgMemPitch, imgSizeX, imgSizeY,
+            api->outimg_gray8
+            (
+                api, 
+                unsafePtr(imgMemPtr, imgSizeX, imgSizeY), imgMemPitch, imgSizeX, imgSizeY,
                 hint.id, hint.minSize.X, hint.minSize.Y, hint.newLine,
-                formatter.data()) != 0
+                formatter.cstr()
+            ) 
+            != 0
         );
 
         returnTrue;
@@ -328,7 +332,7 @@ public:
                 api, 
                 (const at_pixel_rgb32*) imgPtr, imgMemPitch, imgSizeX, imgSizeY,
                 hint.id, hint.minSize.X, hint.minSize.Y, hint.newLine,
-                formatter.data()
+                formatter.cstr()
             ) 
             != 0
         );
