@@ -205,7 +205,6 @@ public:
     (
         Space index // [0, size)
     )
-    const
     {
         Type* result = 0;
 

@@ -28,7 +28,6 @@
         <AlternativeType Name="ArrayMemory&lt;*&gt;"/>
         <AlternativeType Name="ArrayMemoryEx&lt;*&gt;"/>
         <AlternativeType Name="ArrayObjectMemory&lt;*&gt;"/>
-        <AlternativeType Name="ArrayObjectMemoryStatic&lt;*, *&gt;"/>
 
         <DisplayString>[{theSize}] {thePtr,[theSize]na}</DisplayString>
         <Expand>
@@ -36,6 +35,16 @@
             <ArrayItems>
                 <Size>theSize</Size>
                 <ValuePointer>thePtr</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="ArrayObjectMemoryStatic&lt;*&gt;">
+        <DisplayString>[{currentSize}]</DisplayString>
+        <Expand>
+            <ArrayItems>
+                <Size>currentSize</Size>
+                <ValuePointer>($T1*) data.data.rawMemory.data</ValuePointer>
             </ArrayItems>
         </Expand>
     </Type>

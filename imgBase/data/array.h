@@ -183,6 +183,9 @@ public:
     sysinline ArrayEx(Pointer ptr, Space size)
         {assign(ptr, size);}
 
+    sysinline ArrayEx(Pointer ptr, Space size, const ArrayValidityAssertion& assertion)
+        {assign(ptr, size, assertion);}
+
     //
     // Assign data
     //
@@ -393,6 +396,9 @@ public:
 
     sysinline Array(Type* ptr, Space size)
         : Base(ptr, size) {}
+
+    sysinline Array(Type* ptr, Space size, const ArrayValidityAssertion& assertion)
+        : Base(ptr, size, assertion) {}
 
     sysinline Array(const Base& base)
         : Base(base) {}

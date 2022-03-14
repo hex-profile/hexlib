@@ -188,7 +188,7 @@ bool GpuPyramidMemory<Type>::getGpuLayout(GpuPtr(Type)& basePointer, GpuPyramidL
 
     for_count (l, levels)
     {
-        ImageStorage& storage = pyramidArrayPtr[l];
+        auto& storage = pyramidArrayPtr[l];
 
         Point<Space> imageSize = storage.getImageSize();
 

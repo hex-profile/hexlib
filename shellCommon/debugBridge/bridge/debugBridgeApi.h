@@ -365,7 +365,7 @@ constexpr ActionId MouseMove = 0xFFFFFFF4u;
 //
 //----------------------------------------------------------------
 //
-// The with the name of the action hotkey, for example, "Ctrl+W".
+// The name of the action hotkey, for example, "Ctrl+W".
 //
 // The format is:
 //

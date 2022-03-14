@@ -1,10 +1,11 @@
 #pragma once
 
 #include "storage/uninitializedArray.h"
-#include "data/array.h"
+#include "dbgptr/dbgptrGate.h"
 #include "storage/constructDestruct.h"
 #include "errorLog/errorLog.h"
 #include "stdFunc/stdFunc.h"
+#include "data/array.h"
 
 //================================================================
 //
@@ -16,38 +17,105 @@
 //
 //================================================================
 
-template <typename Type, Space maxSize>
-class ArrayObjectMemoryStatic : public Array<Type>
+template <typename TypeParam, Space maxSize>
+class ArrayObjectMemoryStatic
 {
 
+    //----------------------------------------------------------------
+    //
+    // Defs.
+    //
+    //----------------------------------------------------------------
+
 public:
 
-    using Element = Type;
+    using Type = TypeParam;
 
-private:
-
-    using BaseArray = Array<Type>;
-    using SelfType = ArrayObjectMemoryStatic<Type, maxSize>;
     COMPILE_ASSERT(maxSize >= 1);
 
+    //----------------------------------------------------------------
+    //
+    // Construct / destruct.
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    sysinline ArrayObjectMemoryStatic() 
+        {}
+
+    sysinline ~ArrayObjectMemoryStatic() 
+        {dealloc();}
+
+    //----------------------------------------------------------------
+    //
+    // Copy-construct and assign.
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    template <typename T>
+    explicit ArrayObjectMemoryStatic(const ArrayObjectMemoryStatic<T, maxSize>& that)
+    {
+        for_count (i, that.currentSize)
+            constructCopy(data[i], that.data[i]);
+
+        currentSize = that.currentSize;
+    }
+
+public:
+
+    template <typename T>
+    auto& operator =(const ArrayObjectMemoryStatic<T, maxSize>& that)
+    {
+        dealloc();
+
+        for_count (i, that.currentSize)
+            constructCopy(data[i], that.data[i]);
+
+        currentSize = that.currentSize;
+
+        return *this;
+    }
+
+    //----------------------------------------------------------------
+    //
+    // Get array.
+    //
+    //----------------------------------------------------------------
+
 private:
 
-    ArrayObjectMemoryStatic(const SelfType& that); // forbidden
-    void operator =(const SelfType& that); // forbidden
+    sysinline Array<Type> getArray()
+        {return {data(), currentSize, ArrayValidityAssertion{}};}
+
+    sysinline Array<const Type> getArray() const
+        {return {data(), currentSize, ArrayValidityAssertion{}};}
 
 public:
 
-    inline ArrayObjectMemoryStatic() {}
-    inline ~ArrayObjectMemoryStatic() {dealloc();}
+    sysinline auto operator()()
+        {return getArray();}
+
+    sysinline auto operator()() const
+        {return getArray();}
+
+    sysinline operator Array<Type> ()
+        {return getArray();}
+
+    sysinline operator Array<const Type> () const 
+        {return getArray();}
+
+    //----------------------------------------------------------------
+    //
+    // Realloc and dealloc.
+    //
+    //----------------------------------------------------------------
 
 public:
 
-    inline const Array<Type>& operator()() const
-        {return *this;}
-
-public:
-
-    inline bool reallocStatic(Space newSize)
+    sysinline bool reallocStatic(Space newSize)
     {
         ensure(SpaceU(newSize) <= SpaceU(maxSize));
 
@@ -58,12 +126,12 @@ public:
 
         currentSize = newSize;
 
-        BaseArray::assign(data, newSize, ArrayValidityAssertion{});
-
         return true;
     }
 
-    inline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
+public:
+
+    sysinline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
     {
         REQUIRE(reallocStatic(newSize));
         returnTrue;
@@ -77,9 +145,67 @@ public:
             destruct(data[i]);
 
         currentSize = 0;
-
-        BaseArray::assignNull();
     }
+
+    //----------------------------------------------------------------
+    //
+    // API for ptr() and size()
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    sysinline Type* ptrUnsafeForInternalUseOnly()
+        {return data();}
+
+    sysinline const Type* ptrUnsafeForInternalUseOnly() const
+        {return data();}
+
+#if HEXLIB_GUARDED_MEMORY
+
+    sysinline auto ptr()
+        {return ArrayPtrCreate(Type, data(), currentSize, DbgptrArrayPreconditions());}
+
+    sysinline auto ptr() const
+        {return ArrayPtrCreate(const Type, data(), currentSize, DbgptrArrayPreconditions());}
+
+#else
+
+    sysinline Type* ptr()
+        {return data();}
+
+    sysinline const Type* ptr() const
+        {return data();}
+
+#endif
+
+    sysinline Space size() const // always >= 0
+        {return currentSize;}
+
+    //----------------------------------------------------------------
+    //
+    // operator []
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    sysinline bool validAccess(Space index) const
+        {return SpaceU(index) < SpaceU(currentSize);}
+
+public:
+
+    sysinline Type& operator [](Space index)
+        {return ptr()[index];}
+
+    sysinline const Type& operator [](Space index) const
+        {return ptr()[index];}
+
+    //----------------------------------------------------------------
+    //
+    // State.
+    //
+    //----------------------------------------------------------------
 
 private:
 
