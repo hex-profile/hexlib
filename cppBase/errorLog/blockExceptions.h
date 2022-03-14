@@ -65,3 +65,24 @@ sysinline bool blockExceptionsVerboseHelper(const Action& action, stdPars(Kit))
 
     return true;
 }
+
+//================================================================
+//
+// stdExceptBegin
+// stdExceptEnd
+//
+//================================================================
+
+#define stdExceptBegin \
+    try \
+    {
+
+#define stdExceptEnd \
+    } \
+    catch (...) \
+    { \
+        printExternalExceptions(stdPassNoProfiling); \
+        returnFalse; \
+    } \
+    \
+    returnTrue
