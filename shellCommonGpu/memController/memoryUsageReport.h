@@ -47,7 +47,7 @@ inline bool memoryUsageReport
         fltf(ldexpv(float32(stateUsage.cpuMemSize), -20), 1),
         fltf(ldexpv(float32(tempUsage.cpuMemSize), -20), 1),
 
-        sysAlloc ? STR(": System Realloc") : STR(""),
+        sysAlloc ? STR(": System Realloc.") : STR(""),
 
         (sysAlloc || fastAlloc) ? msgWarn : msgInfo
     );

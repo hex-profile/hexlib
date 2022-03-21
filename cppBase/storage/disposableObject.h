@@ -25,23 +25,40 @@ class DisposableObject
 
 public:
 
-    inline operator Type* ()
+    inline operator bool () const 
+        {return constructorCalled;}
+
+    ////
+
+    inline Type* getPtr()
         {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
-    inline operator const Type* () const
+    inline const Type* getPtr() const
         {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
+
+    ////
+
+    inline operator Type*()
+        {return getPtr();}
+
+    inline operator const Type*() const
+        {return getPtr();}
+
+    ////
 
     inline Type* operator()()
-        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
+        {return getPtr();}
 
     inline const Type* operator()() const
-        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
+        {return getPtr();}
+
+    ////
 
     inline Type* operator ->()
-        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
+        {return getPtr();}
 
     inline const Type* operator ->() const
-        {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
+        {return getPtr();}
 
 public:
 
@@ -56,7 +73,7 @@ public:
 
     inline DisposableObject(const DisposableObject<Type>& that)
     {
-        if (that.constructed())
+        if (that.constructorCalled)
         {
             constructCopy(memory.template recast<Type>(), *that);
             constructorCalled = true;
@@ -69,7 +86,7 @@ public:
         {
             destroy();
 
-            if (that.constructed())
+            if (that.constructorCalled)
             {
                 constructCopy(memory.template recast<Type>(), *that);
                 constructorCalled = true;
@@ -118,11 +135,6 @@ public:
     inline void cancelDestructor()
     {
         constructorCalled = false;
-    }
-
-    inline bool constructed() const
-    {
-        return constructorCalled;
     }
 
 private:

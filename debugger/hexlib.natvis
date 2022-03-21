@@ -74,5 +74,9 @@
         <DisplayString> {theSizeX} x {theSizeY}, ptr = {theMemPtrUnsafe}, pitch = {theMemPitch}</DisplayString>
     </Type>
 
+    <Type Name="DisposableObject&lt;*&gt;">
+        <DisplayString Condition="!constructorCalled">NONE</DisplayString>
+        <DisplayString>{* ($T1*) memory.data}</DisplayString>
+    </Type>
 
 </AutoVisualizer>

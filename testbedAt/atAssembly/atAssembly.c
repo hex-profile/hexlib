@@ -1153,7 +1153,7 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
         errorBlock(configFile.updateFile(false, stdPass));
 
         if (updateHappened)
-            printMsgL(kit, STR("Saving config file"), msgWarn);
+            printMsgL(kit, STR("Saving config file."), msgWarn);
     }
 
     ////
