@@ -112,6 +112,18 @@ public:
         constructorCalled = true;
     }
 
+    template <typename... Params>
+    inline void createOptional(bool exists, Params&&... params)
+    {
+        destroy();
+
+        if (exists)
+        {
+            constructParamsVariadic(memory.template recast<Type>(), params...);
+            constructorCalled = true;
+        }
+    }
+
     template <typename That>
     inline auto& operator =(const That& that)
     {

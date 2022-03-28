@@ -51,8 +51,7 @@ public:
 
     inline NumericVar()
     {
-        Type zero = convertNearest<Type>(0);
-        setup(zero, zero, zero);
+        setup(typeMin<Type>(), typeMax<Type>(), convertNearest<Type>(0));
     }
 
     inline explicit NumericVar(TypePar defaultVal)

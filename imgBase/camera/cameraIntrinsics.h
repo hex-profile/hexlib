@@ -35,8 +35,8 @@ struct CameraIntrinsics
     HEXLIB_INLINE explicit CameraIntrinsics(const Point<Float>& focal, const Point<Float>& center)
         : focal(focal), center(center) {}
 
-    Point<Float> focal{};
-    Point<Float> center{};
+    Point<Float> focal{0, 0};
+    Point<Float> center{0, 0};
 };
 
 //----------------------------------------------------------------
@@ -68,6 +68,12 @@ template <typename Float>
 struct CameraDistortion
 {
     Float coeffs[cameraDistortionCount];
+
+    HEXLIB_INLINE CameraDistortion()
+    {
+        for (int i = 0; i < cameraDistortionCount; ++i)
+            coeffs[i] = 0;
+    }
 };
 
 //----------------------------------------------------------------
