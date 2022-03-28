@@ -211,7 +211,7 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
     ////
 
     require(gpuContextHelper.createContext(gpuProperties, gpuContext, stdPassKit(kitCombine(kit, gpuInitKit))));
-    REMEMBER_CLEANUP1_EX(gpuContextCleanup, gpuContext.clear(), GpuContextOwner&, gpuContext);
+    REMEMBER_CLEANUP_EX(gpuContextCleanup, gpuContext.clear());
 
     ////
 

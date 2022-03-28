@@ -89,7 +89,7 @@ bool FileToolsWin32::expandPath(const CharType* filename, GetString& result)
 
     CharType* pathPtr = new (std::nothrow) CharType[size];
     ensure(pathPtr);
-    REMEMBER_CLEANUP1(delete[] pathPtr, CharType*, pathPtr);
+    REMEMBER_CLEANUP(delete[] pathPtr);
 
     DWORD n = GetFullPathName(filename, size, pathPtr, &dummy);
     ensure(n == size - 1);

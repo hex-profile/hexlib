@@ -618,7 +618,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
 
     FILE* outputFile = 0;
     if (kit.dataProcessing && generateFilterBank) {outputFile = fopen(fileName, "wt"); REQUIRE(outputFile);}
-    REMEMBER_CLEANUP1(if (outputFile) fclose(outputFile), FILE*, outputFile);
+    REMEMBER_CLEANUP(if (outputFile) fclose(outputFile));
 
     ////
 

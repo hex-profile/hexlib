@@ -62,7 +62,7 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
 
     void* baseContext = 0;
     require(kit.gpuContextCreation.createContext(gpuDeviceIndex, gpuScheduling(), gpuContext, baseContext, stdPass));
-    REMEMBER_CLEANUP1_EX(gpuContextCleanup, gpuContext.clear(), GpuContextOwner&, gpuContext);
+    REMEMBER_CLEANUP_EX(gpuContextCleanup, gpuContext.clear());
 
     ////
 

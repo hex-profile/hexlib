@@ -138,11 +138,11 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
     CUevent cuStartEvent = 0;
     REQUIRE(cuEventCreate(&cuStartEvent, CU_EVENT_DEFAULT) == CUDA_SUCCESS);
-    REMEMBER_CLEANUP1(DEBUG_BREAK_CHECK(cuEventDestroy(cuStartEvent) == CUDA_SUCCESS), CUevent, cuStartEvent);
+    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(cuEventDestroy(cuStartEvent) == CUDA_SUCCESS));
 
     CUevent cuStopEvent = 0;
     REQUIRE(cuEventCreate(&cuStopEvent, CU_EVENT_DEFAULT) == CUDA_SUCCESS);
-    REMEMBER_CLEANUP1(DEBUG_BREAK_CHECK(cuEventDestroy(cuStopEvent) == CUDA_SUCCESS), CUevent, cuStopEvent);
+    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(cuEventDestroy(cuStopEvent) == CUDA_SUCCESS));
 
     //----------------------------------------------------------------
     //
@@ -370,7 +370,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
         FILE* f = fopen(fileName, runCount() == startWriteIndex ? "wt" : "at");
         REQUIRE(f != 0);
-        REMEMBER_CLEANUP1(fclose(f), FILE*, f);
+        REMEMBER_CLEANUP(fclose(f));
 
         for_count (i, testCount)
         {

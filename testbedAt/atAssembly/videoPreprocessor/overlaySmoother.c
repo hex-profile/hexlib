@@ -315,7 +315,7 @@ struct SharedStruct
         ////
 
         SharedStruct& self = *this;
-        REMEMBER_CLEANUP1_EX(totalCleanup, self.deinit(), SharedStruct&, self);
+        REMEMBER_CLEANUP_EX(totalCleanup, self.deinit());
 
         ////
 
@@ -553,7 +553,7 @@ void serverFunc(void* param)
     // Abort handler: set flag and wake (potentially) waiting client.
     //
 
-    REMEMBER_CLEANUP1_EX
+    REMEMBER_CLEANUP_EX
     (
         signalAbort,
         {
@@ -563,8 +563,7 @@ void serverFunc(void* param)
             }
 
             shared.clientWake.set();
-        },
-        SharedStruct&, shared
+        }
     );
 
     ////
@@ -741,7 +740,7 @@ stdbool OverlaySmootherImpl::init(stdPars(InitKit))
     //
 
     require(shared.init(stdPass));
-    REMEMBER_CLEANUP1_EX(sharedCleanup, shared.deinit(), SharedStruct&, shared);
+    REMEMBER_CLEANUP_EX(sharedCleanup, shared.deinit());
 
     shared.varSmoothing = true;
     shared.varTargetDelay = computeTargetDelay(1.f / cfgMaxOutputRate, 0.f, cfgMaxOutputRate);

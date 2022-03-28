@@ -114,10 +114,10 @@ public:
         Space cpuCount = emuMultiProc::getCpuCount();
 
         require(emulator.create(cpuCount, stdPassThru));
-        REMEMBER_CLEANUP1_EX(emulatorCleanup, emulator.destroy(), emuMultiProc::EmuMultiProc&, emulator);
+        REMEMBER_CLEANUP_EX(emulatorCleanup, emulator.destroy());
 
         require(mutexCreate(emuLock, stdPass));
-        REMEMBER_CLEANUP1_EX(emuLockCleanup, emuLock.clear(), Mutex&, emuLock);
+        REMEMBER_CLEANUP_EX(emuLockCleanup, emuLock.clear());
 
         this->gpuProperties = gpuProperties;
         emulatorThreadCount = cpuCount;
@@ -194,7 +194,7 @@ stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSched
 
     ContextEx* ctx = new (std::nothrow) ContextEx;
     REQUIRE(ctx != 0);
-    REMEMBER_CLEANUP1_EX(contextAllocCleanup, delete ctx, ContextEx*, ctx);
+    REMEMBER_CLEANUP_EX(contextAllocCleanup, delete ctx);
 
     //
     // Standard malloc allocator
@@ -490,7 +490,7 @@ stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream
 
     StreamEx* streamEx = new (std::nothrow) StreamEx;
     REQUIRE(streamEx != 0);
-    REMEMBER_CLEANUP1_EX(streamAllocCleanup, delete streamEx, StreamEx*, streamEx);
+    REMEMBER_CLEANUP_EX(streamAllocCleanup, delete streamEx);
 
     require(streamEx->create(context, stdPass));
 

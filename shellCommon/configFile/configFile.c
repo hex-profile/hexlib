@@ -58,8 +58,8 @@ public:
             return false;
         }
 
-        REMEMBER_CLEANUP1(CloseHandle(pi.hProcess), PROCESS_INFORMATION&, pi);
-        REMEMBER_CLEANUP1(CloseHandle(pi.hThread), PROCESS_INFORMATION&, pi);
+        REMEMBER_CLEANUP(CloseHandle(pi.hProcess));
+        REMEMBER_CLEANUP(CloseHandle(pi.hThread));
 
         // Wait process
         WaitForSingleObject(pi.hProcess, INFINITE);

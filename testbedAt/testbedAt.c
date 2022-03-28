@@ -761,7 +761,7 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const AtEn
     ////
 
     Client* client = new (std::nothrow) Client;
-    REMEMBER_CLEANUP1_EX(clientCleanup, delete client, Client*, client);
+    REMEMBER_CLEANUP_EX(clientCleanup, delete client);
 
     if_not (client)
     {

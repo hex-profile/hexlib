@@ -104,11 +104,11 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
     require(modrefToKernelIndex.realloc(modrefCount, cpuBaseByteAlignment, kit.malloc, stdPass));
     ARRAY_EXPOSE(modrefToKernelIndex);
-    REMEMBER_CLEANUP1_EX(kernelIndexCleanup, modrefToKernelIndex.dealloc(), ArrayMemory<Space>&, modrefToKernelIndex);
+    REMEMBER_CLEANUP_EX(kernelIndexCleanup, modrefToKernelIndex.dealloc());
 
     require(modrefToSamplerIndex.realloc(modrefCount, cpuBaseByteAlignment, kit.malloc, stdPass));
     ARRAY_EXPOSE(modrefToSamplerIndex);
-    REMEMBER_CLEANUP1_EX(samplerIndexCleanup, modrefToSamplerIndex.dealloc(), ArrayMemory<Space>&, modrefToSamplerIndex);
+    REMEMBER_CLEANUP_EX(samplerIndexCleanup, modrefToSamplerIndex.dealloc());
 
     ////
 
@@ -139,27 +139,27 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
     require(moduleInfo.reallocInHeap(moduleCount, stdPass));
     ARRAY_EXPOSE(moduleInfo);
-    REMEMBER_CLEANUP1_EX(moduleInfoCleanup, moduleInfo.dealloc(), ArrayObjectMemory<ModuleInfo>&, moduleInfo);
+    REMEMBER_CLEANUP_EX(moduleInfoCleanup, moduleInfo.dealloc());
 
     ////
 
     require(kernelHandle.reallocInHeap(kernelCount, stdPass));
     ARRAY_EXPOSE(kernelHandle);
-    REMEMBER_CLEANUP1_EX(kernelHandleCleanup, kernelHandle.dealloc(), ArrayObjectMemory<GpuKernel>&, kernelHandle);
+    REMEMBER_CLEANUP_EX(kernelHandleCleanup, kernelHandle.dealloc());
 
     require(kernelInfo.reallocInHeap(kernelCount, stdPass));
     ARRAY_EXPOSE(kernelInfo);
-    REMEMBER_CLEANUP1_EX(kernelInfoCleanup, kernelInfo.dealloc(), ArrayObjectMemory<KernelInfo>&, kernelInfo);
+    REMEMBER_CLEANUP_EX(kernelInfoCleanup, kernelInfo.dealloc());
 
     ////
 
     require(samplerHandle.reallocInHeap(samplerCount, stdPass));
     ARRAY_EXPOSE(samplerHandle);
-    REMEMBER_CLEANUP1_EX(samplerHandleCleanup, samplerHandle.dealloc(), ArrayObjectMemory<GpuSampler>&, samplerHandle);
+    REMEMBER_CLEANUP_EX(samplerHandleCleanup, samplerHandle.dealloc());
 
     require(samplerInfo.reallocInHeap(samplerCount, stdPass));
     ARRAY_EXPOSE(samplerInfo);
-    REMEMBER_CLEANUP1_EX(samplerInfoCleanup, samplerInfo.dealloc(), ArrayObjectMemory<SamplerInfo>&, samplerInfo);
+    REMEMBER_CLEANUP_EX(samplerInfoCleanup, samplerInfo.dealloc());
 
     //----------------------------------------------------------------
     //

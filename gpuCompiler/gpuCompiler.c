@@ -795,7 +795,7 @@ stdbool compileDevicePartToBin
     //----------------------------------------------------------------
 
     StlString cuInputPath = sprintMsg(kit, STR("%0/%1.cu"), inputDir, inputName);
-    REMEMBER_CLEANUP1(remove(cuInputPath.c_str()), const StlString&, cuInputPath);
+    REMEMBER_CLEANUP(remove(cuInputPath.c_str()));
     require(prepareForDeviceCompilation(inputPath, cuInputPath, stdPass));
 
     //----------------------------------------------------------------

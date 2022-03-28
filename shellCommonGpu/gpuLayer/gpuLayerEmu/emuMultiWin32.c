@@ -221,20 +221,20 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     //
 
     require(coreEmulator.create(stdPass));
-    REMEMBER_CLEANUP1_EX(coreEmulatorCleanup, coreEmulator.destroy(), EmuWin32&, coreEmulator);
+    REMEMBER_CLEANUP_EX(coreEmulatorCleanup, coreEmulator.destroy());
 
     //
     // Allocate events
     //
 
     require(eventCreate(tools.startEvent, stdPass));
-    REMEMBER_CLEANUP1_EX(startEventCleanup, tools.startEvent.clear(), ServerTools&, tools);
+    REMEMBER_CLEANUP_EX(startEventCleanup, tools.startEvent.clear());
 
     require(eventCreate(tools.finishEvent, stdPass));
-    REMEMBER_CLEANUP1_EX(finishEventCleanup, tools.finishEvent.clear(), ServerTools&, tools);
+    REMEMBER_CLEANUP_EX(finishEventCleanup, tools.finishEvent.clear());
 
     tools.coreEmulator = &coreEmulator;
-    REMEMBER_CLEANUP1_EX(emulatorPtrCleanup, tools.coreEmulator = 0, ServerTools&, tools);
+    REMEMBER_CLEANUP_EX(emulatorPtrCleanup, tools.coreEmulator = 0);
 
     //
     // Launch thread (should be the last)
@@ -341,7 +341,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
     //
 
     require(serverArray.reallocInHeap(streamCount, stdPass));
-    REMEMBER_CLEANUP1_EX(serverArrayCleanup, serverArray.dealloc(), ArrayObjectMemory<ServerKeeper>&, serverArray);
+    REMEMBER_CLEANUP_EX(serverArrayCleanup, serverArray.dealloc());
 
     //
     // Create thread servers (can be interrupted by error).

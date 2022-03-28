@@ -451,7 +451,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
         returnFalse;
     }
 
-    REMEMBER_CLEANUP1_EX(aviFileClose, aviFile.close(), AviFile&, aviFile);
+    REMEMBER_CLEANUP_EX(aviFileClose, aviFile.close());
 
     ////
 
@@ -467,7 +467,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
     ////
 
     REQUIRE(aviStreamBase.create(aviFile, &info));
-    REMEMBER_CLEANUP1_EX(aviStreamBaseClose, aviStreamBase.close(), AviStream&, aviStreamBase);
+    REMEMBER_CLEANUP_EX(aviStreamBaseClose, aviStreamBase.close());
 
     //
     // create compressed stream

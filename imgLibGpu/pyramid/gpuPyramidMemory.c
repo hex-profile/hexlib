@@ -50,7 +50,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
 
     using Self = GpuPyramidMemory<Type>;
     Self& self = *this;
-    REMEMBER_CLEANUP1_EX(deallocCleanup, self.dealloc(), Self&, self);
+    REMEMBER_CLEANUP_EX(deallocCleanup, self.dealloc());
 
     //
     // allocate

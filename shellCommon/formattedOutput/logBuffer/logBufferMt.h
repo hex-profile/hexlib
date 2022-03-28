@@ -12,7 +12,7 @@
 
 #define GUARD_IF_LOCK_CREATED \
     if (lock.created()) lock.lock(); \
-    REMEMBER_CLEANUP1(if (lock.created()) lock.unlock(), Mutex&, lock)
+    REMEMBER_CLEANUP(if (lock.created()) lock.unlock())
 
 //----------------------------------------------------------------
 
