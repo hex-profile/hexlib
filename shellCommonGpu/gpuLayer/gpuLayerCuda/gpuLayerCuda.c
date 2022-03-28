@@ -432,7 +432,7 @@ stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties,
     ////
 
     REQUIRE_CUDA(cuCtxCreate(&cuContext, flags, deviceId));
-    REMEMBER_CLEANUP1_EX(cuContextCleanup, DEBUG_BREAK_CHECK(cuCtxDestroy(cuContext) == CUDA_SUCCESS), CUcontext, cuContext);
+    REMEMBER_CLEANUP_EX(cuContextCleanup, DEBUG_BREAK_CHECK(cuCtxDestroy(cuContext) == CUDA_SUCCESS));
 
     ////
 
@@ -498,7 +498,7 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSche
 
     ContextEx* ctx = new (std::nothrow) ContextEx;
     REQUIRE(ctx != 0);
-    REMEMBER_CLEANUP1_EX(contextAllocCleanup, delete ctx, ContextEx*, ctx);
+    REMEMBER_CLEANUP_EX(contextAllocCleanup, delete ctx);
 
     require(ctx->create(deviceIndex, tmpProperties, gpuScheduling, baseContext, stdPass));
 
@@ -510,7 +510,7 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSche
     ////
 
     require(ctx->moduleKeeper.create(tmpContext, stdPassKit(kitCombine(kit, getKit()))));
-    REMEMBER_CLEANUP1_EX(moduleKeeperCleanup, ctx->moduleKeeper.destroy(), ContextEx*, ctx);
+    REMEMBER_CLEANUP_EX(moduleKeeperCleanup, ctx->moduleKeeper.destroy());
 
     ////
 
@@ -1231,11 +1231,11 @@ stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& c
 
     CoverageQueue& self = *this;
 
-    require(history.realloc(coverageQueueCapacity, stdPassKit(kitCombine(kit, CpuFastAllocKit(kit.malloc), DataProcessingKit(true)))));
-    REMEMBER_CLEANUP1_EX(queueCleanup, self.history.dealloc(), CoverageQueue&, self);
+    require(history.reallocInHeap(coverageQueueCapacity, stdPass));
+    REMEMBER_CLEANUP_EX(queueCleanup, self.history.dealloc());
 
     REQUIRE(cacheFlushMemBlock.alloc(cacheFlushMemSize));
-    REMEMBER_CLEANUP1_EX(auxMemCleanup, self.cacheFlushMemBlock.dealloc(), CoverageQueue&, self);
+    REMEMBER_CLEANUP_EX(auxMemCleanup, self.cacheFlushMemBlock.dealloc());
 
     ////
 
@@ -1319,7 +1319,7 @@ void CoverageQueue::discardAll()
 stdbool CoverageQueue::flushAll(Profiler* profiler, stdPars(GpuCoverageKit))
 {
     CoverageQueue& self = *this;
-    REMEMBER_CLEANUP1(self.discardAll(), CoverageQueue&, self);
+    REMEMBER_CLEANUP(self.discardAll());
 
     ////
 
@@ -1410,7 +1410,7 @@ stdbool StreamEx::create(const GpuContext& context, bool nullStream, void*& base
 
     ////
 
-    REMEMBER_CLEANUP1_EX(cuStreamCleanup, if (cuStream) DEBUG_BREAK_CHECK(cuStreamDestroy(cuStream) == CUDA_SUCCESS), CUstream, cuStream);
+    REMEMBER_CLEANUP_EX(cuStreamCleanup, if (cuStream) DEBUG_BREAK_CHECK(cuStreamDestroy(cuStream) == CUDA_SUCCESS));
 
     ////
 
@@ -1508,7 +1508,7 @@ stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStrea
 
     StreamEx* streamEx = new (std::nothrow) StreamEx;
     REQUIRE(streamEx != 0);
-    REMEMBER_CLEANUP1_EX(streamAllocCleanup, delete streamEx, StreamEx*, streamEx);
+    REMEMBER_CLEANUP_EX(streamAllocCleanup, delete streamEx);
 
     require(streamEx->create(context, nullStream, baseStream, stdPass));
 

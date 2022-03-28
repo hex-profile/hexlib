@@ -137,27 +137,27 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
     //
     //----------------------------------------------------------------
 
-    require(moduleInfo.realloc(moduleCount, kit.malloc, true, stdPass));
+    require(moduleInfo.reallocInHeap(moduleCount, stdPass));
     ARRAY_EXPOSE(moduleInfo);
     REMEMBER_CLEANUP1_EX(moduleInfoCleanup, moduleInfo.dealloc(), ArrayObjectMemory<ModuleInfo>&, moduleInfo);
 
     ////
 
-    require(kernelHandle.realloc(kernelCount, kit.malloc, true, stdPass));
+    require(kernelHandle.reallocInHeap(kernelCount, stdPass));
     ARRAY_EXPOSE(kernelHandle);
     REMEMBER_CLEANUP1_EX(kernelHandleCleanup, kernelHandle.dealloc(), ArrayObjectMemory<GpuKernel>&, kernelHandle);
 
-    require(kernelInfo.realloc(kernelCount, kit.malloc, true, stdPass));
+    require(kernelInfo.reallocInHeap(kernelCount, stdPass));
     ARRAY_EXPOSE(kernelInfo);
     REMEMBER_CLEANUP1_EX(kernelInfoCleanup, kernelInfo.dealloc(), ArrayObjectMemory<KernelInfo>&, kernelInfo);
 
     ////
 
-    require(samplerHandle.realloc(samplerCount, kit.malloc, true, stdPass));
+    require(samplerHandle.reallocInHeap(samplerCount, stdPass));
     ARRAY_EXPOSE(samplerHandle);
     REMEMBER_CLEANUP1_EX(samplerHandleCleanup, samplerHandle.dealloc(), ArrayObjectMemory<GpuSampler>&, samplerHandle);
 
-    require(samplerInfo.realloc(samplerCount, kit.malloc, true, stdPass));
+    require(samplerInfo.reallocInHeap(samplerCount, stdPass));
     ARRAY_EXPOSE(samplerInfo);
     REMEMBER_CLEANUP1_EX(samplerInfoCleanup, samplerInfo.dealloc(), ArrayObjectMemory<SamplerInfo>&, samplerInfo);
 

@@ -340,7 +340,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
     // the created servers (wait thread and destroy, by element destructors).
     //
 
-    require(serverArray.realloc(streamCount, kit.malloc, true, stdPass));
+    require(serverArray.reallocInHeap(streamCount, stdPass));
     REMEMBER_CLEANUP1_EX(serverArrayCleanup, serverArray.dealloc(), ArrayObjectMemory<ServerKeeper>&, serverArray);
 
     //

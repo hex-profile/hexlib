@@ -68,19 +68,13 @@ public:
     // realloc
     //
 
-    stdbool realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit));
+    stdbool reallocEx(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit));
 
     ////
 
     template <typename Kit>
-    inline stdbool realloc(Space size, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(Kit))
-        {return realloc(size, maxNaturalAlignment, allocator, dataProcessing, stdPassThru);}
-
-    ////
-
-    template <typename Kit>
-    inline stdbool realloc(Space size, stdPars(Kit))
-        {return realloc(size, maxNaturalAlignment, kit.cpuFastAlloc, kit.dataProcessing, stdPassThru);}
+    inline stdbool reallocInHeap(Space size, stdPars(Kit))
+        {return reallocEx(size, maxNaturalAlignment, kit.malloc, true, stdPassThru);}
 
     //
     // dealloc

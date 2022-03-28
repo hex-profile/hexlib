@@ -144,7 +144,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     // Create fibers. Remember to deallocate fibers in case of error.
     //
 
-    require(fibers.realloc(EMU_MAX_THREAD_COUNT, kit.malloc, true, stdPass));
+    require(fibers.reallocInHeap(EMU_MAX_THREAD_COUNT, stdPass));
     REMEMBER_CLEANUP_EX(fibersCleanup, fibers.dealloc());
     ARRAY_EXPOSE(fibers);
 

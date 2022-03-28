@@ -62,6 +62,13 @@ public:
         return buffer.realloc(size, stdPassThru);
     }
 
+    template <typename Kit>
+    stdbool reallocInHeap(Space size, stdPars(Kit))
+    {
+        dealloc(); // also resets queue
+        return buffer.reallocInHeap(size, stdPassThru);
+    }
+
     bool reallocStatic(Space size)
     {
         dealloc(); // also resets queue
