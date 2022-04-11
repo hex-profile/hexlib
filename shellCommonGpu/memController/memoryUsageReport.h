@@ -40,7 +40,7 @@ inline bool memoryUsageReport
     return printMsg
     (
         kit.localLog,
-        STR("%: GPU %M / %M, CPU %M / %M%"),
+        STR("%: GPU %M : %M, CPU %M : %M%"),
         name,
         fltf(ldexpv(float32(stateUsage.gpuMemSize), -20), 1),
         fltf(ldexpv(float32(tempUsage.gpuMemSize), -20), 1),

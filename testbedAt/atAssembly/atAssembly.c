@@ -21,7 +21,7 @@
 #include "profilerShell/profilerShell.h"
 #include "signalsImpl/signalsImpl.h"
 #include "storage/classThunks.h"
-#include "storage/disposableObject.h"
+#include "storage/optionalObject.h"
 #include "storage/rememberCleanup.h"
 #include "timerImpl/timerImpl.h"
 #include "userOutput/paramMsg.h"

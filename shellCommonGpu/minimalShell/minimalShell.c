@@ -9,7 +9,7 @@
 #include "kits/setBusyStatus.h"
 #include "memController/memoryUsageReport.h"
 #include "storage/classThunks.h"
-#include "storage/disposableObject.h"
+#include "storage/optionalObject.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"

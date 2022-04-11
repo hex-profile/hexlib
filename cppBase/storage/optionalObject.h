@@ -7,7 +7,7 @@
 
 //================================================================
 //
-// DisposableObject
+// OptionalObject
 //
 // Wrapper of a class object's memory which can have null state
 // (the object is not constructed) and filled state (the object is constructed).
@@ -20,7 +20,7 @@
 //================================================================
 
 template <typename Type>
-class DisposableObject
+class OptionalObject
 {
 
 public:
@@ -62,16 +62,16 @@ public:
 
 public:
 
-    inline DisposableObject()
+    inline OptionalObject()
     {
     }
 
-    inline ~DisposableObject()
+    inline ~OptionalObject()
     {
         destroy();
     }
 
-    inline DisposableObject(const DisposableObject<Type>& that)
+    inline OptionalObject(const OptionalObject<Type>& that)
     {
         if (that.constructorCalled)
         {
@@ -80,7 +80,7 @@ public:
         }
     }
 
-    inline auto& operator =(const DisposableObject<Type>& that)
+    inline auto& operator =(const OptionalObject<Type>& that)
     {
         if (this != &that)
         {
@@ -97,7 +97,7 @@ public:
     }
 
     template <typename That>
-    inline DisposableObject(const That& that)
+    inline OptionalObject(const That& that)
     {
         constructParamsVariadic(* (Type*) &memory, that);
         constructorCalled = true;

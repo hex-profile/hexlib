@@ -2,7 +2,7 @@
 
 #include "timer/timerKit.h"
 #include "timer/timer.h"
-#include "storage/disposableObject.h"
+#include "storage/optionalObject.h"
 
 //================================================================
 //
@@ -42,6 +42,6 @@ public:
 private:
 
     bool touched = false;
-    DisposableObject<TimeMoment> lastChange;
+    OptionalObject<TimeMoment> lastChange;
 
 };

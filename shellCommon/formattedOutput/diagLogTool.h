@@ -2,7 +2,7 @@
 
 #include "extLib/userOutput/diagLog.h"
 #include "formattedOutput/userOutputThunks.h"
-#include "storage/disposableObject.h"
+#include "storage/optionalObject.h"
 #include "userOutput/diagnosticKit.h"
 #include "userOutput/msgLog.h"
 #include "formatting/messageFormatter.h"
