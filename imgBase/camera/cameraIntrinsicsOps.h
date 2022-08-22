@@ -1,7 +1,7 @@
 #pragma once
 
 #include "camera/cameraIntrinsics.h"
-#include "point/pointMathIntrinsics.h"
+#include "point/pointFunctions.h"
 #include "point3d/point3dBase.h"
 
 //================================================================
