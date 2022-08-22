@@ -228,20 +228,21 @@ public:
     stdbool process(stdPars(ToolTargetProcessKit))
     {
         EngineMemControllerTarget engineThunk(engine, baseKit, kit);
-        require(memController.processCountTemp(engineThunk, tempUsage, stdPassKit(baseKit)));
+        require(memController.processCountTemp(engineThunk, tempUsage, tempActivity, stdPassKit(baseKit)));
         returnTrue;
     }
 
 public:
 
-    inline EngineTempCountToolTarget(AtEngine& engine, MemController& memController, MemoryUsage& tempUsage, const EngineBaseKit& baseKit)
-        : engine(engine), memController(memController), tempUsage(tempUsage), baseKit(baseKit) {}
+    inline EngineTempCountToolTarget(AtEngine& engine, MemController& memController, MemoryUsage& tempUsage, ReallocActivity& tempActivity, const EngineBaseKit& baseKit)
+        : engine(engine), memController(memController), tempUsage(tempUsage), tempActivity(tempActivity), baseKit(baseKit) {}
 
 private:
 
     AtEngine& engine;
     MemController& memController;
     MemoryUsage& tempUsage;
+    ReallocActivity& tempActivity;
     EngineBaseKit baseKit;
 
 };
@@ -725,6 +726,16 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
             debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"), STR("Ctrl+B"));
 
             toolModule.serialize(kit);
+
+            {
+                CFG_NAMESPACE("Tool Memory");
+                toolMemory.serialize(kit);
+            }
+
+            {
+                CFG_NAMESPACE("Engine Memory");
+                engineMemory.serialize(kit);
+            }
         }
 
         ////
@@ -945,7 +956,10 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     //----------------------------------------------------------------
 
     MemoryUsage toolTempUsage;
+    ReallocActivity toolTempActivity;
+
     MemoryUsage engineTempUsage;
+    ReallocActivity engineTempActivity;
 
     {
         //
@@ -958,10 +972,10 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
         ////
 
-        EngineTempCountToolTarget engineThunk(*engineModule, engineMemory, engineTempUsage, kit);
+        EngineTempCountToolTarget engineThunk(*engineModule, engineMemory, engineTempUsage, engineTempActivity, kit);
         ToolModuleProcessThunk toolModuleThunk(toolModule, engineThunk, kitEx);
 
-        require(toolMemory.processCountTemp(toolModuleThunk, toolTempUsage, stdPass));
+        require(toolMemory.processCountTemp(toolModuleThunk, toolTempUsage, toolTempActivity, stdPass));
     }
 
     //----------------------------------------------------------------
@@ -970,7 +984,6 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     //
     //----------------------------------------------------------------
 
-    ReallocActivity toolTempActivity;
     require(toolMemory.handleTempRealloc(toolTempUsage, kit, toolTempActivity, stdPass));
 
     REQUIRE(toolTempActivity.fastAllocCount <= 1);
@@ -987,7 +1000,6 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     //
     //----------------------------------------------------------------
 
-    ReallocActivity engineTempActivity;
     require(engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
 
     REQUIRE(engineTempActivity.fastAllocCount <= 1);

@@ -3,6 +3,8 @@
 #include "gpuModuleHeader.h"
 #include "memController/flatMemoryHolder.h"
 #include "numbers/interface/numberInterface.h"
+#include "cfgTools/numericVar.h"
+#include "dataAlloc/arrayObjectMemory.h"
 
 namespace memController {
 
@@ -50,7 +52,24 @@ struct ReallocActivity
 {
     Space fastAllocCount = 0;
     Space sysAllocCount = 0;
+    Space curveAllocCount = 0;
 };
+
+//================================================================
+//
+// uncommonActivity
+//
+//================================================================
+
+inline bool uncommonActivity(const ReallocActivity& stateActivity, const ReallocActivity& tempActivity)
+{
+    return 
+        stateActivity.sysAllocCount ||
+        stateActivity.fastAllocCount || // Report even fast realloc of the state.
+        stateActivity.curveAllocCount ||
+        tempActivity.sysAllocCount ||
+        tempActivity.curveAllocCount;
+}
 
 //================================================================
 //
@@ -106,6 +125,19 @@ using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, ProfilerKit, MsgLogsKi
 
 //================================================================
 //
+// MemState
+//
+//================================================================
+
+template <typename AddrU>
+struct MemState
+{
+    FlatMemoryHolder<AddrU> memory;
+    AddrU alignment = 1;
+};
+
+//================================================================
+//
 // MemController
 //
 //================================================================
@@ -115,7 +147,11 @@ class MemController
 
 public:
 
-    void deinit();
+    ~MemController();
+
+public:
+
+    void serialize(const CfgSerializeKit& kit);
 
 public:
 
@@ -131,7 +167,7 @@ public:
     // Counts temporary memory required for processing.
     //
 
-    stdbool processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, stdPars(ProcessKit));
+    stdbool processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, ReallocActivity& tempActivity, stdPars(ProcessKit));
 
     //
     // Given the required temp memory size, reallocates memory pools if necessary.
@@ -147,27 +183,29 @@ public:
 
 private:
 
+    stdbool curveReallocBuffers(ReallocActivity& activity, stdPars(ProcessKit));
+
+private:
+
+    NumericVar<Space> curveCapacity{0, spaceMax, 0};
+    ArrayObjectMemory<CpuAddrU> cpuCurveBuffer;
+    ArrayObjectMemory<GpuAddrU> gpuCurveBuffer;
+
     //
-    // Module state memory
+    // Module state memory.
     //
 
     bool stateMemoryIsAllocated = false;
 
-    FlatMemoryHolder<CpuAddrU> cpuStateMemory;
-    CpuAddrU cpuStateAlignment = 1;
-
-    FlatMemoryHolder<GpuAddrU> gpuStateMemory;
-    GpuAddrU gpuStateAlignment = 1;
+    MemState<CpuAddrU> cpuState;
+    MemState<GpuAddrU> gpuState;
 
     //
-    // Module temp memory
+    // Module temp memory.
     //
 
-    FlatMemoryHolder<CpuAddrU> cpuTempMemory;
-    CpuAddrU cpuTempAlignment = 1;
-
-    FlatMemoryHolder<GpuAddrU> gpuTempMemory;
-    GpuAddrU gpuTempAlignment = 1;
+    MemState<CpuAddrU> cpuTemp;
+    MemState<GpuAddrU> gpuTemp;
 
 };
 

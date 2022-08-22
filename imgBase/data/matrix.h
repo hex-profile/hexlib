@@ -246,7 +246,7 @@ private:
 
 public:
 
-    friend sysinline void exchange(MatrixEx<Pointer>& A, MatrixEx<Pointer>& B)
+    sysinline friend void exchange(MatrixEx<Pointer>& A, MatrixEx<Pointer>& B)
     {
         exchange(A.theMemPtrUnsafe, B.theMemPtrUnsafe);
         exchange(A.theMemPitch, B.theMemPitch);
@@ -693,7 +693,7 @@ public:
 
 public:
 
-    friend sysinline void exchange(Matrix<Type>& A, Matrix<Type>& B)
+    sysinline friend void exchange(Matrix<Type>& A, Matrix<Type>& B)
     {
         Base& baseA = A;
         Base& baseB = B;

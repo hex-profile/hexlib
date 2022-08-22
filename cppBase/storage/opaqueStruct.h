@@ -1,6 +1,7 @@
 #pragma once
 
 #include "storage/typeAlignment.h"
+#include "compileTools/compileTools.h"
 
 //================================================================
 //
@@ -18,14 +19,14 @@ class OpaqueStruct
 public:
 
     template <typename Type>
-    inline Type& recast()
+    sysinline Type& recast()
     {
         static_assert(sizeof(Self) >= sizeof(Type) && alignof(Self) % alignof(Type) == 0, "");
         return * (Type*) this;
     }
 
     template <typename Type>
-    inline const Type& recast() const
+    sysinline const Type& recast() const
     {
         static_assert(sizeof(Self) >= sizeof(Type) && alignof(Self) % alignof(Type) == 0, "");
         return * (const Type*) this;
@@ -45,7 +46,7 @@ private:
 //================================================================
 
 template <size_t size>
-inline void exchange(OpaqueStruct<size>& a, OpaqueStruct<size>& b)
+sysinline void exchange(OpaqueStruct<size>& a, OpaqueStruct<size>& b)
 {
     OpaqueStruct<size> tmp = a;
     a = b;

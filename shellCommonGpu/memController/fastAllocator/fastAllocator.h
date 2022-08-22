@@ -3,6 +3,7 @@
 #include "dataAlloc/memoryAllocator.h"
 #include "errorLog/errorLog.h"
 #include "storage/constructDestruct.h"
+#include "data/array.h"
 
 namespace fastAllocator {
 
@@ -39,56 +40,6 @@ namespace fastAllocator {
 
 //================================================================
 //
-// FastAllocatorState
-//
-//================================================================
-
-template <typename AddrU>
-class FastAllocatorState
-{
-
-    template <typename, bool, bool>
-    friend class FastAllocator;
-
-public:
-
-    sysinline FastAllocatorState()
-        :
-        memAddr(0),
-        memSize(0)
-    {
-        offset = 0;
-        maxAlignment = 1;
-        maxOffset = 0;
-    }
-
-    sysinline FastAllocatorState(AddrU memAddr, AddrU memSize)
-        :
-        memAddr(memAddr),
-        memSize(memSize)
-    {
-        offset = 0;
-        maxAlignment = 1;
-        maxOffset = 0;
-    }
-
-private:
-
-    // Flag indicating the absense of stack order violations.
-    // If cleared, all subsequent allocations are refused.
-    bool validState = true;
-
-    AddrU offset;
-    AddrU maxAlignment;
-    AddrU maxOffset;
-
-    AddrU memAddr;
-    AddrU memSize;
-
-};
-
-//================================================================
-//
 // FastAllocator
 //
 //================================================================
@@ -99,11 +50,26 @@ class FastAllocator : public AllocatorInterface<AddrU>
 
 public:
 
-    sysinline FastAllocator(const ErrorLogKit& kit)
-        : kit(kit) {}
+    sysinline FastAllocator(const Array<AddrU>& curveBuffer, const ErrorLogKit& kit)
+        : kit(kit) 
+    {
+        curveSetBuffer(curveBuffer);
+    }
 
-    sysinline FastAllocator(AddrU memAddr, AddrU memSize, const ErrorLogKit& kit)
-        : state(memAddr, memSize), kit(kit) {}
+    sysinline FastAllocator(AddrU memAddr, AddrU memSize, const Array<AddrU>& curveBuffer, const ErrorLogKit& kit)
+        : memAddr(memAddr), memSize(memSize), kit(kit)
+    {
+        curveSetBuffer(curveBuffer);
+    }
+
+    sysinline void curveSetBuffer(const Array<AddrU>& buffer)
+    {
+        ARRAY_EXPOSE_UNSAFE(buffer);
+        curveOrg = bufferPtr;
+        curveEnd = bufferPtr + bufferSize;
+        curvePtr = bufferPtr;
+        curveReported = (curveOrg == curveEnd);
+    }
 
 public:
 
@@ -112,21 +78,42 @@ public:
 
 public:
 
-    bool validState() const
-        {return state.validState;}
+    sysinline bool isValid() const
+        {return validState;}
 
-    AddrU allocatedSpace() const
-        {return state.offset;}
+    sysinline AddrU allocatedSpace() const
+        {return offset;}
 
-    AddrU maxAllocatedSpace() const
-        {return state.maxOffset;}
+    sysinline AddrU maxAllocatedSpace() const
+        {return maxOffset;}
 
-    AddrU maxAlignment() const
-        {return state.maxAlignment;}
+    sysinline AddrU maxAlign() const
+        {return maxAlignment;}
+
+    sysinline Space curveSize() const
+        {return curvePtr - curveOrg;}
+
+    sysinline bool curveIsReported() const
+        {return curveReported;}
 
 private:
 
-    FastAllocatorState<AddrU> state;
+    // Flag indicating the absense of stack order violations.
+    // If cleared, all subsequent allocations are refused.
+    bool validState = true;
+
+    AddrU offset = 0;
+    AddrU maxAlignment = 1;
+    AddrU maxOffset = 0;
+
+    AddrU memAddr = 0;
+    AddrU memSize = 0;
+
+    AddrU* curveOrg = nullptr;
+    AddrU* curveEnd = nullptr;
+    AddrU* curvePtr = nullptr;
+    bool curveReported = false;
+
     ErrorLogKit kit;
 
 };

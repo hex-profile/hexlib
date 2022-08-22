@@ -441,6 +441,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     //----------------------------------------------------------------
 
     MemoryUsage engineTempUsage;
+    ReallocActivity engineTempActivity;
 
     {
         //
@@ -453,7 +454,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
         ////
 
         ProcessThunk processThunk{*this, kitEx};
-        require(kit.engineMemory.processCountTemp(processThunk, engineTempUsage, stdPassKit(kitEx)));
+        require(kit.engineMemory.processCountTemp(processThunk, engineTempUsage, engineTempActivity, stdPassKit(kitEx)));
     }
 
     //----------------------------------------------------------------
@@ -462,7 +463,6 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     //
     //----------------------------------------------------------------
 
-    ReallocActivity engineTempActivity;
     require(kit.engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
 
     REQUIRE(engineTempActivity.fastAllocCount <= 1);

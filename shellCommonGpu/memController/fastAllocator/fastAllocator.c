@@ -11,10 +11,10 @@ namespace fastAllocator {
 //
 //================================================================
 
-template <typename AddrU>
+template <typename AddrU, bool realAlloc, bool stateMode>
 struct FastAllocatorDeallocContext
 {
-    void* allocState;
+    FastAllocator<AddrU, realAlloc, stateMode>* allocator;
     AddrU restoreValue;
     AddrU checkValue;
 };
@@ -23,17 +23,15 @@ struct FastAllocatorDeallocContext
 //
 // FastAllocator::allocFunc
 //
-// ~55-57 instructions on X86.
+// ~55-57 instructions on X86 (without allocation curve check).
 //
 //================================================================
 
 template <typename AddrU, bool realAlloc, bool stateMode>
 stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
 {
-    auto& that = state;
-
     // State?
-    REQUIRE(that.validState);
+    REQUIRE(validState);
 
     // Alignment.
     REQUIRE(isPower2(alignment));
@@ -42,7 +40,7 @@ stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alig
     AddrU alignmentMask = alignment - 1;
 
     // Round the offset UP to a multiple of the alignment.
-    AddrU originalOffset = that.offset;
+    AddrU originalOffset = offset;
     REQUIRE(originalOffset <= TYPE_MAX(AddrU) - alignmentMask); // can add
     AddrU alignedOffset = (originalOffset + alignmentMask) & ~alignmentMask;
 
@@ -54,16 +52,36 @@ stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alig
     // Fits into the memory?
     if (realAlloc)
     {
-        REQUIRE(newOffset <= that.memSize);
-        REQUIRE((that.memAddr & alignmentMask) == 0);
+        REQUIRE_CUSTOM(newOffset <= memSize, CT("Insufficient memory."));
+        REQUIRE_CUSTOM((memAddr & alignmentMask) == 0, CT("Insufficient alignment of system buffer."));
     }
 
-    // Record "that" changes.
-    that.offset = newOffset;
+    // Allocation curve checker.
+    if_not (realAlloc)
+    {
+        if (curvePtr != curveEnd)
+            *curvePtr++ = newOffset;
+        else
+        {
+            CHECK_CUSTOM(curveReported, CT("Allocation curve checker capacity exceeded."));
+            curveReported = true;
+        }
+    }
+    else
+    {
+        if_not (curvePtr != curveEnd && *curvePtr++ == newOffset)
+        {
+            CHECK_CUSTOM(curveReported, CT("Allocation curve mismatch between counting and execution phases."));
+            curveReported = true;
+        }
+    }
+
+    // Record changes.
+    offset = newOffset;
 
     // Accumulate counters
-    that.maxAlignment = maxv(that.maxAlignment, alignment);
-    that.maxOffset = maxv(that.maxOffset, newOffset);
+    maxAlignment = maxv(maxAlignment, alignment);
+    maxOffset = maxv(maxOffset, newOffset);
 
     // Deallocator.
     if (stateMode)
@@ -72,15 +90,15 @@ stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alig
     {
         MemoryDeallocContext& deallocContext = owner.replace(deallocFunc);
 
-        auto& info = deallocContext.recast<FastAllocatorDeallocContext<AddrU>>();
+        auto& info = deallocContext.recast<FastAllocatorDeallocContext<AddrU, realAlloc, stateMode>>();
 
-        info.allocState = &state;
+        info.allocator = this;
         info.restoreValue = originalOffset;
         info.checkValue = newOffset;
     }
 
     // Result.
-    AddrU allocatedAddr = that.memAddr + alignedOffset;
+    AddrU allocatedAddr = memAddr + alignedOffset;
     result = realAlloc ? allocatedAddr : 0;
 
     returnTrue;
@@ -97,17 +115,16 @@ stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alig
 template <typename AddrU, bool realAlloc, bool stateMode>
 void FastAllocator<AddrU, realAlloc, stateMode>::deallocFunc(MemoryDeallocContext& context)
 {
-    FastAllocatorDeallocContext<AddrU>& info = (FastAllocatorDeallocContext<AddrU>&) context;
+    auto& info = (FastAllocatorDeallocContext<AddrU, realAlloc, stateMode>&) context;
+    auto& the = *info.allocator;
 
-    FastAllocatorState<AddrU>& state = * (FastAllocatorState<AddrU>*) info.allocState;
-
-    if (state.offset == info.checkValue)
-        state.offset = info.restoreValue;
+    if (the.offset == info.checkValue)
+        the.offset = info.restoreValue;
     else
     {
         // Lock error state and refuse subsequent allocations.
         DEBUG_BREAK_INLINE();
-        state.validState = false;
+        the.validState = false;
     }
 }
 

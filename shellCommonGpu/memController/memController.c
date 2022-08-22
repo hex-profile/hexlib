@@ -1,10 +1,14 @@
 #include "memController.h"
 
-#include "memController/fastAllocator/fastAllocator.h"
+#include "allocation/mallocAllocator/mallocAllocator.h"
+#include "allocation/mallocKit.h"
+#include "dataAlloc/arrayObjectMemory.inl"
+#include "formattedOutput/requireMsg.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
+#include "memController/fastAllocator/fastAllocator.h"
+#include "numbers/mathIntrinsics.h"
 #include "userOutput/errorLogEx.h"
 #include "userOutput/printMsg.h"
-#include "numbers/mathIntrinsics.h"
 
 namespace memController {
 
@@ -62,29 +66,23 @@ private:
 
 //================================================================
 //
-// MemController::deinit
+// MemController::~MemController
 //
 //================================================================
 
-void MemController::deinit()
+MemController::~MemController()
 {
-    stateMemoryIsAllocated = false;
+}
 
-    ////
+//================================================================
+//
+// MemController::serialize
+//
+//================================================================
 
-    cpuStateMemory.dealloc();
-    cpuStateAlignment = 0;
-
-    gpuStateMemory.dealloc();
-    gpuStateAlignment = 0;
-
-    ////
-
-    cpuTempMemory.dealloc();
-    cpuTempAlignment = 0;
-
-    gpuTempMemory.dealloc();
-    gpuTempAlignment = 0;
+void MemController::serialize(const CfgSerializeKit& kit)
+{
+    curveCapacity.serialize(kit, STR("Alloc Curve Checker Capacity"));
 }
 
 //================================================================
@@ -107,6 +105,44 @@ inline bool memFailReport(const CharArray& name, AddrU memSize, AddrU memAlignme
 
 //================================================================
 //
+// MemController::curveReallocBuffers
+//
+//================================================================
+
+stdbool MemController::curveReallocBuffers(ReallocActivity& activity, stdPars(ProcessKit))
+{
+    stdScopedBegin;
+
+    MAKE_MALLOC_ALLOCATOR(kit);
+    auto oldKit = kit;
+    auto kit = kitCombine(oldKit, MallocKit(mallocAllocator));
+
+    ////
+
+    if_not (cpuCurveBuffer.maxSize() == curveCapacity)
+    {
+        ++activity.curveAllocCount;
+        require(cpuCurveBuffer.reallocInHeap(curveCapacity, stdPass));
+    }
+
+    if_not (gpuCurveBuffer.maxSize() == curveCapacity)
+    {
+        ++activity.curveAllocCount;
+        require(gpuCurveBuffer.reallocInHeap(curveCapacity, stdPass));
+    }
+
+    ////
+
+    REQUIRE(cpuCurveBuffer.resize(curveCapacity));
+    REQUIRE(gpuCurveBuffer.resize(curveCapacity));
+
+    ////
+
+    stdScopedEnd;
+}
+
+//================================================================
+//
 // MemController::handleStateRealloc
 //
 // If not successful, dealloc.
@@ -123,10 +159,10 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     if (stateMemoryIsAllocated && target.reallocValid())
     {
-        stateUsage.cpuMemSize = cpuStateMemory.size();
-        stateUsage.gpuMemSize = gpuStateMemory.size();
-        stateUsage.cpuAlignment = cpuStateAlignment;
-        stateUsage.gpuAlignment = gpuStateAlignment;
+        stateUsage.cpuMemSize = cpuState.memory.size();
+        stateUsage.gpuMemSize = gpuState.memory.size();
+        stateUsage.cpuAlignment = cpuState.alignment;
+        stateUsage.gpuAlignment = gpuState.alignment;
         returnTrue;
     }
 
@@ -184,14 +220,22 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     //----------------------------------------------------------------
     //
-    // Count state memory / realloc to fake (should succeed).
+    // Curve buffers.
+    //
+    //----------------------------------------------------------------
+
+    require(curveReallocBuffers(stateActivity, stdPass));
+
+    //----------------------------------------------------------------
+    //
+    // Count state memory / realloc to fake.
     //
     //----------------------------------------------------------------
 
     using namespace fastAllocator;
 
-    FastAllocator<CpuAddrU, false, true> cpuCounter{kit};
-    FastAllocator<GpuAddrU, false, true> gpuCounter{kit};
+    FastAllocator<CpuAddrU, false, true> cpuCounter{cpuCurveBuffer, kit};
+    FastAllocator<GpuAddrU, false, true> gpuCounter{gpuCurveBuffer, kit};
 
     ////
 
@@ -216,8 +260,25 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     auto cpuMemSize = cpuCounter.allocatedSpace();
     auto gpuMemSize = gpuCounter.allocatedSpace();
 
-    auto cpuAlignment = cpuCounter.maxAlignment();
-    auto gpuAlignment = gpuCounter.maxAlignment();
+    auto cpuAlignment = cpuCounter.maxAlign();
+    auto gpuAlignment = gpuCounter.maxAlign();
+
+    ////
+
+    auto cpuRecords = cpuCounter.curveSize();
+    auto gpuRecords = gpuCounter.curveSize();
+
+    if (curveCapacity)
+    {
+        if_not (cpuRecords < curveCapacity && gpuRecords < curveCapacity)
+        {
+            cpuRecords = 0; // Overflow reported, don't check on execution phase.
+            gpuRecords = 0;
+        }
+    }
+
+    REQUIRE(cpuCurveBuffer.resize(cpuRecords));
+    REQUIRE(gpuCurveBuffer.resize(gpuRecords));
 
     //----------------------------------------------------------------
     //
@@ -225,8 +286,8 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     //
     //----------------------------------------------------------------
 
-    bool cpuFastResize = (cpuMemSize <= cpuStateMemory.maxSize()) && (cpuAlignment <= cpuStateAlignment);
-    bool gpuFastResize = (gpuMemSize <= gpuStateMemory.maxSize()) && (gpuAlignment <= gpuStateAlignment);
+    bool cpuFastResize = (cpuMemSize <= cpuState.memory.maxSize()) && (cpuAlignment <= cpuState.alignment);
+    bool gpuFastResize = (gpuMemSize <= gpuState.memory.maxSize()) && (gpuAlignment <= gpuState.alignment);
 
     ////
 
@@ -234,13 +295,13 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     if_not (cpuFastResize)
     {
-        cpuStateMemory.dealloc(); // Don't double mem usage.
-        cpuStateAlignment = 1;
+        cpuState.memory.dealloc(); // Don't double mem usage.
+        cpuState.alignment = 1;
 
-        cpuAllocOk = errorBlock(cpuStateMemory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass));
+        cpuAllocOk = errorBlock(cpuState.memory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass));
 
         if (cpuAllocOk)
-            cpuStateAlignment = cpuAlignment;
+            cpuState.alignment = cpuAlignment;
     }
 
     ////
@@ -249,13 +310,13 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     if_not (gpuFastResize)
     {
-        gpuStateMemory.dealloc(); // Don't double mem usage.
-        gpuStateAlignment = 1;
+        gpuState.memory.dealloc(); // Don't double mem usage.
+        gpuState.alignment = 1;
 
-        gpuAllocOk = errorBlock(gpuStateMemory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass));
+        gpuAllocOk = errorBlock(gpuState.memory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass));
 
         if (gpuAllocOk)
-            gpuStateAlignment = gpuAlignment;
+            gpuState.alignment = gpuAlignment;
     }
 
     //----------------------------------------------------------------
@@ -280,11 +341,11 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     //
     //----------------------------------------------------------------
 
-    REQUIRE(cpuStateMemory.resize(cpuMemSize));
-    FastAllocator<CpuAddrU, true, true> cpuDistributor{cpuStateMemory.ptr(), cpuStateMemory.size(), kit};
+    REQUIRE(cpuState.memory.resize(cpuMemSize));
+    FastAllocator<CpuAddrU, true, true> cpuDistributor{cpuState.memory.ptr(), cpuState.memory.size(), cpuCurveBuffer, kit};
 
-    REQUIRE(gpuStateMemory.resize(gpuMemSize));
-    FastAllocator<GpuAddrU, true, true> gpuDistributor{gpuStateMemory.ptr(), gpuStateMemory.size(), kit};
+    REQUIRE(gpuState.memory.resize(gpuMemSize));
+    FastAllocator<GpuAddrU, true, true> gpuDistributor{gpuState.memory.ptr(), gpuState.memory.size(), gpuCurveBuffer, kit};
 
     ////
 
@@ -303,9 +364,12 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     ////
 
     REQUIRE(cpuDistributor.allocatedSpace() == cpuMemSize);
-    REQUIRE(cpuDistributor.maxAlignment() == cpuAlignment);
+    REQUIRE(cpuDistributor.maxAlign() == cpuAlignment);
+    REQUIRE(cpuDistributor.curveSize() == cpuRecords);
+
     REQUIRE(gpuDistributor.allocatedSpace() == gpuMemSize);
-    REQUIRE(gpuDistributor.maxAlignment() == gpuAlignment);
+    REQUIRE(gpuDistributor.maxAlign() == gpuAlignment);
+    REQUIRE(gpuDistributor.curveSize() == gpuRecords);
 
     //----------------------------------------------------------------
     //
@@ -319,8 +383,8 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     stateUsage.cpuMemSize = cpuMemSize;
     stateUsage.gpuMemSize = gpuMemSize;
-    stateUsage.cpuAlignment = cpuStateAlignment;
-    stateUsage.gpuAlignment = gpuStateAlignment;
+    stateUsage.cpuAlignment = cpuState.alignment;
+    stateUsage.gpuAlignment = gpuState.alignment;
 
     ////
 
@@ -333,7 +397,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 //
 //================================================================
 
-stdbool MemController::processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, stdPars(ProcessKit))
+stdbool MemController::processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, ReallocActivity& tempActivity, stdPars(ProcessKit))
 {
     //----------------------------------------------------------------
     //
@@ -346,14 +410,22 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 
     //----------------------------------------------------------------
     //
-    // Count temp memory / realloc to fake (should succeed).
+    // Curve buffers.
+    //
+    //----------------------------------------------------------------
+
+    require(curveReallocBuffers(tempActivity, stdPass));
+
+    //----------------------------------------------------------------
+    //
+    // Count temp memory / realloc to fake.
     //
     //----------------------------------------------------------------
 
     using namespace fastAllocator;
 
-    FastAllocator<CpuAddrU, false, false> cpuCounter{kit};
-    FastAllocator<GpuAddrU, false, false> gpuCounter{kit};
+    FastAllocator<CpuAddrU, false, false> cpuCounter{cpuCurveBuffer, kit};
+    FastAllocator<GpuAddrU, false, false> gpuCounter{gpuCurveBuffer, kit};
 
     GpuTextureAllocFail gpuTextureCounter(kit);
 
@@ -371,16 +443,33 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 
     ////
 
-    REQUIRE(cpuCounter.validState() && cpuCounter.allocatedSpace() == 0);
-    REQUIRE(gpuCounter.validState() && gpuCounter.allocatedSpace() == 0);
+    REQUIRE(cpuCounter.isValid() && cpuCounter.allocatedSpace() == 0);
+    REQUIRE(gpuCounter.isValid() && gpuCounter.allocatedSpace() == 0);
+
+    ////
+
+    auto cpuRecords = cpuCounter.curveSize();
+    auto gpuRecords = gpuCounter.curveSize();
+
+    if (curveCapacity)
+    {
+        if_not (cpuRecords < curveCapacity && gpuRecords < curveCapacity)
+        {
+            cpuRecords = 0; // Overflow reported, don't check on execution phase.
+            gpuRecords = 0;
+        }
+    }
+
+    REQUIRE(cpuCurveBuffer.resize(cpuRecords));
+    REQUIRE(gpuCurveBuffer.resize(gpuRecords));
 
     ////
 
     tempUsage.cpuMemSize = cpuCounter.maxAllocatedSpace();
-    tempUsage.cpuAlignment = cpuCounter.maxAlignment();
+    tempUsage.cpuAlignment = cpuCounter.maxAlign();
 
     tempUsage.gpuMemSize = gpuCounter.maxAllocatedSpace();
-    tempUsage.gpuAlignment = gpuCounter.maxAlignment();
+    tempUsage.gpuAlignment = gpuCounter.maxAlign();
 
     ////
 
@@ -415,8 +504,8 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
 
     ////
 
-    bool cpuFastResize = (cpuMemSize <= cpuTempMemory.maxSize()) && (cpuAlignment <= cpuTempAlignment);
-    bool gpuFastResize = (gpuMemSize <= gpuTempMemory.maxSize()) && (gpuAlignment <= gpuTempAlignment);
+    bool cpuFastResize = (cpuMemSize <= cpuTemp.memory.maxSize()) && (cpuAlignment <= cpuTemp.alignment);
+    bool gpuFastResize = (gpuMemSize <= gpuTemp.memory.maxSize()) && (gpuAlignment <= gpuTemp.alignment);
 
     ////
 
@@ -424,13 +513,13 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
 
     if_not (cpuFastResize)
     {
-        cpuTempMemory.dealloc(); // Don't double mem usage.
-        cpuTempAlignment = 1;
+        cpuTemp.memory.dealloc(); // Don't double mem usage.
+        cpuTemp.alignment = 1;
 
-        cpuAllocOk = errorBlock(cpuTempMemory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass));
+        cpuAllocOk = errorBlock(cpuTemp.memory.realloc(cpuMemSize, cpuAlignment, alloc.cpuSystemAllocator, stdPass));
 
         if (cpuAllocOk)
-            cpuTempAlignment = cpuAlignment;
+            cpuTemp.alignment = cpuAlignment;
     }
 
     ////
@@ -439,27 +528,26 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
 
     if_not (gpuFastResize)
     {
-        gpuTempMemory.dealloc(); // Don't double mem usage.
-        gpuTempAlignment = 1;
+        gpuTemp.memory.dealloc(); // Don't double mem usage.
+        gpuTemp.alignment = 1;
 
-        gpuAllocOk = errorBlock(gpuTempMemory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass));
+        gpuAllocOk = errorBlock(gpuTemp.memory.realloc(gpuMemSize, gpuAlignment, alloc.gpuSystemAllocator, stdPass));
 
         if (gpuAllocOk)
-            gpuTempAlignment = gpuAlignment;
+            gpuTemp.alignment = gpuAlignment;
     }
 
     ////
 
     if (cpuAllocOk)
-        REQUIRE(cpuTempMemory.resize(cpuMemSize));
+        REQUIRE(cpuTemp.memory.resize(cpuMemSize));
 
     if (gpuAllocOk)
-        REQUIRE(gpuTempMemory.resize(gpuMemSize));
+        REQUIRE(gpuTemp.memory.resize(gpuMemSize));
 
     //----------------------------------------------------------------
     //
     // On error, report and fail.
-    // Prepare distributing allocators.
     //
     //----------------------------------------------------------------
 
@@ -525,8 +613,8 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
 
     using namespace fastAllocator;
 
-    FastAllocator<CpuAddrU, true, false> cpuDistributor{cpuTempMemory.ptr(), cpuTempMemory.size(), kit};
-    FastAllocator<GpuAddrU, true, false> gpuDistributor{gpuTempMemory.ptr(), gpuTempMemory.size(), kit};
+    FastAllocator<CpuAddrU, true, false> cpuDistributor{cpuTemp.memory.ptr(), cpuTemp.memory.size(), cpuCurveBuffer, kit};
+    FastAllocator<GpuAddrU, true, false> gpuDistributor{gpuTemp.memory.ptr(), gpuTemp.memory.size(), gpuCurveBuffer, kit};
 
     GpuTextureAllocFail gpuTextureAllocator(kit);
 
@@ -552,15 +640,17 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
     //
     //----------------------------------------------------------------
 
-    REQUIRE(cpuDistributor.validState());
+    REQUIRE(cpuDistributor.isValid());
     REQUIRE(cpuDistributor.allocatedSpace() == 0);
+    REQUIRE(cpuDistributor.curveSize() == cpuCurveBuffer.size() || cpuDistributor.curveIsReported());
     tempUsage.cpuMemSize = cpuDistributor.maxAllocatedSpace();
-    tempUsage.cpuAlignment = cpuDistributor.maxAlignment();
+    tempUsage.cpuAlignment = cpuDistributor.maxAlign();
 
-    REQUIRE(gpuDistributor.validState());
+    REQUIRE(gpuDistributor.isValid());
     REQUIRE(gpuDistributor.allocatedSpace() == 0);
+    REQUIRE(gpuDistributor.curveSize() == gpuCurveBuffer.size() || gpuDistributor.curveIsReported());
     tempUsage.gpuMemSize = gpuDistributor.maxAllocatedSpace();
-    tempUsage.gpuAlignment = gpuDistributor.maxAlignment();
+    tempUsage.gpuAlignment = gpuDistributor.maxAlign();
 
     ////
 

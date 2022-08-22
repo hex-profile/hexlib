@@ -124,6 +124,11 @@ void PackageKeeperImpl::serialize(const CfgSerializeKit& kit)
     {
         CFG_NAMESPACE("~Shell");
         deactivateOverlay.serialize(kit, STR("Deactivate Overlay"), STR("\\"));
+
+        {
+            CFG_NAMESPACE("Engine Memory");
+            engineMemory.serialize(kit);
+        }
     }
 }
 

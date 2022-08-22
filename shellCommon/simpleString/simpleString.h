@@ -96,7 +96,7 @@ public:
 
 public:
 
-    friend sysinline void exchange(SStringBuffer<Type>& a, SStringBuffer<Type>& b)
+    sysinline friend void exchange(SStringBuffer<Type>& a, SStringBuffer<Type>& b)
     {
         exchangeByCopying(a.currentPtr, b.currentPtr);
         exchangeByCopying(a.currentSize, b.currentSize);
@@ -312,7 +312,7 @@ public:
 
 public:
 
-    friend sysinline void exchange(String& a, String& b)
+    sysinline friend void exchange(String& a, String& b)
     {
         exchange(a.buffer, b.buffer);
     }

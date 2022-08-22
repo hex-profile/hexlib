@@ -300,7 +300,7 @@ public:
 
 public:
 
-    friend inline void exchange(ArrayEx<Pointer>& a, ArrayEx<Pointer>& b)
+    sysinline friend void exchange(ArrayEx<Pointer>& a, ArrayEx<Pointer>& b)
     {
         exchange(a.thePtr, b.thePtr);
         exchange(a.theSize, b.theSize);

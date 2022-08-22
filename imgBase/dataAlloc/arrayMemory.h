@@ -75,7 +75,7 @@ private:
 
 public:
 
-    inline friend void exchange(ArrayMemoryEx<Pointer>& a, ArrayMemoryEx<Pointer>& b)
+    sysinline friend void exchange(ArrayMemoryEx<Pointer>& a, ArrayMemoryEx<Pointer>& b)
     {
         BaseArray* ap = &a;
         BaseArray* bp = &b;
@@ -177,7 +177,7 @@ class ArrayMemory : public ArrayMemoryEx<Type*>
 
 public:
 
-    inline friend void exchange(ArrayMemory<Type>& a, ArrayMemory<Type>& b)
+    sysinline friend void exchange(ArrayMemory<Type>& a, ArrayMemory<Type>& b)
     {
         Base* ap = &a;
         Base* bp = &b;

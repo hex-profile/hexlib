@@ -5,6 +5,27 @@
 
 //================================================================
 //
+// CHECK_MSG
+//
+//================================================================
+
+#define CHECK_MSG(condition, msg) \
+    CHECK_EX(condition, printMsg(kit.msgLog, msg, msgErr))
+
+#define CHECK_MSG1(condition, msg, v0) \
+    CHECK_EX(condition, printMsg(kit.msgLog, msg, v0, msgErr))
+
+#define CHECK_MSG2(condition, msg, v0, v1) \
+    CHECK_EX(condition, printMsg(kit.msgLog, msg, v0, v1, msgErr))
+
+#define CHECK_MSG3(condition, msg, v0, v1, v2) \
+    CHECK_EX(condition, printMsg(kit.msgLog, msg, v0, v1, v2, msgErr))
+
+#define CHECK_MSG4(condition, msg, v0, v1, v2, v3) \
+    CHECK_EX(condition, printMsg(kit.msgLog, msg, v0, v1, v2, v3, msgErr))
+
+//================================================================
+//
 // REQUIRE_MSG
 //
 //================================================================
