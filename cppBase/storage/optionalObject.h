@@ -25,53 +25,53 @@ class OptionalObject
 
 public:
 
-    inline explicit operator bool () const 
+    sysinline explicit operator bool () const 
         {return constructorCalled;}
 
     ////
 
-    inline Type* getPtr()
+    sysinline Type* getPtr()
         {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
-    inline const Type* getPtr() const
+    sysinline const Type* getPtr() const
         {return constructorCalled ? &memory.template recast<Type>() : nullptr;}
 
     ////
 
-    inline operator Type*()
+    sysinline Type& operator*()
+        {return *getPtr();}
+
+    sysinline const Type& operator*() const
+        {return *getPtr();}
+
+    ////
+
+    sysinline Type* operator()()
         {return getPtr();}
 
-    inline operator const Type*() const
+    sysinline const Type* operator()() const
         {return getPtr();}
 
     ////
 
-    inline Type* operator()()
+    sysinline Type* operator ->()
         {return getPtr();}
 
-    inline const Type* operator()() const
-        {return getPtr();}
-
-    ////
-
-    inline Type* operator ->()
-        {return getPtr();}
-
-    inline const Type* operator ->() const
+    sysinline const Type* operator ->() const
         {return getPtr();}
 
 public:
 
-    inline OptionalObject()
+    sysinline OptionalObject()
     {
     }
 
-    inline ~OptionalObject()
+    sysinline ~OptionalObject()
     {
         destroy();
     }
 
-    inline OptionalObject(const OptionalObject<Type>& that)
+    sysinline OptionalObject(const OptionalObject<Type>& that)
     {
         if (that.constructorCalled)
         {
@@ -80,7 +80,7 @@ public:
         }
     }
 
-    inline auto& operator =(const OptionalObject<Type>& that)
+    sysinline auto& operator =(const OptionalObject<Type>& that)
     {
         if (this != &that)
         {
@@ -97,14 +97,14 @@ public:
     }
 
     template <typename That>
-    inline OptionalObject(const That& that)
+    sysinline OptionalObject(const That& that)
     {
         constructParamsVariadic(* (Type*) &memory, that);
         constructorCalled = true;
     }
 
     template <typename... Params>
-    inline void create(Params&&... params)
+    sysinline void create(Params&&... params)
     {
         destroy();
 
@@ -113,7 +113,7 @@ public:
     }
 
     template <typename... Params>
-    inline void createOptional(bool exists, Params&&... params)
+    sysinline void createOptional(bool exists, Params&&... params)
     {
         destroy();
 
@@ -125,17 +125,13 @@ public:
     }
 
     template <typename That>
-    inline auto& operator =(const That& that)
+    sysinline auto& operator =(const That& that)
     {
-        destroy();
-
-        constructParamsVariadic(memory.template recast<Type>(), that);
-        constructorCalled = true;
-
+        create(that);
         return *this;
     }
 
-    inline void destroy()
+    sysinline void destroy()
     {
         if (constructorCalled)
         {
@@ -144,9 +140,19 @@ public:
         }
     }
 
-    inline void cancelDestructor()
+    sysinline void cancelDestructor()
     {
         constructorCalled = false;
+    }
+
+    sysinline bool operator ==(const OptionalObject<Type>& that) const
+    {
+        ensure(this->constructorCalled == that.constructorCalled);
+
+        if (this->constructorCalled)
+            ensure(*this->getPtr() == *that.getPtr());
+
+        return true;
     }
 
 private:

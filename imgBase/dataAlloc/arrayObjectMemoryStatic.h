@@ -53,10 +53,10 @@ public:
     //
     //----------------------------------------------------------------
 
-public:
+private:
 
     template <typename T>
-    explicit ArrayObjectMemoryStatic(const ArrayObjectMemoryStatic<T, maxSize>& that)
+    sysinline void copyConstruct(const ArrayObjectMemoryStatic<T, maxSize>& that)
     {
         for_count (i, that.allocSize)
             constructCopy(data[i], that.data[i]);
@@ -68,15 +68,31 @@ public:
 public:
 
     template <typename T>
-    auto& operator =(const ArrayObjectMemoryStatic<T, maxSize>& that)
+    sysinline explicit ArrayObjectMemoryStatic(const ArrayObjectMemoryStatic<T, maxSize>& that)
     {
-        dealloc();
+        copyConstruct(that);
+    }
 
-        for_count (i, that.allocSize)
-            constructCopy(data[i], that.data[i]);
+    sysinline explicit ArrayObjectMemoryStatic(const ArrayObjectMemoryStatic<Type, maxSize>& that)
+    {
+        copyConstruct(that);
+    }
 
-        allocSize = that.allocSize;
-        usedSize = that.usedSize;
+public:
+
+    template <typename T>
+    sysinline auto& operator =(const ArrayObjectMemoryStatic<T, maxSize>& that)
+    {
+        if_not (this == &that)
+            {dealloc(); copyConstruct(that);}
+
+        return *this;
+    }
+
+    sysinline auto& operator =(const ArrayObjectMemoryStatic<Type, maxSize>& that)
+    {
+        if_not (this == &that)
+            {dealloc(); copyConstruct(that);}
 
         return *this;
     }
@@ -142,7 +158,7 @@ public:
 
 public:
 
-    void dealloc()
+    sysinline void dealloc()
     {
         for (auto i = allocSize - 1; i >= 0; --i)
             destruct(data[i]);
@@ -159,12 +175,12 @@ public:
 
 public:
 
-    void resizeNull() 
+    sysinline void resizeNull() 
     {
         usedSize = 0;
     }
 
-    bool resize(Space newSize)
+    sysinline bool resize(Space newSize)
     {
         ensure(0 <= newSize && newSize <= allocSize);
         usedSize = newSize;
