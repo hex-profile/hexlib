@@ -28,7 +28,7 @@ inline bool computeAlignedSize(Space size, Space alignmentMask, Space& result)
 //================================================================
 
 template <typename Type>
-stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layers, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layers, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     REQUIRE(layers >= 0);
 
@@ -91,7 +91,7 @@ stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layers, const Point<Space>
 
     ////
 
-    const Space maxAllocSize = TYPE_MAX(Space) / elemSize;
+    constexpr Space maxAllocSize = TYPE_MAX(Space) / elemSize;
     REQUIRE(allocTotalSize <= maxAllocSize);
     Space byteAllocSize = allocTotalSize * elemSize;
 
@@ -100,7 +100,7 @@ stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layers, const Point<Space>
     //
 
     AddrU newAddr = 0;
-    require(allocator.func.alloc(allocator.state, byteAllocSize, baseByteAlignment, memoryOwner, newAddr, stdPass));
+    require(allocator.alloc(SpaceU(byteAllocSize), SpaceU(baseByteAlignment), memoryOwner, newAddr, stdPass));
 
     COMPILE_ASSERT(sizeof(Pointer) == sizeof(AddrU));
     Pointer newPtr = Pointer(newAddr);

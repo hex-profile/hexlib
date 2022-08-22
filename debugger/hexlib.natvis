@@ -79,4 +79,8 @@
         <DisplayString>{* ($T1*) memory.data}</DisplayString>
     </Type>
 
+    <Type Name="CharArrayEx&lt;*&gt;">
+        <DisplayString>{ptr, [size]}</DisplayString>
+    </Type>
+
 </AutoVisualizer>

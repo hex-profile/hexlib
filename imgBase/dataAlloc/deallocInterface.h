@@ -30,7 +30,7 @@ struct DeallocContext : public OpaqueStruct<reservedBytes> {};
 ////
 
 template <size_t reservedBytes, uint32 hash>
-inline void exchange(DeallocContext<reservedBytes, hash>& a, DeallocContext<reservedBytes, hash>& b)
+sysinline void exchange(DeallocContext<reservedBytes, hash>& a, DeallocContext<reservedBytes, hash>& b)
 {
     OpaqueStruct<reservedBytes>& aBase = a;
     OpaqueStruct<reservedBytes>& bBase = b;
@@ -55,26 +55,21 @@ public:
 
 public:
 
-    inline ResourceOwner()
-    {
-        deallocFunc = 0;
-    }
-
-    inline ~ResourceOwner()
+    sysinline ~ResourceOwner()
     {
         if (deallocFunc)
             deallocFunc(context);
     }
 
-    inline void clear()
+    sysinline void clear()
     {
         if (deallocFunc)
             deallocFunc(context);
 
-        deallocFunc = 0;
+        deallocFunc = nullptr;
     }
 
-    inline DeallocContext& replace(DeallocFunc* newFunc)
+    sysinline DeallocContext& replace(DeallocFunc* newFunc)
     {
         if (deallocFunc)
             deallocFunc(context);
@@ -83,14 +78,18 @@ public:
         return context;
     }
 
-    inline DeallocContext& getContext() {return context;}
-    inline const DeallocContext& getContext() const {return context;}
+    sysinline DeallocContext& getContext()
+        {return context;}
 
-    inline void discardAlloc() {deallocFunc = 0;}
+    sysinline const DeallocContext& getContext() const
+        {return context;}
+
+    sysinline void discardAlloc()
+        {deallocFunc = nullptr;}
 
 public:
 
-    inline friend void exchange(ResourceOwner<DeallocContext>& a, ResourceOwner<DeallocContext>& b)
+    sysinline friend void exchange(ResourceOwner<DeallocContext>& a, ResourceOwner<DeallocContext>& b)
     {
         exchange(a.context, b.context);
         exchange(a.deallocFunc, b.deallocFunc);
@@ -99,6 +98,6 @@ public:
 private:
 
     DeallocContext context;
-    DeallocFunc* deallocFunc; // 0 in empty state
+    DeallocFunc* deallocFunc = nullptr; // 0 in empty state
 
 };

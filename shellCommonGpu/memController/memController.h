@@ -1,6 +1,5 @@
 #pragma once
 
-#include "allocation/flatMemoryAllocator.h"
 #include "gpuModuleHeader.h"
 #include "memController/flatMemoryHolder.h"
 #include "numbers/interface/numberInterface.h"
@@ -13,7 +12,7 @@ namespace memController {
 //
 //================================================================
 
-using FastAllocToolkit = KitCombine<DataProcessingKit, CpuFastAllocKit, CpuBlockAllocatorKit, GpuFastAllocKit, GpuBlockAllocatorKit>;
+using FastAllocToolkit = KitCombine<DataProcessingKit, CpuFastAllocKit, GpuFastAllocKit>;
 
 //================================================================
 //
@@ -24,25 +23,11 @@ using FastAllocToolkit = KitCombine<DataProcessingKit, CpuFastAllocKit, CpuBlock
 struct MemoryUsage
 {
     CpuAddrU cpuMemSize = 0;
-    SpaceU cpuAlignment = 1;
+    CpuAddrU cpuAlignment = 1;
 
     GpuAddrU gpuMemSize = 0;
-    SpaceU gpuAlignment = 1;
+    GpuAddrU gpuAlignment = 1;
 };
-
-//----------------------------------------------------------------
-
-sysinline MemoryUsage maxOf(const MemoryUsage& A, const MemoryUsage& B)
-{
-    MemoryUsage tmp;
-
-    tmp.cpuMemSize = maxv(A.cpuMemSize, B.cpuMemSize);
-    tmp.gpuMemSize = maxv(A.gpuMemSize, B.gpuMemSize);
-    tmp.cpuAlignment = maxv(A.cpuAlignment, B.cpuAlignment);
-    tmp.gpuAlignment = maxv(A.gpuAlignment, B.gpuAlignment);
-
-    return tmp;
-}
 
 //----------------------------------------------------------------
 
@@ -106,8 +91,8 @@ struct MemControllerProcessTarget
 
 KIT_CREATE3(
     BaseAllocatorsKit,
-    FlatMemoryAllocator<CpuAddrU>&, cpuSystemAllocator,
-    FlatMemoryAllocator<GpuAddrU>&, gpuSystemAllocator,
+    AllocatorInterface<CpuAddrU>&, cpuSystemAllocator,
+    AllocatorInterface<GpuAddrU>&, gpuSystemAllocator,
     GpuTextureAllocator&, gpuSystemTextureAllocator
 );
 
@@ -169,20 +154,20 @@ private:
     bool stateMemoryIsAllocated = false;
 
     FlatMemoryHolder<CpuAddrU> cpuStateMemory;
-    SpaceU cpuStateAlignment = 1;
+    CpuAddrU cpuStateAlignment = 1;
 
     FlatMemoryHolder<GpuAddrU> gpuStateMemory;
-    SpaceU gpuStateAlignment = 1;
+    GpuAddrU gpuStateAlignment = 1;
 
     //
     // Module temp memory
     //
 
     FlatMemoryHolder<CpuAddrU> cpuTempMemory;
-    SpaceU cpuTempAlignment = 1;
+    CpuAddrU cpuTempAlignment = 1;
 
     FlatMemoryHolder<GpuAddrU> gpuTempMemory;
-    SpaceU gpuTempAlignment = 1;
+    GpuAddrU gpuTempAlignment = 1;
 
 };
 

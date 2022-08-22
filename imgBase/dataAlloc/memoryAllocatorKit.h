@@ -25,7 +25,7 @@ KIT_CREATE(DataProcessingKit, bool, dataProcessing);
 //================================================================
 
 template <typename AddrU>
-struct AllocatorObject;
+struct AllocatorInterface;
 
 //================================================================
 //
@@ -33,4 +33,4 @@ struct AllocatorObject;
 //
 //================================================================
 
-KIT_CREATE(CpuFastAllocKit, AllocatorObject<CpuAddrU>&, cpuFastAlloc);
+KIT_CREATE(CpuFastAllocKit, AllocatorInterface<CpuAddrU>&, cpuFastAlloc);

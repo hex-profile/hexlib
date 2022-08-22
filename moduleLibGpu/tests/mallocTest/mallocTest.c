@@ -108,7 +108,7 @@ UniquePtr<MallocTest> MallocTest::create()
 
 void MallocTestImpl::serialize(const ModuleSerializeKit& kit)
 {
-    displaySwitch.serialize(kit, STR("Display"), {STR("<Nothing>"), STR("")}, {STR("Malloc Test"), STR("Alt+M")});
+    displaySwitch.serialize(kit, STR("Display"), {STR("<Nothing>"), STR("")}, {STR("Malloc Test")});
     poolSizeCfg.serialize(kit, STR("Pool Size"));
     blockMinCfg.serialize(kit, STR("Block Size Min"));
     blockMaxCfg.serialize(kit, STR("Block Size Max"));

@@ -17,7 +17,7 @@
 //
 //================================================================
 
-using AtEngineReallocKit = KitCombine<GpuModuleReallocKit, GpuBlockAllocatorKit>;
+using AtEngineReallocKit = GpuModuleReallocKit;
 using AtEngineProcessKit = KitCombine<GpuModuleProcessKit, GpuRgbFrameKit>;
 
 //================================================================

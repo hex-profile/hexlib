@@ -11,8 +11,8 @@ namespace minimalShell {
 //
 //================================================================
 
-using EngineReallocKit = KitCombine<GpuModuleReallocKit, GpuBlockAllocatorKit>;
-using EngineProcessKit = KitCombine<GpuModuleProcessKit, GpuBlockAllocatorKit>;
+using EngineReallocKit = GpuModuleReallocKit;
+using EngineProcessKit = GpuModuleProcessKit;
 
 //================================================================
 //

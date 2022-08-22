@@ -64,7 +64,7 @@ public:
         const PyramidConfigOptions& options,
         Space baseByteAlignment,
         Space rowByteAlignment,
-        AllocatorObject<GpuAddrU>& allocator,
+        AllocatorInterface<GpuAddrU>& allocator,
         stdPars(ErrorLogKit)
     );
 

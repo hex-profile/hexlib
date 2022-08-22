@@ -68,7 +68,7 @@ public:
     // realloc
     //
 
-    stdbool reallocEx(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit));
+    stdbool reallocEx(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit));
 
     ////
 

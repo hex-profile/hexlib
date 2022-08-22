@@ -1,9 +1,9 @@
-#include "fastSpaceAllocator.h"
+#include "fastAllocator.h"
 
 #include "numbers/int/intType.h"
 #include "errorLog/debugBreak.h"
 
-namespace fastSpaceAllocator {
+namespace fastAllocator {
 
 //================================================================
 //
@@ -21,16 +21,16 @@ struct FastAllocatorDeallocContext
 
 //================================================================
 //
-// FastAllocatorThunk::allocFunc
+// FastAllocator::allocFunc
 //
 // ~55-57 instructions on X86.
 //
 //================================================================
 
 template <typename AddrU, bool realAlloc, bool stateMode>
-stdbool FastAllocatorThunk<AddrU, realAlloc, stateMode>::alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
 {
-    FastAllocatorState<AddrU>& that = castState(state);
+    auto& that = state;
 
     // State?
     REQUIRE(that.validState);
@@ -88,14 +88,14 @@ stdbool FastAllocatorThunk<AddrU, realAlloc, stateMode>::alloc(AllocatorState& s
 
 //================================================================
 //
-// FastAllocatorThunk::deallocFunc
+// FastAllocator::deallocFunc
 //
 // ~7 instructions on X86.
 //
 //================================================================
 
 template <typename AddrU, bool realAlloc, bool stateMode>
-void FastAllocatorThunk<AddrU, realAlloc, stateMode>::deallocFunc(MemoryDeallocContext& context)
+void FastAllocator<AddrU, realAlloc, stateMode>::deallocFunc(MemoryDeallocContext& context)
 {
     FastAllocatorDeallocContext<AddrU>& info = (FastAllocatorDeallocContext<AddrU>&) context;
 
@@ -113,15 +113,15 @@ void FastAllocatorThunk<AddrU, realAlloc, stateMode>::deallocFunc(MemoryDeallocC
 
 //================================================================
 //
-// FastAllocatorThunk instantiations
+// FastAllocator instantiations
 //
 //================================================================
 
 #define TMP_MACRO(AddrU) \
-    template class FastAllocatorThunk<AddrU, false, false>; \
-    template class FastAllocatorThunk<AddrU, false, true>; \
-    template class FastAllocatorThunk<AddrU, true, false>; \
-    template class FastAllocatorThunk<AddrU, true, true>; \
+    template class FastAllocator<AddrU, false, false>; \
+    template class FastAllocator<AddrU, false, true>; \
+    template class FastAllocator<AddrU, true, false>; \
+    template class FastAllocator<AddrU, true, true>; \
 
 TMP_MACRO(size_t)
 

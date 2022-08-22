@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename Pointer>
-stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     //
     // check size
@@ -24,9 +24,8 @@ stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, Allocat
 
     ////
 
-    const Space elemSize = (Space) sizeof(typename PtrElemType<Pointer>::T);
-
-    const Space maxAllocCount = TYPE_MAX(Space) / elemSize;
+    constexpr Space elemSize = Space(sizeof(typename PtrElemType<Pointer>::T));
+    constexpr Space maxAllocCount = TYPE_MAX(Space) / elemSize;
 
     REQUIRE(size <= maxAllocCount);
     Space byteAllocSize = size * elemSize;
@@ -35,8 +34,10 @@ stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, Allocat
     // Allocate; if successful, update array layout.
     //
 
+    COMPILE_ASSERT(sizeof(SpaceU) <= sizeof(AddrU));
+
     AddrU newAddr = 0;
-    require(allocator.func.alloc(allocator.state, byteAllocSize, byteAlignment, memoryDealloc, newAddr, stdPass));
+    require(allocator.alloc(SpaceU(byteAllocSize), SpaceU(byteAlignment), memoryDealloc, newAddr, stdPass));
 
     COMPILE_ASSERT(sizeof(Pointer) == sizeof(newAddr));
     Pointer newPtr = Pointer(newAddr);

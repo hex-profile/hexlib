@@ -76,12 +76,12 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
 //
 // GpuAllocatorJoinContextThunk
 //
-// GpuMemoryAllocator + GpuContext ==> FlatMemoryAllocator
+// GpuMemoryAllocator + GpuContext ==> AllocatorInterface
 //
 //================================================================
 
 template <typename AddrU>
-class GpuAllocatorJoinContextThunk : public FlatMemoryAllocator<AddrU>
+class GpuAllocatorJoinContextThunk : public AllocatorInterface<AddrU>
 {
 
 public:

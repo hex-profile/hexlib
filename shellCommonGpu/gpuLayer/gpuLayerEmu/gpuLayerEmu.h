@@ -6,7 +6,7 @@
 #include "errorLog/errorLogKit.h"
 #include "userOutput/errorLogExKit.h"
 #include "gpuLayer/gpuLayerEmu/emuMultiProc.h"
-#include "allocation/mallocFlatAllocator/mallocFlatAllocator.h"
+#include "allocation/mallocAllocator/mallocAllocator.h"
 #include "allocation/mallocKit.h"
 
 //================================================================
@@ -31,7 +31,7 @@ public:
 
 private:
 
-    MallocFlatAllocatorThunk<AddrU> base;
+    MallocAllocator<AddrU> base;
 
 };
 

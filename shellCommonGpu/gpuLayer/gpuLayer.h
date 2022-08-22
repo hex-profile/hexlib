@@ -1,9 +1,9 @@
 #pragma once
 
 #include "gpuAppliedApi/gpuAppliedApi.h"
-#include "allocation/flatMemoryAllocator.h"
 #include "gpuLayer/gpuLayerKits.h"
 #include "gpuLayer/gpuScheduling.h"
+#include "dataAlloc/memoryAllocator.h"
 
 //================================================================
 //

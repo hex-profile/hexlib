@@ -1,10 +1,9 @@
 #include "memController.h"
 
-#include "memController/fastSpaceAllocator/fastSpaceAllocator.h"
+#include "memController/fastAllocator/fastAllocator.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "userOutput/errorLogEx.h"
 #include "userOutput/printMsg.h"
-#include "allocation/flatToSpaceAllocatorThunk.h"
 #include "numbers/mathIntrinsics.h"
 
 namespace memController {
@@ -95,13 +94,13 @@ void MemController::deinit()
 //================================================================
 
 template <typename AddrU, typename Kit>
-inline bool memFailReport(const CharArray& name, AddrU memSize, SpaceU memAlignment, stdPars(Kit))
+inline bool memFailReport(const CharArray& name, AddrU memSize, AddrU memAlignment, stdPars(Kit))
 {
     return printMsg
     (
         kit.localLog, STR("%0: Failed to alloc %1 Mb"),
         name,
-        fltf(ldexpv(float32(memSize), -20), 1), memAlignment,
+        fltf(ldexpv(float32(memSize), -20), 1),
         msgErr
     );
 }
@@ -147,26 +146,18 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     if (MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY)
     {
-
-        AllocatorState nullState;
-
-        FlatToSpaceAllocatorThunk<CpuAddrU> cpuAllocator(alloc.cpuSystemAllocator, kit);
-        FlatToSpaceAllocatorThunk<GpuAddrU> gpuAllocator(alloc.gpuSystemAllocator, kit);
+        auto& cpuAllocator = alloc.cpuSystemAllocator;
+        auto& gpuAllocator = alloc.gpuSystemAllocator;
 
         //
         // Reallocate everything.
         //
 
-        AllocatorObject<CpuAddrU> cpuAllocObject{nullState, cpuAllocator};
-        AllocatorObject<GpuAddrU> gpuAllocObject{nullState, gpuAllocator};
-
         auto reallocKit = kitCombine
         (
             DataProcessingKit(true),
-            CpuFastAllocKit(cpuAllocObject),
-            CpuBlockAllocatorKit(cpuAllocator),
-            GpuFastAllocKit(gpuAllocObject),
-            GpuBlockAllocatorKit(gpuAllocator),
+            CpuFastAllocKit(cpuAllocator),
+            GpuFastAllocKit(gpuAllocator),
             GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
         );
 
@@ -197,15 +188,10 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     //
     //----------------------------------------------------------------
 
-    using namespace fastSpaceAllocator;
+    using namespace fastAllocator;
 
-    AllocatorState cpuCounterState;
-    FastAllocatorThunk<CpuAddrU, false, true> cpuCounterInterface(kit);
-    cpuCounterInterface.initCountingState(cpuCounterState);
-
-    AllocatorState gpuCounterState;
-    FastAllocatorThunk<GpuAddrU, false, true> gpuCounterInterface(kit);
-    gpuCounterInterface.initCountingState(gpuCounterState);
+    FastAllocator<CpuAddrU, false, true> cpuCounter{kit};
+    FastAllocator<GpuAddrU, false, true> gpuCounter{kit};
 
     ////
 
@@ -213,17 +199,12 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     ////
 
-    AllocatorObject<CpuAddrU> cpuCounterObject{cpuCounterState, cpuCounterInterface};
-    AllocatorObject<GpuAddrU> gpuCounterObject{gpuCounterState, gpuCounterInterface};
-
     {
         auto reallocKit = kitCombine
         (
             DataProcessingKit(false),
-            CpuFastAllocKit(cpuCounterObject),
-            CpuBlockAllocatorKit(cpuCounterInterface),
-            GpuFastAllocKit(gpuCounterObject),
-            GpuBlockAllocatorKit(gpuCounterInterface),
+            CpuFastAllocKit(cpuCounter),
+            GpuFastAllocKit(gpuCounter),
             GpuTextureAllocKit(gpuTextureCounter)
         );
 
@@ -232,11 +213,11 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     ////
 
-    CpuAddrU cpuMemSize = cpuCounterInterface.allocatedSpace(cpuCounterState);
-    GpuAddrU gpuMemSize = gpuCounterInterface.allocatedSpace(gpuCounterState);
+    auto cpuMemSize = cpuCounter.allocatedSpace();
+    auto gpuMemSize = gpuCounter.allocatedSpace();
 
-    SpaceU cpuAlignment = cpuCounterInterface.maxAlignment(cpuCounterState);
-    SpaceU gpuAlignment = gpuCounterInterface.maxAlignment(gpuCounterState);
+    auto cpuAlignment = cpuCounter.maxAlignment();
+    auto gpuAlignment = gpuCounter.maxAlignment();
 
     //----------------------------------------------------------------
     //
@@ -300,34 +281,19 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     //----------------------------------------------------------------
 
     REQUIRE(cpuStateMemory.resize(cpuMemSize));
-    REQUIRE(cpuStateMemory.ptr() <= TYPE_MAX(CpuAddrU));
-    REQUIRE(cpuStateMemory.size() <= TYPE_MAX(CpuAddrU));
-
-    AllocatorState cpuDistributorState;
-    FastAllocatorThunk<CpuAddrU, true, true> cpuDistributorInterface(kit);
-    cpuDistributorInterface.initDistribState(cpuDistributorState, CpuAddrU(cpuStateMemory.ptr()), CpuAddrU(cpuStateMemory.size()));
+    FastAllocator<CpuAddrU, true, true> cpuDistributor{cpuStateMemory.ptr(), cpuStateMemory.size(), kit};
 
     REQUIRE(gpuStateMemory.resize(gpuMemSize));
-    REQUIRE(gpuStateMemory.ptr() <= TYPE_MAX(GpuAddrU));
-    REQUIRE(gpuStateMemory.size() <= TYPE_MAX(GpuAddrU));
-
-    AllocatorState gpuDistributorState;
-    FastAllocatorThunk<GpuAddrU, true, true> gpuDistributorInterface(kit);
-    gpuDistributorInterface.initDistribState(gpuDistributorState, GpuAddrU(gpuStateMemory.ptr()), GpuAddrU(gpuStateMemory.size()));
+    FastAllocator<GpuAddrU, true, true> gpuDistributor{gpuStateMemory.ptr(), gpuStateMemory.size(), kit};
 
     ////
-
-    AllocatorObject<CpuAddrU> cpuDistributorObject{cpuDistributorState, cpuDistributorInterface};
-    AllocatorObject<GpuAddrU> gpuDistributorObject{gpuDistributorState, gpuDistributorInterface};
 
     {
         auto reallocKit = kitCombine
         (
             DataProcessingKit(true),
-            CpuFastAllocKit(cpuDistributorObject),
-            CpuBlockAllocatorKit(cpuDistributorInterface),
-            GpuFastAllocKit(gpuDistributorObject),
-            GpuBlockAllocatorKit(gpuDistributorInterface),
+            CpuFastAllocKit(cpuDistributor),
+            GpuFastAllocKit(gpuDistributor),
             GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
         );
 
@@ -336,10 +302,10 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
     ////
 
-    REQUIRE(cpuDistributorInterface.allocatedSpace(cpuDistributorState) == cpuMemSize);
-    REQUIRE(cpuDistributorInterface.maxAlignment(cpuDistributorState) == cpuAlignment);
-    REQUIRE(gpuDistributorInterface.allocatedSpace(gpuDistributorState) == gpuMemSize);
-    REQUIRE(gpuDistributorInterface.maxAlignment(gpuDistributorState) == gpuAlignment);
+    REQUIRE(cpuDistributor.allocatedSpace() == cpuMemSize);
+    REQUIRE(cpuDistributor.maxAlignment() == cpuAlignment);
+    REQUIRE(gpuDistributor.allocatedSpace() == gpuMemSize);
+    REQUIRE(gpuDistributor.maxAlignment() == gpuAlignment);
 
     //----------------------------------------------------------------
     //
@@ -384,30 +350,20 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
     //
     //----------------------------------------------------------------
 
-    using namespace fastSpaceAllocator;
+    using namespace fastAllocator;
 
-    AllocatorState cpuCounterState;
-    FastAllocatorThunk<CpuAddrU, false, false> cpuCounterInterface(kit);
-    cpuCounterInterface.initCountingState(cpuCounterState);
-
-    AllocatorState gpuCounterState;
-    FastAllocatorThunk<GpuAddrU, false, false> gpuCounterInterface(kit);
-    gpuCounterInterface.initCountingState(gpuCounterState);
+    FastAllocator<CpuAddrU, false, false> cpuCounter{kit};
+    FastAllocator<GpuAddrU, false, false> gpuCounter{kit};
 
     GpuTextureAllocFail gpuTextureCounter(kit);
 
     ////
 
-    AllocatorObject<CpuAddrU> cpuCounterObject{cpuCounterState, cpuCounterInterface};
-    AllocatorObject<GpuAddrU> gpuCounterObject{gpuCounterState, gpuCounterInterface};
-
     auto processKit = kitCombine
     (
         DataProcessingKit(false),
-        CpuFastAllocKit(cpuCounterObject),
-        CpuBlockAllocatorKit(cpuCounterInterface),
-        GpuFastAllocKit(gpuCounterObject),
-        GpuBlockAllocatorKit(gpuCounterInterface),
+        CpuFastAllocKit(cpuCounter),
+        GpuFastAllocKit(gpuCounter),
         GpuTextureAllocKit(gpuTextureCounter)
     );
 
@@ -415,16 +371,16 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 
     ////
 
-    REQUIRE(cpuCounterInterface.validState(cpuCounterState) && cpuCounterInterface.allocatedSpace(cpuCounterState) == 0);
-    REQUIRE(gpuCounterInterface.validState(gpuCounterState) && gpuCounterInterface.allocatedSpace(gpuCounterState) == 0);
+    REQUIRE(cpuCounter.validState() && cpuCounter.allocatedSpace() == 0);
+    REQUIRE(gpuCounter.validState() && gpuCounter.allocatedSpace() == 0);
 
     ////
 
-    tempUsage.cpuMemSize = cpuCounterInterface.maxAllocatedSpace(cpuCounterState);
-    tempUsage.cpuAlignment = cpuCounterInterface.maxAlignment(cpuCounterState);
+    tempUsage.cpuMemSize = cpuCounter.maxAllocatedSpace();
+    tempUsage.cpuAlignment = cpuCounter.maxAlignment();
 
-    tempUsage.gpuMemSize = gpuCounterInterface.maxAllocatedSpace(gpuCounterState);
-    tempUsage.gpuAlignment = gpuCounterInterface.maxAlignment(gpuCounterState);
+    tempUsage.gpuMemSize = gpuCounter.maxAllocatedSpace();
+    tempUsage.gpuAlignment = gpuCounter.maxAlignment();
 
     ////
 
@@ -451,11 +407,11 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
     //
     //----------------------------------------------------------------
 
-    CpuAddrU cpuMemSize = tempUsage.cpuMemSize;
-    GpuAddrU gpuMemSize = tempUsage.gpuMemSize;
+    auto cpuMemSize = tempUsage.cpuMemSize;
+    auto gpuMemSize = tempUsage.gpuMemSize;
 
-    SpaceU cpuAlignment = tempUsage.cpuAlignment;
-    SpaceU gpuAlignment = tempUsage.gpuAlignment;
+    auto cpuAlignment = tempUsage.cpuAlignment;
+    auto gpuAlignment = tempUsage.gpuAlignment;
 
     ////
 
@@ -542,24 +498,17 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
 
     if (MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY)
     {
-        AllocatorState nullState;
-
-        FlatToSpaceAllocatorThunk<CpuAddrU> cpuAllocator(alloc.cpuSystemAllocator, kit);
-        FlatToSpaceAllocatorThunk<GpuAddrU> gpuAllocator(alloc.gpuSystemAllocator, kit);
+        auto& cpuAllocator = alloc.cpuSystemAllocator;
+        auto& gpuAllocator = alloc.gpuSystemAllocator;
         GpuTextureAllocFail gpuTextureAllocator(kit);
-
-        AllocatorObject<CpuAddrU> cpuAllocObject{nullState, cpuAllocator};
-        AllocatorObject<GpuAddrU> gpuAllocObject{nullState, gpuAllocator};
 
         ////
 
         auto processKit = kitCombine
         (
             DataProcessingKit(true),
-            CpuFastAllocKit(cpuAllocObject),
-            CpuBlockAllocatorKit(cpuAllocator),
-            GpuFastAllocKit(gpuAllocObject),
-            GpuBlockAllocatorKit(gpuAllocator),
+            CpuFastAllocKit(cpuAllocator),
+            GpuFastAllocKit(gpuAllocator),
             GpuTextureAllocKit(gpuTextureAllocator)
         );
 
@@ -574,23 +523,10 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
     //
     //----------------------------------------------------------------
 
-    using namespace fastSpaceAllocator;
+    using namespace fastAllocator;
 
-    REQUIRE(cpuTempMemory.ptr() <= TYPE_MAX(CpuAddrU));
-    REQUIRE(cpuTempMemory.size() <= TYPE_MAX(CpuAddrU));
-    AllocatorState cpuDistributorState;
-    FastAllocatorThunk<CpuAddrU, true, false> cpuDistributorInterface(kit);
-    cpuDistributorInterface.initDistribState(cpuDistributorState, CpuAddrU(cpuTempMemory.ptr()), CpuAddrU(cpuTempMemory.size()));
-
-    ////
-
-    REQUIRE(gpuTempMemory.ptr() <= TYPE_MAX(GpuAddrU));
-    REQUIRE(gpuTempMemory.size() <= TYPE_MAX(GpuAddrU));
-    AllocatorState gpuDistributorState;
-    FastAllocatorThunk<GpuAddrU, true, false> gpuDistributorInterface(kit);
-    gpuDistributorInterface.initDistribState(gpuDistributorState, GpuAddrU(gpuTempMemory.ptr()), GpuAddrU(gpuTempMemory.size()));
-
-    ////
+    FastAllocator<CpuAddrU, true, false> cpuDistributor{cpuTempMemory.ptr(), cpuTempMemory.size(), kit};
+    FastAllocator<GpuAddrU, true, false> gpuDistributor{gpuTempMemory.ptr(), gpuTempMemory.size(), kit};
 
     GpuTextureAllocFail gpuTextureAllocator(kit);
 
@@ -600,16 +536,11 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
     //
     //----------------------------------------------------------------
 
-    AllocatorObject<CpuAddrU> cpuDistributorObject{cpuDistributorState, cpuDistributorInterface};
-    AllocatorObject<GpuAddrU> gpuDistributorObject{gpuDistributorState, gpuDistributorInterface};
-
     auto processKit = kitCombine
     (
         DataProcessingKit(true),
-        CpuFastAllocKit(cpuDistributorObject),
-        CpuBlockAllocatorKit(cpuDistributorInterface),
-        GpuFastAllocKit(gpuDistributorObject),
-        GpuBlockAllocatorKit(gpuDistributorInterface),
+        CpuFastAllocKit(cpuDistributor),
+        GpuFastAllocKit(gpuDistributor),
         GpuTextureAllocKit(gpuTextureAllocator)
     );
 
@@ -621,15 +552,15 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
     //
     //----------------------------------------------------------------
 
-    REQUIRE(cpuDistributorInterface.validState(cpuDistributorState));
-    REQUIRE(cpuDistributorInterface.allocatedSpace(cpuDistributorState) == 0);
-    tempUsage.cpuMemSize = cpuDistributorInterface.maxAllocatedSpace(cpuDistributorState);
-    tempUsage.cpuAlignment = cpuDistributorInterface.maxAlignment(cpuDistributorState);
+    REQUIRE(cpuDistributor.validState());
+    REQUIRE(cpuDistributor.allocatedSpace() == 0);
+    tempUsage.cpuMemSize = cpuDistributor.maxAllocatedSpace();
+    tempUsage.cpuAlignment = cpuDistributor.maxAlignment();
 
-    REQUIRE(gpuDistributorInterface.validState(gpuDistributorState));
-    REQUIRE(gpuDistributorInterface.allocatedSpace(gpuDistributorState) == 0);
-    tempUsage.gpuMemSize = gpuDistributorInterface.maxAllocatedSpace(gpuDistributorState);
-    tempUsage.gpuAlignment = gpuDistributorInterface.maxAlignment(gpuDistributorState);
+    REQUIRE(gpuDistributor.validState());
+    REQUIRE(gpuDistributor.allocatedSpace() == 0);
+    tempUsage.gpuMemSize = gpuDistributor.maxAllocatedSpace();
+    tempUsage.gpuAlignment = gpuDistributor.maxAlignment();
 
     ////
 

@@ -18,7 +18,7 @@
 #include "errorLog/debugBreak.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/printMsg.h"
-#include "allocation/mallocFlatAllocator/mallocFlatAllocator.h"
+#include "allocation/mallocAllocator/mallocAllocator.h"
 #include "compileTools/classContext.h"
 #include "kits/setBusyStatus.h"
 #include "baseInterfaces/baseSignals.h"
@@ -637,7 +637,7 @@ private:
     ErrorLogKit errorLogKit(errorLog); \
     ErrorLogExByMsgLog errorLogEx(msgLog); \
     \
-    MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit); \
+    MAKE_MALLOC_ALLOCATOR(errorLogKit); \
     \
     AtImgConsoleImplThunk<AtApi> imgConsole(api, formatter); \
     \
@@ -665,7 +665,7 @@ private:
 //
 //================================================================
 
-stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, AllocatorObject<CpuAddrU>& allocator, stdPars(ErrorLogKit))
+stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, AllocatorInterface<CpuAddrU>& allocator, stdPars(ErrorLogKit))
 {
     size_t atSizeApi = 0;
     require(api.videofile_name(&api, NULL, 0, &atSizeApi) != 0);
@@ -854,10 +854,10 @@ public:
     inline MallocMonitorThunk(AllocatorInterface<AddrU>& base)
         : base(base) {}
 
-    stdbool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
     {
         ++counter;
-        return base.alloc(state, size, alignment, owner, result, stdNullPassThru);
+        return base.alloc(size, alignment, owner, result, stdNullPassThru);
     }
 
 public:
@@ -893,10 +893,9 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     //
     //----------------------------------------------------------------
 
-    MallocMonitorThunk<CpuAddrU> mallocMonitor(baseKit.malloc.func);
-    AllocatorObject<CpuAddrU> mallocMonitorObject{baseKit.malloc.state, mallocMonitor};
+    MallocMonitorThunk<CpuAddrU> mallocMonitor(baseKit.malloc);
 
-    auto kit = kitReplace(baseKit, MallocKit(mallocMonitorObject));
+    auto kit = kitReplace(baseKit, MallocKit(mallocMonitor));
 
     REMEMBER_CLEANUP
     (

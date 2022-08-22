@@ -16,7 +16,7 @@ class CpuPlanarYuvMemory : public CpuPlanarYuv<Element>
 public:
 
     template <typename Kit>
-    inline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, AllocatorObject<CpuAddrU>& allocator, stdPars(Kit))
+    inline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, AllocatorInterface<CpuAddrU>& allocator, stdPars(Kit))
     {
         this->data.assignNull();
         this->size = point(0);

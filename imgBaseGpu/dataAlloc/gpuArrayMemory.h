@@ -31,7 +31,7 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    stdbool realloc(Space size, Space byteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+    stdbool realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
         {return Base::realloc(size, byteAlignment, allocator, stdPassThru);}
 
     template <typename Kit>

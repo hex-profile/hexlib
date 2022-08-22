@@ -20,7 +20,7 @@ KIT_CREATE(GpuPropertiesKit, const GpuProperties&, gpuProperties);
 //
 //================================================================
 
-KIT_CREATE(GpuFastAllocKit, AllocatorObject<GpuAddrU>&, gpuFastAlloc);
+KIT_CREATE(GpuFastAllocKit, AllocatorInterface<GpuAddrU>&, gpuFastAlloc);
 
 //================================================================
 //

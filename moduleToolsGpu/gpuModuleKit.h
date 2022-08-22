@@ -7,16 +7,6 @@
 
 //================================================================
 //
-// CpuBlockAllocatorKit
-// GpuBlockAllocatorKit
-//
-//================================================================
-
-KIT_CREATE(CpuBlockAllocatorKit, BlockAllocatorInterface<CpuAddrU>&, cpuBlockAlloc);
-KIT_CREATE(GpuBlockAllocatorKit, BlockAllocatorInterface<GpuAddrU>&, gpuBlockAlloc);
-
-//================================================================
-//
 // GpuModuleReallocKit
 // GpuModuleProcessKit
 //

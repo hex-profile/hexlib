@@ -8,4 +8,4 @@
 //
 //================================================================
 
-KIT_CREATE(MallocKit, AllocatorObject<CpuAddrU>&, malloc);
+KIT_CREATE(MallocKit, AllocatorInterface<CpuAddrU>&, malloc);

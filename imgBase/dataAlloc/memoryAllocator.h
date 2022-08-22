@@ -9,14 +9,6 @@
 
 //================================================================
 //
-// AllocatorState
-//
-//================================================================
-
-using AllocatorState = OpaqueStruct<64>;
-
-//================================================================
-//
 // MemoryOwner
 //
 //================================================================
@@ -25,16 +17,7 @@ using MemoryDeallocContext = DeallocContext<24, 0x4C0E823E>;
 
 ////
 
-class MemoryOwner : public ResourceOwner<MemoryDeallocContext>
-{
-    inline friend void exchange(MemoryOwner& a, MemoryOwner& b)
-    {
-        ResourceOwner<MemoryDeallocContext>* ap = &a;
-        ResourceOwner<MemoryDeallocContext>* bp = &b;
-
-        exchange(*ap, *bp);
-    }
-};
+using MemoryOwner = ResourceOwner<MemoryDeallocContext>;
 
 //================================================================
 //
@@ -49,36 +32,26 @@ class MemoryOwner : public ResourceOwner<MemoryDeallocContext>
 template <typename AddrU>
 struct AllocatorInterface
 {
-    virtual stdbool alloc(AllocatorState& state, AddrU size, SpaceU alignment, MemoryOwner& owner, AddrU& result, stdNullPars) =0;
+    virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars) =0;
 };
 
 //================================================================
 //
-// Advanced API for block allocators
+// AllocatorInterface
+//
+// The allocator of raw memory buffers for application-level data containers.
+//
+// The allocator can have fast "stack" implementation.
 //
 //================================================================
 
 template <typename AddrU>
-struct BlockAllocatorInterface
+struct AllocatorNull : public AllocatorInterface<AddrU>
 {
-    virtual void initCountingState(AllocatorState& state) =0;
-    virtual void initDistribState(AllocatorState& state, AddrU memAddr, AddrU memSize) =0;
-
-    virtual bool validState(const AllocatorState& state) =0;
-    virtual AddrU allocatedSpace(const AllocatorState& state) =0;
-    virtual AddrU maxAllocatedSpace(const AllocatorState& state) =0;
-    virtual SpaceU maxAlignment(const AllocatorState& state) =0;
-};
-
-//================================================================
-//
-// AllocatorObject
-//
-//================================================================
-
-template <typename AddrU>
-struct AllocatorObject
-{
-    AllocatorState& state; 
-    AllocatorInterface<AddrU>& func;
+    virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    {
+        owner.clear();
+        result = 0;
+        returnTrue;
+    }
 };

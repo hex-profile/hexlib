@@ -14,8 +14,8 @@ namespace gpuShell {
 
 KIT_CREATE3(
     GpuSystemAllocatorsKit,
-    FlatMemoryAllocator<CpuAddrU>&, cpuSystemAllocator,
-    FlatMemoryAllocator<GpuAddrU>&, gpuSystemAllocator,
+    AllocatorInterface<CpuAddrU>&, cpuSystemAllocator,
+    AllocatorInterface<GpuAddrU>&, gpuSystemAllocator,
     GpuTextureAllocator&, gpuSystemTextureAllocator
 );
 

@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename Type>
-stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit))
+stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     Space sizeX = size.X;
     Space sizeY = size.Y;
@@ -73,7 +73,7 @@ stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByt
 
     ////
 
-    const Space maxAllocSize = TYPE_MAX(Space) / elemSize;
+    constexpr Space maxAllocSize = TYPE_MAX(Space) / elemSize;
     REQUIRE(allocTotalSize <= maxAllocSize);
     Space byteAllocSize = allocTotalSize * elemSize;
 
@@ -81,8 +81,10 @@ stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByt
     // Allocate; if successful, update matrix layout.
     //
 
+    COMPILE_ASSERT(sizeof(SpaceU) <= sizeof(AddrU));
+
     AddrU newAddr = 0;
-    require(allocator.func.alloc(allocator.state, byteAllocSize, baseByteAlignment, memoryOwner, newAddr, stdPass));
+    require(allocator.alloc(SpaceU(byteAllocSize), SpaceU(baseByteAlignment), memoryOwner, newAddr, stdPass));
 
     COMPILE_ASSERT(sizeof(Pointer) == sizeof(AddrU));
     Pointer newPtr = Pointer(newAddr);

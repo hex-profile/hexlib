@@ -1,4 +1,4 @@
-#include "mallocFlatAllocator.h"
+#include "mallocAllocator.h"
 
 #include "errorLog/errorLog.h"
 #include "numbers/int/intType.h"
@@ -29,12 +29,12 @@ struct MallocCore
 
 //================================================================
 //
-// MallocFlatAllocatorThunk::alloc
+// MallocAllocator::alloc
 //
 //================================================================
 
 template <typename AddrU>
-stdbool MallocFlatAllocatorThunk<AddrU>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+stdbool MallocAllocator<AddrU>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
 {
     MallocCore<AddrU> coreAlloc;
     return sysAllocAlignShell<AddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
@@ -42,12 +42,12 @@ stdbool MallocFlatAllocatorThunk<AddrU>::alloc(AddrU size, AddrU alignment, Memo
 
 //================================================================
 //
-// MallocFlatAllocatorThunk::dealloc
+// MallocAllocator::dealloc
 //
 //================================================================
 
 template <typename AddrU>
-void MallocFlatAllocatorThunk<AddrU>::dealloc(MemoryDeallocContext& deallocContext)
+void MallocAllocator<AddrU>::dealloc(MemoryDeallocContext& deallocContext)
 {
     AddrU& memAddr = (AddrU&) deallocContext;
 
@@ -67,4 +67,4 @@ void MallocFlatAllocatorThunk<AddrU>::dealloc(MemoryDeallocContext& deallocConte
 //
 //================================================================
 
-template class MallocFlatAllocatorThunk<size_t>;
+template class MallocAllocator<size_t>;

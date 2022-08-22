@@ -1,6 +1,6 @@
 #pragma once
 
-#include "allocation/mallocFlatAllocator/mallocFlatAllocator.h"
+#include "allocation/mallocAllocator/mallocAllocator.h"
 #include "compileTools/blockExceptionsSilent.h"
 #include "debugBridge/bridgeUsage/msgLogToBridge.h"
 #include "fileToolsImpl/fileToolsImpl.h"
@@ -75,7 +75,7 @@ struct StarterKitMaker
     ////
 
     ErrorLogKit errorLogKit{errorLog};
-    MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit);
+    MAKE_MALLOC_ALLOCATOR(errorLogKit);
 
     ////
 
@@ -173,7 +173,7 @@ struct StarterDebugKitMaker
     ////
 
     ErrorLogKit errorLogKit{errorLog};
-    MAKE_MALLOC_ALLOCATOR_OBJECT(errorLogKit);
+    MAKE_MALLOC_ALLOCATOR(errorLogKit);
 
     ////
 

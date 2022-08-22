@@ -79,7 +79,7 @@ private:
 
 public:
 
-    stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorObject<AddrU>& allocator, stdPars(ErrorLogKit));
+    stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////
 

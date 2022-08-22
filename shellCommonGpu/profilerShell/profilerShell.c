@@ -186,15 +186,17 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
             if (totalTime >= 1.f) break;
         }
 
-        bool ok = true;
-        check_flag(totalCount >= 1, ok);
-        check_flag(totalTime >= 1.f || totalCount >= 8, ok);
+        float32 lastTime = float32Nan();
 
-        float32 avgTime = totalTime / totalCount;
+        if (frameTimeCount >= 1)
+        {
+            float32* t = frameTimeHist[0];
+            if (t) lastTime = *t;
+        }
 
-        printMsg(kit.localLog, STR("Frame time %0"), 
-            !ok ? ParamMsg(paramMsg(STR("N/A"))) : 
-            paramMsg(STR("%0 ms / %1 fps"), fltf(avgTime * 1e3, 2), fltf(1.f / avgTime, 1)));
+        float32 avgTime = totalTime / float32(totalCount);
+
+        printMsg(kit.localLog, STR("Frame time %0 ms / %1 fps"), fltf(lastTime * 1e3, 2), fltf(1.f / avgTime, 1));
     }
 
     //----------------------------------------------------------------

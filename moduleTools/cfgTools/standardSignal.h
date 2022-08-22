@@ -27,7 +27,8 @@ public:
 
 public:
 
-    inline void serialize
+    // Returns true if NOT signaled
+    inline bool serialize
     (
         const CfgSerializeKit& kit,
         const CharArray& name,
@@ -106,8 +107,9 @@ private:
 //
 //================================================================
 
-inline void StandardSignal::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key, const CharArray& comment)
+inline bool StandardSignal::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key, const CharArray& comment)
 {
     SerializeStandardSignal serializeSignal(*this, name, key, comment);
     kit.visitor(kit.scope, serializeSignal);
+    return (impulseCount == 0);
 }

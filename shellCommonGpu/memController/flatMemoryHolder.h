@@ -1,8 +1,7 @@
 #pragma once
 
 #include "errorLog/errorLog.h"
-#include "data/space.h"
-#include "allocation/flatMemoryAllocator.h"
+#include "dataAlloc/memoryAllocator.h"
 
 //================================================================
 //
@@ -33,7 +32,7 @@ private:
 
 public:
 
-    inline stdbool realloc(AddrU size, AddrU alignment, FlatMemoryAllocator<AddrU>& allocator, stdNullPars)
+    inline stdbool realloc(AddrU size, AddrU alignment, AllocatorInterface<AddrU>& allocator, stdNullPars)
     {
         stdNullBegin;
 
@@ -76,7 +75,6 @@ public:
 
     bool resize(AddrU size) // rearrange without reallocation
     {
-        ensure(SpaceU(size) <= SpaceU(allocSize));
         currentSize = size;
 
         return true;
