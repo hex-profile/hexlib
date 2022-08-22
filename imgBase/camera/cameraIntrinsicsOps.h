@@ -21,7 +21,7 @@ sysinline Point<Float> operator %(const CameraIntrinsics<Float>& c, const Point<
 template <typename Float>
 sysinline Point<Float> operator %(const CameraIntrinsics<Float>& c, const Point3D<Float>& value)
 {
-    auto ray = nativeRecipZero(value.Z) * point(value.X, value.Y);
+    auto ray = fastRecipZero(value.Z) * point(value.X, value.Y);
     return c % ray;
 }
 
@@ -47,7 +47,7 @@ sysinline Point3D<Float> applyGetPoint(const CameraIntrinsics<Float>& intrinsics
 template <typename Float>
 sysinline auto operator ~(const CameraIntrinsics<Float>& c)
 {
-    auto invf = nativeRecipZero(c.focal);
+    auto invf = fastRecipZero(c.focal);
     return CameraIntrinsics<Float>(invf, -invf * c.center);
 }
 

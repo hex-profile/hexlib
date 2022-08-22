@@ -108,7 +108,7 @@ GPUTOOL_2D_BEG
     ////
 
     Space taps = convertUp<Space>(filterTaps(alternative) * filterScale * downsampleFactor - 1e-6f);
-    float32 divFilterScale = nativeRecip(downsampleFactor * filterScale);
+    float32 divFilterScale = fastRecip(downsampleFactor * filterScale);
 
     Point<float32> filterOrg = computeFilterStartPos(srcCenterPos, taps);
 
@@ -170,7 +170,7 @@ GPUTOOL_2D_BEG
     ////
 
     Space taps = convertUp<Space>(filterTaps(alternative) * filterScale - 1e-6f);
-    float32 divFilterScale = nativeRecip(filterScale);
+    float32 divFilterScale = fastRecip(filterScale);
 
     Point<float32> filterOrg = computeFilterStartPos(srcCenterPos, taps);
 

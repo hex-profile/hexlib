@@ -16,7 +16,7 @@ sysinline Float getBits(Float err, int maxBits = 24)
     if (def(err) && err < minValue)
         err = minValue;
 
-    return -nativeLog2(err);
+    return -fastLog2(err);
 }
 
 //================================================================

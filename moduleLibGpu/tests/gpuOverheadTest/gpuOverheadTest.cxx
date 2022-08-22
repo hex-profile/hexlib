@@ -169,10 +169,10 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
     if (fixedGroupSize)
         minGroupWarps = maxGroupWarps = fixedGroupWarps;
 
-    Space warpSizeBits = convertNearest<Space>(nativeLog2(float32(warpSize)));
+    Space warpSizeBits = convertNearest<Space>(fastLog2(float32(warpSize)));
 
-    float32 minWarpCountBits = nativeLog2(float32(minGroupWarps));
-    float32 maxWarpCountBits = nativeLog2(float32(maxGroupWarps));
+    float32 minWarpCountBits = fastLog2(float32(minGroupWarps));
+    float32 maxWarpCountBits = fastLog2(float32(maxGroupWarps));
  
     ////
 
@@ -198,7 +198,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
         ////
 
         float32 imageArea = linerp(rndgenUniformFloat(r), minImageArea, maxImageArea);
-        float32 imageAreaBits = nativeLog2(imageArea);
+        float32 imageAreaBits = fastLog2(imageArea);
 
         float32 ratioAreaBits = clampMax(4.f, imageAreaBits);
 
@@ -212,8 +212,8 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
         float32 imageBitsX = 0.5f * fixedAreaBits + ratioBitsX;
         float32 imageBitsY = 0.5f * fixedAreaBits + ratioBitsY;
 
-        Space imageSizeX = clampMin(convertNearest<Space>(nativePow2(imageBitsX)), 1);
-        Space imageSizeY = clampMin(convertNearest<Space>(nativePow2(imageBitsY)), 1);
+        Space imageSizeX = clampMin(convertNearest<Space>(fastPow2(imageBitsX)), 1);
+        Space imageSizeY = clampMin(convertNearest<Space>(fastPow2(imageBitsY)), 1);
         Point<Space> imageSize = point(imageSizeX, imageSizeY);
 
         ////

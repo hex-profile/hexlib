@@ -11,7 +11,7 @@
 //
 // Correct results only for N >= 1!
 //
-// On Kepler, gives 5 instructions
+// On Kepler, generates 5 instructions
 //
 //================================================================
 
@@ -48,7 +48,7 @@ sysinline float32 modulo2(float32 x)
 //
 // normCoordMirror
 //
-// On Kepler, gives 5 instructions
+// On Kepler, generates 5 instructions
 //
 //================================================================
 

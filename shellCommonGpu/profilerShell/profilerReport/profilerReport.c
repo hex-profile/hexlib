@@ -816,9 +816,9 @@ void computeNodeTiming(const ProfilerNode& node, const TimingParams& o, Timing& 
 
     if (node.totalElemCount)
     {
-        avgElemCount = float32(node.totalElemCount) * nativeRecipZero(float32(node.counter));
+        avgElemCount = float32(node.totalElemCount) * fastRecipZero(float32(node.counter));
 
-        float32 divNodeTotalElemCount = nativeRecipZero(float32(node.totalElemCount));
+        float32 divNodeTotalElemCount = fastRecipZero(float32(node.totalElemCount));
         float32 avgElemTime = nodeTotalTime * divNodeTotalElemCount;
 
         avgElemClocks = avgElemTime * o.processingThroughput;

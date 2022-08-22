@@ -22,7 +22,7 @@ GPUTOOL_2D_BEG
 
     Point<float32> rectRadius = 0.5f * convertFloat32(vGlobSize);
     Point<float32> divBorderedRectRadius = 1.f / (rectRadius - thicknessRadius);
-    float32 divThicknessRadius2 = square(nativeRecipZero(thicknessRadius));
+    float32 divThicknessRadius2 = square(fastRecipZero(thicknessRadius));
 
     Point<float32> pos = point(Xs, Ys) - rectRadius;
 
@@ -62,7 +62,7 @@ GPUTOOL_2D_BEG
     ////
 
     float32 vectorPresence = saturate(independentPresenceMode ? maxWeight : sumWeight); 
-    auto vectorColor = nativeRecipZero(sumWeight) * sumWeightColor;
+    auto vectorColor = fastRecipZero(sumWeight) * sumWeightColor;
 
     ////
 
@@ -204,10 +204,10 @@ GPUTOOL_2D_BEG
 
     ////
 
-    float32 divSumWeight = nativeRecipZero(sumWeight);
+    float32 divSumWeight = fastRecipZero(sumWeight);
 
     float32 filteredPresence = divSumWeight * sumWeightPresence;
-    auto filteredColor = nativeRecipZero(sumWeightPresence) * sumWeightColor;
+    auto filteredColor = fastRecipZero(sumWeightPresence) * sumWeightColor;
 
     ////
 
@@ -288,7 +288,7 @@ GPUTOOL_2D_BEG
 //  }
 //  else
 //  {
-//    float32 divider = nativeRecipZero(square(p01) - 1);
+//    float32 divider = fastRecipZero(square(p01) - 1);
 //    currentPresence0 = (p01*t1-t0) * divider;
 //    currentPresence1 = (p01*t0-t1) * divider;
 //
@@ -315,7 +315,7 @@ GPUTOOL_2D_BEG
         ////
 
         #define TMP_MACRO(i, _) \
-            float32 correctionFactor##i = nativeDivide(t##i, currentResult##i); \
+            float32 correctionFactor##i = fastDivide(t##i, currentResult##i); \
             if_not (def(correctionFactor##i)) correctionFactor##i = 1; \
             correctionFactor##i = clampRange(correctionFactor##i, 1/4.f, 4.f); \
             currentPresence##i = currentPresence##i * correctionFactor##i;

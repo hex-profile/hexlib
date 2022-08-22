@@ -489,7 +489,7 @@ stdbool processFreqProd
 
     ////
 
-    float32 divMaxHarmonic = nativeRecipZero(xMaxHarmonic);
+    float32 divMaxHarmonic = fastRecipZero(xMaxHarmonic);
 
     //----------------------------------------------------------------
     //
@@ -574,8 +574,8 @@ stdbool processFreqProd
 
     ////
 
-    float32 divOldLen = nativeRecipZero(sqrtf(xOldSum2));
-    float32 divNewLen = nativeRecipZero(sqrtf(xNewSum2));
+    float32 divOldLen = fastRecipZero(sqrtf(xOldSum2));
+    float32 divNewLen = fastRecipZero(sqrtf(xNewSum2));
 
     //----------------------------------------------------------------
     //

@@ -165,7 +165,7 @@ sysinline Point4D<Float> quatImaginaryExp(const Point3D<Float>& vec)
     VECTOR_DECOMPOSE(vec);
 
     Float rX, rY;
-    nativeCosSin(vecLength, rX, rY);
+    fastCosSin(vecLength, rX, rY);
 
     return quatCompose(rX, rY * vecDir);
 }
@@ -207,7 +207,7 @@ sysinline Point3D<Float> quatUnitLogSpecial(const Point4D<Float>& Q)
 
     ////
 
-    Float theta2 = nativeAtan2(rY, rX);
+    Float theta2 = exactAtan2(rY, rX);
 
     return theta2 * vecDir;
 }

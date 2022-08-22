@@ -423,7 +423,7 @@ sysinline float32_x2 complexMul(const float32_x2& a, const float32_x2& b)
 //
 // complexFma
 //
-// Sometimes gives more efficient code on GPU.
+// Sometimes generates more efficient code on GPU.
 //
 //================================================================
 
@@ -487,7 +487,7 @@ sysinline auto circleCcw(Float v)
 {
     Float angle = v * (2 * Float(pi64));
     Float resultX, resultY;
-    nativeCosSin(angle, resultX, resultY);
+    fastCosSin(angle, resultX, resultY);
     return makeVec2(resultX, resultY);
 }
 

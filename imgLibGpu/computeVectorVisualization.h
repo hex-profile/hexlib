@@ -60,7 +60,7 @@ sysinline float32_x4 computeVectorVisualization(const float32_x2& value, bool gr
     auto colorG = make_float32_x4(0, 1, 0, 0);
     auto colorY = make_float32_x4(0, 1.f, 1.f, 0);
 
-    float32 divSumWeight = nativeRecip(weightR + weightB + weightG + weightY);
+    float32 divSumWeight = fastRecip(weightR + weightB + weightG + weightY);
     auto pureColor = divSumWeight * (weightR * colorR + weightB * colorB + weightG * colorG + weightY * colorY);
 
     ////
@@ -95,7 +95,7 @@ sysinline float32_x4 limitColorBrightness(const float32_x4& color)
 
     if (maxComponent > 1.f)
     {
-        float32 divMaxComponent = nativeRecip(maxComponent);
+        float32 divMaxComponent = fastRecip(maxComponent);
         result *= divMaxComponent;
     }
 

@@ -188,7 +188,7 @@ GPUTOOL_2D_BEG
         float32 arrowHeight = 3.0f;
 
         const float32 arrowLen = vecLength;
-        float32 divArrowLen = nativeRecipZero(arrowLen);
+        float32 divArrowLen = fastRecipZero(arrowLen);
 
         ////
 

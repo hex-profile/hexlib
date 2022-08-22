@@ -52,7 +52,7 @@ GaussWindowParams makeGaussWindowParams(float32 sigma)
     ////
 
     GaussWindowParams params;
-    params.divSigmaSq = nativeRecipZero(square(sigma));
+    params.divSigmaSq = fastRecipZero(square(sigma));
     params.taps = taps;
 
     return params;

@@ -4,4 +4,3 @@ How to make it easier to use:
 * Supports both exception-based and "return bool" compilation modes for error handling.
 * Kits are unusual and badly supported by IDEs.
 * Reallocation scheme with measure/execute phases is unusal.
-

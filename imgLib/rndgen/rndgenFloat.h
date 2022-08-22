@@ -67,7 +67,7 @@ sysinline Type rndgenUniformRange(RndgenState& state, const Type& a, const Type&
 //
 // rndgenUniformFloat
 //
-// The fastest, should be 3 instructions if in series.
+// The fastest, should be 3 instructions if used in series.
 //
 // Generates uniformly distributed float in [0, 1) range,
 // not super-quality (low bits of mantissa are less random).
@@ -188,8 +188,8 @@ sysinline float32 rndgenGaussApproxFour(RndgenState& state)
 template <typename Type>
 sysinline Type rndgenLogScale(RndgenState& state, const Type& minValue, const Type& maxValue)
 {
-    Type minLog2 = nativeLog2(minValue);
-    Type maxLog2 = nativeLog2(maxValue);
+    Type minLog2 = fastLog2(minValue);
+    Type maxLog2 = fastLog2(maxValue);
 
-    return nativePow2(rndgenUniformRange(state, minLog2, maxLog2));
+    return fastPow2(rndgenUniformRange(state, minLog2, maxLog2));
 }

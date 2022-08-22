@@ -149,7 +149,7 @@ stdbool convertIndependentPresenceToAdditive
                 GPU_LAYERED_MATRIX_PASS(n, srcVector), \
                 GPU_LAYERED_MATRIX_PASS(n, srcPresence), \
                 GPU_LAYERED_MATRIX_PASS(n, dstPresence), \
-                square(nativeRecipZero(vectorProximity)), \
+                square(fastRecipZero(vectorProximity)), \
                 stdPass \
             ) \
         )

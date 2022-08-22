@@ -69,10 +69,10 @@ class GaussWindow
 public:
 
     sysinline GaussWindow(const GaussSigmaDirect& that)
-        {divSigmaSq = nativeRecipZero(square(that.sigma));}
+        {divSigmaSq = fastRecipZero(square(that.sigma));}
 
     sysinline GaussWindow(const GaussSigmaSquare& that)
-        {divSigmaSq = nativeRecipZero(that.sigmaSq);}
+        {divSigmaSq = fastRecipZero(that.sigmaSq);}
 
     sysinline GaussWindow(const GaussWindowParams& params)
         {divSigmaSq = params.divSigmaSq;}

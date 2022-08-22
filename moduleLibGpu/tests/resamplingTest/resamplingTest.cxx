@@ -60,7 +60,7 @@ template <typename Float>
 sysinline Float sinc(Float x)
 {
     Float t = Float(pi64) * x;
-    Float result = nativeDivide(sinf(t), t);
+    Float result = fastDivide(sinf(t), t);
     if_not (def(result)) result = 1;
     return result;
 }
@@ -620,7 +620,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     float32 meanErr = 0;
     require(computeMeanAbsError(errorCpu, meanErr, stdPass));
 
-    printMsgL(kit, STR("Max err %0 bits, Mean err %1 bits"), fltf(-nativeLog2(maxErr), 1), fltf(-nativeLog2(meanErr), 1));
+    printMsgL(kit, STR("Max err %0 bits, Mean err %1 bits"), fltf(-fastLog2(maxErr), 1), fltf(-fastLog2(meanErr), 1));
 
     ////
 

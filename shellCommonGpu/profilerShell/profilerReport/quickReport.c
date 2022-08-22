@@ -75,7 +75,7 @@ stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Sp
 
         ////
 
-        float32 divNodeCounter = nativeRecipZero(float32(node.counter));
+        float32 divNodeCounter = fastRecipZero(float32(node.counter));
 
         float32 avgNormalTime = nodeTotalTime * divNodeCounter;
         float32 avgDeviceTime = nodeDeviceTime * divNodeCounter;
@@ -86,7 +86,7 @@ stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Sp
 
         ////
 
-        float32 divNodeTotalElemCount = nativeRecipZero(float32(node.totalElemCount));
+        float32 divNodeTotalElemCount = fastRecipZero(float32(node.totalElemCount));
 
         float32 avgElemNormalTime = nodeTotalTime * divNodeTotalElemCount;
         float32 avgElemDeviceTime = nodeDeviceTime * divNodeTotalElemCount;

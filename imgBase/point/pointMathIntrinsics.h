@@ -64,9 +64,9 @@ POINT_DEFINE_FUNC3(linearIf)
 //
 //================================================================
 
-POINT_DEFINE_FUNC1(nativeRecip)
-POINT_DEFINE_FUNC1(nativeRecipZero)
-POINT_DEFINE_FUNC2(nativeDivide)
+POINT_DEFINE_FUNC1(fastRecip)
+POINT_DEFINE_FUNC1(fastRecipZero)
+POINT_DEFINE_FUNC2(fastDivide)
 
 //================================================================
 //
@@ -83,5 +83,5 @@ POINT_DEFINE_FUNC1(recipSqrt)
 //
 //================================================================
 
-POINT_DEFINE_FUNC1(nativePow2)
-POINT_DEFINE_FUNC1(nativeLog2)
+POINT_DEFINE_FUNC1(fastPow2)
+POINT_DEFINE_FUNC1(fastLog2)

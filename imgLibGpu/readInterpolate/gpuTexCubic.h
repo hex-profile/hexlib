@@ -252,8 +252,8 @@ sysinline auto tex2DCubicBsplineFastPrepare(const Point<float32>& pos, const Poi
     Point<float32> sumA = C0 + C1;
     Point<float32> sumB = C2 + C3;
 
-    Point<float32> divSumA = point(nativeRecip(sumA.X), nativeRecip(sumA.Y));
-    Point<float32> divSumB = point(nativeRecip(sumB.X), nativeRecip(sumB.Y));
+    Point<float32> divSumA = point(fastRecip(sumA.X), fastRecip(sumA.Y));
+    Point<float32> divSumB = point(fastRecip(sumB.X), fastRecip(sumB.Y));
 
     prep.posA = (base + (0.5f - 1) + C1 * divSumA) * texstep;
     prep.posB = (base + (0.5f + 1) + C3 * divSumB) * texstep;

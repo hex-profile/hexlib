@@ -44,7 +44,7 @@ GPUTOOL_2D_BEG
 
     float32 factorNum = 1 + k1*r2 + k2*r4 + k3*r6;
     float32 factorDen = 1 + k4*r2 + k5*r4 + k6*r6;
-    float32 factor = factorNum * nativeRecip(factorDen);
+    float32 factor = factorNum * fastRecip(factorDen);
 
     ////
 

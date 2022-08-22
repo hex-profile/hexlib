@@ -25,7 +25,7 @@ class OptionalObject
 
 public:
 
-    inline operator bool () const 
+    inline explicit operator bool () const 
         {return constructorCalled;}
 
     ////
@@ -156,3 +156,13 @@ private:
     bool constructorCalled = false;
 
 };
+
+//================================================================
+//
+// allv<OptionalObject>
+//
+//================================================================
+
+template <typename Type>
+sysinline bool allv(const OptionalObject<Type>& value)
+    {return bool{value};}

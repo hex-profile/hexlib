@@ -61,7 +61,7 @@ sysinline uint32 rndgenBetter16(RndgenState& state)
 //
 // distributiveHash
 //
-// Thomas Wang hash, 9 instructions on Kepler
+// Thomas Wang hash, generates 9 instructions on Kepler.
 //
 //================================================================
 

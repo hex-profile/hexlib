@@ -109,42 +109,42 @@ sysinline float32 sigmoidApprox(float32 value);
 
 //
 // Max error is 5.5 bits
-// On Kepler it gives 13 instructions.
+// On Kepler it generates 13 instructions.
 //
 
 template <>
 sysinline float32 sigmoidApprox<2>(float32 value)
 {
     float32 ex = negExpApprox<2>(absv(value), 0.799f);
-    float32 result = nativeRecip(1 + ex);
+    float32 result = fastRecip(1 + ex);
     if (value < 0) result = 1 - result;
     return result;
 }
 
 //
 // Max error is 6.5 bits
-// On Kepler it gives 14 instructions.
+// On Kepler it generates 14 instructions.
 //
 
 template <>
 sysinline float32 sigmoidApprox<3>(float32 value)
 {
     float32 ex = negExpApprox<3>(absv(value), 0.894f);
-    float32 result = nativeRecip(1 + ex);
+    float32 result = fastRecip(1 + ex);
     if (value < 0) result = 1 - result;
     return result;
 }
 
 //
 // Max error is 7.5 bits.
-// On Kepler it gives 15 instructions.
+// On Kepler it generates 15 instructions.
 //
 
 template <>
 sysinline float32 sigmoidApprox<4>(float32 value)
 {
     float32 ex = negExpApprox<4>(absv(value), 0.946f);
-    float32 result = nativeRecip(1 + ex);
+    float32 result = fastRecip(1 + ex);
     if (value < 0) result = 1 - result;
     return result;
 }
@@ -169,5 +169,5 @@ template <>
 sysinline float32 antiGaussSq(const float32& value)
 {
     float32 limitedValue = clampRange<float32>(value, FLT_MIN, 1.f);
-    return (-1.38629436111989062f) * nativeLog2(limitedValue);
+    return (-1.38629436111989062f) * fastLog2(limitedValue);
 }

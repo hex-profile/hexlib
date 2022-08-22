@@ -157,7 +157,7 @@ void TemporalFilter<Type, n>::addContinuous(const Type& value, float32 dTime, co
 template <typename Type, int n>
 Type TemporalWeightedFilter<Type, n>::operator () () const
 {
-    return nativeRecip(avgWeight()) * avgWeightValue();
+    return fastRecip(avgWeight()) * avgWeightValue();
 }
 
 //================================================================

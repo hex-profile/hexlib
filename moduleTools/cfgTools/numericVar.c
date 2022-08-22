@@ -15,7 +15,7 @@ bool SerializeBoolVar::getTextValue(CfgWriteStream& s) const
 
 //----------------------------------------------------------------
 
-bool SerializeBoolVar::setTextValue(CfgReadStream& s)
+bool SerializeBoolVar::setTextValue(CfgReadStream& s) const
 {
     bool readValue = false;
     ensure(cfgRead(s, readValue));

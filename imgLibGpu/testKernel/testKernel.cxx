@@ -15,13 +15,8 @@
 
 #if __CUDA_ARCH__
 
-__global__ void testKernel(float32* ptr)
+__global__ void testKernel(const float32* src, float32* dst)
 {
-    auto value = *ptr;
-
-    value = roundPosToNearestSample(value);
-
-    *ptr = value;
 }
 
 ////

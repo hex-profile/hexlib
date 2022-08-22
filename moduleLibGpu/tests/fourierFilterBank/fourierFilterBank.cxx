@@ -173,7 +173,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    *dst = make_float32_x2(nativeRecipZero(sumWeight) * sumWeightValue, 0);
+    *dst = make_float32_x2(fastRecipZero(sumWeight) * sumWeightValue, 0);
 }
 #endif
 GPUTOOL_2D_END

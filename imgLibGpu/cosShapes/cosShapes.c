@@ -29,7 +29,7 @@ sysinline float32 cosShape(float32 x)
 void genCosShape(float32* arrPtr, int arrSize)
 {
     auto radius = 0.5f * arrSize;
-    auto divRadius = nativeRecip(radius);
+    auto divRadius = fastRecip(radius);
 
     auto sum = float32{0};
 
@@ -39,7 +39,7 @@ void genCosShape(float32* arrPtr, int arrSize)
         sum += arrPtr[i];
     }
 
-    auto divSum = nativeRecip(sum);
+    auto divSum = fastRecip(sum);
 
     for_count(i, arrSize)
         arrPtr[i] *= divSum;
@@ -55,7 +55,7 @@ void genCosShapeHalf(float32* arrPtr, int arrSize)
 {
     int lobe = arrSize - 1;
     auto radius = lobe + 0.5f;
-    auto divRadius = nativeRecip(radius);
+    auto divRadius = fastRecip(radius);
 
     auto sum = float32{0};
 
@@ -65,7 +65,7 @@ void genCosShapeHalf(float32* arrPtr, int arrSize)
         sum += arrPtr[i];
     }
 
-    auto divSum = nativeRecip(sum);
+    auto divSum = fastRecip(sum);
 
     for_count(i, arrSize)
         arrPtr[i] *= divSum;

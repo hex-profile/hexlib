@@ -32,7 +32,7 @@ sysinline Point<Float> circleCCW(Float v)
 {
     Float angle = v * (2 * Float(pi64));
     Point<Float> result;
-    nativeCosSin(angle, result.X, result.Y);
+    fastCosSin(angle, result.X, result.Y);
     return result;
 }
 
@@ -90,14 +90,16 @@ sysinline Float scalarProd(const Point<Float>& A, const Point<Float>& B)
 //
 // getPhase
 //
-// Returns value in range [-1/2, +1/2]
+// Returns value in range [-1/2, +1/2].
+//
+// Maximal precision, but slow!
 //
 //================================================================
 
 template <typename Float>
 sysinline Float getPhase(const Point<Float>& vec)
 {
-    Float result = nativeAtan2(vec.Y, vec.X);
+    Float result = exactAtan2(vec.Y, vec.X);
     result *= (1 / (2 * Float(pi64)));
     if_not (def(result)) result = 0;
     return result;
@@ -107,8 +109,11 @@ sysinline Float getPhase(const Point<Float>& vec)
 //
 // approxPhase
 //
-// The result is in range [-1/2, +1/2]
-// On unit circle, max error is 0.00135.
+// The result is in range [-1/2, +1/2].
+//
+// On unit circle, max error is 0.00135, accuracy is 9.53 bits.
+//
+// Generates 19 instructions on Pascal.
 //
 //================================================================
 
@@ -121,13 +126,12 @@ sysinline Float approxPhase(const Point<Float>& value)
     Float minXY = minv(aX, aY);
     Float maxXY = maxv(aX, aY);
 
-    Float D = nativeDivide(minXY, maxXY);
-    if (maxXY == 0) D = 0; // range [0..1]
+    Float D = fastDivide(minXY, maxXY);
 
     // Cubic polynom approximation, at interval ends x=0 and x=1 both value and 1st derivative are equal to real function.
     Float result = (0.1591549430918954f + ((-0.02288735772973838f) + (-0.01126758536215698f) * D) * D) * D;
 
-    if (aY >= aX)
+    if (aY > aX)
         result = 0.25f - result;
 
     if (value.X < 0)
@@ -135,6 +139,66 @@ sysinline Float approxPhase(const Point<Float>& value)
 
     if (value.Y < 0)
         result = -result;
+
+    if (maxXY == 0)
+        result = 0;
+
+    return result;
+}
+
+//================================================================
+//
+// fastPhase
+//
+// The result is in range [-1/2, +1/2].
+// 
+// Gives 20.68 bits of accuracy.
+// Generates 24 instructions on Pascal.
+//
+//================================================================
+
+template <typename Float>
+sysinline Float fastPhase(const Point<Float>& value)
+{
+    Float aX = absv(value.X);
+    Float aY = absv(value.Y);
+
+    Float minXY = minv(aX, aY);
+    Float maxXY = maxv(aX, aY);
+
+    Float D = fastDivide(minXY, maxXY);
+
+    auto D2 = D * D;
+
+    ////
+
+    auto result = Float(-0.013480470);
+    result = result * D2 + Float(0.057477314);
+    result = result * D2 - Float(0.121239071);
+    result = result * D2 + Float(0.195635925f);
+    result = result * D2 - Float(0.332994597f);
+    result = result * D2 + Float(0.999995630f);
+    result = result * D;
+
+    ////
+
+    result *= (0.5f / pi32);
+
+    ////
+
+    if (aY > aX)
+        result = 0.25f - result;
+
+    if (value.X < 0)
+        result = 0.5f - result;
+
+    if (value.Y < 0)
+        result = -result;
+
+    ////
+
+    if (maxXY == 0)
+        result = 0;
 
     return result;
 }

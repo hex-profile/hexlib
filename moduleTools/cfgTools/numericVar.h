@@ -291,7 +291,7 @@ public:
         : SerializeNumericVar<int32>(var, name, comment, blockComment), var(var) {}
 
     bool getTextValue(CfgWriteStream& s) const;
-    bool setTextValue(CfgReadStream& s);
+    bool setTextValue(CfgReadStream& s) const;
 
 private:
 
