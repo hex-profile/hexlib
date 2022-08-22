@@ -1,4 +1,5 @@
 #include "displayParamsImpl.h"
+
 #include "kits/alternativeVersionKit.h"
 
 //================================================================

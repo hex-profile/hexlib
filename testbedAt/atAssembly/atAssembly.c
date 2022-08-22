@@ -1265,7 +1265,9 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     ////
 
     PipeControl pipeControl{frameAdvance ? 0 : 1, false};
-    UserPoint userPoint{kit.atUserPointValid, kit.atUserPoint, overview.mouseSignal, overview.mouseSignalAlt};
+
+    UserPoint userPoint{kit.atUserPointValid, kit.atUserPoint, 
+        overview.mouseLeftSet != 0, overview.mouseLeftReset != 0, overview.mouseRightSet != 0, overview.mouseRightReset != 0};
 
     ////
 

@@ -944,14 +944,12 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     // User point
     //
 
-    bool userPointValid = kit.userPoint.valid;
-    Point<Space> userPoint = kit.userPoint.position;
+    auto userPoint = kit.userPoint;
 
-    if_not (userPoint >= 0 && userPoint < cropSize)
-        userPointValid = false;
+    if_not (userPoint.position >= 0 && userPoint.position < cropSize)
+        userPoint.valid = false;
 
-    UserPoint newUserPoint{userPointValid, userPoint, kit.userPoint.signal, kit.userPoint.signalAlt};
-    UserPointKit newUserPointKit(newUserPoint);
+    UserPointKit newUserPointKit(userPoint);
 
     ////
 

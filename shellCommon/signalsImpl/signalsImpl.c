@@ -206,23 +206,16 @@ void prepareSignalHistogram(BaseActionReceiving& at, const Array<int32>& histogr
         ////
 
         if (id == baseActionId::MouseLeftDown)
-            overview.mouseSignal = true;
+            overview.mouseLeftSet++;
 
         if (id == baseActionId::MouseRightDown)
-            overview.mouseSignalAlt = true;
+            overview.mouseRightSet++;
 
-        ////
+        if (id == baseActionId::MouseLeftUp)
+            overview.mouseLeftReset++;
 
-        overview.anyEventsFound = true;
-
-        if_not
-        (
-            id == baseActionId::MouseLeftUp ||
-            id == baseActionId::MouseRightUp
-        )
-        {
-            overview.realEventsFound = true;
-        }
+        if (id == baseActionId::MouseRightUp)
+            overview.mouseRightReset++;
 
         ////
 
@@ -239,6 +232,17 @@ void prepareSignalHistogram(BaseActionReceiving& at, const Array<int32>& histogr
 
         if (id == baseActionId::ResetupActions)
             overview.resetupActions = true;
+
+        ////
+
+        overview.anyEventsFound = true;
+        overview.realEventsFound = true;
+
+        ////
+
+        bool specialAction = (id >= baseActionId::LastPredefinedAction);
+
+
     };
 
     ////

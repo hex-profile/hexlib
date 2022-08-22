@@ -106,13 +106,7 @@ private:
 //
 //================================================================
 
-inline void StandardSignal::serialize
-(
-    const CfgSerializeKit& kit,
-    const CharArray& name,
-    const CharArray& key,
-    const CharArray& comment
-)
+inline void StandardSignal::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key, const CharArray& comment)
 {
     SerializeStandardSignal serializeSignal(*this, name, key, comment);
     kit.visitor(kit.scope, serializeSignal);

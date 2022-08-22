@@ -26,18 +26,20 @@ void registerSignals(CfgSerialization& serialization, const CfgNamespace* scope,
 
 struct SignalsOverview
 {
-    bool anyEventsFound;
-    bool realEventsFound;
+    bool anyEventsFound = false;
+    bool realEventsFound = false;
 
     BaseMousePos mousePos;
-    bool mouseSignal;
-    bool mouseSignalAlt;
+    int32 mouseLeftSet = 0;
+    int32 mouseLeftReset = 0;
+    int32 mouseRightSet = 0;
+    int32 mouseRightReset = 0;
 
-    bool saveConfig;
-    bool loadConfig;
-    bool editConfig;
+    bool saveConfig = false;
+    bool loadConfig = false;
+    bool editConfig = false;
 
-    bool resetupActions;
+    bool resetupActions = false;
 };
 
 //================================================================

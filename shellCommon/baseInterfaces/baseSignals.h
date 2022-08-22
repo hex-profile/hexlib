@@ -35,6 +35,8 @@ namespace baseActionId
     constexpr BaseActionId EditConfig = 0xFFFFFFF6u;
 
     constexpr BaseActionId ResetupActions = 0xFFFFFFF5u;
+
+    constexpr BaseActionId LastPredefinedAction = ResetupActions;
 }
 
 //================================================================

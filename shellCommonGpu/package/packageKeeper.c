@@ -477,7 +477,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
     ////
 
-    UserPoint userPoint{false, point(0), false, false};
+    UserPoint userPoint;
 
     if (overview.mousePos.valid())
         signalMousePos = overview.mousePos;
@@ -485,8 +485,11 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
     userPoint.valid = signalMousePos.valid();
     userPoint.position = signalMousePos.pos();
 
-    userPoint.signal = overview.mouseSignal;
-    userPoint.signalAlt = overview.mouseSignalAlt;
+    userPoint.leftSet = (overview.mouseLeftSet != 0);
+    userPoint.rightSet = (overview.mouseRightSet != 0);
+
+    userPoint.leftReset = (overview.mouseLeftReset != 0);
+    userPoint.rightReset = (overview.mouseRightReset != 0);
 
     ////
 

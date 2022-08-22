@@ -11,6 +11,8 @@
 class CfgNamespace;
 struct CfgVisitor;
 
+//----------------------------------------------------------------
+
 struct CfgSerializeKit
 {
     CfgVisitor& visitor; 
