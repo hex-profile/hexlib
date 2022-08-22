@@ -50,16 +50,9 @@ void formatOutput(const CUresult& value, FormatOutputStream& outputStream)
     ////
 
     if_not (textDesc)
-    {
-        formatOutput(int32(value), outputStream);
-    }
+        outputStream << int32(value);
     else
-    {
-        formatOutput(textDesc, outputStream);
-        formatOutput(STR(" (code "), outputStream);
-        formatOutput(int32(value), outputStream);
-        formatOutput(STR(")"), outputStream);
-    }
+        outputStream << textDesc << STR(" (code ") << int32(value) << STR(")");
 }
 
 //================================================================

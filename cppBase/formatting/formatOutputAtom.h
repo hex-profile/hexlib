@@ -26,13 +26,13 @@ public:
 
 public:
 
-    inline FormatOutputAtom()
+    sysinline FormatOutputAtom()
         {} // uninitialized
 
-    inline FormatOutputAtom(const void* value, FormatOutputAtomFunc* func)
+    sysinline FormatOutputAtom(const void* value, FormatOutputAtomFunc* func)
         : value(value), func(func) {}
 
-    inline FormatOutputAtom(const FormatOutputAtom& that)
+    sysinline FormatOutputAtom(const FormatOutputAtom& that)
         : value(that.value), func(that.func) {}
 
     //
@@ -43,11 +43,11 @@ public:
 public:
 
     template <typename Type>
-    inline FormatOutputAtom(const Type& value)
+    sysinline FormatOutputAtom(const Type& value)
         : value(&value), func((FormatOutputAtomFunc*) FormatOutputFunc<Type>::get()) {}
 
     template <typename Type>
-    inline void setup(const Type& value)
+    sysinline void setup(const Type& value)
     {
         this->value = &value;
         this->func = (FormatOutputAtomFunc*) formatOutput<Type>;

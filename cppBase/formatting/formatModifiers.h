@@ -12,11 +12,11 @@
 //================================================================
 
 template <typename Type>
-inline FormatNumber<Type> dec(const Type& value, int32 nDigits)
+sysinline FormatNumber<Type> dec(const Type& value, int32 nDigits)
     {return formatNumber(value, FormatNumberOptions().width(nDigits).alignRight().fillZero());}
 
 template <typename Type>
-inline FormatNumber<Type> decs(const Type& value, int32 nDigits)
+sysinline FormatNumber<Type> decs(const Type& value, int32 nDigits)
     {return formatNumber(value, FormatNumberOptions().width(nDigits).alignRight().fillZero().plusOn());}
 
 //================================================================
@@ -28,7 +28,7 @@ inline FormatNumber<Type> decs(const Type& value, int32 nDigits)
 //================================================================
 
 template <typename Type>
-inline FormatNumber<Type> hex(const Type& value, int32 nDigits = 8)
+sysinline FormatNumber<Type> hex(const Type& value, int32 nDigits = 8)
     {return formatNumber(value, FormatNumberOptions().baseHex().alignRight().fillZero().width(nDigits));}
 
 //================================================================
@@ -46,19 +46,19 @@ inline FormatNumber<Type> hex(const Type& value, int32 nDigits = 8)
 #define TMP_MACRO(FF, ff) \
     \
     template <typename Type> \
-    inline FormatNumber<Type> flt##ff(const Type& value, int32 prec) \
+    sysinline FormatNumber<Type> flt##ff(const Type& value, int32 prec) \
         {return formatNumber(value, FormatNumberOptions().fform##FF().precision(prec));} \
     \
     template <typename Type> \
-    inline FormatNumber<Type> flt##ff##s(const Type& value, int32 prec) \
+    sysinline FormatNumber<Type> flt##ff##s(const Type& value, int32 prec) \
         {return formatNumber(value, FormatNumberOptions().fform##FF().precision(prec).plusOn());} \
     \
     template <typename Type> \
-    inline FormatNumber<Type> flt##ff(const Type& value, char fill, int32 width, int32 prec) \
+    sysinline FormatNumber<Type> flt##ff(const Type& value, char fill, int32 width, int32 prec) \
         {return formatNumber(value, FormatNumberOptions().fform##FF().fillWith(fill).alignInternal().width(width).precision(prec));} \
     \
     template <typename Type> \
-    inline FormatNumber<Type> flt##ff##s(const Type& value, char fill, int32 width, int32 prec) \
+    sysinline FormatNumber<Type> flt##ff##s(const Type& value, char fill, int32 width, int32 prec) \
         {return formatNumber(value, FormatNumberOptions().fform##FF().fillWith(fill).alignInternal().width(width).precision(prec).plusOn());}
 
 TMP_MACRO(F, f)

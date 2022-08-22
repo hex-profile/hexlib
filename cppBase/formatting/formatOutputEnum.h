@@ -20,7 +20,7 @@
     { \
         if (0) ; \
         PREP_FOR(PREP_SEQ_SIZE(seq), FORMAT_OUTPUT_ENUM_ITER, seq) \
-        else outputStream.write(int(value)); \
+        else outputStream << int(value); \
     }
 
 #define FORMAT_OUTPUT_ENUM_ITER(n, seq) \
@@ -30,7 +30,7 @@
     FORMAT_OUTPUT_ENUM_ITER3(PREP_ARG2_0 pair, PREP_ARG2_1 pair)
 
 #define FORMAT_OUTPUT_ENUM_ITER3(enumValue, stringLiteral) \
-    else if (value == enumValue) outputStream.write(STR(stringLiteral));
+    else if (value == enumValue) outputStream << STR(stringLiteral);
 
 //================================================================
 //
@@ -47,11 +47,11 @@
     { \
         if (0) ; \
         PREP_FOR(PREP_SEQ_SIZE(seq), FORMAT_OUTPUT_ENUM_SIMPLE_ITER, seq) \
-        else outputStream.write(int(value)); \
+        else outputStream << int(value); \
     }
 
 #define FORMAT_OUTPUT_ENUM_SIMPLE_ITER(n, seq) \
     FORMAT_OUTPUT_ENUM_SIMPLE_ITER2(PREP_SEQ_ELEM(n, seq))
 
 #define FORMAT_OUTPUT_ENUM_SIMPLE_ITER2(enumValue) \
-    else if (value == enumValue) outputStream.write(STR(PREP_STRINGIZE(enumValue)));
+    else if (value == enumValue) outputStream << STR(PREP_STRINGIZE(enumValue));

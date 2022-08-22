@@ -10,7 +10,7 @@
 //================================================================
 
 template <typename Type>
-inline void reduceValue(const Type& value, Type& resultValue, CharArray& resultUnit)
+sysinline void reduceValue(const Type& value, Type& resultValue, CharArray& resultUnit)
 {
     resultValue = value;
     resultUnit = STR("");
@@ -50,7 +50,7 @@ inline void reduceValue(const Type& value, Type& resultValue, CharArray& resultU
 //================================================================
 
 template <typename Type>
-static inline void doFormatOutput(const PrettyNumber<Type>& value, FormatOutputStream& outputStream)
+static sysinline void doFormatOutput(const PrettyNumber<Type>& value, FormatOutputStream& outputStream)
 {
     int32 order = 0;
 
@@ -58,8 +58,7 @@ static inline void doFormatOutput(const PrettyNumber<Type>& value, FormatOutputS
     CharArray usedUnit;
     reduceValue(value.number.value, usedValue, usedUnit);
 
-    outputStream.write(FormatNumber<Type>(usedValue, value.number.options));
-    outputStream.write(usedUnit);
+    outputStream << formatNumber(usedValue, value.number) << usedUnit;
 }
 
 //================================================================

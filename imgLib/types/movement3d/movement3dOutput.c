@@ -10,22 +10,6 @@
 //================================================================
 
 template <typename Float>
-inline void output(const Movement3D<Float>& value, FormatOutputStream& outputStream)
-{
-    outputStream.write(STR("{"));
-    formatOutput(value.rotation, outputStream);
-    outputStream.write(STR("}, {"));
-    formatOutput(value.translation, outputStream);
-    outputStream.write(STR("}"));
-}
-
-//================================================================
-//
-// output
-//
-//================================================================
-
-template <typename Float>
 inline void output(const FormatNumber<Movement3D<Float>>& number, FormatOutputStream& outputStream)
 {
     auto& p = number.value;
@@ -34,20 +18,14 @@ inline void output(const FormatNumber<Movement3D<Float>>& number, FormatOutputSt
     (
         outputStream,
         STR("{\"q\": {\"w\": %, \"x\": %, \"y\": %, \"z\": %}, \"p\": {\"x\": %, \"y\": %, \"z\": %}}"),
-        formatNumber(p.rotation.W, number.options),
-        formatNumber(p.rotation.X, number.options),
-        formatNumber(p.rotation.Y, number.options),
-        formatNumber(p.rotation.Z, number.options),
-        formatNumber(p.translation.X, number.options),
-        formatNumber(p.translation.Y, number.options),
-        formatNumber(p.translation.Z, number.options)
+        formatNumber(p.rotation.W, number),
+        formatNumber(p.rotation.X, number),
+        formatNumber(p.rotation.Y, number),
+        formatNumber(p.rotation.Z, number),
+        formatNumber(p.translation.X, number),
+        formatNumber(p.translation.Y, number),
+        formatNumber(p.translation.Z, number)
     );
-
-    //outputStream.write(STR("{"));
-    //formatOutput(formatNumber(number.value.rotation, number.options), outputStream);
-    //outputStream.write(STR("}, {"));
-    //formatOutput(formatNumber(number.value.translation, number.options), outputStream);
-    //outputStream.write(STR("}"));
 }
 
 //================================================================
@@ -57,10 +35,6 @@ inline void output(const FormatNumber<Movement3D<Float>>& number, FormatOutputSt
 //================================================================
 
 #define TMP_MACRO(Float, o) \
-    \
-    template <> \
-    void formatOutput(const Movement3D<Float>& value, FormatOutputStream& outputStream) \
-        {output(value, outputStream);} \
     \
     template <> \
     void formatOutput(const FormatNumber<Movement3D<Float>>& value, FormatOutputStream& outputStream) \

@@ -27,7 +27,7 @@ inline StlString sprintMsg(const Kit& kit, const CharArray& format, const Types&
     ////
 
     kit.formatter.clear();
-    formatOutput(paramMsg, kit.formatter);
+    kit.formatter << paramMsg;
 
     if_not (kit.formatter.valid())
         throw std::bad_alloc();

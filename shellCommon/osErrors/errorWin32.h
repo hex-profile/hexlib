@@ -16,7 +16,7 @@ class ErrorWin32
 
 public:
 
-    operator uint32 () const {return error;}
+    uint32 get() const {return error;}
     CLASS_CONTEXT(ErrorWin32, ((uint32, error)))
 
 };

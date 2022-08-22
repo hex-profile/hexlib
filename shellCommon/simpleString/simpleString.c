@@ -191,7 +191,7 @@ void SimpleStringEx<Type>::append(const Type* thatPtr, size_t thatSize)
 template <>
 void formatOutput(const SimpleStringEx<CharType>& value, FormatOutputStream& outputStream)
 {
-    outputStream.write(value.charArray());
+    outputStream << value.charArray();
 }
 
 //================================================================

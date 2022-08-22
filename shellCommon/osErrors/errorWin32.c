@@ -19,13 +19,11 @@
 template <>
 void formatOutput(const ErrorWin32& value, FormatOutputStream& outputStream)
 {
-    DWORD err = value;
-
     LPTSTR formatStr = 0;
     REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(LocalFree(formatStr) == 0));
 
     DWORD formatResult = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, value, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR) &formatStr, 0, NULL);
+        NULL, value.get(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR) &formatStr, 0, NULL);
 
     ////
 
@@ -36,14 +34,10 @@ void formatOutput(const ErrorWin32& value, FormatOutputStream& outputStream)
 
     ////
 
-    outputStream.write(STR("Error "));
-    outputStream.write(value);
+    outputStream << STR("Error ") << value.get();
 
     if (formatResult && formatStr)
-    {
-        outputStream.write(STR(". "));
-        outputStream.write(CharArray(formatStr, formatLen));
-    }
+        outputStream << STR(". ") << charArray(formatStr, formatLen);
 }
 
 //----------------------------------------------------------------

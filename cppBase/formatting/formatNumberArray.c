@@ -13,8 +13,8 @@ sysinline void outputNumberArray(const Type* arrayPtr, size_t arraySize, const F
 {
     for_count (i, arraySize)
     {
-        outputStream.write(FormatNumber<Type>(arrayPtr[i], options));
-        if (i != arraySize-1) outputStream.write(delimiter);
+        outputStream << formatNumber(arrayPtr[i], options);
+        if (i != arraySize-1) outputStream << delimiter;
     }
 }
 

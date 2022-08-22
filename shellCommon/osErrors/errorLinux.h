@@ -16,7 +16,7 @@ class ErrorLinux
 
 public:
 
-    operator int () const {return error;}
+    int get() const {return error;}
     CLASS_CONTEXT(ErrorLinux, ((int, error)))
 
 };

@@ -9,19 +9,19 @@
 //================================================================
 
 template <typename VectorType>
-inline void outputVectorTypeX2(const VectorType& value, FormatOutputStream& outputStream)
+sysinline void outputVectorTypeX2(const VectorType& value, FormatOutputStream& outputStream)
 {
-    outputStream.write(value.x);
-    outputStream.write(STR(", "));
-    outputStream.write(value.y);
+    outputStream 
+        << value.x << STR(", ") 
+        << value.y;
 }
 
 template <typename VectorType>
-inline void outputVectorTypeX2(const FormatNumber<VectorType>& number, FormatOutputStream& outputStream)
+sysinline void outputVectorTypeX2(const FormatNumber<VectorType>& number, FormatOutputStream& outputStream)
 {
-    outputStream.write(formatNumber(number.value.x, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.y, number.options));
+    outputStream
+        << formatNumber(number.value.x, number) << STR(", ")
+        << formatNumber(number.value.y, number);
 }
 
 //================================================================
@@ -31,27 +31,23 @@ inline void outputVectorTypeX2(const FormatNumber<VectorType>& number, FormatOut
 //================================================================
 
 template <typename VectorType>
-inline void outputVectorTypeX4(const VectorType& number, FormatOutputStream& outputStream)
+sysinline void outputVectorTypeX4(const VectorType& number, FormatOutputStream& outputStream)
 {
-    outputStream.write(number.x);
-    outputStream.write(STR(", "));
-    outputStream.write(number.y);
-    outputStream.write(STR(", "));
-    outputStream.write(number.z);
-    outputStream.write(STR(", "));
-    outputStream.write(number.w);
+    outputStream 
+        << number.x << STR(", ")
+        << number.y << STR(", ")
+        << number.z << STR(", ")
+        << number.w;
 }
 
 template <typename VectorType>
-inline void outputVectorTypeX4(const FormatNumber<VectorType>& number, FormatOutputStream& outputStream)
+sysinline void outputVectorTypeX4(const FormatNumber<VectorType>& number, FormatOutputStream& outputStream)
 {
-    outputStream.write(formatNumber(number.value.x, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.y, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.z, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.w, number.options));
+    outputStream
+        << formatNumber(number.value.x, number) << STR(", ")
+        << formatNumber(number.value.y, number) << STR(", ")
+        << formatNumber(number.value.z, number) << STR(", ")
+        << formatNumber(number.value.w, number);
 }
 
 //================================================================
@@ -68,7 +64,7 @@ inline void outputVectorTypeX4(const FormatNumber<VectorType>& number, FormatOut
     \
     template <> \
     void formatOutput(const FormatNumber<VectorType>& number, FormatOutputStream& outputStream) \
-        {func(formatNumber(convertFloat32(number.value), number.options), outputStream);} \
+        {func(formatNumber(convertFloat32(number.value), number), outputStream);} \
 
 VECTOR_FLOAT_X2_FOREACH(TMP_MACRO, outputVectorTypeX2)
 VECTOR_FLOAT_X4_FOREACH(TMP_MACRO, outputVectorTypeX4)
@@ -85,7 +81,7 @@ VECTOR_FLOAT_X4_FOREACH(TMP_MACRO, outputVectorTypeX4)
     \
     template <> \
     void formatOutput(const FormatNumber<VectorType>& number, FormatOutputStream& outputStream) \
-        {func(formatNumber(number.value, number.options), outputStream);} \
+        {func(formatNumber(number.value, number), outputStream);} \
 
 VECTOR_INT_X2_FOREACH(TMP_MACRO, outputVectorTypeX2)
 VECTOR_INT_X4_FOREACH(TMP_MACRO, outputVectorTypeX4)

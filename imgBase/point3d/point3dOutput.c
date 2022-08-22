@@ -9,13 +9,12 @@
 //================================================================
 
 template <typename Type>
-inline void outputPoint(const Point3D<Type>& value, FormatOutputStream& outputStream)
+sysinline void outputPoint(const Point3D<Type>& value, FormatOutputStream& outputStream)
 {
-    outputStream.write(value.X);
-    outputStream.write(STR(", "));
-    outputStream.write(value.Y);
-    outputStream.write(STR(", "));
-    outputStream.write(value.Z);
+    outputStream 
+        << value.X << STR(", ")
+        << value.Y << STR(", ")
+        << value.Z;
 }
 
 //================================================================
@@ -25,13 +24,12 @@ inline void outputPoint(const Point3D<Type>& value, FormatOutputStream& outputSt
 //================================================================
 
 template <typename Type>
-inline void outputPoint(const FormatNumber<Point3D<Type>>& number, FormatOutputStream& outputStream)
+sysinline void outputPoint(const FormatNumber<Point3D<Type>>& number, FormatOutputStream& outputStream)
 {
-    outputStream.write(formatNumber(number.value.X, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.Y, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.Z, number.options));
+    outputStream
+        << formatNumber(number.value.X, number) << STR(", ")
+        << formatNumber(number.value.Y, number) << STR(", ")
+        << formatNumber(number.value.Z, number);
 }
 
 //================================================================

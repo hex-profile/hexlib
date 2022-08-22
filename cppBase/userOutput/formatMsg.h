@@ -15,5 +15,5 @@ inline void formatMsg(FormatOutputStream& stream, const CharArray& format, const
     ParamMsg paramMsg(format, params, sizeof...(values));
 
     FormatOutputAtom& atom = paramMsg;
-    formatOutput(atom, stream);
+    stream << atom;
 }

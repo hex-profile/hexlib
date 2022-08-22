@@ -17,17 +17,22 @@ struct FormatNumber
 {
     Type value;
     FormatNumberOptions options;
-
-    inline FormatNumber(const Type& value, const FormatNumberOptions& options)
-        : value(value), options(options) {}
 };
 
 //----------------------------------------------------------------
 
 template <typename Type>
-inline FormatNumber<Type> formatNumber(const Type& value, const FormatNumberOptions& options)
+sysinline FormatNumber<Type> formatNumber(const Type& value, const FormatNumberOptions& options)
 {
-    return FormatNumber<Type>(value, options);
+    return {value, options};
+}
+
+//----------------------------------------------------------------
+
+template <typename Type, typename Other>
+sysinline FormatNumber<Type> formatNumber(const Type& value, const FormatNumber<Other>& example)
+{
+    return {value, example.options};
 }
 
 //================================================================
@@ -83,8 +88,17 @@ void formatOutput(const Type& value, FormatOutputStream& outputStream);
 //----------------------------------------------------------------
 
 template <typename Type>
+sysinline FormatOutputStream& operator <<(FormatOutputStream& outputStream, const Type& value)
+{
+    formatOutput(value, outputStream);
+    return outputStream;
+}
+
+//----------------------------------------------------------------
+
+template <typename Type>
 struct FormatOutputFunc
 {
     typedef void FuncType(const Type& value, FormatOutputStream& outputStream);
-    static inline FuncType* get() {return &formatOutput<Type>;}
+    static sysinline FuncType* get() {return &formatOutput<Type>;}
 };

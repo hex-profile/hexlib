@@ -16,17 +16,15 @@
 template <>
 void formatOutput(const ErrorLinux& value, FormatOutputStream& outputStream)
 {
-    outputStream.write(STR("Error "));
-    outputStream.write(value);
+    outputStream << STR("Error ") << value.get();
 
     ////
 
     constexpr int bufferSize = 256;
     char bufferArray[bufferSize];
-    char* errorMsg = strerror_r(int(value), bufferArray, bufferSize);
+    char* errorMsg = strerror_r(value.get(), bufferArray, bufferSize);
 
-    outputStream.write(STR(". "));
-    outputStream.write(charArrayFromPtr(errorMsg));
+    outputStream << STR(". ") << charArrayFromPtr(errorMsg);
 }
 
 //----------------------------------------------------------------

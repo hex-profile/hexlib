@@ -17,7 +17,7 @@ struct ParamMsg : public FormatOutputAtom
 
 public:
 
-    inline ParamMsg(const CharArray& format, const FormatOutputAtom* paramPtr, size_t paramSize)
+    sysinline ParamMsg(const CharArray& format, const FormatOutputAtom* paramPtr, size_t paramSize)
         :
         format(format), paramPtr(paramPtr), paramSize(paramSize)
     {

@@ -9,15 +9,13 @@
 //================================================================
 
 template <typename Type>
-inline void outputPoint(const Point4D<Type>& value, FormatOutputStream& outputStream)
+sysinline void outputPoint(const Point4D<Type>& value, FormatOutputStream& outputStream)
 {
-    outputStream.write(value.X);
-    outputStream.write(STR(", "));
-    outputStream.write(value.Y);
-    outputStream.write(STR(", "));
-    outputStream.write(value.Z);
-    outputStream.write(STR(", "));
-    outputStream.write(value.W);
+    outputStream
+        << value.X << STR(", ")
+        << value.Y << STR(", ")
+        << value.Z << STR(", ")
+        << value.W;
 }
 
 //================================================================
@@ -27,15 +25,13 @@ inline void outputPoint(const Point4D<Type>& value, FormatOutputStream& outputSt
 //================================================================
 
 template <typename Type>
-inline void outputPoint(const FormatNumber<Point4D<Type>>& number, FormatOutputStream& outputStream)
+sysinline void outputPoint(const FormatNumber<Point4D<Type>>& number, FormatOutputStream& outputStream)
 {
-    outputStream.write(formatNumber(number.value.X, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.Y, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.Z, number.options));
-    outputStream.write(STR(", "));
-    outputStream.write(formatNumber(number.value.W, number.options));
+    outputStream 
+        << formatNumber(number.value.X, number) << STR(", ")
+        << formatNumber(number.value.Y, number) << STR(", ")
+        << formatNumber(number.value.Z, number) << STR(", ")
+        << formatNumber(number.value.W, number);
 }
 
 //================================================================
