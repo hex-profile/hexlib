@@ -86,7 +86,7 @@ public:
 private:
 
     ToolModule& toolModule;
-    TargetReallocKit const baseKit;
+    TargetReallocKit baseKit;
 
 };
 
@@ -118,7 +118,7 @@ private:
 
     ToolModule& toolModule;
     ToolTarget& toolTarget;
-    TargetProcessKit const baseKit;
+    TargetProcessKit baseKit;
 
 };
 
@@ -169,7 +169,7 @@ public:
 private:
 
     AtEngine& engine;
-    EngineBaseKit const baseGpuKit;
+    EngineBaseKit baseGpuKit;
 
 };
 
@@ -205,8 +205,8 @@ public:
 private:
 
     AtEngine& engine;
-    EngineBaseKit const baseKit;
-    ExtraKit const extraKit;
+    EngineBaseKit baseKit;
+    ExtraKit extraKit;
 
 };
 
@@ -228,35 +228,21 @@ public:
     stdbool process(stdPars(ToolTargetProcessKit))
     {
         EngineMemControllerTarget engineThunk(engine, baseKit, kit);
-
-        MemoryUsage tempUsage;
         require(memController.processCountTemp(engineThunk, tempUsage, stdPassKit(baseKit)));
-
-        maxTempUsage = maxOf(maxTempUsage, tempUsage);
-
         returnTrue;
     }
 
 public:
 
-    inline EngineTempCountToolTarget
-    (
-        AtEngine& engine,
-        MemController& memController,
-        MemoryUsage& maxTempUsage,
-        EngineBaseKit const baseKit
-    )
-        :
-        engine(engine), memController(memController), maxTempUsage(maxTempUsage), baseKit(baseKit)
-    {
-    }
+    inline EngineTempCountToolTarget(AtEngine& engine, MemController& memController, MemoryUsage& tempUsage, const EngineBaseKit& baseKit)
+        : engine(engine), memController(memController), tempUsage(tempUsage), baseKit(baseKit) {}
 
 private:
 
     AtEngine& engine;
     MemController& memController;
-    MemoryUsage& maxTempUsage;
-    EngineBaseKit const baseKit;
+    MemoryUsage& tempUsage;
+    EngineBaseKit baseKit;
 
 };
 
@@ -279,36 +265,21 @@ public:
     {
         EngineMemControllerTarget engineThunk(engine, baseKit, kit);
 
-        MemoryUsage tempUsage;
         require(memController.processAllocTemp(engineThunk, baseKit, tempUsage, stdPassKit(baseKit)));
-
-        maxTempUsage = maxOf(maxTempUsage, tempUsage);
 
         returnTrue;
     }
 
 public:
 
-    inline EngineTempDistribToolTarget
-    (
-        AtEngine& engine,
-        MemController& memController,
-        MemoryUsage& maxTempUsage,
-        EngineBaseKit const baseKit
-    )
-        :
-        engine(engine),
-        memController(memController),
-        maxTempUsage(maxTempUsage),
-        baseKit(baseKit)
-    {
-    }
+    inline EngineTempDistribToolTarget(AtEngine& engine, MemController& memController, MemoryUsage& tempUsage, const EngineBaseKit& baseKit)
+        : engine(engine), memController(memController), tempUsage(tempUsage), baseKit(baseKit) {}
 
 private:
 
     AtEngine& engine;
     MemController& memController;
-    MemoryUsage& maxTempUsage;
+    MemoryUsage& tempUsage;
     EngineBaseKit baseKit;
 
 };

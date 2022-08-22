@@ -68,6 +68,11 @@ inline RememberCleanup<Action> rememberCleanup(const Action& action)
 #define REMEMBER_CLEANUP(action) \
     auto RC__PASTE(__cleanup, __LINE__) = rememberCleanup([&] () {action;})
 
+//----------------------------------------------------------------
+
+#define REMEMBER_COUNTING_CLEANUP(action) \
+    REMEMBER_CLEANUP(if (!kit.dataProcessing) {action;})
+
 //================================================================
 //
 // RememberCleanupEx

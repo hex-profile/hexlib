@@ -25,6 +25,11 @@ public:
         func = outputFunc;
     }
 
+    const FormatOutputAtom& operator ~() const 
+    {
+        return *this;
+    }
+
 private:
 
     static void outputFunc(const void* value, FormatOutputStream& outputStream);

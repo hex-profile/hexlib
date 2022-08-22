@@ -436,7 +436,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
     //----------------------------------------------------------------
     //
-    // Count engine module temp memory
+    // Count engine module temp memory.
     //
     //----------------------------------------------------------------
 

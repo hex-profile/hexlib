@@ -401,19 +401,17 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
     AllocatorObject<CpuAddrU> cpuCounterObject{cpuCounterState, cpuCounterInterface};
     AllocatorObject<GpuAddrU> gpuCounterObject{gpuCounterState, gpuCounterInterface};
 
-    {
-        auto processKit = kitCombine
-        (
-            DataProcessingKit(false),
-            CpuFastAllocKit(cpuCounterObject),
-            CpuBlockAllocatorKit(cpuCounterInterface),
-            GpuFastAllocKit(gpuCounterObject),
-            GpuBlockAllocatorKit(gpuCounterInterface),
-            GpuTextureAllocKit(gpuTextureCounter)
-        );
+    auto processKit = kitCombine
+    (
+        DataProcessingKit(false),
+        CpuFastAllocKit(cpuCounterObject),
+        CpuBlockAllocatorKit(cpuCounterInterface),
+        GpuFastAllocKit(gpuCounterObject),
+        GpuBlockAllocatorKit(gpuCounterInterface),
+        GpuTextureAllocKit(gpuTextureCounter)
+    );
 
-        require(target.process(stdPassKit(processKit)));
-    }
+    require(target.process(stdPassKit(processKit)));
 
     ////
 
