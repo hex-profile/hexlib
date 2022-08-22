@@ -964,7 +964,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
 
     if (textEnabled && displayFrameRate && shared.smoothing())
     {
-        printMsgL(kit, STR("OverlaySmoother: Input %0 fps, Output %1 fps, Jitter %2 ms (%3%%)"),
+        printMsgL(kit, '$', STR("OverlaySmoother: Input $ fps, Output $ fps, Jitter $ ms ($%)"),
             fltf(1.f / inputDelayFilter(), 1),
             fltf(1.f / targetDelay, 1),
             fltf(actualJitter * 1000, 1),
@@ -974,20 +974,20 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     if (textEnabled && displayInfo)
     {
 
-        printMsgL(kit, STR("OverlaySmoother: Input Momentary %0 ms, Input Smooth %1 ms, Target %2 ms"),
+        printMsgL(kit, STR("OverlaySmoother: Input Momentary % ms, Input Smooth % ms, Target % ms"),
             fltf(lastInputDelay * 1e3f, 1),
             fltf(inputDelayFilter() * 1e3f, 1),
             fltf(targetDelay * 1e3f, 1));
 
-        printMsgL(kit, STR("OverlaySmoother: Render Delay [%0, %1] ms, Jitter %2 ms"),
+        printMsgL(kit, STR("OverlaySmoother: Render Delay [%, %] ms, Jitter % ms"),
             fltf(minRenderDelay * 1e3f, 1), fltf(maxRenderDelay * 1e3f, 1),
             fltf((maxRenderDelay - minRenderDelay) * 1e3f, 1));
 
-        printMsgL(kit, STR("OverlaySmoother: Output Delay [%0, %1] ms, Jitter %2%%"),
+        printMsgL(kit, '$', STR("OverlaySmoother: Output Delay [$, $] ms, Jitter $%"),
             fltf(minActualDelay * 1e3f, 1), fltf(maxActualDelay * 1e3f, 1),
             fltf((maxActualDelay / minActualDelay - 1.f) * 100, 0));
 
-        printMsgL(kit, STR("OverlaySmoother: Queue Size = %0 of %1 (Filtered %2, Boost %3)"), queueSize, queueCapacity,
+        printMsgL(kit, STR("OverlaySmoother: Queue Size = % of % (Filtered %, Boost %)"), queueSize, queueCapacity,
             fltf(queueOccupancyFilter() * queueCapacity, 1), fltf(computeQueueBoostFactor(queueOccupancyFilter()), 2));
 
     }

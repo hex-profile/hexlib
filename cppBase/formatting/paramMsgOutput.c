@@ -4,14 +4,6 @@
 
 //================================================================
 //
-// paramMsgSpecChar
-//
-//================================================================
-
-static const CharType paramMsgSpecChar = '%';
-
-//================================================================
-//
 // formatOutput<ParamMsg>
 //
 //================================================================
@@ -20,14 +12,15 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
 {
 
     const ParamMsg& v = * (const ParamMsg*) value;
+    auto specialChar = v.specialChar;
 
     ////
 
-    const FormatOutputAtom* paramPtr = v.paramPtr;
-    size_t paramSize = v.paramSize;
+    auto paramPtr = v.paramPtr;
+    auto paramSize = v.paramSize;
 
-    const CharType* formatPtr = v.format.ptr;
-    const CharType* formatEnd = v.format.ptr + v.format.size;
+    auto formatPtr = v.format.ptr;
+    auto formatEnd = v.format.ptr + v.format.size;
 
     ////
 
@@ -42,7 +35,7 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
 
         const CharType* searchStart = formatPtr;
 
-        while (formatPtr != formatEnd && *formatPtr != paramMsgSpecChar)
+        while (formatPtr != formatEnd && *formatPtr != specialChar)
             ++formatPtr;
 
         if (formatPtr != searchStart)
@@ -52,17 +45,6 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
             break;
 
         ++formatPtr;
-
-        //
-        // received %%, output %
-        //
-
-        if (formatPtr != formatEnd && *formatPtr == paramMsgSpecChar)
-        {
-            outputStream.write(&paramMsgSpecChar, 1);
-            ++formatPtr;
-            continue;
-        }
 
         //
         // received %n
@@ -94,7 +76,7 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
         }
         else
         {
-            outputStream.write(&paramMsgSpecChar, 1);
+            outputStream.write(&specialChar, 1);
         }
 
     }

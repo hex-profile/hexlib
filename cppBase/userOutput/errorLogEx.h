@@ -67,7 +67,7 @@ class ErrorLogExNull : public ErrorLogEx
     { \
         const FormatOutputAtom params[COMPILE_CLAMP_MIN(n, 1)] = {PREP_FOR(n, PRINTTRACE__STORE_PARAM, _)}; \
         \
-        ParamMsg paramMsg(format, params, n); \
+        ParamMsg paramMsg{defaultSpecialChar, format, params, n}; \
         return errorLogEx.addMsgTrace(paramMsg, msgKind, stdPassThru); \
     }
 

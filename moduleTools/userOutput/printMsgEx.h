@@ -19,24 +19,24 @@
 //
 //================================================================
 
-inline bool printMsgCheckDataProcessing(...)
+sysinline bool printMsgCheckDataProcessing(...)
     {return true;}
 
-inline bool printMsgCheckDataProcessing(const DataProcessingKit* kit)
+sysinline bool printMsgCheckDataProcessing(const DataProcessingKit* kit)
     {return kit->dataProcessing;}
 
 //----------------------------------------------------------------
 
-inline bool printMsgCheckOutputEnabled(...)
+sysinline bool printMsgCheckOutputEnabled(...)
     {return true;}
 
-inline bool printMsgCheckOutputEnabled(const VerbosityKit* kit)
+sysinline bool printMsgCheckOutputEnabled(const VerbosityKit* kit)
     {return kit->verbosity >= Verbosity::On;}
 
 //----------------------------------------------------------------
 
 template <typename Kit>
-inline bool isOutputEnabled(const Kit& kit)
+sysinline bool isOutputEnabled(const Kit& kit)
     {return printMsgCheckDataProcessing(&kit) && printMsgCheckOutputEnabled(&kit);}
 
 //================================================================
@@ -49,9 +49,19 @@ inline bool isOutputEnabled(const Kit& kit)
 //================================================================
 
 template <typename Kit, typename... Types>
-inline bool printMsgL(const Kit& kit, const CharArray& format, const Types&... values)
+sysinline bool printMsgL(const Kit& kit, const CharArray& format, const Types&... values)
     {return !isOutputEnabled(kit) ? true : printMsg(kit.localLog, format, values...);}
 
 template <typename Kit, typename... Types>
-inline bool printMsgG(const Kit& kit, const CharArray& format, const Types&... values)
+sysinline bool printMsgL(const Kit& kit, CharType specialChar, const CharArray& format, const Types&... values)
+    {return !isOutputEnabled(kit) ? true : printMsg(kit.localLog, specialChar, format, values...);}
+
+//----------------------------------------------------------------
+
+template <typename Kit, typename... Types>
+sysinline bool printMsgG(const Kit& kit, const CharArray& format, const Types&... values)
     {return !isOutputEnabled(kit) ? true : printMsg(kit.msgLog, format, values...);}
+
+template <typename Kit, typename... Types>
+sysinline bool printMsgG(const Kit& kit, CharType specialChar, const CharArray& format, const Types&... values)
+    {return !isOutputEnabled(kit) ? true : printMsg(kit.msgLog, specialChar, format, values...);}

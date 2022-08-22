@@ -5,6 +5,14 @@
 
 //================================================================
 //
+// defaultSpecialChar
+//
+//================================================================
+
+constexpr CharType defaultSpecialChar = '%';
+
+//================================================================
+//
 // ParamMsg
 //
 // Core formatting function, takes format string in printf-style
@@ -17,9 +25,9 @@ struct ParamMsg : public FormatOutputAtom
 
 public:
 
-    sysinline ParamMsg(const CharArray& format, const FormatOutputAtom* paramPtr, size_t paramSize)
+    sysinline ParamMsg(CharType specialChar, const CharArray& format, const FormatOutputAtom* paramPtr, size_t paramSize)
         :
-        format(format), paramPtr(paramPtr), paramSize(paramSize)
+        specialChar(specialChar), format(format), paramPtr(paramPtr), paramSize(paramSize)
     {
         value = this;
         func = outputFunc;
@@ -36,6 +44,7 @@ private:
 
 private:
 
+    CharType specialChar;
     CharArray format;
     const FormatOutputAtom* paramPtr;
     size_t paramSize;

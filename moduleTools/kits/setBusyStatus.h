@@ -53,6 +53,6 @@ inline bool setBusyStatus(const SetBusyStatusKit& kit, const CharArray& format, 
     constexpr size_t n = sizeof...(values);
     const FormatOutputAtom params[] = {values...};
 
-    ParamMsg paramMsg(format, params, n);
+    ParamMsg paramMsg(defaultSpecialChar, format, params, n);
     return kit.setBusyStatus.set(paramMsg);
 }

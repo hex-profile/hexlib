@@ -24,13 +24,16 @@ class ParamMsg0 : public ParamMsg
 
 public:
 
-    sysinline ParamMsg0(const CharArray& format)
-        : ParamMsg(format, 0, 0) {}
+    sysinline ParamMsg0(CharType specialChar, const CharArray& format)
+        : ParamMsg(specialChar, format, 0, 0) {}
 
 };
 
+sysinline ParamMsg0 paramMsg(CharType specialChar, const CharArray& format)
+    {return ParamMsg0(specialChar, format);}
+
 sysinline ParamMsg0 paramMsg(const CharArray& format)
-    {return ParamMsg0(format);}
+    {return ParamMsg0(defaultSpecialChar, format);}
 
 //----------------------------------------------------------------
 
@@ -55,11 +58,12 @@ sysinline ParamMsg0 paramMsg(const CharArray& format)
         \
         explicit sysinline ParamStruct \
         ( \
+            CharType specialChar, \
             const CharArray& format, \
             PREP_ENUM_INDEXED_PAIR(n, const T, &v) \
         ) \
             : \
-            ParamMsg(format, params, n), \
+            ParamMsg(specialChar, format, params, n), \
             PREP_ENUM(n, PARAMMSG__COPY_VALUE, o) \
         { \
             PREP_FOR(n, PARAMMSG__SET_ATOM, o) \
@@ -75,11 +79,33 @@ sysinline ParamMsg0 paramMsg(const CharArray& format)
     template <PREP_ENUM_INDEXED(n, typename T)> \
     sysinline ParamStruct<PREP_ENUM_INDEXED(n, T)> paramMsg \
     ( \
+        CharType specialChar, \
         const CharArray& format, \
         PREP_ENUM_INDEXED_PAIR(n, const T, &v) \
     ) \
     { \
-        return ParamStruct<PREP_ENUM_INDEXED(n, T)>(format, PREP_ENUM_INDEXED(n, v)); \
+        return ParamStruct<PREP_ENUM_INDEXED(n, T)>(specialChar, format, PREP_ENUM_INDEXED(n, v)); \
+    } \
+    \
+    template <PREP_ENUM_INDEXED(n, typename T)> \
+    sysinline ParamStruct<PREP_ENUM_INDEXED(n, T)> paramMsg \
+    ( \
+        const CharArray& format, \
+        PREP_ENUM_INDEXED_PAIR(n, const T, &v) \
+    ) \
+    { \
+        return ParamStruct<PREP_ENUM_INDEXED(n, T)>(defaultSpecialChar, format, PREP_ENUM_INDEXED(n, v)); \
+    } \
+    \
+    template <PREP_ENUM_INDEXED(n, typename T)> \
+    sysinline ParamStruct<PREP_ENUM_INDEXED(n, T)> paramMsgSafe \
+    ( \
+        CharType specialChar, \
+        const CharArray& format, \
+        PREP_ENUM_INDEXED_PAIR(n, const T, *v) \
+    ) \
+    { \
+        return ParamStruct<PREP_ENUM_INDEXED(n, T)>(specialChar, format, PREP_ENUM_INDEXED(n, *v)); \
     } \
     \
     template <PREP_ENUM_INDEXED(n, typename T)> \
@@ -89,7 +115,7 @@ sysinline ParamMsg0 paramMsg(const CharArray& format)
         PREP_ENUM_INDEXED_PAIR(n, const T, *v) \
     ) \
     { \
-        return ParamStruct<PREP_ENUM_INDEXED(n, T)>(format, PREP_ENUM_INDEXED(n, *v)); \
+        return ParamStruct<PREP_ENUM_INDEXED(n, T)>(defaultSpecialChar, format, PREP_ENUM_INDEXED(n, *v)); \
     } \
     \
     template <PREP_ENUM_INDEXED(n, typename T)> \

@@ -1229,7 +1229,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         //
         //----------------------------------------------------------------
 
-        printMsg(log, STR("<pre class=\"headerBlock\"><a href=\"index.html\">Profiler report created at %0, %1, Minimal displayed fraction %2%%</a></pre>"),
+        printMsg(log, '$', STR("<pre class=\"headerBlock\"><a href=\"index.html\">Profiler report created at $, $, Minimal displayed fraction $%</a></pre>"),
             o.reportCreationTime, o.timingParams.deviceTimingMode ? STR("Device mode") : STR("Host mode"),
             fltf(o.displayParams.timeThresholdFraction * 100, 1));
 

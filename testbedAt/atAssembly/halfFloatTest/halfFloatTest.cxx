@@ -497,7 +497,7 @@ stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
         for_count (k, 16)
             require(testPacking(stdPass));
 
-        printMsgL(kit, STR("Half-float pack test: %0%%"), fltf(float32(packTestPass) / float32(0x10000) * 100, 1), msgInfo);
+        printMsgL(kit, '$', STR("Half-float pack test: $%"), fltf(float32(packTestPass) / float32(0x10000) * 100, 1), msgInfo);
     }
 
     returnTrue;

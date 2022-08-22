@@ -161,13 +161,14 @@ public:
         printMsg
         (
             kit.msgLog,
-            STR("%0%1: %2 is %4%5, %3%% total"),
+            '$',
+            STR("$$: $ is $$, $% total"),
             STR(""), // indent
             userName.size ? userName : charArrayFromPtr(scope.location), // 1
-            paramMsg(deviceMode ? STR("Device %0%%") : (pureTime ? STR("Body") : STR("Time")), fltf(deviceFraction * 1e2f, 0)), // 2
+            paramMsg('$', deviceMode ? STR("Device $%") : (pureTime ? STR("Body") : STR("Time")), fltf(deviceFraction * 1e2f, 0)), // 2
             fltf(timePercentage, 1), // 3
-            paramMsg(!perCycleCountImportant ? STR("%0 ms") : STR("%0 ms x %1 fraction"), fltf(avgTimeMs, 3), fltf(avgPerCycleCount, 1)), // 4
-            paramMsg(avgElemTime == 0 ? STR("") : STR(" (%0 us/elem)"), prettyNumber(fltg(avgElemTime * 1e6f, 3)), fltf(sqrtf(avgElemCount), 0))
+            paramMsg(!perCycleCountImportant ? STR("% ms") : STR("% ms x % fraction"), fltf(avgTimeMs, 3), fltf(avgPerCycleCount, 1)), // 4
+            paramMsg(avgElemTime == 0 ? STR("") : STR(" (% us/elem)"), prettyNumber(fltg(avgElemTime * 1e6f, 3)), fltf(sqrtf(avgElemCount), 0))
         );
 
         ////
@@ -187,7 +188,7 @@ public:
 
 public:
 
-    inline PrintNode(float32 processingThroughput, const ReportKit& kit)
+    sysinline PrintNode(float32 processingThroughput, const ReportKit& kit)
         : processingThroughput(processingThroughput), kit(kit) {}
 
 private:

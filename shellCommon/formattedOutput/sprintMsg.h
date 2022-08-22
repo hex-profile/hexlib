@@ -22,7 +22,7 @@ template <typename Kit, typename... Types>
 inline StlString sprintMsg(const Kit& kit, const CharArray& format, const Types&... values)
 {
     const FormatOutputAtom params[] = {values...};
-    ParamMsg paramMsg(format, params, sizeof...(values));
+    ParamMsg paramMsg(defaultSpecialChar, format, params, sizeof...(values));
    
     ////
 
