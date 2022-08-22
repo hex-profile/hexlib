@@ -235,7 +235,7 @@ UniquePtr<ConfigFile> ConfigFile::create()
 //
 //================================================================
 
-class GetSimpleString : public GetString
+class GetSimpleString : public fileTools::GetString
 {
 
     SimpleString& str;
@@ -279,7 +279,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(Kit))
     if_not
     (
         def(cfgFilename) &&
-        kit.fileTools.expandPath(cfgFilename.cstr(), getFilename) &&
+        fileTools::expandPath(cfgFilename.cstr(), getFilename) &&
         def(filename)
     )
     {

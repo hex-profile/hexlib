@@ -3,7 +3,6 @@
 #include "cfgTools/boolSwitch.h"
 #include "configFile/cfgSimpleString.h"
 #include "history/historyObject.h"
-#include "interfaces/fileToolsKit.h"
 #include "kits/moduleKit.h"
 #include "profilerShell/profiler/profilerImpl.h"
 #include "profilerShell/profilerReport/profilerReport.h"
@@ -28,7 +27,7 @@ public:
 
     using InitKit = KitCombine<ProfilerImpl::AllocKit, MsgLogKit>;
     using DeinitKit = KitCombine<ErrorLogKit, MsgLogKit>;
-    using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit, FileToolsKit>;
+    using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit>;
     using ReportKit = ProcessKit;
 
 public:

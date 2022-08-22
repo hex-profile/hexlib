@@ -3,7 +3,6 @@
 #include "configFile/cfgStringEnv.h"
 #include "configFile/stringReceiver.h"
 #include "errorLog/errorLogKit.h"
-#include "interfaces/fileToolsKit.h"
 #include "stdFunc/stdFunc.h"
 #include "storage/smartPtr.h"
 #include "userOutput/errorLogExKit.h"
@@ -16,7 +15,7 @@ namespace cfgVarsImpl {
 //
 //================================================================
 
-using FileEnvKit = KitCombine<ErrorLogKit, ErrorLogExKit, FileToolsKit>;
+using FileEnvKit = KitCombine<ErrorLogKit, ErrorLogExKit>;
 
 //================================================================
 //

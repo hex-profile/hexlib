@@ -36,17 +36,16 @@ public:
 
 public:
 
-    inline TmpFileEraserThunk(const String& name, FileTools& fileTools)
+    inline TmpFileEraserThunk(const String& name)
         :
-        theName(name),
-        fileTools(fileTools)
+        theName(name)
     {
     }
 
     inline ~TmpFileEraserThunk()
     {
         if (active)
-            fileTools.deleteFile(theName.c_str());
+            fileTools::deleteFile(theName.c_str());
     }
 
     inline void cancel() {active = false;}
@@ -55,7 +54,6 @@ private:
 
     bool active = true;
     String theName;
-    FileTools& fileTools;
 
 };
 
@@ -578,7 +576,7 @@ stdbool loadFile(const CharType* filename, Memory& memory, stdPars(FileEnvKit))
     //
     //----------------------------------------------------------------
 
-    kit.fileTools.deleteFile(temporaryFilename.c_str());
+    fileTools::deleteFile(temporaryFilename.c_str());
 
     //----------------------------------------------------------------
     //
@@ -997,7 +995,7 @@ stdbool saveFile(const Memory& memory, const CharType* filename, stdPars(FileEnv
     //
     //----------------------------------------------------------------
 
-    TmpFileEraserThunk tmpEraser(temporaryFilename, kit.fileTools);
+    TmpFileEraserThunk tmpEraser(temporaryFilename);
 
     ////
 
@@ -1014,7 +1012,7 @@ stdbool saveFile(const Memory& memory, const CharType* filename, stdPars(FileEnv
     //
     //----------------------------------------------------------------
 
-    REQUIRE(kit.fileTools.renameFile(temporaryFilename.c_str(), filename));
+    REQUIRE(fileTools::renameFile(temporaryFilename.c_str(), filename));
     tmpEraser.cancel();
 
     returnTrue;

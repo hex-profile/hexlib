@@ -3,7 +3,6 @@
 #include "allocation/mallocKit.h"
 #include "debugBridge/bridge/debugBridgeKit.h"
 #include "errorLog/errorLogKit.h"
-#include "interfaces/fileToolsKit.h"
 #include "kits/msgLogsKit.h"
 #include "timer/timerKit.h"
 #include "userOutput/errorLogExKit.h"
@@ -19,7 +18,7 @@ using namespace packageApi;
 //
 //================================================================
 
-using StarterKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, FileToolsKit, MallocKit>;
+using StarterKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit>;
 
 //================================================================
 //

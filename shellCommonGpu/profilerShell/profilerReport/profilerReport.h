@@ -1,7 +1,6 @@
 #pragma once
 
 #include "profilerShell/profiler/profilerStruct.h"
-#include "interfaces/fileToolsKit.h"
 #include "kits/moduleHeader.h"
 #include "userOutput/diagnosticKit.h"
 
@@ -14,7 +13,7 @@ namespace profilerReport {
 //================================================================
 
 using ReportKit = DiagnosticKit;
-using ReportFileKit = KitCombine<ReportKit, FileToolsKit>;
+using ReportFileKit = ReportKit;
 
 //================================================================
 //

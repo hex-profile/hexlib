@@ -4,6 +4,8 @@
 #include "kit/kit.h"
 #include "numbers/int/intBase.h"
 
+namespace fileTools {
+
 //================================================================
 //
 // GetString
@@ -38,30 +40,34 @@ using FileSize = uint64;
 
 //================================================================
 //
-// FileTools
+// File tools.
 //
 //================================================================
 
-struct FileTools
-{
-    // Check if file exists.
-    virtual bool fileExists(const CharType* filename) =0;
+// Check if file exists.
+bool fileExists(const CharType* filename);
 
-    // Get file size.
-    virtual bool getFileSize(const CharType* filename, FileSize& result) =0;
+// Get file size.
+bool getFileSize(const CharType* filename, FileSize& result);
 
-    // Returns the time of last file modification.
-    virtual bool getChangeTime(const CharType* filename, FileTime& result) =0;
+// Returns the time of last file modification.
+bool getChangeTime(const CharType* filename, FileTime& result);
 
-    // Delete file.
-    virtual bool deleteFile(const CharType* filename) =0;
+// Delete file.
+bool deleteFile(const CharType* filename);
 
-    // Atomic rename, replacing destination file.
-    virtual bool renameFile(const CharType* oldName, const CharType* newName) =0;
+// Atomic rename, replacing destination file.
+bool renameFile(const CharType* oldName, const CharType* newName);
 
-    // Expand file name to full absolute path.
-    virtual bool expandPath(const CharType* filename, GetString& result) =0;
+// Expand file name to full absolute path.
+bool expandPath(const CharType* filename, GetString& result);
 
-    // Make directory
-    virtual bool makeDirectory(const CharType* filename) =0;
-};
+// Make directory
+bool makeDirectory(const CharType* filename);
+
+//----------------------------------------------------------------
+
+}
+
+using fileTools::FileTime;
+using fileTools::FileSize;

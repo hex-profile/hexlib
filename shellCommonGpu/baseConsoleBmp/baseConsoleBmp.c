@@ -339,7 +339,7 @@ stdbool BaseConsoleBmpImpl::mdCheck(stdPars(Kit))
         mdCurrentDir = dir;
         REQUIRE(def(mdCurrentDir));
 
-        kit.fileTools.makeDirectory(mdCurrentDir.cstr()); // don't check for error
+        fileTools::makeDirectory(mdCurrentDir.cstr()); // don't check for error
     }
 
     returnTrue;

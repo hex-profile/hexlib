@@ -1,7 +1,6 @@
 #pragma once
 
 #include "baseInterfaces/baseImageConsole.h"
-#include "interfaces/fileToolsKit.h"
 #include "storage/dynamicClass.h"
 #include "userOutput/diagnosticKit.h"
 #include "cpuFuncKit.h"
@@ -24,7 +23,7 @@ using Pixel = uint8_x4;
 //
 //================================================================
 
-using Kit = KitCombine<DiagnosticKit, ProfilerKit, CpuFastAllocKit, DataProcessingKit, FileToolsKit>;
+using Kit = KitCombine<DiagnosticKit, ProfilerKit, CpuFastAllocKit, DataProcessingKit>;
 
 //================================================================
 //

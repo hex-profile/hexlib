@@ -4,7 +4,6 @@
 #include "atAssembly/frameAdvanceKit.h"
 #include "atInterface/atInterfaceKit.h"
 #include "gpuModuleHeader.h"
-#include "interfaces/fileToolsKit.h"
 #include "kits/alternativeVersionKit.h"
 #include "kits/displayParamsKit.h"
 #include "kits/gpuRgbFrameKit.h"
@@ -45,7 +44,7 @@ struct VideoPrepTarget
 using ReallocKit = KitCombine<ModuleReallocKit, GpuAppExecKit, AtCommonKit>;
 
 using ProcessKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, VerbosityKit, 
-    UserPointKit, SetBusyStatusKit, GpuAppExecKit, FileToolsKit, MallocKit, AtProcessKit, FrameAdvanceKit>;
+    UserPointKit, SetBusyStatusKit, GpuAppExecKit, MallocKit, AtProcessKit, FrameAdvanceKit>;
 
 //================================================================
 //

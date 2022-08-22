@@ -1,6 +1,6 @@
-#ifdef __linux__
+#include "interfaces/fileTools.h"
 
-#include "fileToolsLinux.h"
+#ifdef __linux__
 
 #include <memory>
 #include <algorithm>
@@ -15,24 +15,26 @@
 #include "stlString/stlString.h"
 #include "compileTools/errorHandling.h"
 
+namespace fileTools {
+
 //================================================================
 //
-// FileToolsLinux::fileExists
+// fileExists
 //
 //================================================================
 
-bool FileToolsLinux::fileExists(const CharType* filename)
+bool fileExists(const CharType* filename)
 {
     return access(filename, F_OK) != -1;
 }
 
 //================================================================
 //
-// FileToolsLinux::getFileSize
+// getFileSize
 //
 //================================================================
 
-bool FileToolsLinux::getFileSize(const CharType* filename, FileSize& result)
+bool getFileSize(const CharType* filename, FileSize& result)
 {
     struct stat tmp;
     require(stat(filename, &tmp) == 0);
@@ -45,11 +47,11 @@ bool FileToolsLinux::getFileSize(const CharType* filename, FileSize& result)
 
 //================================================================
 //
-// FileToolsLinux::getChangeTime
+// getChangeTime
 //
 //================================================================
 
-bool FileToolsLinux::getChangeTime(const CharType* filename, FileTime& result)
+bool getChangeTime(const CharType* filename, FileTime& result)
 {
     struct stat tmp;
     require(stat(filename, &tmp) == 0);
@@ -60,39 +62,39 @@ bool FileToolsLinux::getChangeTime(const CharType* filename, FileTime& result)
 
 //================================================================
 //
-// FileToolsLinux::deleteFile
-// FileToolsLinux::renameFile
+// deleteFile
+// renameFile
 //
 //================================================================
 
-bool FileToolsLinux::deleteFile(const CharType* filename)
+bool deleteFile(const CharType* filename)
 {
     return remove(filename) == 0;
 }
 
-bool FileToolsLinux::renameFile(const CharType* oldName, const CharType* newName)
+bool renameFile(const CharType* oldName, const CharType* newName)
 {
     return rename(oldName, newName) == 0;
 }
 
 //================================================================
 //
-// FileToolsLinux::makeDirectory
+// makeDirectory
 //
 //================================================================
 
-bool FileToolsLinux::makeDirectory(const CharType* filename)
+bool makeDirectory(const CharType* filename)
 {
     return mkdir(filename, 0777) == 0;
 }
 
 //================================================================
 //
-// FileToolsLinux::expandPath
+// expandPath
 //
 //================================================================
 
-bool FileToolsLinux::expandPath(const CharType* filename, GetString& result)
+bool expandPath(const CharType* filename, GetString& result)
 {
     using namespace std;
 
@@ -187,5 +189,7 @@ bool FileToolsLinux::expandPath(const CharType* filename, GetString& result)
 }
 
 //----------------------------------------------------------------
+
+}
 
 #endif

@@ -4,7 +4,6 @@
 #include "configFile/cfgSerialization.h"
 #include "configFile/stringReceiver.h"
 #include "errorLog/errorLogKit.h"
-#include "interfaces/fileToolsKit.h"
 #include "simpleString/simpleString.h"
 #include "stdFunc/stdFunc.h"
 #include "storage/dynamicClass.h"
@@ -69,7 +68,7 @@ private:
 //
 //================================================================
 
-using Kit = KitCombine<MsgLogKit, ErrorLogKit, ErrorLogExKit, FileToolsKit>;
+using Kit = KitCombine<MsgLogKit, ErrorLogKit, ErrorLogExKit>;
 
 //================================================================
 //

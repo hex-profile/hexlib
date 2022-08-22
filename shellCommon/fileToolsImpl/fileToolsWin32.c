@@ -1,6 +1,6 @@
-#ifdef _WIN32
+#include "interfaces/fileTools.h"
 
-#include "fileToolsWin32.h"
+#ifdef _WIN32
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -9,13 +9,15 @@
 
 #include "storage/rememberCleanup.h"
 
+namespace fileTools {
+
 //================================================================
 //
-// FileToolsWin32::fileExists
+// fileExists
 //
 //================================================================
 
-bool FileToolsWin32::fileExists(const CharType* filename)
+bool fileExists(const CharType* filename)
 {
     //
     // only FindFirstFile - GetFileAttributes sees not all files
@@ -30,11 +32,11 @@ bool FileToolsWin32::fileExists(const CharType* filename)
 
 //================================================================
 //
-// FileToolsWin32::getChangeTime
+// getChangeTime
 //
 //================================================================
 
-bool FileToolsWin32::getChangeTime(const CharType* filename, FileTime& result)
+bool getChangeTime(const CharType* filename, FileTime& result)
 {
     struct _stati64 tmp;
     ensure(_stati64(filename, &tmp) == 0);
@@ -45,11 +47,11 @@ bool FileToolsWin32::getChangeTime(const CharType* filename, FileTime& result)
 
 //================================================================
 //
-// FileToolsWin32::getFileSize
+// getFileSize
 //
 //================================================================
 
-bool FileToolsWin32::getFileSize(const CharType* filename, FileSize& result)
+bool getFileSize(const CharType* filename, FileSize& result)
 {
     struct _stati64 tmp;
     ensure(_stati64(filename, &tmp) == 0);
@@ -62,24 +64,24 @@ bool FileToolsWin32::getFileSize(const CharType* filename, FileSize& result)
 
 //================================================================
 //
-// FileToolsWin32::deleteFile
-// FileToolsWin32::renameFile
+// deleteFile
+// renameFile
 //
 //================================================================
 
-bool FileToolsWin32::deleteFile(const CharType* filename)
+bool deleteFile(const CharType* filename)
     {return DeleteFile(filename) != 0;}
 
-bool FileToolsWin32::renameFile(const CharType* oldName, const CharType* newName)
+bool renameFile(const CharType* oldName, const CharType* newName)
     {return MoveFileEx(oldName, newName, MOVEFILE_REPLACE_EXISTING) != 0;}
 
 //================================================================
 //
-// FileToolsWin32::expandPath
+// expandPath
 //
 //================================================================
 
-bool FileToolsWin32::expandPath(const CharType* filename, GetString& result)
+bool expandPath(const CharType* filename, GetString& result)
 {
     CharType* dummy(0);
     DWORD size = GetFullPathName(filename, 0, NULL, &dummy);
@@ -100,15 +102,17 @@ bool FileToolsWin32::expandPath(const CharType* filename, GetString& result)
 
 //================================================================
 //
-// FileToolsWin32::makeDirectory
+// makeDirectory
 //
 //================================================================
 
-bool FileToolsWin32::makeDirectory(const CharType* filename)
+bool makeDirectory(const CharType* filename)
 {
     return CreateDirectory(filename, NULL) != 0;
 }
 
 //----------------------------------------------------------------
+
+}
 
 #endif

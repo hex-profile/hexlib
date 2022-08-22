@@ -1780,7 +1780,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
 
     ////
 
-    kit.fileTools.makeDirectory(o.outputDir);
+    fileTools::makeDirectory(o.outputDir);
 
     ////
 

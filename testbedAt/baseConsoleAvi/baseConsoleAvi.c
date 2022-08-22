@@ -751,7 +751,7 @@ stdbool BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
     {
         if (currentOutputDir != outputDir)
         {
-            kit.fileTools.makeDirectory(outputDir);
+            fileTools::makeDirectory(outputDir);
             writers.clear();
             currentOutputDir = outputDir;
         }

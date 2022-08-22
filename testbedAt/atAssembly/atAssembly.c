@@ -4,17 +4,18 @@
 
 #include "atAssembly/frameAdvanceKit.h"
 #include "atAssembly/frameChange.h"
+#include "atEngine/atEngine.h"
 #include "cfgTools/boolSwitch.h"
 #include "compileTools/classContext.h"
 #include "configFile/cfgSimpleString.h"
 #include "configFile/configFile.h"
 #include "errorLog/debugBreak.h"
-#include "fileToolsImpl/fileToolsImpl.h"
+#include "formattedOutput/errorBreakThunks.h"
 #include "formattedOutput/userOutputThunks.h"
-#include "atEngine/atEngine.h"
 #include "gpuImageConsoleImpl/gpuImageConsoleImpl.h"
 #include "gpuLayer/gpuCallsProhibition.h"
 #include "gpuShell/gpuShell.h"
+#include "interfaces/fileTools.h"
 #include "memController/memController.h"
 #include "memController/memoryUsageReport.h"
 #include "overlayTakeover/overlayTakeoverThunk.h"
@@ -23,12 +24,11 @@
 #include "storage/classThunks.h"
 #include "storage/optionalObject.h"
 #include "storage/rememberCleanup.h"
+#include "tests/testShell/testShell.h"
 #include "timerImpl/timerImpl.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsgEx.h"
 #include "videoPreprocessor/videoPreprocessor.h"
-#include "tests/testShell/testShell.h"
-#include "formattedOutput/errorBreakThunks.h"
 
 namespace atStartup {
 
@@ -38,7 +38,7 @@ namespace atStartup {
 //
 //================================================================
 
-using ProcessProfilerKit = KitCombine<ProcessKit, TimerKit, OverlayTakeoverKit, UserPointKit, FileToolsKit, FrameAdvanceKit, ProfilerKit>;
+using ProcessProfilerKit = KitCombine<ProcessKit, TimerKit, OverlayTakeoverKit, UserPointKit, FrameAdvanceKit, ProfilerKit>;
 using ProcessFinalKit = KitCombine<ProcessProfilerKit, gpuShell::GpuShellKit>;
 
 using TargetReallocKit = ProcessFinalKit;
@@ -321,12 +321,12 @@ stdbool getFileProperties(const CharType* filename, FileProperties& result, stdP
 {
     result = FileProperties{};
 
-    if_not (kit.fileTools.fileExists(filename))
+    if_not (fileTools::fileExists(filename))
         returnTrue;
 
     result.exists = true;
-    REQUIRE(kit.fileTools.getChangeTime(filename, result.changeTime));
-    REQUIRE(kit.fileTools.getFileSize(filename, result.fileSize));
+    REQUIRE(fileTools::getChangeTime(filename, result.changeTime));
+    REQUIRE(fileTools::getFileSize(filename, result.fileSize));
 
     returnTrue;
 }
@@ -342,7 +342,7 @@ class InputMetadataHandler
 
 public:
 
-    using UpdateKit = KitCombine<DiagnosticKit, LocalLogKit, FileToolsKit>;
+    using UpdateKit = KitCombine<DiagnosticKit, LocalLogKit>;
 
     stdbool checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit));
     stdbool reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit));
@@ -764,24 +764,17 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     REQUIRE(!!engineModule);
 
     //
-    //
-    //
-
-    FileToolsImpl fileTools;
-    FileToolsKit fileToolsKit(fileTools);
-
-    //
     // Config file
     //
 
     SimpleString configFilename; configFilename << engineModule->getName() << CT(".cfg");
-    errorBlock(configFile.loadFile(configFilename, stdPassKit(kitCombine(kit, fileToolsKit))));
+    errorBlock(configFile.loadFile(configFilename, stdPass));
     REMEMBER_CLEANUP_EX(configFileCleanup, configFile.unloadFile());
 
     configFile.loadVars(*this);
 
     configFile.saveVars(*this, true);
-    errorBlock(configFile.updateFile(true, stdPassKit(kitCombine(kit, fileToolsKit)))); // fix potential errors
+    errorBlock(configFile.updateFile(true, stdPass)); // fix potential errors
 
     //
     // Register signals
@@ -846,17 +839,12 @@ void AtAssemblyImpl::finalize(stdPars(InitKit))
     if_not (initialized)
         return;
 
-    ////
-
-    FileToolsImpl fileTools;
-    FileToolsKit fileToolsKit(fileTools);
-
     //
     // Make finalization work
     //
 
     configFile.saveVars(*this, false);
-    errorBlock(configFile.updateFile(false, stdPassKit(kitCombine(kit, fileToolsKit))));
+    errorBlock(configFile.updateFile(false, stdPass));
 }
 
 //================================================================
@@ -1243,7 +1231,6 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //----------------------------------------------------------------
 
     TimerImpl timer;
-    FileToolsImpl fileTools;
 
     ////
 
@@ -1268,7 +1255,6 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
             OverlayTakeoverKit(overlayTakeover),
             PipeControlKit(pipeControl),
             UserPointKit(userPoint),
-            FileToolsKit(fileTools),
             FrameAdvanceKit(frameAdvance)
         );
 

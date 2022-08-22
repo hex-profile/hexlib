@@ -3,7 +3,6 @@
 #include "allocation/mallocAllocator/mallocAllocator.h"
 #include "compileTools/blockExceptionsSilent.h"
 #include "debugBridge/bridgeUsage/msgLogToBridge.h"
-#include "fileToolsImpl/fileToolsImpl.h"
 #include "formattedOutput/diagLogTool.h"
 #include "formattedOutput/messageFormatterStdio.h"
 #include "package/starterKit.h"
@@ -70,7 +69,6 @@ struct StarterKitMaker
     ////
 
     TimerImpl timer;
-    FileToolsImpl fileTools;
 
     ////
 
@@ -88,7 +86,6 @@ struct StarterKitMaker
         LocalLogKit(localLog),
         LocalLogAuxKit(false, localLog),
         TimerKit(timer),
-        FileToolsKit(fileTools),
         MallocKit(mallocAllocator)
     );
 };
@@ -168,7 +165,6 @@ struct StarterDebugKitMaker
     ////
 
     TimerImpl timer;
-    FileToolsImpl fileTools;
 
     ////
 
@@ -186,7 +182,6 @@ struct StarterDebugKitMaker
         LocalLogKit{localLog},
         LocalLogAuxKit{false, localLog},
         TimerKit{timer},
-        FileToolsKit{fileTools},
         MallocKit{mallocAllocator}, 
         DebugBridgeKit{debugBridge},
         DumpParamsKit{dumpParams}

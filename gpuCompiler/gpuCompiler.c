@@ -7,14 +7,13 @@
 #include "checkHeap.h"
 #include "cmdLine/cmdLine.h"
 #include "errorLog/blockExceptions.h"
-#include "fileToolsImpl/fileToolsImpl.h"
 #include "formattedOutput/logToStdConsole.h"
 #include "formattedOutput/requireMsg.h"
 #include "formattedOutput/sprintMsg.h"
 #include "formattedOutput/textFiles.h"
 #include "formattedOutput/userOutputThunks.h"
 #include "formatting/formatModifiers.h"
-#include "interfaces/fileToolsKit.h"
+#include "interfaces/fileTools.h"
 #include "numbers/float/floatType.h"
 #include "numbers/int/intCompare.h"
 #include "parseTools/parseTools.h"
@@ -55,7 +54,7 @@ using namespace std;
 //
 //================================================================
 
-using CompilerKit = KitCombine<DiagnosticKit, FileToolsKit>;
+using CompilerKit = DiagnosticKit;
 
 //================================================================
 //
@@ -895,10 +894,10 @@ stdbool compileDevicePartToBin
 
     if
     (
-        kit.fileTools.fileExists(binPath.c_str()) &&
-        kit.fileTools.fileExists(asmPath.c_str()) &&
-        kit.fileTools.fileExists(cupPath.c_str()) &&
-        kit.fileTools.fileExists(cachedPath.c_str())
+        fileTools::fileExists(binPath.c_str()) &&
+        fileTools::fileExists(asmPath.c_str()) &&
+        fileTools::fileExists(cupPath.c_str()) &&
+        fileTools::fileExists(cachedPath.c_str())
     )
     {
         //
@@ -1658,15 +1657,13 @@ int main(int argCount, const CharType* argStr[])
 
     ErrorLogByMsgLog errorLog(msgLog);
     ErrorLogExByMsgLog errorLogEx(msgLog);
-    FileToolsImpl fileTools;
 
     CompilerKit kit = kitCombine
     (
         MessageFormatterKit(formatter),
         ErrorLogKit(errorLog),
         ErrorLogExKit(errorLogEx),
-        MsgLogKit(msgLog),
-        FileToolsKit(fileTools)
+        MsgLogKit(msgLog)
     );
 
     stdTraceRoot;
