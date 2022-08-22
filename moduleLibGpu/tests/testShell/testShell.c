@@ -8,6 +8,7 @@
 #include "tests/gaussPresentationTest/gaussPresentationTest.h"
 #include "tests/fourierFilterBank/fourierFilterBank.h"
 #include "tests/mallocTest/mallocTest.h"
+#include "tests/atanTest/atanTest.h"
 
 namespace testShell {
 
@@ -32,6 +33,7 @@ private:
     resamplingTest::ResamplingTest resamplingTest;
     Rotation3DTest rotation3dTest;
     UniquePtr<MallocTest> mallocTest = MallocTest::create();
+    UniquePtr<AtanTest> atanTest = AtanTest::create();
 
 };
 
@@ -71,6 +73,11 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
         {
             CFG_NAMESPACE("Malloc Test");
             mallocTest->serialize(kit);
+        }
+
+        {
+            CFG_NAMESPACE("Atan Test");
+            atanTest->serialize(kit);
         }
     }
 }
@@ -117,6 +124,12 @@ stdbool TestShellImpl::process(const Process& base, stdPars(ProcessKit))
     if (mallocTest->active())
     {
         require(mallocTest->process(stdPass));
+        returnTrue;
+    }
+
+    if (atanTest->active())
+    {
+        require(atanTest->process(stdPass));
         returnTrue;
     }
 

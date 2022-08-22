@@ -168,7 +168,7 @@ GPUTOOL_2D_BEG
     //
 
     if (orientationMode)
-        vecDir = circleCCW(0.5f * getPhase(vecDir) + 1 * 0.25f);
+        vecDir = circleCCW(0.5f * fastPhase(vecDir) + 1 * 0.25f);
 
     ////
 

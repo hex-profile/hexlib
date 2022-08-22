@@ -88,7 +88,7 @@ sysinline Float scalarProd(const Point<Float>& A, const Point<Float>& B)
 
 //================================================================
 //
-// getPhase
+// exactPhase
 //
 // Returns value in range [-1/2, +1/2].
 //
@@ -97,7 +97,7 @@ sysinline Float scalarProd(const Point<Float>& A, const Point<Float>& B)
 //================================================================
 
 template <typename Float>
-sysinline Float getPhase(const Point<Float>& vec)
+sysinline Float exactPhase(const Point<Float>& vec)
 {
     Float result = exactAtan2(vec.Y, vec.X);
     result *= (1 / (2 * Float(pi64)));
