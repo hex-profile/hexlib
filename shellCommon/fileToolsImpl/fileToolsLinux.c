@@ -19,13 +19,25 @@ namespace fileTools {
 
 //================================================================
 //
-// fileExists
+// isFile
 //
 //================================================================
 
-bool fileExists(const CharType* filename)
+bool isFile(const CharType* filename)
 {
     return access(filename, F_OK) != -1;
+}
+
+//================================================================
+//
+// isDir
+//
+//================================================================
+
+bool isDir(const CharType* filename)
+{
+    struct stat sb;
+    return stat(filename, &sb) == 0 && S_ISDIR(sb.st_mode);
 }
 
 //================================================================

@@ -894,10 +894,10 @@ stdbool compileDevicePartToBin
 
     if
     (
-        fileTools::fileExists(binPath.c_str()) &&
-        fileTools::fileExists(asmPath.c_str()) &&
-        fileTools::fileExists(cupPath.c_str()) &&
-        fileTools::fileExists(cachedPath.c_str())
+        fileTools::isFile(binPath.c_str()) &&
+        fileTools::isFile(asmPath.c_str()) &&
+        fileTools::isFile(cupPath.c_str()) &&
+        fileTools::isFile(cachedPath.c_str())
     )
     {
         //

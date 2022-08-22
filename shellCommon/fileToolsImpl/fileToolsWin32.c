@@ -13,21 +13,53 @@ namespace fileTools {
 
 //================================================================
 //
-// fileExists
+// isFileEx
 //
 //================================================================
 
-bool fileExists(const CharType* filename)
+template <typename Check>
+inline bool isFileEx(const CharType* filename, const Check& check)
 {
     //
     // only FindFirstFile - GetFileAttributes sees not all files
     //
 
-    WIN32_FIND_DATA tmp;
-    HANDLE handle = FindFirstFile(filename, &tmp);
-    bool yes = (handle != INVALID_HANDLE_VALUE);
-    if (handle != INVALID_HANDLE_VALUE) FindClose(handle);
+    WIN32_FIND_DATA data;
+
+    HANDLE handle = FindFirstFile(filename, &data);
+
+    bool yes = (handle != INVALID_HANDLE_VALUE) && check(data);
+
+    if (handle != INVALID_HANDLE_VALUE) 
+        FindClose(handle);
+
     return yes;
+}
+
+//================================================================
+//
+// isFile
+//
+//================================================================
+
+bool isFile(const CharType* filename)
+{
+    auto check = [] (auto& data) {return (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0;};
+
+    return isFileEx(filename, check);
+}
+
+//================================================================
+//
+// isDir
+//
+//================================================================
+
+bool isDir(const CharType* filename)
+{
+    auto check = [] (auto& data) {return (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;};
+
+    return isFileEx(filename, check);
 }
 
 //================================================================

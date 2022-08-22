@@ -45,7 +45,8 @@ using FileSize = uint64;
 //================================================================
 
 // Check if file exists.
-bool fileExists(const CharType* filename);
+bool isFile(const CharType* filename);
+bool isDir(const CharType* filename);
 
 // Get file size.
 bool getFileSize(const CharType* filename, FileSize& result);

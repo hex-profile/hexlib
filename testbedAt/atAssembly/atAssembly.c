@@ -321,7 +321,7 @@ stdbool getFileProperties(const CharType* filename, FileProperties& result, stdP
 {
     result = FileProperties{};
 
-    if_not (fileTools::fileExists(filename))
+    if_not (fileTools::isFile(filename))
         returnTrue;
 
     result.exists = true;
