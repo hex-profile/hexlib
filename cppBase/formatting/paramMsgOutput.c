@@ -77,6 +77,7 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
                 const FormatOutputAtom& p = paramPtr[n];
                 p.func(p.value, outputStream);
                 ++formatPtr;
+                currentIndex = n + 1;
                 continue;
             }
         }
