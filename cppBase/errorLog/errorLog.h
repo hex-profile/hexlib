@@ -52,11 +52,11 @@ class ErrorLogNull : public ErrorLog
 
 //----------------------------------------------------------------
 
-#define CHECK_TRACE_PREFIX \
+#define CHECK_PREFIX \
     TRACE_AUTO_LOCATION CT(": ")
 
-#define CHECK_TRACE(condition, messageLiteral) \
-    CHECK_EX(condition, kit.errorLog.addErrorTrace(CHECK_TRACE_PREFIX messageLiteral, TRACE_PASSTHRU(trace)))
+#define CHECK_CUSTOM(condition, messageLiteral) \
+    CHECK_EX(condition, kit.errorLog.addErrorTrace(CHECK_PREFIX messageLiteral, TRACE_PASSTHRU(trace)))
 
 //----------------------------------------------------------------
 
@@ -66,21 +66,31 @@ class ErrorLogNull : public ErrorLog
 //----------------------------------------------------------------
 
 #define CHECK(condition) \
-    CHECK_TRACE(condition, CHECK_FAIL_MSG(condition))
+    CHECK_CUSTOM(condition, CHECK_FAIL_MSG(condition))
 
 //================================================================
 //
 // REQUIRE
 //
-// Checks a condition; if the condition is not true,
-// outputs an error message to the error log and returns false.
+//================================================================
+
+#define REQUIRE(condition) \
+    require(CHECK(condition))
+
+//================================================================
+//
+// REQUIRE_CUSTOM
+//
+//================================================================
+
+#define REQUIRE_CUSTOM(condition, messageLiteral) \
+    require(CHECK_CUSTOM(condition, messageLiteral))
+
+//================================================================
+//
+// REQUIRE_EX
 //
 //================================================================
 
 #define REQUIRE_EX(condition, failReport) \
     require(CHECK_EX(condition, failReport))
-
-//----------------------------------------------------------------
-
-#define REQUIRE(condition) \
-    require(CHECK(condition))

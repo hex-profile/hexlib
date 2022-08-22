@@ -18,7 +18,7 @@ struct MallocCore
         REQUIRE(allocSize <= TYPE_MAX(size_t));
         void* allocPtr = malloc(size_t(allocSize));
 
-        require(CHECK_TRACE(allocPtr != 0, CT("Memory allocation failed")));
+        REQUIRE_CUSTOM(allocPtr != 0, CT("Memory allocation failed"));
 
         COMPILE_ASSERT(sizeof(void*) <= sizeof(AddrU));
         result = (AddrU) allocPtr;

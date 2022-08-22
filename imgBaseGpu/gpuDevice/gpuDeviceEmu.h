@@ -21,7 +21,7 @@
 using EmuError = const CharType*;
 
 #define EMU_ERRMSG(condition) \
-    (CHECK_TRACE_PREFIX CHECK_FAIL_MSG(condition))
+    (CHECK_PREFIX CHECK_FAIL_MSG(condition))
 
 //================================================================
 //
