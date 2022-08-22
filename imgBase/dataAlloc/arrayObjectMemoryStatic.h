@@ -58,10 +58,11 @@ public:
     template <typename T>
     explicit ArrayObjectMemoryStatic(const ArrayObjectMemoryStatic<T, maxSize>& that)
     {
-        for_count (i, that.currentSize)
+        for_count (i, that.allocSize)
             constructCopy(data[i], that.data[i]);
 
-        currentSize = that.currentSize;
+        allocSize = that.allocSize;
+        usedSize = that.usedSize;
     }
 
 public:
@@ -71,10 +72,11 @@ public:
     {
         dealloc();
 
-        for_count (i, that.currentSize)
+        for_count (i, that.allocSize)
             constructCopy(data[i], that.data[i]);
 
-        currentSize = that.currentSize;
+        allocSize = that.allocSize;
+        usedSize = that.usedSize;
 
         return *this;
     }
@@ -88,10 +90,10 @@ public:
 private:
 
     sysinline Array<Type> getArray()
-        {return {data(), currentSize, ArrayValidityAssertion{}};}
+        {return {data(), usedSize, ArrayValidityAssertion{}};}
 
     sysinline Array<const Type> getArray() const
-        {return {data(), currentSize, ArrayValidityAssertion{}};}
+        {return {data(), usedSize, ArrayValidityAssertion{}};}
 
 public:
 
@@ -124,7 +126,8 @@ public:
         for_count (i, newSize)
             constructDefault(data[i]);
 
-        currentSize = newSize;
+        allocSize = newSize;
+        usedSize = newSize;
 
         return true;
     }
@@ -141,10 +144,31 @@ public:
 
     void dealloc()
     {
-        for (Space i = currentSize-1; i >= 0; --i)
+        for (auto i = allocSize - 1; i >= 0; --i)
             destruct(data[i]);
 
-        currentSize = 0;
+        allocSize = 0;
+        usedSize = 0;
+    }
+
+    //----------------------------------------------------------------
+    //
+    // Resize.
+    //
+    //----------------------------------------------------------------
+
+public:
+
+    void resizeNull() 
+    {
+        usedSize = 0;
+    }
+
+    bool resize(Space newSize)
+    {
+        ensure(0 <= newSize && newSize <= allocSize);
+        usedSize = newSize;
+        return true;
     }
 
     //----------------------------------------------------------------
@@ -164,10 +188,10 @@ public:
 #if HEXLIB_GUARDED_MEMORY
 
     sysinline auto ptr()
-        {return ArrayPtrCreate(Type, data(), currentSize, DbgptrArrayPreconditions());}
+        {return ArrayPtrCreate(Type, data(), usedSize, DbgptrArrayPreconditions());}
 
     sysinline auto ptr() const
-        {return ArrayPtrCreate(const Type, data(), currentSize, DbgptrArrayPreconditions());}
+        {return ArrayPtrCreate(const Type, data(), usedSize, DbgptrArrayPreconditions());}
 
 #else
 
@@ -180,7 +204,7 @@ public:
 #endif
 
     sysinline Space size() const // always >= 0
-        {return currentSize;}
+        {return usedSize;}
 
     //----------------------------------------------------------------
     //
@@ -191,7 +215,7 @@ public:
 public:
 
     sysinline bool validAccess(Space index) const
-        {return SpaceU(index) < SpaceU(currentSize);}
+        {return SpaceU(index) < SpaceU(usedSize);}
 
 public:
 
@@ -209,9 +233,11 @@ public:
 
 private:
 
-    // Only elements [0, currentSize) are constructed
+    // Only elements [0, allocSize) are constructed
     UninitializedArray<Type, maxSize> data;
-    Space currentSize = 0;
+
+    Space allocSize = 0; // [0, maxSize]
+    Space usedSize = 0; // [0, allocSize]
 
 };
 

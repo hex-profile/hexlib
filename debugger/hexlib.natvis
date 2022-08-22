@@ -40,10 +40,10 @@
     </Type>
 
     <Type Name="ArrayObjectMemoryStatic&lt;*&gt;">
-        <DisplayString>[{currentSize}]</DisplayString>
+        <DisplayString>[{usedSize}]</DisplayString>
         <Expand>
             <ArrayItems>
-                <Size>currentSize</Size>
+                <Size>usedSize</Size>
                 <ValuePointer>($T1*) data.data.rawMemory.data</ValuePointer>
             </ArrayItems>
         </Expand>
