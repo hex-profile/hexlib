@@ -11,8 +11,8 @@
 template <typename VectorType>
 sysinline void outputVectorTypeX2(const VectorType& value, FormatOutputStream& outputStream)
 {
-    outputStream 
-        << value.x << STR(", ") 
+    outputStream
+        << value.x << STR(", ")
         << value.y;
 }
 
@@ -33,7 +33,7 @@ sysinline void outputVectorTypeX2(const FormatNumber<VectorType>& number, Format
 template <typename VectorType>
 sysinline void outputVectorTypeX4(const VectorType& number, FormatOutputStream& outputStream)
 {
-    outputStream 
+    outputStream
         << number.x << STR(", ")
         << number.y << STR(", ")
         << number.z << STR(", ")

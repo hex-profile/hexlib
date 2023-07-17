@@ -20,11 +20,29 @@
 //================================================================
 
 #if defined(__CUDA_ARCH__)
-    #define sysinline __device__ __host__ inline
+    #define sysinline __forceinline__ __device__ __host__
 #elif defined(_MSC_VER)
-    #define sysinline __forceinline
+    #define sysinline inline __forceinline
+#elif defined(__GNUC__)
+    #define sysinline inline __attribute__((always_inline))
 #else
     #define sysinline inline
+#endif
+
+//================================================================
+//
+// sysnoinline
+//
+//================================================================
+
+#if defined(__CUDA_ARCH__)
+    #define sysnoinline __noinline__
+#elif defined(_MSC_VER)
+    #define sysnoinline __declspec(noinline)
+#elif defined(__GNUC__)
+    #define sysnoinline __attribute__((noinline))
+#else
+    #define sysnoinline
 #endif
 
 //================================================================
@@ -202,12 +220,7 @@ sysinline Dst soft_cast(Src&& src)
 //================================================================
 //
 // recastEqualLayout
-//
-//================================================================
-
-//================================================================
-//
-// TYPE_ALIGN
+// recastFittingLayout
 //
 //================================================================
 
@@ -463,7 +476,7 @@ template <size_t N, typename... Types>
 struct GetNthType;
 
 template <typename T0, typename... Types>
-struct GetNthType<0, T0, Types...> 
+struct GetNthType<0, T0, Types...>
 {
     using T = T0;
 };
@@ -495,3 +508,13 @@ struct GetNthType<N, T0, Types...>
     #endif
 
 #endif
+
+//================================================================
+//
+// may_throw
+//
+// Used to specify that some function may throw exceptions.
+//
+//================================================================
+
+#define may_throw noexcept(false)

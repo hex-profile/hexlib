@@ -8,7 +8,7 @@
 #include "kits/displayParamsKit.h"
 #include "kits/gpuRgbFrameKit.h"
 #include "kits/inputVideoNameKit.h"
-#include "kits/userPoint.h"
+#include "kits/userPointKit.h"
 #include "vectorTypes/vectorBase.h"
 #include "storage/dynamicClass.h"
 
@@ -43,7 +43,7 @@ struct VideoPrepTarget
 
 using ReallocKit = KitCombine<ModuleReallocKit, GpuAppExecKit, AtCommonKit>;
 
-using ProcessKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, VerbosityKit, 
+using ProcessKit = KitCombine<CpuFuncKit, MsgLogExKit, MsgLogsKit, OverlayTakeoverKit, PipeControlKit, TimerKit, VerbosityKit,
     UserPointKit, SetBusyStatusKit, GpuAppExecKit, MallocKit, AtProcessKit, FrameAdvanceKit>;
 
 //================================================================

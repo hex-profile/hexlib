@@ -192,7 +192,7 @@ GPUTOOL_2D_BEG
 
         ////
 
-        float32 currentArrowHeight = arrowHeight * saturate(divArrowLen * (vecLength - revPos.X));
+        float32 currentArrowHeight = arrowHeight * saturatev(divArrowLen * (vecLength - revPos.X));
         float32 maxArrowHeight = arrowHeight;
 
         ////
@@ -219,7 +219,7 @@ GPUTOOL_2D_BEG
 
     float32 figurePart = figurePresence;
     float32 shadowPart = (1 - figurePresence) * shadowPresence;
-    float32 imagePart = saturate(1 - figurePart - shadowPart);
+    float32 imagePart = saturatev(1 - figurePart - shadowPart);
 
     ////
 

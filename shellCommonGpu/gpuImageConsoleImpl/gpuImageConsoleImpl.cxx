@@ -35,6 +35,7 @@
 #include "numbers/mathIntrinsics.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsgEx.h"
+#include "kits/userPoint.h"
 #endif
 
 namespace gpuImageConsoleImpl {
@@ -509,7 +510,7 @@ stdbool upconvertValueMatrix
 template <typename Type, typename Kit>
 stdbool getElementAtUserPoint(const GpuMatrix<const Type>& image, const LinearTransform<Point<float32>>& transform, Point<Space>& resultIdx, Type& resultValue, stdPars(Kit))
 {
-    Point<float32> dstPos = convertFloat32(kit.userPoint.position) + 0.5f; // to space format
+    Point<float32> dstPos = kit.userPoint.floatPos;
     Point<float32> srcPos = transform(dstPos);
     Point<Space> srcIdx = convertToNearestIndex(srcPos);
 
@@ -622,7 +623,7 @@ stdbool standardEntry
     Point<float32>& upsampleFactor,
     InterpType& upsampleType,
     Point<Space>& upsampleSize,
-    BorderMode& borderMode, 
+    BorderMode& borderMode,
     stdPars(Kit)
 )
 {
@@ -700,7 +701,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     const Point<float32>& upsampleFactor,
     InterpType upsampleType,
     const Point<Space>& upsampleSize,
-    BorderMode borderMode, 
+    BorderMode borderMode,
     const ImgOutputHint& hint,
     stdNullPars
 )
@@ -745,7 +746,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
         ScalarVisualizationProvider<Type> outputProvider
         {
             ScalarVisualizationParams<Type>
-            {img, channel, coordBack, valueTransform, upsampleType, borderMode, displayMode == DisplayMode::Centered}, 
+            {img, channel, coordBack, valueTransform, upsampleType, borderMode, displayMode == DisplayMode::Centered},
             kit
         };
 
@@ -781,7 +782,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     if (hint.target == ImgOutputOverlay && kit.userPoint.valid)
         errorBlock(printTextValue());
 
-    //// 
+    ////
 
     stdScopedEnd;
 }
@@ -896,7 +897,7 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
 
     ////
 
-    require(visualizeVectorImage(image, dest, linearTransform(coordBackMul, coordBackAdd), valueFactor, 
+    require(visualizeVectorImage(image, dest, linearTransform(coordBackMul, coordBackAdd), valueFactor,
         upsampleType, borderMode, grayMode, stdPass));
 
     ////
@@ -916,7 +917,7 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>
 
         if (allv(def(vectorValue)))
         {
-            Point<float32> dstPos = convertIndexToPos(kit.userPoint.position);
+            auto dstPos = kit.userPoint.floatPos;
             require(imposeVectorArrow(dest, dstPos, (arrowFactor == 0 ? 1.f : arrowFactor) * vectorValue, arrowFactor == 0, stdPass));
         }
 
@@ -993,11 +994,11 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
         {
             VectorVisualizationParams<Vector>
             {
-                image, valueFactor, hint.textFactor, hint.arrowFactor, coordBackMul, upsampleType, borderMode, 
-                displayMode == DisplayMode::Centered, 
+                image, valueFactor, hint.textFactor, hint.arrowFactor, coordBackMul, upsampleType, borderMode,
+                displayMode == DisplayMode::Centered,
                 vectorMode == VectorMode::Magnitude,
                 getTextEnabled()
-            }, 
+            },
             kit
         };
 
@@ -1011,8 +1012,8 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
     if (hint.target == ImgOutputConsole)
     {
         GPU_MATRIX_ALLOC(result, uint8_x4, upsampleSize);
-    
-        require(visualizeVectorImage(image, result, linearTransform(coordBackMul, point(0.f)), valueFactor, upsampleType, borderMode, 
+
+        require(visualizeVectorImage(image, result, linearTransform(coordBackMul, point(0.f)), valueFactor, upsampleType, borderMode,
             vectorMode == VectorMode::Magnitude, stdPass));
 
         ////
@@ -1094,7 +1095,7 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
     {
         GPU_MATRIX_ALLOC(tmp, uint8_x4, image.luma.size());
         require(convertYuv420ToBgr<Type>(image.luma, image.chroma, nullptr, nullptr, point(0), zeroOf<uint8_x4>(), tmp, stdPass));
-    
+
         require(baseConsole.addImageBgr(tmp, hint, stdPass));
     }
 
@@ -1156,7 +1157,7 @@ private:
 //================================================================
 
 GPUTOOL_2D_BEG
-(                   
+(
     convertPackedYuvToRgb,
     PREP_EMPTY,
     ((const float16_x4, src))
@@ -1264,10 +1265,10 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
     {
         UnpackedColorConvertProvider<Type> outputProvider
         {
-            ScalarVisualizationParams<Type>{img, 0, coordBack, valueTransform, upsampleType, borderMode, displayMode == DisplayMode::Centered}, 
+            ScalarVisualizationParams<Type>{img, 0, coordBack, valueTransform, upsampleType, borderMode, displayMode == DisplayMode::Centered},
             colorMode, kit
         };
-        
+
         require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, hint.desc, stdPass));
     }
 
@@ -1286,9 +1287,9 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
         if (getTextEnabled())
         {
             using Base = VECTOR_BASE(Type);
-            int hexDigits = divUp<int>(sizeof(Base) * CHAR_BIT, 4);
+            int hexDigits = divUp<int>(TYPE_BIT_COUNT(Base), 4);
 
-            require(printMsgL(kit, TYPE_IS_BUILTIN_INT(Base) ? STR("Value[%0] = %1 (hex %2)") : STR("Value[%0] = %1"), 
+            require(printMsgL(kit, TYPE_IS_BUILTIN_INT(Base) ? STR("Value[%0] = %1 (hex %2)") : STR("Value[%0] = %1"),
                 userIdx, fltg(convertFloat32(userValue), 6), hex(userValue, hexDigits)));
         }
 

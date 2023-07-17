@@ -8,6 +8,7 @@
 #include "allocation/mallocKit.h"
 #include "gpuLayer/gpuLayerImpl.h"
 #include "cfgTools/multiSwitch.h"
+#include "storage/adapters/callable.h"
 
 namespace gpuShell {
 
@@ -15,7 +16,7 @@ namespace gpuShell {
 //
 // GpuContextHelper
 //
-// A convenience class.
+// Stateless, only config variables.
 //
 //================================================================
 
@@ -45,38 +46,10 @@ private:
 //
 //================================================================
 
-struct GpuShellTarget
-{
-    virtual stdbool exec(stdPars(GpuShellKit)) =0;
-};
+using GpuShellTarget = Callable<stdbool (stdPars(GpuShellKit))>;
 
 //================================================================
 //
-// GpuShellTargetThunk
-//
-//================================================================
-
-template <typename Lambda>
-class GpuShellTargetThunk : public GpuShellTarget
-{
-
-public:
-
-    virtual stdbool exec(stdPars(GpuShellKit))
-        {return lambda(stdPassThru);}
-
-    GpuShellTargetThunk(const Lambda& lambda)
-        : lambda(lambda) {}
-
-private:
-
-    const Lambda& lambda;
-
-};
-
-//================================================================
-//
-// ExecGlobalToolkit
 // ExecCyclicToolkit
 //
 //================================================================
@@ -89,6 +62,8 @@ using ExecCyclicToolkit = KitCombine<GpuApiImplKit, GpuPropertiesKit, GpuCurrent
 //
 // GpuShellImpl
 //
+// Stateless, only config vars.
+//
 //================================================================
 
 class GpuShellImpl
@@ -96,20 +71,11 @@ class GpuShellImpl
 
 public:
 
-    void serialize(const CfgSerializeKit& kit);
+    void serialize(const CfgSerializeKit& kit, bool hotkeys);
 
 public:
 
     stdbool execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit));
-
-public:
-
-    template <typename Lambda>
-    stdbool execCyclicShellLambda(const Lambda& lambda, stdPars(ExecCyclicToolkit))
-    {
-        GpuShellTargetThunk<Lambda> target{lambda};
-        return execCyclicShell(target, stdPassThru);
-    }
 
 private:
 

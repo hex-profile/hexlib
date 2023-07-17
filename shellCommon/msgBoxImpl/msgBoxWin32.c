@@ -18,7 +18,7 @@ bool MsgBoxWin32::operator ()(const CharType* message, MsgKind msgKind)
         NULL,
         message,
         CT("Message"),
-    
+
         msgKind == msgErr ? MB_ICONERROR :
         msgKind == msgWarn ? MB_ICONWARNING :
         MB_ICONINFORMATION

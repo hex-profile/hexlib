@@ -23,9 +23,9 @@ inline bool memoryUsageReport
     bool sysAlloc = (stateActivity.sysAllocCount || tempActivity.sysAllocCount);
     bool fastAlloc = stateActivity.fastAllocCount != 0;
 
-    return printMsg
+    return printMsgL
     (
-        kit.localLog,
+        kit,
         STR("%: GPU %M : %M, CPU %M : %M%"),
         name,
         fltf(ldexpv(float32(stateUsage.gpuMemSize), -20), 1),

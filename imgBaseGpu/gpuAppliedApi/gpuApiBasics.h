@@ -19,7 +19,7 @@
 //
 //================================================================
 
-struct GpuContext : public OpaqueStruct<8> {};
+using GpuContext = OpaqueStruct<8, 0xAD23E3A0u>;
 
 //================================================================
 //
@@ -29,7 +29,7 @@ struct GpuContext : public OpaqueStruct<8> {};
 //
 //================================================================
 
-struct GpuStream : public OpaqueStruct<8> {};
+using GpuStream = OpaqueStruct<8, 0x98F6A9F0u>;
 
 //================================================================
 //
@@ -41,7 +41,7 @@ struct GpuStream : public OpaqueStruct<8> {};
 //
 //================================================================
 
-struct GpuEvent : public OpaqueStruct<8> {};
+using GpuEvent = OpaqueStruct<8, 0xE06D6391u>;
 
 //================================================================
 //
@@ -51,4 +51,4 @@ struct GpuEvent : public OpaqueStruct<8> {};
 //
 //================================================================
 
-struct GpuTexture : public OpaqueStruct<32> {};
+using GpuTexture = OpaqueStruct<32, 0x2CCAB6C4u>;

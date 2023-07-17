@@ -7,7 +7,7 @@
 //================================================================
 //
 // bsplineCubicPrefilter
-// 
+//
 // Michael Unser prefilter for cubic bspline kernel.
 //
 //================================================================
@@ -68,7 +68,7 @@ static devConstant float32 preFilter3[] = {0, 0, 0, FILTER_CORE15};
 #undef FILTER2
 #undef FILTER3
 
-#undef FILTER_SRC_SHIFT 
+#undef FILTER_SRC_SHIFT
 #undef FUNCNAME
 #undef PACK_SIZE
 #undef PACK_TO_SRC_FACTOR
@@ -76,7 +76,7 @@ static devConstant float32 preFilter3[] = {0, 0, 0, FILTER_CORE15};
 //================================================================
 //
 // bsplineCubicUnprefilter
-// 
+//
 //================================================================
 
 #define FILTER_CORE3 (1.f/6), (4.f/6), (1.f/6)

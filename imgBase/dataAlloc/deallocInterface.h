@@ -20,25 +20,6 @@
 
 //================================================================
 //
-// DeallocContext
-//
-//================================================================
-
-template <size_t reservedBytes, uint32 hash>
-struct DeallocContext : public OpaqueStruct<reservedBytes> {};
-
-////
-
-template <size_t reservedBytes, uint32 hash>
-sysinline void exchange(DeallocContext<reservedBytes, hash>& a, DeallocContext<reservedBytes, hash>& b)
-{
-    OpaqueStruct<reservedBytes>& aBase = a;
-    OpaqueStruct<reservedBytes>& bBase = b;
-    exchange(aBase, bBase);
-}
-
-//================================================================
-//
 // ResourceOwner
 //
 // Memory block deallocation representative.

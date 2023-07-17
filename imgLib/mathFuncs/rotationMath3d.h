@@ -48,7 +48,7 @@ sysinline Point4D<Float> operator %(const Point4D<Float>& A, const Point4D<Float
 template <typename Float>
 sysinline Point3D<Float> crossProduct(const Point3D<Float>& A, const Point3D<Float>& B)
 {
-	return 
+	return
     {
 		A.Y * B.Z - B.Y * A.Z,
 		A.Z * B.X - B.Z * A.X,
@@ -75,23 +75,12 @@ sysinline Point3D<Float> operator %(const Point4D<Float>& Q, const Point3D<Float
 
 //================================================================
 //
-// Mat3D
-//
-// For efficient target application of a rotation.
-//
-//================================================================
-
-template <typename Float>
-using Mat3D = Point3D<Point3D<Float>>;
-
-//================================================================
-//
 // quatMat
 //
 //================================================================
 
 template <typename Float>
-sysinline Mat3D<Float> quatMat(const Point4D<Float>& Q)
+sysinline auto quatMat(const Point4D<Float>& Q)
 {
     auto XX = 2 * Q.X * Q.X;
     auto XY = 2 * Q.X * Q.Y;
@@ -107,45 +96,9 @@ sysinline Mat3D<Float> quatMat(const Point4D<Float>& Q)
 
     return point3D
     (
-        point3D(1.f - YY - ZZ, XY - ZW, YW + XZ), 
-        point3D(ZW + XY, 1.f - ZZ - XX, YZ - XW), 
+        point3D(1.f - YY - ZZ, XY - ZW, YW + XZ),
+        point3D(ZW + XY, 1.f - ZZ - XX, YZ - XW),
         point3D(XZ - YW, XW + YZ, 1.f - XX - YY)
-    );
-}
-
-//================================================================
-//
-// Mat3D inverse.
-//
-//================================================================
-
-template <typename Float>
-sysinline Mat3D<Float> operator ~(const Mat3D<Float>& R)
-{
-    return point3D
-    (
-        point3D(R.X.X, R.Y.X, R.Z.X),
-        point3D(R.X.Y, R.Y.Y, R.Z.Y),
-        point3D(R.X.Z, R.Y.Z, R.Z.Z)
-    );
-}
-
-//================================================================
-//
-// Mat3D apply.
-//
-// 9 MADs.
-//
-//================================================================
-
-template <typename Float>
-sysinline Point3D<Float> operator %(const Mat3D<Float>& R, const Point3D<Float>& V)
-{
-    return point3D
-    (
-        scalarProd(R.X, V),
-        scalarProd(R.Y, V),
-        scalarProd(R.Z, V)
     );
 }
 
@@ -179,7 +132,7 @@ sysinline Point4D<Float> quatImaginaryExp(const Point3D<Float>& vec)
 // The quaternion is {cos(theta/2), sin(theta/2) * dir}.
 // Function needs to return (theta/2) * dir.
 //
-// The function returns (theta/2) in range [-pi/2, +pi/2] 
+// The function returns (theta/2) in range [-pi/2, +pi/2]
 // to minimize the angle magnitude.
 //
 //================================================================
@@ -193,7 +146,7 @@ sysinline Point3D<Float> quatUnitLogSpecial(const Point4D<Float>& Q)
     //
     // To minimize angle magnitude, use (rX > 0) and (rY > 0).
     //
-    // If rX < 0, invert the input quaternion, 
+    // If rX < 0, invert the input quaternion,
     // which does not change its SO(3) rotation action.
     //
 
@@ -243,7 +196,7 @@ sysinline Point3D<Float> quatToRodrigues(const Point4D<Float>& Q)
 //
 // quatFlipToBase
 //
-// Flips a quaternion sign to make it closer to the specified base 
+// Flips a quaternion sign to make it closer to the specified base
 // as if they were R^4 vectors.
 //
 //================================================================

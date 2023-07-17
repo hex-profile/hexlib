@@ -6,7 +6,6 @@
 #include "binaryFile/binaryFileImpl.h"
 #include "checkHeap.h"
 #include "cmdLine/cmdLine.h"
-#include "errorLog/blockExceptions.h"
 #include "formattedOutput/logToStdConsole.h"
 #include "formattedOutput/requireMsg.h"
 #include "formattedOutput/sprintMsg.h"
@@ -20,7 +19,7 @@
 #include "runProcess/runProcess.h"
 #include "shared/gpuModule.h"
 #include "storage/rememberCleanup.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "userOutput/msgLog.h"
 #include "userOutput/printMsg.h"
 
@@ -1451,10 +1450,10 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
     if (gpuHardwareTarget)
     {
-        REQUIRE_MSG(platformArch.size() != 0, 
+        REQUIRE_MSG(platformArch.size() != 0,
             STR("For CUDA hardware target, HEXLIB_GPU_ARCH should be specified as a colon-separated list of integers."));
 
-        REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"), 
+        REQUIRE_MSG(platformBitness == CT("32") || platformBitness == CT("64"),
             STR("For CUDA hardware target, HEXLIB_GPU_BITNESS should be specified (32 or 64)"));
     }
 
@@ -1491,7 +1490,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         }
 
         clArgs.insert(clArgs.end(), otherArgs.begin(), otherArgs.end());
-        
+
         clArgs.push_back(sprintMsg(kit, STR("-%0%1"), outputOption, outputFile));
         clArgs.insert(clArgs.end(), cppFiles.begin(), cppFiles.end());
 
@@ -1645,7 +1644,7 @@ int main(int argCount, const CharType* argStr[])
 
     const size_t formatterSize = 65536;
     CharType formatterPtr[formatterSize];
-    MessageFormatterStdio formatter{makeArray(formatterPtr, formatterSize)};
+    MessageFormatterImpl formatter{makeArray(formatterPtr, formatterSize)};
 
     ////
 
@@ -1656,13 +1655,13 @@ int main(int argCount, const CharType* argStr[])
 #endif
 
     ErrorLogByMsgLog errorLog(msgLog);
-    ErrorLogExByMsgLog errorLogEx(msgLog);
+    MsgLogExByMsgLog msgLogEx(msgLog);
 
     CompilerKit kit = kitCombine
     (
         MessageFormatterKit(formatter),
         ErrorLogKit(errorLog),
-        ErrorLogExKit(errorLogEx),
+        MsgLogExKit(msgLogEx),
         MsgLogKit(msgLog)
     );
 
@@ -1674,7 +1673,7 @@ int main(int argCount, const CharType* argStr[])
     //
     //----------------------------------------------------------------
 
-    bool ok = blockExceptions(mainFunc(argCount, argStr, stdPass));
+    bool ok = errorBlock(mainFunc(argCount, argStr, stdPass));
 
     ////
 

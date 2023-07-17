@@ -1,14 +1,14 @@
 #pragma once
 
 #include "cfgTools/overlayTakeover.h"
-#include "configFile/cfgSerialization.h"
+#include "cfg/cfgSerialization.h"
 
 //================================================================
 //
 // OverlayTakeoverThunk
 //
 //================================================================
-                                    
+
 class OverlayTakeoverThunk : public OverlayTakeover
 {
 
@@ -37,29 +37,29 @@ private:
 //
 //================================================================
 
-template <typename Target>
+template <typename Lambda>
 class OverlaySerializationThunk : public CfgSerialization
 {
 
 public:
 
-    virtual void serialize(const CfgSerializeKit& kit)
-        {target.serialize(kitCombine(kit, OverlayTakeoverKit{overlayTakeover}));}
+    virtual void operator()(const CfgSerializeKit& kit)
+        {lambda(kitCombine(kit, OverlayTakeoverKit{overlayTakeover}));}
 
-    OverlaySerializationThunk(Target& target, OverlayTakeoverID& overlayOwnerID)
-        : target(target), overlayTakeover(overlayOwnerID) {}
+    OverlaySerializationThunk(const Lambda& lambda, OverlayTakeoverID& overlayOwnerID)
+        : lambda(lambda), overlayTakeover(overlayOwnerID) {}
 
 private:
 
-    Target& target;
+    Lambda lambda;
     OverlayTakeoverThunk overlayTakeover;
 
 };
 
 //----------------------------------------------------------------
 
-template <typename Target>
-inline auto overlaySerializationThunk(Target& target, OverlayTakeoverID& overlayOwnerID)
+template <typename Lambda>
+inline auto overlaySerializationThunk(const Lambda& lambda, OverlayTakeoverID& overlayOwnerID)
 {
-    return OverlaySerializationThunk<Target>(target, overlayOwnerID);
+    return OverlaySerializationThunk<Lambda>(lambda, overlayOwnerID);
 }

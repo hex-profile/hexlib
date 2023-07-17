@@ -110,6 +110,6 @@ private:
 inline bool StandardSignal::serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& key, const CharArray& comment)
 {
     SerializeStandardSignal serializeSignal(*this, name, key, comment);
-    kit.visitor(kit.scope, serializeSignal);
+    kit.visitSignal(serializeSignal);
     return (impulseCount == 0);
 }

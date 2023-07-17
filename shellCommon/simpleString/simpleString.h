@@ -1,7 +1,7 @@
 #pragma once
 
 #include "charType/charArray.h"
-#include "storage/noncopyable.h"
+#include "storage/nonCopyable.h"
 #include "numbers/interface/exchangeInterface.h"
 #include "numbers/interface/numberInterface.h"
 
@@ -60,15 +60,15 @@ private:
 template <typename Type>
 class SStringBuffer : public NonCopyable
 {
-    
+
 public:
-    
+
     sysinline ~SStringBuffer()
         {clear();}
 
 public:
 
-    sysinline size_t size() const 
+    sysinline size_t size() const
         {return currentSize;}
 
     sysinline Type* cstr() const
@@ -82,7 +82,7 @@ public:
 
 public:
 
-    sysinline bool valid() const 
+    sysinline bool valid() const
     {
         return currentPtr != InvalidString<Type>::cstr();
     }
@@ -164,7 +164,7 @@ public:
 
     //----------------------------------------------------------------
     //
-    // Construct from a value.
+    // Copy & move construct.
     //
     //----------------------------------------------------------------
 
@@ -172,6 +172,17 @@ public:
 
     sysinline SimpleStringEx(const String& that)
         {assign(that);}
+
+    sysnoinline SimpleStringEx(String&& that)
+        {exchange(*this, that); that.clear();}
+
+    //----------------------------------------------------------------
+    //
+    // Construct from a value.
+    //
+    //----------------------------------------------------------------
+
+public:
 
     explicit sysinline SimpleStringEx(const Type* cstr)
         {assign(cstr);}
@@ -201,10 +212,10 @@ public:
 
 public:
 
-    sysinline operator CharArrayEx<Type> () const 
+    sysinline operator CharArrayEx<Type> () const
         {return CharArrayEx<Type>(cstr(), size());}
 
-    sysinline CharArrayEx<Type> charArray() const
+    sysinline CharArrayEx<Type> str() const
         {return CharArrayEx<Type>(cstr(), size());}
 
 public:
@@ -235,12 +246,15 @@ public:
         {assign(charArrayFromPtr(cstr));}
 
     sysinline void assign(const String& that)
-        {that.valid() ? assign(that.charArray()) : invalidate();}
+        {that.valid() ? assign(that.str()) : invalidate();}
 
 public:
 
     sysinline String& operator =(const String& that)
         {assign(that); return *this;}
+
+    sysinline String& operator =(String&& that)
+        {exchange(*this, that); that.clear(); return *this;}
 
     sysinline String& operator =(const Type* cstr)
         {assign(cstr); return *this;}
@@ -265,7 +279,7 @@ public:
         {append(charArrayFromPtr(cstr));}
 
     sysinline void append(const SimpleStringEx<Type>& that)
-        {that.valid() ? append(that.charArray()) : invalidate();}
+        {that.valid() ? append(that.str()) : invalidate();}
 
 public:
 
@@ -286,23 +300,23 @@ public:
 public:
 
     friend sysinline bool operator ==(const String& a, const String& b)
-        {return a.valid() && b.valid() && strEqual(a.charArray(), b.charArray());}
+        {return a.valid() && b.valid() && strEqual(a.str(), b.str());}
 
     ////
 
     friend sysinline bool operator ==(const String& a, const Type* b)
-        {return a.valid() && strEqual(a.charArray(), charArrayFromPtr(b));}
+        {return a.valid() && strEqual(a.str(), charArrayFromPtr(b));}
 
     friend sysinline bool operator ==(const Type* a, const String& b)
-        {return b.valid() && strEqual(charArrayFromPtr(a), b.charArray());}
+        {return b.valid() && strEqual(charArrayFromPtr(a), b.str());}
 
     ////
 
     friend sysinline bool operator ==(const String& a, const CharArrayEx<Type>& b)
-        {return a.valid() && strEqual(a.charArray(), b);}
+        {return a.valid() && strEqual(a.str(), b);}
 
     friend sysinline bool operator ==(const CharArrayEx<Type>& a, const String& b)
-        {return b.valid() && strEqual(a, b.charArray());}
+        {return b.valid() && strEqual(a, b.str());}
 
     //----------------------------------------------------------------
     //

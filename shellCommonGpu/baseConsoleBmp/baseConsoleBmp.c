@@ -4,20 +4,21 @@
 
 #include "baseInterfaces/imageProviderMemcpy.h"
 #include "binaryFile/binaryFileImpl.h"
+#include "bmpFile/bmpPackedHeaders.h"
+#include "cfgTools/boolSwitch.h"
+#include "cfgTools/cfgSimpleString.h"
 #include "data/spacex.h"
 #include "dataAlloc/arrayMemory.h"
+#include "errorLog/convertExceptions.h"
+#include "errorLog/debugBreak.h"
 #include "errorLog/errorLog.h"
-#include "errorLog/blockExceptions.h"
 #include "flipMatrix.h"
-#include "formattedOutput/messageFormatterStdio.h"
+#include "formattedOutput/formatters/messageFormatterImpl.h"
 #include "interfaces/fileTools.h"
 #include "rndgen/rndgenBase.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
-#include "bmpFile/bmpPackedHeaders.h"
-#include "cfgTools/boolSwitch.h"
-#include "configFile/cfgSimpleString.h"
 
 namespace baseConsoleBmp {
 
@@ -68,7 +69,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
     ARRAY_EXPOSE_UNSAFE(result);
-    MessageFormatterStdio formatter{result};
+    MessageFormatterImpl formatter{result};
 
     v.func(v.value, formatter);
     REQUIRE(formatter.valid());
@@ -162,7 +163,7 @@ stdbool writeImage
 
     header.bfType = 0x4D42; // BM
     REQUIRE(convertExact(totalSize, header.bfSize));
-    header.bfReserved1 = 0; 
+    header.bfReserved1 = 0;
     header.bfReserved2 = 0;
     REQUIRE(convertExact(headerSize, header.bfOffBits));
 
@@ -230,8 +231,8 @@ HashKey getHash(const CharArray& str)
 
 SimpleString getDefaultImageDir()
 {
-    SimpleString dir; 
-        
+    SimpleString dir;
+
     auto tempDir = getenv("HEXLIB_OUTPUT");
 
     if_not (tempDir)
@@ -255,28 +256,28 @@ SimpleString getDefaultImageDir()
 class BaseConsoleBmpImpl : public BaseConsoleBmp
 {
 
-public:
-
     void setActive(bool active)
         {savingActive = active;}
 
     void setDir(const CharType* dir)
         {outputDir = dir ? SimpleString(dir) : getDefaultImageDir();}
 
-public:
+    ////
 
-    void serialize(const CfgSerializeKit& kit)
+    void serialize(const CfgSerializeKit& kit, bool hotkeys)
     {
-        savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+B"));
+        savingActive.serialize(kit, STR("Active"), hotkeys ? STR("Shift+Alt+B") : STR(""));
         outputDir.serialize(kit, STR("Output Directory"));
     }
 
-public:
+    ////
 
     stdbool saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
     stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
-public:
+    ////
+
+    void clearState();
 
     bool active() const
         {return savingActive;}
@@ -286,17 +287,17 @@ public:
 
     void setLockstepCounter(Counter counter);
 
-private:
+    ////
 
     BoolSwitch savingActive{false};
     SimpleStringVar outputDir{getDefaultImageDir()};
 
-private:
+    ////
 
     Counter initCounter = 0;
     unordered_map<HashKey, Counter> table;
 
-private:
+    ////
 
     stdbool mdCheck(stdPars(Kit));
 
@@ -308,6 +309,19 @@ private:
 
 UniquePtr<BaseConsoleBmp> BaseConsoleBmp::create()
     {return makeUnique<BaseConsoleBmpImpl>();}
+
+//================================================================
+//
+// BaseConsoleBmpImpl::clearState
+//
+//================================================================
+
+void BaseConsoleBmpImpl::clearState()
+{
+    initCounter = 0;
+    table.clear();
+    mdCurrentDir = nanOf<SimpleString>();
+}
 
 //================================================================
 //
@@ -415,15 +429,16 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
     Counter frameIndex{};
 
-    auto getFrameIndex = [&]
     {
+        convertExceptionsBegin;
+
         auto hash = getHash(descStr);
         auto f = table.insert(make_pair(hash, initCounter));
         Counter& counter = f.first->second;
         frameIndex = counter++;
-    };
 
-    require(blockExceptionsVoid(getFrameIndex()));
+        convertExceptionsEnd;
+    }
 
     //----------------------------------------------------------------
     //

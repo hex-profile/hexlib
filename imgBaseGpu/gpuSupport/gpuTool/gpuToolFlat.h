@@ -44,7 +44,7 @@
 
 #define GPT_FLAT_MAKE_CALLER(prefix, samplerList, paramList, groupSizeX, groupSizeY) \
     \
-    hostDeclareKernel(prefix##Kernel, prefix##Params, o); \
+    hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
     stdbool prefix \
     ( \

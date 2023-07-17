@@ -48,7 +48,7 @@ struct FiberTask
 //
 //================================================================
 
-static void FIBER_CONVENTION fiberFunc(void* parameter)
+void FIBER_CONVENTION fiberFunc(void* parameter)
 {
 
     //

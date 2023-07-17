@@ -4,7 +4,7 @@
 #include "gpuLayer/gpuLayer.h"
 #include "dataAlloc/arrayObjectMemory.h"
 #include "dataAlloc/memoryAllocatorKit.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "allocation/mallocKit.h"
 
 //================================================================
@@ -53,7 +53,7 @@ class GpuModuleKeeper
 
 public:
 
-    using CreateKit = KitCombine<ErrorLogKit, ErrorLogExKit, GpuInitKit, MallocKit>;
+    using CreateKit = KitCombine<ErrorLogKit, MsgLogExKit, GpuInitKit, MallocKit>;
 
     //----------------------------------------------------------------
     //

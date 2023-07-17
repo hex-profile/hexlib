@@ -27,7 +27,7 @@ sysinline void atomicAction(Type* dst, Type value, const Action& action)
 
     auto oldValue = target.load();
 
-    while (!target.compare_exchange_weak(oldValue, action(oldValue, value), memory_order_relaxed, memory_order_relaxed)) 
+    while (!target.compare_exchange_weak(oldValue, action(oldValue, value), memory_order_relaxed, memory_order_relaxed))
         ;
 }
 
@@ -136,7 +136,7 @@ sysinline float32 __int_as_float(int32 value)
 //
 // Originally posted by Andy_Lomas on NVIDIA forums.
 //
-// Tested by me, correctly handles both +-{0, 1, maxfloat, infinity}, 
+// Tested by me, correctly handles both +-{0, 1, maxfloat, infinity},
 // including negative zero.
 //
 //================================================================

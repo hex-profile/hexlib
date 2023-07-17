@@ -95,10 +95,10 @@ stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Sp
 
         float32 nodeTimeFraction = nodeTotalTime / o.fullRunTime;
 
-        o.visitor(treeLevel, node.userName, nodeStack, false, nodeTimeFraction, avgPerCycleCount, avgNormalTime, avgDeviceTime, avgElemCount, 
+        o.visitor(treeLevel, node.userName, nodeStack, false, nodeTimeFraction, avgPerCycleCount, avgNormalTime, avgDeviceTime, avgElemCount,
             avgElemNormalTime, avgElemDeviceTime);
     }
-  
+
     //----------------------------------------------------------------
     //
     // Fast way
@@ -162,13 +162,12 @@ public:
         (
             kit.msgLog,
             '$',
-            STR("$$: $ is $$, $% total"),
-            STR(""), // indent
-            userName.size ? userName : charArrayFromPtr(scope.location), // 1
-            paramMsg('$', deviceMode ? STR("Device $%") : (pureTime ? STR("Body") : STR("Time")), fltf(deviceFraction * 1e2f, 0)), // 2
-            fltf(timePercentage, 1), // 3
-            paramMsg(!perCycleCountImportant ? STR("% ms") : STR("% ms x % fraction"), fltf(avgTimeMs, 3), fltf(avgPerCycleCount, 1)), // 4
-            paramMsg(avgElemTime == 0 ? STR("") : STR(" (% us/elem)"), prettyNumber(fltg(avgElemTime * 1e6f, 3)), fltf(sqrtf(avgElemCount), 0))
+            STR("$: $ is $$, $% total"),
+            userName.size ? userName : charArrayFromPtr(scope.location),
+            paramMsg('$', deviceMode ? STR("Device $%") : (pureTime ? STR("Body") : STR("Time")), fltf(deviceFraction * 1e2f, 0)),
+            paramMsg(!perCycleCountImportant ? STR("% ms") : STR("% ms x % fraction"), fltf(avgTimeMs, 3), fltf(avgPerCycleCount, 1)),
+            paramMsg(avgElemTime == 0 ? STR("") : STR(" (% us/elem)"), prettyNumber(fltg(avgElemTime * 1e6f, 3)), fltf(sqrtf(avgElemCount), 0)),
+            fltf(timePercentage, 1)
         );
 
         ////
@@ -206,9 +205,9 @@ private:
 
 stdbool namedNodesReport
 (
-    ProfilerNode* rootNode, 
-    float32 divTicksPerSec, 
-    uint32 cycleCount, 
+    ProfilerNode* rootNode,
+    float32 divTicksPerSec,
+    uint32 cycleCount,
     float32 processingThroughput,
     stdPars(ReportKit)
 )
@@ -242,7 +241,7 @@ stdbool namedNodesReport
     REQUIRE(divTicksPerSec > 0);
     float32 tickFactor = divTicksPerSec;
 
-    float32 fullRunTime = float32(rootNode->totalTimeSum) * tickFactor; 
+    float32 fullRunTime = float32(rootNode->totalTimeSum) * tickFactor;
 
     ////
 

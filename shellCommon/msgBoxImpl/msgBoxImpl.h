@@ -2,7 +2,7 @@
 
 //================================================================
 //
-// TimerImpl
+// MsgBoxImpl
 //
 //================================================================
 
@@ -10,6 +10,11 @@
 
     #include "msgBoxWin32.h"
     using MsgBoxImpl = MsgBoxWin32;
+
+#elif defined(__linux__)
+
+    #include "msgBoxLinux.h"
+    using MsgBoxImpl = MsgBoxLinux;
 
 #else
 

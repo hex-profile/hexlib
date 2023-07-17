@@ -326,7 +326,7 @@ GPUTOOL_2D_BEG_EX
     #undef TMP_MACRO
 
     ////
-  
+
 
     Point<Space> extendedIdx = threadIdx;
     extendedIdx.DIR(X, Y) *= downsampleFactor; // 2X bank conflicts, but not important.
@@ -693,7 +693,7 @@ PREP_PASTE(FUNCNAME, ProcessFinalProto) PREP_PASTE(FUNCNAME, ProcessFinalCachedV
 
 stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 (
-    const GpuMatrix<const GABOR_INPUT_PIXEL>& src, 
+    const GpuMatrix<const GABOR_INPUT_PIXEL>& src,
     PREP_LIST_FOREACH_PAIR(GABOR_PREPROCESS_IMAGES (o), GABOR_DECLARE_MATRIX_PARAM, _)
     const GpuMatrix<const float32_x2>& circleTable,
     PREP_LIST_FOREACH_PAIR(GABOR_POSTPROCESS_IMAGES (o), GABOR_DECLARE_MATRIX_PARAM, _)
@@ -763,8 +763,8 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
         (
             src,
             PREP_LIST_FOREACH_PAIR(GABOR_PREPROCESS_IMAGES (o), GABOR_PASS_MATRIX_PARAM, _)
-            circleTable, 
-            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp), 
+            circleTable,
+            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp),
             demodulateOutput,
             stdPass
         )
@@ -778,16 +778,16 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 
     require
     (
-        ( 
-            uncachedVersion ? 
+        (
+            uncachedVersion ?
             PREP_PASTE3(FUNCNAME, ProcessFinalSimple, DIR(Ver, Hor)) :
             PREP_PASTE3(FUNCNAME, ProcessFinalCached, DIR(Ver, Hor))
         )
         (
-            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp), 
-            circleTable, 
+            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp),
+            circleTable,
             PREP_LIST_FOREACH_PAIR(GABOR_POSTPROCESS_IMAGES (o), GABOR_PASS_MATRIX_PARAM, _)
-            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, dst), 
+            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, dst),
             demodulateOutput,
             params,
             stdPass
@@ -820,16 +820,16 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 // 2D weighted average of defined pixels within the weight window of
 // Gabor envelope (Gaussian ball).
 //
-// * When computing each Gabor filter, replace undefined input pixels with 
-// the default value. The replacement cannot be done inside the input image, 
-// because the same input pixel may have different default values 
+// * When computing each Gabor filter, replace undefined input pixels with
+// the default value. The replacement cannot be done inside the input image,
+// because the same input pixel may have different default values
 // when it is used for different Gabor positions.
 //
 // The above description prevents separable filtering if implemented directly.
 // To keep filtering separable, the following method is used:
 //
-// Assume we don't know the default input value at the filtering stage, 
-// let's denote it by variable D. 
+// Assume we don't know the default input value at the filtering stage,
+// let's denote it by variable D.
 //
 // For unconditional input, the filtered value is sum(Fi * Vi)
 // where F is the filter and V is value.
@@ -841,13 +841,13 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 // ==
 // sum(Fi * Mi * Vi) + D * sum(Fi * 1) - sum(Fi * Mi)
 //
-// So, the result of any linear filter, including complex Gabor filter, splits into three sums: 
+// So, the result of any linear filter, including complex Gabor filter, splits into three sums:
 // (Filtered product of image and mask) + (Filtered 1) - D * (Filtered mask).
 //
 // For Gabor filters, filtered 1 is zero, so the result is:
 // (Gabor-filtered product of image and mask) - D * (Gabor-filtered mask).
 //
-// Both filters can be computed separably, as well as the image of default value D, which is 
+// Both filters can be computed separably, as well as the image of default value D, which is
 // (envelope-filtered product of image and mask) / (envelope-filtered mask).
 //
 //----------------------------------------------------------------
@@ -880,7 +880,7 @@ GPUTOOL_2D_BEG_EX
     PREP_PASTE3(FUNCNAME, EnvelopeInitialCached, DIR(Hor, Ver)),
     GABOR_INITIAL_CACHED_THREAD_COUNT,
     true,
-    
+
     PREP_LIST_FOREACH_PAIR(ENVELOPE_INPUT_IMAGES (o), ENVELOPE_DECLARE_SAMPLER, _),
     ((ENVELOPE_INTERM_PIXEL, dst)),
     ((ENVELOPE_PARAMS, params))
@@ -1028,7 +1028,7 @@ GPUTOOL_2D_BEG_EX
     PREP_PASTE3(FUNCNAME, EnvelopeFinalCached, DIR(Hor, Ver)),
     GABOR_FINAL_CACHED_THREAD_COUNT,
     true,
-    
+
     ((const ENVELOPE_INTERM_PIXEL, src, INTERP_NONE, ENVELOPE_BORDER_MODE)),
     PREP_LIST_FOREACH_PAIR(ENVELOPE_OUTPUT_IMAGES (o), ENVELOPE_DECLARE_MATRIX, _),
     ((ENVELOPE_PARAMS, params))

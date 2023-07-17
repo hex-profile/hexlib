@@ -27,7 +27,7 @@ sysinline void outputPoint(const Point4D<Type>& value, FormatOutputStream& outpu
 template <typename Type>
 sysinline void outputPoint(const FormatNumber<Point4D<Type>>& number, FormatOutputStream& outputStream)
 {
-    outputStream 
+    outputStream
         << formatNumber(number.value.X, number) << STR(", ")
         << formatNumber(number.value.Y, number) << STR(", ")
         << formatNumber(number.value.Z, number) << STR(", ")

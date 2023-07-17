@@ -23,7 +23,7 @@ inline StlString sprintMsg(const Kit& kit, const CharArray& format, const Types&
 {
     const FormatOutputAtom params[] = {values...};
     ParamMsg paramMsg(defaultSpecialChar, format, params, sizeof...(values));
-   
+
     ////
 
     kit.formatter.clear();
@@ -31,6 +31,6 @@ inline StlString sprintMsg(const Kit& kit, const CharArray& format, const Types&
 
     if_not (kit.formatter.valid())
         throw std::bad_alloc();
-   
+
     return StlString(kit.formatter.cstr());
 }

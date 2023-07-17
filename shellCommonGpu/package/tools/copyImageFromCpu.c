@@ -62,8 +62,8 @@ stdbool copyImageFromCpu
 
 //----------------------------------------------------------------
 
-INSTANTIATE_FUNC(copyImageFromCpu<uint8>);
-INSTANTIATE_FUNC(copyImageFromCpu<uint8_x4>);
+INSTANTIATE_FUNC(copyImageFromCpu<uint8>)
+INSTANTIATE_FUNC(copyImageFromCpu<uint8_x4>)
 
 //----------------------------------------------------------------
 

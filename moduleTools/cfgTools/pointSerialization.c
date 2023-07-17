@@ -77,25 +77,9 @@ struct CfgWrite<Point4DFamily>
 
 inline bool skipComma(CfgReadStream& s)
 {
-    CharType tmp(0);
-
-    ensure(s.readChars(&tmp, 1));
-
-    if_not (tmp == ' ')
-        ensure(s.unreadChar());
-
-    ////
-
-    ensure(s.readChars(&tmp, 1));
-    ensure(tmp == ',');
-
-    ////
-
-    ensure(s.readChars(&tmp, 1));
-
-    if_not (tmp == ' ')
-        ensure(s.unreadChar());
-
+    s.skipSpaces();
+    ensure(s.skipText(STR(",")));
+    s.skipSpaces();
     return true;
 }
 
@@ -111,7 +95,7 @@ struct CfgRead<PointFamily>
     template <typename PointType>
     static inline bool func(CfgReadStream& s, PointType& value)
     {
-        PointType newValue(value);
+        PointType newValue;
 
         ensure(cfgRead(s, newValue.X));
         ensure(skipComma(s));
@@ -135,7 +119,7 @@ struct CfgRead<Point3DFamily>
     template <typename PointType>
     static inline bool func(CfgReadStream& s, PointType& value)
     {
-        PointType newValue(value);
+        PointType newValue;
 
         ensure(cfgRead(s, newValue.X));
         ensure(skipComma(s));
@@ -161,7 +145,7 @@ struct CfgRead<Point4DFamily>
     template <typename PointType>
     static inline bool func(CfgReadStream& s, PointType& value)
     {
-        PointType newValue(value);
+        PointType newValue;
 
         ensure(cfgRead(s, newValue.X));
         ensure(skipComma(s));

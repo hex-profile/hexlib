@@ -1,0 +1,141 @@
+﻿#================================================================
+#
+# Base.
+#
+#================================================================
+
+FROM nvidia/cudagl:11.1.1-devel-ubuntu20.04
+
+###
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
+
+#================================================================
+#
+# Locales.
+#
+#================================================================
+
+RUN apt-get install -y locales
+RUN locale-gen en_US.UTF-8
+RUN update-locale LANG=en_US.UTF-8
+
+#================================================================
+#
+# Far.
+#
+#================================================================
+
+RUN apt-get -y update # without it can't install software-properties-common
+RUN apt-get install -y software-properties-common # to use add-apt-repository
+RUN add-apt-repository ppa:far2l-team/ppa
+RUN apt-get install -y far2l
+
+#================================================================
+#
+# Small utils.
+#
+#================================================================
+
+RUN apt-get install -y \
+    screen \
+    psmisc \
+    mc \
+    htop \
+    sudo \
+    curl \
+    wget
+
+#================================================================
+#
+# NVIDIA driver.
+#
+#================================================================
+
+RUN if ! command -v nvidia-xconfig &> /dev/null; then \
+        export DRIVER_VERSION=$(head -n1 </proc/driver/nvidia/version | awk '{print $8}'); \
+        echo Installing NVIDIA driver $DRIVER_VERSION; \
+        cd /tmp; \
+        if [ ! -f "/tmp/NVIDIA-Linux-x86_64-$DRIVER_VERSION.run" ]; then \
+            curl -fsL -O "https://us.download.nvidia.com/XFree86/Linux-x86_64/$DRIVER_VERSION/NVIDIA-Linux-x86_64-$DRIVER_VERSION.run" || curl -fsL -O "https://us.download.nvidia.com/tesla/$DRIVER_VERSION/NVIDIA-Linux-x86_64-$DRIVER_VERSION.run" || { echo "Failed NVIDIA GPU driver download. Exiting."; exit 1; }; \
+        fi; \
+        sudo sh "NVIDIA-Linux-x86_64-$DRIVER_VERSION.run" -x; \
+        cd "NVIDIA-Linux-x86_64-$DRIVER_VERSION"; \
+        sudo ./nvidia-installer --silent \
+                    --install-compat32-libs \
+                    --no-kernel-module \
+                    --no-nouveau-check \
+                    --no-nvidia-modprobe \
+                    --no-rpms \
+                    --no-backup \
+                    --no-check-for-alternate-installs || true; \
+        sudo rm -rf /tmp/NVIDIA* && cd ~; \
+    fi
+
+#================================================================
+#
+# Libs.
+#
+#================================================================
+
+RUN apt-get install -y \
+    libeigen3-dev \
+    libglew-dev \
+    libglfw3-dev
+
+#================================================================
+#
+# TurboVNC & VirtualGL.
+#
+#================================================================
+
+RUN wget -q -O /tmp/turbovnc.deb "https://sourceforge.net/projects/turbovnc/files/3.0.3/turbovnc_3.0.3_amd64.deb/download" && \
+    dpkg -i /tmp/turbovnc.deb && \
+    rm /tmp/turbovnc.deb
+
+###
+
+RUN apt-get install -y \
+    libgl1-mesa-glx \
+    libegl1-mesa \
+    libxv1 \
+    libssl1.1 \
+    libc6
+
+RUN wget -q -O /tmp/virtualgl.deb "https://sourceforge.net/projects/virtualgl/files/3.1/virtualgl_3.1_amd64.deb/download" && \
+    dpkg -i /tmp/virtualgl.deb && \
+    rm /tmp/virtualgl.deb
+
+#================================================================
+#
+# noVNC.
+#
+#================================================================
+
+RUN apt-get install -y git
+
+RUN git clone https://github.com/novnc/noVNC.git /opt/noVNC && \
+    git clone https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify
+
+#================================================================
+#
+# TigerVNC.
+#
+#================================================================
+
+RUN apt-get install -y tigervnc-standalone-server tigervnc-scraping-server tigervnc-xorg-extension
+
+#================================================================
+#
+# Desktop.
+#
+#================================================================
+
+RUN apt-get install -y --no-install-recommends \
+    lxde
+
+#RUN apt-get install -y --no-install-recommends \
+#    xfce4 \
+#    xfce4-terminal

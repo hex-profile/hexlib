@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23.0 FATAL_ERROR)
 project(gpuCompiler)
 
 #----------------------------------------------------------------
@@ -16,6 +16,4 @@ set_target_properties(gpuCompiler PROPERTIES OUTPUT_NAME "gpuCC")
 #
 #----------------------------------------------------------------
 
-add_library(gpuCompilerInterface INTERFACE)
-
-target_include_directories(gpuCompilerInterface INTERFACE .)
+hexlibProjectTemplate(gpuCompilerInterface INTERFACE . "" FALSE hexlib)

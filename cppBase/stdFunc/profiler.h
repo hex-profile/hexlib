@@ -17,7 +17,7 @@
 union ProfilerScope
 {
     struct Profiler* profiler;
-    OpaqueStruct<24> data;
+    OpaqueStruct<24, 0x728B1298u> data;
 };
 
 //================================================================
@@ -36,7 +36,7 @@ public:
 
 public:
 
-    using InternalReference = OpaqueStruct<8>;
+    using InternalReference = OpaqueStruct<8, 0x54517C8Du>;
     InternalReference reference;
 
     BroodChildRole profilerChild;

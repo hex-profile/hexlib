@@ -9,9 +9,9 @@
 #include "kits/displayParamsKit.h"
 #include "kits/msgLogsKit.h"
 #include "kits/setBusyStatusKit.h"
-#include "kits/userPoint.h"
+#include "kits/userPointKit.h"
 #include "timer/timerKit.h"
-#include "userOutput/errorLogExKit.h"
+#include "userOutput/msgLogExKit.h"
 
 //================================================================
 //
@@ -51,10 +51,10 @@ KIT_CREATE(PipeControlKit, const PipeControl&, pipeControl);
 enum class Verbosity
 {
     // Produce nothing.
-    Off, 
+    Off,
 
     // Produce nothing but main fullscreen image.
-    Render, 
+    Render,
 
     // Produce everything.
     On
@@ -77,9 +77,9 @@ sysinline auto verboseOnlyIf(bool condition, const Kit& kit)
 //
 //================================================================
 
-using ModuleReallocKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit>;
+using ModuleReallocKit = KitCombine<CpuFuncKit, MsgLogExKit, MsgLogsKit>;
 
-using ModuleProcessKit = KitCombine<CpuFuncKit, ErrorLogExKit, MsgLogsKit,
+using ModuleProcessKit = KitCombine<CpuFuncKit, MsgLogExKit, MsgLogsKit,
     PipeControlKit, TimerKit, VerbosityKit, UserPointKit, SetBusyStatusKit,
     AlternativeVersionKit, DisplayParamsKit>;
 

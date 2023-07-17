@@ -147,8 +147,6 @@ public:
     {
         MUTEX_GUARD(emuLock);
         return emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru);
-
-        returnTrue;
     }
 
 public:
@@ -447,7 +445,7 @@ public:
 
     ~StreamEx() {destroy();}
 
-    stdbool create(const GpuContext& context, stdPars(ErrorLogExKit))
+    stdbool create(const GpuContext& context, stdPars(MsgLogExKit))
         {this->context = context; returnTrue;}
 
     void destroy()
@@ -477,14 +475,24 @@ inline StreamEx& uncast(const GpuStream& stream)
 
 //================================================================
 //
+// getNativeHandle
+//
+//================================================================
+
+void* getNativeHandle(const GpuStream& stream)
+{
+    return nullptr;
+}
+
+//================================================================
+//
 // EmuInitApiThunk::createStream
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars)
+stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars)
 {
     result.clear();
-    baseStream = 0;
 
     ////
 
@@ -668,13 +676,13 @@ TMP_MACRO(copyArrayGpuGpu, GpuAddrU, GpuAddrU);
 
 struct CopyMatrixParams
 {
-    CpuAddrU srcPtr; 
+    CpuAddrU srcPtr;
     Space srcBytePitch;
 
-    CpuAddrU dstPtr; 
+    CpuAddrU dstPtr;
     Space dstBytePitch;
 
-    Space byteSizeX; 
+    Space byteSizeX;
     Space sizeY;
 };
 
@@ -921,17 +929,12 @@ stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool EmuExecApiThunk::putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+stdbool EmuExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
 {
     returnTrue;
 }
 
 stdbool EmuExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
-{
-    returnTrue;
-}
-
-stdbool EmuExecApiThunk::checkEvent(const GpuEvent& event, stdNullPars)
 {
     returnTrue;
 }

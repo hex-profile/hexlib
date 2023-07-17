@@ -23,7 +23,7 @@ public:
 
     bool setPeriod(float32 period)
     {
-        require(def(period) && period > 0);
+        ensure(def(period) && period > 0);
         reportPeriod = period;
         return true;
     }

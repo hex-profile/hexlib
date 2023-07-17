@@ -145,7 +145,7 @@ extern const NullKit nullKit;
 // stdNullPassThru
 //
 // Standard trace support, no kit.
-// 
+//
 //================================================================
 
 #define stdNullPars \
@@ -159,4 +159,4 @@ extern const NullKit nullKit;
     stdPassThruKit(nullKit)
 
 #define stdNullBegin
-    
+

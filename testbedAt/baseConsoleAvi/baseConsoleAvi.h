@@ -64,7 +64,7 @@ public:
     stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit));
 
 private:
-                
+
     DynamicClass<class BaseConsoleAviImpl> instance;
 
 };
@@ -106,21 +106,26 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool overlayClear(stdNullPars)
     {
-        require(baseOverlay.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
+        return baseOverlay.overlayClear(stdPassThru);
+    }
+
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    {
+        require(baseOverlay.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
         require(saver.saveImage(size, imageProvider, desc, id, stdPass));
         returnTrue;
     }
 
-    stdbool setImageFake(stdNullPars)
+    stdbool overlaySetFake(stdNullPars)
     {
-        return baseOverlay.setImageFake(stdPassThru);
+        return baseOverlay.overlaySetFake(stdPassThru);
     }
 
-    stdbool updateImage(stdNullPars) 
+    stdbool overlayUpdate(stdNullPars)
     {
-        return baseOverlay.updateImage(stdPassThru);
+        return baseOverlay.overlayUpdate(stdPassThru);
     }
 
 private:

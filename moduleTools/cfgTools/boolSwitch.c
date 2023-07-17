@@ -83,11 +83,11 @@ bool BoolSwitch::serialize(const CfgSerializeKit& kit, const CharArray& name, co
 {
     int32 oldValue = base;
 
-    SerializeRingSwitchSignal serializeSignal(signal, name, STR(" <>"), key, comment);
-    kit.visitor(kit.scope, serializeSignal);
+    SerializeRingSwitchSignal serializeSignal(signal, name, STR(" <->"), key, comment);
+    kit.visitSignal(serializeSignal);
 
     SerializeBoolSwitchVariable serializeVar(base, name, comment, key);
-    kit.visitor(kit.scope, serializeVar);
+    kit.visitVar(serializeVar);
 
     if (signal)
     {
@@ -162,11 +162,11 @@ bool RingSwitchBase::serialize(const CfgSerializeKit& kit, const CharArray& name
 {
     int32 oldValue = value;
 
-    SerializeRingSwitchSignal serializeSignal(signal, name, STR(" Toggle"), key, comment);
-    kit.visitor(kit.scope, serializeSignal);
+    SerializeRingSwitchSignal serializeSignal(signal, name, STR(" Cycle"), key, comment);
+    kit.visitSignal(serializeSignal);
 
     SerializeRingSwitchVariable serializeVar(value, name, comment, key);
-    kit.visitor(kit.scope, serializeVar);
+    kit.visitVar(serializeVar);
 
     if (signal)
     {

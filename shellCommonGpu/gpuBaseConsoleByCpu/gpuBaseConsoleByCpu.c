@@ -24,7 +24,7 @@
 //
 // GpuBaseImageProvider::setImage
 //
-// Preallocates the intermediate GPU buffer assuming maximum 
+// Preallocates the intermediate GPU buffer assuming maximum
 // expected CPU row byte alignment.
 //
 //================================================================
@@ -58,8 +58,8 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const ColorPixel>& image,
 //
 // * If the destination pitch is equal to the source pitch, copies it as an array.
 //
-// * If the destination pitch is not equal to the source one, 
-// transforms the image on GPU to the destination pitch 
+// * If the destination pitch is not equal to the source one,
+// transforms the image on GPU to the destination pitch
 // using the preallocated intermediate buffer.
 //
 // * Doesn't do dynamic allocations based on the destination pitch.
@@ -103,7 +103,7 @@ stdbool GpuBaseImageProvider::saveBgr32(const Matrix<ColorPixel>& dest, stdNullP
             srcProper = flipMatrix(srcProper);
 
         //
-        // Rearrange on GPU, not very fast, but it's still 
+        // Rearrange on GPU, not very fast, but it's still
         // much faster than any manipulation on CPU.
         //
 
@@ -162,7 +162,7 @@ stdbool GpuBaseImageProvider::saveBgr24(const Matrix<MonoPixel>& dest, stdNullPa
         srcProper = flipMatrix(srcProper);
 
     //
-    // Rearrange on GPU, not very fast, but it's still 
+    // Rearrange on GPU, not very fast, but it's still
     // much faster than any manipulation on CPU.
     //
 
@@ -184,15 +184,14 @@ stdbool GpuBaseImageProvider::saveBgr24(const Matrix<MonoPixel>& dest, stdNullPa
 //================================================================
 
 template <typename Type>
-stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars)
+stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit))
 {
     if (hint.target == ImgOutputOverlay)
     {
         GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(gpuMatrix, stdPass));
 
-        require(baseVideoOverlay.setImage(gpuMatrix.size(), kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
-        overlaySet = true;
+        require(baseVideoOverlay.overlaySet(gpuMatrix.size(), kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
     }
     else
     {
@@ -242,7 +241,7 @@ INSTANTIATE_FUNC(GpuBaseConsoleByCpuThunk::addImageCopyImpl<uint8_x4>)
 //
 //================================================================
 
-stdbool GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+stdbool GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
 {
     GPU_MATRIX_ALLOC(gpuImageMemory, uint8_x4, size);
     GpuMatrix<uint8_x4> gpuImage = flipMatrix(gpuImageMemory);
@@ -253,9 +252,7 @@ stdbool GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, c
     GpuBaseImageProvider imageProvider(kit);
     require(imageProvider.setImage(gpuImage, stdPass));
 
-    require(baseVideoOverlay.setImage(size, kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
-
-    overlaySet = true;
+    require(baseVideoOverlay.overlaySet(size, kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
 
     ////
 

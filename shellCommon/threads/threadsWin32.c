@@ -323,7 +323,7 @@ public:
 
     void close()
     {
-        if (opened) 
+        if (opened)
         {
             DEBUG_BREAK_CHECK(WaitForSingleObject(handle, INFINITE) == WAIT_OBJECT_0);
             DEBUG_BREAK_CHECK(CloseHandle(handle) != 0);

@@ -10,9 +10,12 @@
 // The structure with untyped memory of specified size.
 // The memory has alignment suitable for any built-in type.
 //
+// The hash template parameter is introduced to make
+// the different types of the same size incompatible.
+//
 //================================================================
 
-template <size_t size>
+template <size_t size, unsigned hash>
 class OpaqueStruct
 {
 
@@ -34,7 +37,7 @@ public:
 
 private:
 
-    using Self = OpaqueStruct<size>;
+    using Self = OpaqueStruct;
 
     alignas(maxNaturalAlignment) unsigned char data[size];
 };
@@ -45,10 +48,10 @@ private:
 //
 //================================================================
 
-template <size_t size>
-sysinline void exchange(OpaqueStruct<size>& a, OpaqueStruct<size>& b)
+template <size_t size, unsigned hash>
+sysinline void exchange(OpaqueStruct<size, hash>& a, OpaqueStruct<size, hash>& b)
 {
-    OpaqueStruct<size> tmp = a;
+    auto tmp = a;
     a = b;
     b = tmp;
 }

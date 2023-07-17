@@ -13,7 +13,7 @@
 template <>
 uint32 randRange(RndgenState& rndgen, uint32 lo, uint32 hi)
 {
-  
+
     uint32 result = lo;
 
     ////
@@ -21,10 +21,10 @@ uint32 randRange(RndgenState& rndgen, uint32 lo, uint32 hi)
     if (lo <= hi)
     {
         uint32 diff = hi - lo;
-                              
+
         uint32 rem = rndgen32(rndgen);
 
-        if (diff != uint32(0xFFFFFFFFUL)) 
+        if (diff != uint32(0xFFFFFFFFUL))
             rem = rem % (diff + 1);
 
         result = lo + rem;
@@ -55,7 +55,7 @@ int32 randRange(RndgenState& rndgen, int32 lo, int32 hi)
 
         uint32 rem = rndgen32(rndgen);
 
-        if (diff != uint32(0xFFFFFFFFUL)) 
+        if (diff != uint32(0xFFFFFFFFUL))
             rem = rem % (diff + 1);
 
         result = int32(lo + rem); // result in range lo .. hi
@@ -80,7 +80,7 @@ float32 randRange(RndgenState& rndgen, float32 lo, float32 hi)
     if (def(lo, hi) && lo <= hi)
     {
         float32 divMax32 = 0.23283064370807973754314699618685e-9f; // 1 / (2^32 - 1);
-    
+
         float32 R = lo + float32(rndgen32(rndgen)) * divMax32 * (hi - lo);
 
         if (def(R))
@@ -118,8 +118,8 @@ float64 randRange(RndgenState& rndgen, float64 lo, float64 hi)
         float64 r1 = float64(rndgen32(rndgen));
         float64 r2 = float64(rndgen32(rndgen));
 
-        float64 R = 
-            0.23283064365386962891887177448354e-9 * r1 + 
+        float64 R =
+            0.23283064365386962891887177448354e-9 * r1 +
             0.54210108624275221703311375920553e-19 * r2;
 
         float64 tmp = lo + R * (hi - lo);

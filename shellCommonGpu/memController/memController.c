@@ -7,8 +7,8 @@
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "memController/fastAllocator/fastAllocator.h"
 #include "numbers/mathIntrinsics.h"
-#include "userOutput/errorLogEx.h"
 #include "userOutput/printMsg.h"
+#include "userOutput/printMsgTrace.h"
 
 namespace memController {
 
@@ -51,16 +51,16 @@ public:
     stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
     {
         result.clear();
-        printMsgTrace(kit.errorLogEx, STR("Texture allocation is too slow for temporary memory."), msgErr, stdPassThru);
+        printMsgTrace(kit.msgLogEx, STR("Texture allocation is too slow for temporary memory."), msgErr, stdPassThru);
         returnFalse;
     }
 
-    inline GpuTextureAllocFail(const ErrorLogExKit& kit)
+    inline GpuTextureAllocFail(const MsgLogExKit& kit)
         : kit(kit) {}
 
 private:
 
-    ErrorLogExKit kit;
+    MsgLogExKit kit;
 
 };
 
@@ -105,6 +105,26 @@ inline bool memFailReport(const CharArray& name, AddrU memSize, AddrU memAlignme
 
 //================================================================
 //
+// MemController::dealloc
+//
+//================================================================
+
+void MemController::dealloc()
+{
+    curveCapacity = 0;
+    cpuCurveBuffer.dealloc();
+    gpuCurveBuffer.dealloc();
+
+    stateMemoryIsAllocated = false;
+    cpuState.dealloc();
+    gpuState.dealloc();
+
+    cpuTemp.dealloc();
+    gpuTemp.dealloc();
+}
+
+//================================================================
+//
 // MemController::curveReallocBuffers
 //
 //================================================================
@@ -114,7 +134,7 @@ stdbool MemController::curveReallocBuffers(ReallocActivity& activity, stdPars(Pr
     stdScopedBegin;
 
     MAKE_MALLOC_ALLOCATOR(kit);
-    auto oldKit = kit;
+    auto& oldKit = kit;
     auto kit = kitCombine(oldKit, MallocKit(mallocAllocator));
 
     ////

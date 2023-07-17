@@ -51,7 +51,7 @@ class FastAllocator : public AllocatorInterface<AddrU>
 public:
 
     sysinline FastAllocator(const Array<AddrU>& curveBuffer, const ErrorLogKit& kit)
-        : kit(kit) 
+        : kit(kit)
     {
         curveSetBuffer(curveBuffer);
     }

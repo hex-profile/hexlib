@@ -12,7 +12,7 @@
 //
 // if (i < activeCount) data[i] += data[stageSize + i]
 //
-// Usually ptr = &data[i] is precalculated within the thread's state, 
+// Usually ptr = &data[i] is precalculated within the thread's state,
 // so the operation looks like:
 //
 // if (i < activeCount) ptr[0] += ptr[stageSize]

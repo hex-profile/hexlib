@@ -2,6 +2,7 @@
 
 #include "movement3dBase.h"
 #include "mathFuncs/rotationMath3d.h"
+#include "mathFuncs/mat3d.h"
 
 //================================================================
 //
@@ -40,7 +41,7 @@ sysinline Movement3D<Float> movement3D(const Point3D<Float>& translation)
 // completelyEqual
 //
 //================================================================
- 
+
 template <typename Float>
 sysinline bool completelyEqual(const Movement3D<Float>& A, const Movement3D<Float>& B)
 {
@@ -251,7 +252,7 @@ struct ConvertImpl<Movement3DFamily, Movement3DFamily, check, rounding, hint>
         {
             return movement3D
             (
-                BaseImpl4D::func(src.rotation), 
+                BaseImpl4D::func(src.rotation),
                 BaseImpl3D::func(src.translation)
             );
         }

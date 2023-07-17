@@ -83,4 +83,19 @@
         <DisplayString>{ptr, [size]}</DisplayString>
     </Type>
 
+    <Type Name="PodVector&lt;*&gt;">
+        <DisplayString>[{currentSize}] {allocPtr,[currentSize]na}</DisplayString>
+        <Expand>
+            <Item Name="[ptr]">($T1*) allocPtr,Xb</Item>
+            <ArrayItems>
+                <Size>currentSize</Size>
+                <ValuePointer>($T1*) allocPtr</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="StringStorageEx&lt;*&gt;">
+        <DisplayString>{($T1*) allocPtr, [currentSize]}</DisplayString>
+    </Type>
+
 </AutoVisualizer>

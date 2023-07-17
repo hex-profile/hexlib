@@ -4,14 +4,14 @@
 //
 // maxSigmaForSlidingGaussWith8bitAccuracy
 //
-// Maximal sigma for the given number of taps 
+// Maximal sigma for the given number of taps
 // to get (255/256) Gauss coverage.
 //
 //================================================================
 
 static const float32 maxSigmaForSlidingGaussWith8bitAccuracy[] =
 {
-    -1, 
+    -1,
     0.012f, // 1 taps
     0.300f, // 2 taps
     0.454f, // 3 taps

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "compileTools/compileTools.h"
+
 //================================================================
 //
 // isAnySpace
@@ -7,7 +9,7 @@
 //================================================================
 
 template <typename Char>
-inline bool isAnySpace(Char c)
+sysinline bool isAnySpace(Char c)
 {
     return
         c == ' ' ||
@@ -25,7 +27,7 @@ inline bool isAnySpace(Char c)
 //================================================================
 
 template <typename Char>
-inline bool isSpaceTab(Char c)
+sysinline bool isSpaceTab(Char c)
 {
     return
         c == ' ' ||
@@ -39,23 +41,54 @@ inline bool isSpaceTab(Char c)
 //================================================================
 
 template <typename Char>
-inline bool isDigit(Char c)
+sysinline bool isDigit(Char c)
 {
     return c >= '0' && c <= '9';
 }
 
 //================================================================
 //
-// isBigHexDigit
+// isHexDigit
 //
 //================================================================
 
 template <typename Char>
-inline bool isBigHexDigit(Char c)
+sysinline bool isHexDigit(Char c)
 {
     return
         (c >= '0' && c <= '9') ||
-        (c >= 'A' && c <= 'F');
+        (c >= 'A' && c <= 'F') ||
+        (c >= 'a' && c <= 'f');
+}
+
+//================================================================
+//
+// readAccumHexDigit
+//
+//================================================================
+
+template <typename Value, typename Result>
+sysinline bool readAccumHexDigit(Value c, Result& result)
+{
+    Result digit{};
+
+    if (c >= '0' && c <= '9')
+        digit = c - '0';
+
+    else if (c >= 'A' && c <= 'F')
+        digit = c - 'A' + 10;
+
+    else if (c >= 'a' && c <= 'f')
+        digit = c - 'a' + 10;
+
+    else
+        return false;
+
+    ////
+
+    result = (result << 4) + digit;
+
+    return true;
 }
 
 //================================================================
@@ -66,11 +99,11 @@ inline bool isBigHexDigit(Char c)
 //================================================================
 
 template <typename Char>
-inline bool isLowerLetter(Char c)
+sysinline bool isLowerLetter(Char c)
     {return (c >= 'a' && c <= 'z');}
 
 template <typename Char>
-inline bool isUpperLetter(Char c)
+sysinline bool isUpperLetter(Char c)
     {return (c >= 'A' && c <= 'Z');}
 
 //================================================================
@@ -81,7 +114,7 @@ inline bool isUpperLetter(Char c)
 //================================================================
 
 template <typename Char>
-inline Char toLowerLetter(Char c)
+sysinline Char toLowerLetter(Char c)
 {
     if (c >= 'A' && c <= 'Z')
         c += 'a' - 'A';
@@ -90,7 +123,7 @@ inline Char toLowerLetter(Char c)
 }
 
 template <typename Char>
-inline Char toUpperLetter(Char c)
+sysinline Char toUpperLetter(Char c)
 {
     if (c >= 'a' && c <= 'z')
         c += 'A' - 'a';
@@ -105,7 +138,7 @@ inline Char toUpperLetter(Char c)
 //================================================================
 
 template <typename Char>
-inline bool isLatinLetter(Char c)
+sysinline bool isLatinLetter(Char c)
 {
     return
         (c >= 'A' && c <= 'Z') ||
@@ -119,7 +152,7 @@ inline bool isLatinLetter(Char c)
 //================================================================
 
 template <typename Char>
-inline bool isDirSeparator(Char c)
+sysinline bool isDirSeparator(Char c)
 {
     return c == '\\' || c == '/';
 }
@@ -132,7 +165,7 @@ inline bool isDirSeparator(Char c)
 //================================================================
 
 template <typename Char>
-inline bool isIdent1st(Char c)
+sysinline bool isIdent1st(Char c)
 {
     return c == '_' || isLatinLetter(c);
 }
@@ -140,7 +173,7 @@ inline bool isIdent1st(Char c)
 //----------------------------------------------------------------
 
 template <typename Char>
-inline bool isIdentNext(Char c)
+sysinline bool isIdentNext(Char c)
 {
     return
         isIdent1st(c) ||

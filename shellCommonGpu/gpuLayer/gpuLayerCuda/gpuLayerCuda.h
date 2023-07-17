@@ -86,7 +86,7 @@ public:
 
     stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars);
     static void destroyContext(GpuContextDeallocContext& deallocContext);
-    
+
     using GpuInitApi::threadContextSet;
     stdbool threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdNullPars);
     stdbool threadContextRestore(const GpuThreadContextSave& save, stdNullPars);
@@ -130,7 +130,7 @@ public:
     // Stream
     //
 
-    stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars);
+    stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars);
     static void destroyStream(GpuStreamDeallocContext& deallocContext);
 
     //
@@ -315,9 +315,8 @@ public:
     // Events
     //
 
-    stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars);
+    stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars);
     stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars);
-    stdbool checkEvent(const GpuEvent& event, stdNullPars);
     stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars);
     stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars);
 

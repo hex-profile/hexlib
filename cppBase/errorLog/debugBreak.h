@@ -43,3 +43,6 @@ void debugBreak();
 
 #define DEBUG_BREAK_CHECK(condition) \
     (allv(condition) || (DEBUG_BREAK_INLINE(), false))
+
+#define DEBUG_BREAK_IF(condition) \
+    (!allv(condition) || (DEBUG_BREAK_INLINE(), false))

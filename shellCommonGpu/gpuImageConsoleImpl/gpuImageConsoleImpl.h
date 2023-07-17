@@ -6,7 +6,7 @@
 #include "imageConsole/imageConsoleModes.h"
 #include "kits/moduleKit.h"
 #include "kits/msgLogsKit.h"
-#include "kits/userPoint.h"
+#include "kits/userPointKit.h"
 
 namespace gpuImageConsoleImpl {
 
@@ -21,80 +21,32 @@ class GpuBaseConsoleProhibitThunk : public GpuBaseConsole
 
 public:
 
-    stdbool clear(stdNullPars)
-        {REQUIRE(false); returnTrue;}
-
-    stdbool update(stdNullPars)
-        {REQUIRE(false); returnTrue;}
-
-    stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-        {REQUIRE(false); returnTrue;}
-
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-        {REQUIRE(false); returnTrue;}
-
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
-        {REQUIRE(false); returnTrue;}
-
-    stdbool overlaySetFakeImage(stdNullPars)
-        {REQUIRE(false); returnTrue;}
-
-    stdbool overlayUpdate(stdNullPars)
-        {REQUIRE(false); returnTrue;}
-
     bool getTextEnabled()
         {return false;}
 
     void setTextEnabled(bool textEnabled)
         {}
 
-public:
+    stdbool clear(stdPars(Kit))
+        {CHECK(false); returnTrue;}
 
-    GpuBaseConsoleProhibitThunk(const ErrorLogKit& kit) : kit(kit) {}
+    stdbool update(stdPars(Kit))
+        {CHECK(false); returnTrue;}
 
-private:
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+        {CHECK(false); returnTrue;}
 
-    ErrorLogKit kit;
+    stdbool overlayClear(stdPars(Kit))
+        {CHECK(false); returnTrue;}
 
-};
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
+        {CHECK(false); returnTrue;}
 
-//================================================================
-//
-// GpuBaseConsoleIgnoreThunk
-//
-//================================================================
+    stdbool overlaySetImageFake(stdPars(Kit))
+        {CHECK(false); returnTrue;}
 
-class GpuBaseConsoleIgnoreThunk : public GpuBaseConsole
-{
-
-public:
-
-    stdbool clear(stdNullPars)
-        {returnTrue;}
-
-    stdbool update(stdNullPars)
-        {returnTrue;}
-
-    stdbool addImage(const GpuMatrix<const uint8>& img, const ImgOutputHint& hint, stdNullPars)
-        {returnTrue;}
-
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
-        {returnTrue;}
-
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
-        {returnTrue;}
-
-    stdbool overlaySetFakeImage(stdNullPars)
-        {returnTrue;}
-
-    stdbool overlayUpdate(stdNullPars)
-        {returnTrue;}
-
-    bool getTextEnabled()
-        {return false;}
-
-    void setTextEnabled(bool textEnabled)
-        {}
+    stdbool overlayUpdate(stdPars(Kit))
+        {CHECK(false); returnTrue;}
 
 };
 
@@ -123,22 +75,25 @@ class GpuImageConsoleThunk : public GpuImageConsole
 
 public:
 
-    stdbool clear(stdNullPars)
+    stdbool clear(stdPars(Kit))
         {return baseConsole.clear(stdPassThru);}
 
-    stdbool update(stdNullPars)
+    stdbool update(stdPars(Kit))
         {return baseConsole.update(stdPassThru);}
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
         {return baseConsole.addImageBgr(img, hint, stdPassThru);}
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool overlayClear(stdPars(Kit))
+        {return baseConsole.overlayClear(stdPassThru);}
+
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
         {return baseConsole.overlaySetImageBgr(size, img, hint, stdPassThru);}
 
-    stdbool overlaySetFakeImage(stdNullPars)
-        {return baseConsole.overlaySetFakeImage(stdPassThru);}
+    stdbool overlaySetImageFake(stdPars(Kit))
+        {return baseConsole.overlaySetImageFake(stdPassThru);}
 
-    stdbool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdPars(Kit))
         {return baseConsole.overlayUpdate(stdPassThru);}
 
     bool getTextEnabled()
@@ -367,16 +322,16 @@ public:
 
     inline GpuImageConsoleThunk
     (
-        GpuBaseConsole& baseConsole, 
+        GpuBaseConsole& baseConsole,
         DisplayMode displayMode,
-        VectorMode vectorMode, 
+        VectorMode vectorMode,
         const Kit& kit
     )
-        : 
+        :
         baseConsole(baseConsole),
         displayMode(displayMode),
-        vectorMode(vectorMode), 
-        kit(kit) 
+        vectorMode(vectorMode),
+        kit(kit)
     {
     }
 

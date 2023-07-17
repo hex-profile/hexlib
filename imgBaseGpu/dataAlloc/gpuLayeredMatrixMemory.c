@@ -67,7 +67,7 @@ stdbool GpuLayeredMatrixMemory<Type>::reallocEx(Space layers, const Point<Space>
 
     //
     // align image size X
-    // 
+    //
 
     Space alignedSizeX = 0;
     REQUIRE(computeAlignedSize(sizeX, rowAlignMask, alignedSizeX));
@@ -184,7 +184,7 @@ bool GpuLayeredMatrixMemory<Type>::resize(Space layers, Space sizeX, Space sizeY
 
 #define TMP_MACRO(Type, o) \
     template class GpuLayeredMatrixMemory<Type>;
-  
+
 VECTOR_INT_FOREACH(TMP_MACRO, o)
 VECTOR_FLOAT_FOREACH(TMP_MACRO, o)
 

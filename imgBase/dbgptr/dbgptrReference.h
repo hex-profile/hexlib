@@ -26,6 +26,8 @@ public:
 
     DbgptrReference() =delete;
 
+    DbgptrReference(const Self&) =default;
+
 public:
 
     inline const Pointer& asPointer() const

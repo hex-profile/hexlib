@@ -118,7 +118,7 @@ public:
 
 public:
 
-    sysinline const GpuLayeredMatrix<Type>& operator () () const 
+    sysinline const GpuLayeredMatrix<Type>& operator () () const
         {return *this;}
 
     sysinline GpuLayeredMatrix<Type>& operator () ()
@@ -151,7 +151,7 @@ class GpuLayeredMatrixSubrange : public GpuLayeredMatrix<Type>
 public:
 
     sysinline GpuLayeredMatrixSubrange(const GpuLayeredMatrix<Type>& base, Space layerOrg, Space layerEnd)
-        : base(base), layerOrg(layerOrg), layerEnd(layerEnd) 
+        : base(base), layerOrg(layerOrg), layerEnd(layerEnd)
     {
     }
 

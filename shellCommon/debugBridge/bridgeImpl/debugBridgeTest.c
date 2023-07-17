@@ -83,7 +83,7 @@ public:
         if (!tempDir)
             tempDir = ".";
 
-        filename = string(tempDir) + "/test.cfg";
+        filename = string(tempDir) + "/test.json";
     }
 
 public:
@@ -319,12 +319,12 @@ private:
 void ActionSetupTest::update()
 {
     for (auto& rec: buffer)
-        cout << "BRIDGE: Action setup " << 
+        cout << "BRIDGE: Action setup " <<
         "ID=" << rec.id << " " <<
         "name='" << rec.name << "' " <<
         "key='" << rec.key << "' " <<
-        "desc='" << rec.description << "'" << 
-        endl; 
+        "desc='" << rec.description << "'" <<
+        endl;
 
     if (clearHappened)
         actualBuffer.clear();
@@ -353,9 +353,9 @@ struct ActionReceivingTest : public ActionReceiving
 
 public:
 
-    virtual void getActions(ActionReceiver& receiver) 
+    virtual void getActions(ActionReceiver& receiver)
     {
-        ActionRec actions[] = 
+        ActionRec actions[] =
         {
             {0x3111BAE9, {}},
             {actionId::MouseLeftDown, {}},
@@ -477,7 +477,7 @@ public:
 
     virtual bool active() {return true;}
 
-    virtual void commit() 
+    virtual void commit()
     {
         actionSetupTest.update();
         messageConsoleTest.update();

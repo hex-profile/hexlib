@@ -3,10 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-#include "formattedOutput/messageFormatterStdio.h"
+#include "formattedOutput/formatters/messageFormatterImpl.h"
 #include "stdFunc/stdFunc.h"
 #include "stlString/stlString.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "userOutput/msgLog.h"
 #include "userOutput/printMsg.h"
 #include "userOutput/diagnosticKit.h"
@@ -209,7 +209,7 @@ public:
         openedFilename.clear();
     }
 
-    bool valid() const 
+    bool valid() const
     {
         return !!stream;
     }
@@ -278,9 +278,6 @@ public:
     bool update()
         {return true;}
 
-    bool isThreadProtected() const
-        {return false;}
-
     virtual void lock()
         {}
 
@@ -289,7 +286,7 @@ public:
 
 private:
 
-    OutputTextFile& file; 
+    OutputTextFile& file;
     MessageFormatter& formatter;
 
 };

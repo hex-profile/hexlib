@@ -43,7 +43,7 @@ struct GpuProperties
 
     // Sampler base address alignment in bytes.
     //
-    // Also serves as a base alignment for CPU and GPU 
+    // Also serves as a base alignment for CPU and GPU
     // memory blocks involved in DMA transfers,
     // like CPU pinned memory blocks and their GPU counterparts.
     SpaceU samplerAndFastTransferBaseAlignment{};
@@ -64,7 +64,7 @@ struct GpuProperties
 //
 //================================================================
 
-using GpuTextureDeallocContext = DeallocContext<8, 0xB113EE47>;
+using GpuTextureDeallocContext = OpaqueStruct<8, 0xB113EE47u>;
 
 //----------------------------------------------------------------
 
@@ -113,16 +113,29 @@ sysinline stdbool gpuSyncCurrentStream(stdPars(Kit))
 //
 // GpuEventAllocator
 //
+// An event captures a set of work.
+//
+// After event creation, the captured work set is EMPTY,
+// so waiting on such event returns immediately.
+//
 //================================================================
 
-using GpuEventDeallocContext = DeallocContext<8, 0xF21F8275>;
+using GpuEventDeallocContext = OpaqueStruct<8, 0xF21F8275u>;
 
 //----------------------------------------------------------------
 
 struct GpuEventOwner : public GpuEvent
 {
+    using Base = GpuEvent;
+
     inline void clear() {owner.clear();}
     ResourceOwner<GpuEventDeallocContext> owner;
+
+    friend inline void exchange(GpuEventOwner& a, GpuEventOwner& b)
+    {
+        exchange(soft_cast<Base&>(a), soft_cast<Base&>(b));
+        exchange(a.owner, b.owner);
+    }
 };
 
 //----------------------------------------------------------------
@@ -134,39 +147,55 @@ struct GpuEventAllocator
 
 //================================================================
 //
-// GpuEventWaiting
-// GpuEventRecording
-//
-// After creation or after waiting, an event is 'detached'.
-// On successful recording, an event becomes 'attached'.
-//
-// Waiting on detached event returns success immediately!
-//
-//================================================================
-
-struct GpuEventWaiting
-{
-    virtual stdbool checkEvent(const GpuEvent& event, stdNullPars) =0;
-
-    virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars) =0;
-
-    inline stdbool waitEvent(const GpuEvent& event, stdNullPars)
-        {bool tmp = false; return waitEvent(event, tmp, stdNullPassThru);}
-
-    virtual stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars) =0;
-};
-
-//================================================================
-//
 // GpuEventRecording
 //
 //================================================================
 
 struct GpuEventRecording
 {
-    virtual stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+    //
+    // Captures in the event all the work submitted to the stream so far.
+    //
+    // This function may be called multiple times for the same event,
+    // in this case the new work set replaces the old one,
+    // so waiting on such event will wait for the new work set to finish.
+    //
+
+    virtual stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+
+    //
+    // Puts into the other stream a command to wait for
+    // the completion the given event's work set.
+    //
+    // The wait is performed on GPU without CPU sync.
+    //
 
     virtual stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+};
+
+//================================================================
+//
+// GpuEventWaiting
+//
+//================================================================
+
+struct GpuEventWaiting
+{
+    //
+    // Waits on CPU for the event's work set to complete.
+    //
+
+    virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars) =0;
+
+    inline stdbool waitEvent(const GpuEvent& event, stdNullPars)
+        {bool tmp = false; return waitEvent(event, tmp, stdNullPassThru);}
+
+    //
+    // Compute time elapsed between two events.
+    // Both events should be finished, otherwise error is returned.
+    //
+
+    virtual stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars) =0;
 };
 
 //================================================================

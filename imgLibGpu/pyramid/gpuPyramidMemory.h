@@ -101,7 +101,7 @@ public:
         Space newLevels,
         Space newLayers,
         const PyramidScale& scale,
-        Rounding sizeRounding, 
+        Rounding sizeRounding,
         stdPars(Kit)
     )
     {

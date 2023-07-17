@@ -16,7 +16,7 @@
 #include "simpleString/simpleString.h"
 #include "storage/classThunks.h"
 #include "storage/rememberCleanup.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "userOutput/paramMsg.h"
 #include "formattedOutput/requireMsg.h"
 
@@ -589,7 +589,7 @@ StlString trimRightSpaces(const StlString& str)
 struct CodeBlockParams
 {
     Space simpleCutRadius;
-    Space smartMaxScanRows; 
+    Space smartMaxScanRows;
     Space smartMaxRows;
 };
 
@@ -1727,8 +1727,8 @@ private:
 //----------------------------------------------------------------
 
 CLASSTHUNK_CONSTRUCT_DESTRUCT(HtmlReport)
-CLASSTHUNK_VOID1(HtmlReport, serialize, const CfgSerializeKit&);
-CLASSTHUNK_BOOL_STD1(HtmlReport, makeReport, const MakeReportParams&, ReportFileKit);
+CLASSTHUNK_VOID1(HtmlReport, serialize, const CfgSerializeKit&)
+CLASSTHUNK_BOOL_STD1(HtmlReport, makeReport, const MakeReportParams&, ReportFileKit)
 
 //================================================================
 //

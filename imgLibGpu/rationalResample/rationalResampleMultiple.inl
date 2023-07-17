@@ -47,7 +47,7 @@ namespace PREP_PASTE(FUNCNAME, Space) {
 #ifdef OUTPUT_FACTOR
     #define OUTPUT_FACTOR_ONLY(s) s
     #define OUTPUT_FACTOR_ONLY_COMMA(s) s,
-#else 
+#else
     #define OUTPUT_FACTOR_ONLY(s)
     #define OUTPUT_FACTOR_ONLY_COMMA(s)
 #endif
@@ -95,7 +95,7 @@ PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 template <typename Dst>
 struct ResampleParams
 {
-    Point<float32> srcTexstep; 
+    Point<float32> srcTexstep;
     GpuMatrix<Dst> dst[TASK_COUNT];
     OUTPUT_FACTOR_ONLY(float32 outputFactor;)
 };
@@ -176,8 +176,8 @@ struct ResampleParams
 
 #define TMP_MACRO(Src, Interm, DstType, rank) \
     \
-    GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE3(FUNCNAME, Hor, rank), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE3(FUNCNAME, Hor, DstType), (DstType)); \
-    GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE3(FUNCNAME, Ver, rank), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE3(FUNCNAME, Ver, DstType), (DstType)); \
+    GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE3(FUNCNAME, Hor, rank), ResampleParams, PREP_PASTE(FUNCNAME, HorLink), PREP_PASTE3(FUNCNAME, Hor, DstType), (DstType)) \
+    GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE3(FUNCNAME, Ver, rank), ResampleParams, PREP_PASTE(FUNCNAME, VerLink), PREP_PASTE3(FUNCNAME, Ver, DstType), (DstType)) \
 
 FOREACH_DST_TYPE(TMP_MACRO)
 
@@ -328,7 +328,7 @@ stdbool FUNCNAME
     ResampleParams<Dst> finalParams;
     finalParams.srcTexstep = computeTexstep(intermSize);
     OUTPUT_FACTOR_ONLY(finalParams.outputFactor = outputFactor.DIR(Y, X));
-    
+
 
     #define TMP_MACRO(t, _) \
         require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler##t, makeConst(interm##t), borderMode, \
@@ -351,7 +351,7 @@ stdbool FUNCNAME
             areaOf(dstSize),
             PREP_PASTE(FUNCNAME, DIR(VerLink, HorLink))<Dst>(),
             finalParams,
-            kit.gpuCurrentStream,                                          
+            kit.gpuCurrentStream,
             stdPass
         )
     );

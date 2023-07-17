@@ -41,28 +41,29 @@ using Counter = uint32;
 
 struct BaseConsoleBmp
 {
-
-public:
-
     static UniquePtr<BaseConsoleBmp> create();
     virtual ~BaseConsoleBmp() {}
 
-public:
+    ////
 
     virtual void setActive(bool active) =0;
     virtual void setDir(const CharType* dir) =0; // can be NULL
 
-public:
+    ////
 
-    virtual void serialize(const CfgSerializeKit& kit) =0;
+    virtual void serialize(const CfgSerializeKit& kit, bool hotkeys) =0;
 
-public:
+    ////
+
+    virtual void clearState() =0;
+
+    ////
 
     virtual bool active() const =0;
     virtual const CharType* getOutputDir() const =0;
     virtual void setLockstepCounter(Counter counter) =0;
 
-public:
+    ////
 
     virtual stdbool saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
     virtual stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
@@ -108,21 +109,26 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool overlayClear(stdNullPars)
     {
-        require(baseOverlay.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
+        return baseOverlay.overlayClear(stdPassThru);
+    }
+
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    {
+        require(baseOverlay.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
         require(saver.saveImage(size, imageProvider, desc, id, stdPass));
         returnTrue;
     }
 
-    stdbool setImageFake(stdNullPars)
+    stdbool overlaySetFake(stdNullPars)
     {
-        return baseOverlay.setImageFake(stdPassThru);
+        return baseOverlay.overlaySetFake(stdPassThru);
     }
 
-    stdbool updateImage(stdNullPars) 
+    stdbool overlayUpdate(stdNullPars)
     {
-        return baseOverlay.updateImage(stdPassThru);
+        return baseOverlay.overlayUpdate(stdPassThru);
     }
 
 private:

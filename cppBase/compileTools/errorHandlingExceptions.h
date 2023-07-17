@@ -24,7 +24,13 @@ void exceptThrowFailure();
 //
 //================================================================
 
-class stdbool {};
+class
+#if (__cplusplus >= 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L) && (_MSC_VER >= 1913))
+    [[nodiscard]]
+#endif
+stdbool
+{
+};
 
 //----------------------------------------------------------------
 
@@ -64,7 +70,7 @@ sysinline void requireHelper(const stdbool& value)
 template <>
 sysinline void requireHelper(const bool& value)
 {
-    if (!value) 
+    if (!value)
         exceptThrowFailure();
 }
 
@@ -75,18 +81,18 @@ sysinline void requireHelper(const bool& value)
 
 //================================================================
 //
-// exceptBlockHelper
+// errorBlockHelper
 //
 //================================================================
 
 template <typename Action>
-sysinline bool exceptBlockHelper(const Action& action)
+sysinline bool errorBlockHelper(const Action& action)
 {
     try
     {
-        action(); // stdbool value is not used
+        stdbool ignore = action(); // stdbool value is not used
     }
-    catch (...) 
+    catch (...)
     {
         return false;
     }
@@ -97,4 +103,4 @@ sysinline bool exceptBlockHelper(const Action& action)
 //----------------------------------------------------------------
 
 #define errorBlock(action) \
-    exceptBlockHelper([&] () -> stdbool {return (action);})
+    errorBlockHelper([&] () -> stdbool {return (action);})

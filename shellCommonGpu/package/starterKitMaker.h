@@ -4,7 +4,7 @@
 #include "compileTools/blockExceptionsSilent.h"
 #include "debugBridge/bridgeUsage/msgLogToBridge.h"
 #include "formattedOutput/diagLogTool.h"
-#include "formattedOutput/messageFormatterStdio.h"
+#include "formattedOutput/formatters/messageFormatterImpl.h"
 #include "package/starterKit.h"
 #include "timerImpl/timerImpl.h"
 
@@ -42,7 +42,7 @@ private:
 struct StarterKitMaker
 {
     StarterKitMaker(const Array<CharType>& formatterArray, DiagLog* diagLogPtr)
-        : 
+        :
         formatter{formatterArray},
         diagLogPtr{diagLogPtr}
     {
@@ -50,7 +50,7 @@ struct StarterKitMaker
 
     ////
 
-    MessageFormatterStdio formatter;
+    MessageFormatterImpl formatter;
 
     DiagLog* const diagLogPtr;
     DiagLogNull diagLogNull;
@@ -64,7 +64,7 @@ struct StarterKitMaker
     ////
 
     ErrorLogByMsgLog errorLog{msgLog};
-    ErrorLogExByMsgLog errorLogEx{msgLog};
+    MsgLogExByMsgLog msgLogEx{msgLog};
 
     ////
 
@@ -81,7 +81,7 @@ struct StarterKitMaker
     (
         MessageFormatterKit(formatter),
         ErrorLogKit(errorLog),
-        ErrorLogExKit(errorLogEx),
+        MsgLogExKit(msgLogEx),
         MsgLogKit(msgLog),
         LocalLogKit(localLog),
         LocalLogAuxKit(false, localLog),
@@ -118,28 +118,32 @@ struct StarterKitMaker
 struct StarterDebugKitMaker
 {
     StarterDebugKitMaker(const Array<CharType>& formatterArray, bool flushEveryMessage, DiagLog* diagLogPtr, DebugBridge* debugBridgePtr, const DumpParams& dumpParams)
-        : 
+        :
         formatter{formatterArray},
         flushEveryMessage{flushEveryMessage},
         diagLogPtr{diagLogPtr},
         debugBridgePtr{debugBridgePtr},
         dumpParams{dumpParams}
     {
-        blockExceptionsSilentVoid(debugBridge.statusConsole()->clear());
+        blockExceptBegin;
+        debugBridge.statusConsole()->clear();
+        blockExceptEndIgnore;
     }
 
     ////
 
     ~StarterDebugKitMaker()
     {
-        blockExceptionsSilentVoid(debugBridge.commit());
+        blockExceptBegin;
+        debugBridge.commit();
+        blockExceptEndIgnore;
     }
 
     ////
 
-    MessageFormatterStdio formatter;
+    MessageFormatterImpl formatter;
     bool const flushEveryMessage;
-    
+
     DiagLog* const diagLogPtr;
     DiagLogNull diagLogNull;
     DiagLog& diagLog = diagLogPtr ? *diagLogPtr : diagLogNull;
@@ -160,7 +164,7 @@ struct StarterDebugKitMaker
     ////
 
     ErrorLogByMsgLog errorLog{msgLog};
-    ErrorLogExByMsgLog errorLogEx{msgLog};
+    MsgLogExByMsgLog msgLogEx{msgLog};
 
     ////
 
@@ -177,12 +181,12 @@ struct StarterDebugKitMaker
     (
         MessageFormatterKit{formatter},
         ErrorLogKit{errorLog},
-        ErrorLogExKit{errorLogEx},
+        MsgLogExKit{msgLogEx},
         MsgLogKit{msgLog},
         LocalLogKit{localLog},
         LocalLogAuxKit{false, localLog},
         TimerKit{timer},
-        MallocKit{mallocAllocator}, 
+        MallocKit{mallocAllocator},
         DebugBridgeKit{debugBridge},
         DumpParamsKit{dumpParams}
     );

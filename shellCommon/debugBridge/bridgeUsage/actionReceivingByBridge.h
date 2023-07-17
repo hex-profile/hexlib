@@ -1,8 +1,8 @@
 #include "baseInterfaces/baseSignals.h"
 #include "debugBridge/bridge/debugBridge.h"
-#include "errorLog/blockExceptions.h"
 #include "errorLog/errorLogKit.h"
 #include "stdFunc/stdFunc.h"
+#include "errorLog/convertExceptions.h"
 
 namespace actionReceivingByBridge {
 
@@ -45,7 +45,7 @@ public:
 
     virtual void process(db::ArrayRef<const db::ActionRec> actions)
     {
-        auto arr = makeArray(actions.ptr, actions.size);
+        auto arr = makeArray(actions.ptr, Space(actions.size));
         receiver.process(recastElement<const BaseActionRec>(arr));
     }
 
@@ -66,15 +66,19 @@ class BaseActionReceivingByBridge : public BaseActionReceiving
 
 public:
 
-    using Kit = ErrorLogExKit;
+    using Kit = MsgLogExKit;
 
     BaseActionReceivingByBridge(db::ActionReceiving& base, stdPars(Kit))
         : base(base), kit(kit), trace(trace) {}
 
     virtual void getActions(BaseActionReceiver& receiver)
     {
-        BridgeReceiverByBaseReceiver receiverThunk{receiver};
-        blockExceptionsVoid(base.getActions(receiverThunk));
+        convertExceptionsBegin
+        {
+            BridgeReceiverByBaseReceiver receiverThunk{receiver};
+            base.getActions(receiverThunk);
+        }
+        convertExceptionsEndEx({})
     }
 
 private:

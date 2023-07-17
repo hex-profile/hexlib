@@ -1,6 +1,6 @@
 #pragma once
 
-#include "userOutput/errorLogExKit.h"
+#include "userOutput/msgLogExKit.h"
 #include "stlString/stlString.h"
 #include "stdFunc/stdFunc.h"
 
@@ -10,7 +10,7 @@
 //
 //================================================================
 
-using RunProcessKit = KitCombine<ErrorLogKit, MsgLogKit, ErrorLogExKit>;
+using RunProcessKit = KitCombine<ErrorLogKit, MsgLogKit, MsgLogExKit>;
 
 //================================================================
 //

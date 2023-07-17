@@ -85,8 +85,8 @@ COMPILE_ASSERT(alignof(BitmapPalette) == 1);
 //================================================================
 
 struct BitmapHeaderWithoutPalette
-    : 
-    public BitmapFileHeader, 
+    :
+    public BitmapFileHeader,
     public BitmapInfoHeader
 {
 };
@@ -101,8 +101,8 @@ COMPILE_ASSERT(alignof(BitmapHeaderWithoutPalette) == 1);
 //================================================================
 
 struct BitmapHeaderWithPalette
-    : 
-    public BitmapFileHeader, 
+    :
+    public BitmapFileHeader,
     public BitmapInfoHeader,
     public BitmapPalette
 {

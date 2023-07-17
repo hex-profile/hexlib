@@ -3,6 +3,7 @@
 #include "numbers/interface/exchangeInterface.h"
 #include "numbers/interface/numberInterface.h"
 #include "point/point.h"
+#include "point3d/point3d.h"
 #include "point4d/point4d.h"
 #include "numbers/float16/float16Type.h"
 #include "vectorTypes/vectorBase.h"
@@ -215,7 +216,7 @@ sysinline typename MakeVectorType<Base, 2>::T makeVec2(const Base& x, const Base
 //----------------------------------------------------------------
 
 template <typename Base>
-sysinline typename MakeVectorType<Base, 4>::T makeVec4(const Base& x, const Base& y, const Base& z, const Base& w)
+sysinline auto makeVec4(const Base& x, const Base& y, const Base& z, const Base& w)
 {
     typename MakeVectorType<Base, 4>::T tmp;
     tmp.x = x;
@@ -398,6 +399,76 @@ struct ConvertImpl<PointFamily, VectorX2, check, rounding, hint>
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //----------------------------------------------------------------
 //
+// VectorX4 <-> Point3D
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
+// VectorX4 -> Point3D
+//
+//================================================================
+
+template <ConvertCheck check, Rounding rounding, ConvertHint hint>
+struct ConvertImpl<VectorX4, Point3DFamily, check, rounding, hint>
+{
+    template <typename Src, typename Dst>
+    struct Convert
+    {
+        using SrcBase = VECTOR_BASE(Src);
+        using DstBase = VECTOR_BASE(Dst);
+
+        using BaseConvert = typename ConvertScalar<SrcBase, DstBase, check, rounding, hint>::Code;
+
+        static sysinline Dst func(const Src& src)
+        {
+            return point3D<DstBase>
+            (
+                BaseConvert::func(src.x),
+                BaseConvert::func(src.y),
+                BaseConvert::func(src.z)
+            );
+        }
+    };
+};
+
+//================================================================
+//
+// Point3D -> VectorX4
+//
+//================================================================
+
+template <ConvertCheck check, Rounding rounding, ConvertHint hint>
+struct ConvertImpl<Point3DFamily, VectorX4, check, rounding, hint>
+{
+    template <typename Src, typename Dst>
+    struct Convert
+    {
+        using SrcBase = VECTOR_BASE(Src);
+        using DstBase = VECTOR_BASE(Dst);
+
+        using BaseConvert = typename ConvertScalar<SrcBase, DstBase, check, rounding, hint>::Code;
+        using ZeroConvert = typename ConvertScalar<int, DstBase, check, rounding, hint>::Code;
+
+        static sysinline Dst func(const Src& src)
+        {
+            return makeVec4<DstBase>
+            (
+                BaseConvert::func(src.X),
+                BaseConvert::func(src.Y),
+                BaseConvert::func(src.Z),
+                ZeroConvert::func(0)
+            );
+        }
+    };
+};
+
+//================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
+//
 // VectorX4 <-> Point4D
 //
 //----------------------------------------------------------------
@@ -463,3 +534,106 @@ struct ConvertImpl<Point4DFamily, VectorX4, check, rounding, hint>
         }
     };
 };
+
+//================================================================
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//----------------------------------------------------------------
+//
+// Explicit point <-> vector conversions.
+//
+//----------------------------------------------------------------
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//================================================================
+
+//================================================================
+//
+// toVector
+//
+//================================================================
+
+template <typename Base>
+sysinline auto toVector(const Point<Base>& value)
+{
+    return makeVec2(value.X, value.Y);
+}
+
+template <typename Base>
+sysinline auto toVector(const Point3D<Base>& value)
+{
+    return makeVec4(value.X, value.Y, value.Z, convertNearest<Base>(0));
+}
+
+template <typename Base>
+sysinline auto toVector(const Point4D<Base>& value)
+{
+    return makeVec4(value.X, value.Y, value.Z, value.W);
+}
+
+//================================================================
+//
+// ToPoint
+//
+//================================================================
+
+template <int rank>
+struct ToPoint;
+
+////
+
+template <>
+struct ToPoint<2>
+{
+    template <typename Vector>
+    static sysinline auto func(const Vector& vec)
+    {
+        return point(vec.x, vec.y);
+    }
+};
+
+template <>
+struct ToPoint<3>
+{
+    template <typename Vector>
+    static sysinline auto func(const Vector& vec)
+    {
+        return point3D(vec.x, vec.y, vec.z);
+    }
+};
+
+template <>
+struct ToPoint<4>
+{
+    template <typename Vector>
+    static sysinline auto func(const Vector& vec)
+    {
+        return point4D(vec.x, vec.y, vec.z, vec.w);
+    }
+};
+
+//================================================================
+//
+// toPoint
+//
+//================================================================
+
+template <typename Vector>
+sysinline auto toPoint(const Vector& value)
+{
+    auto tmp = helpRead(value);
+    constexpr int rank = VectorTypeRank<decltype(tmp)>::val;
+    COMPILE_ASSERT(rank != 1);
+    return ToPoint<rank>::func(tmp);
+}
+
+//================================================================
+//
+// toPoint3D
+//
+//================================================================
+
+template <typename Vector>
+sysinline auto toPoint3D(const Vector& value)
+{
+    auto tmp = helpRead(value);
+    return ToPoint<3>::func(tmp);
+}

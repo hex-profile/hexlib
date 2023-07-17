@@ -33,7 +33,7 @@ public:
     StdStringOutput(Str& str)
         : str(str) {}
 
-    void add(const CharType* bufArray, size_t bufSize) override
+    void add(const CharType* bufArray, size_t bufSize)
         {str.append(bufArray, bufSize);}
 
 private:

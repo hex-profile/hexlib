@@ -22,8 +22,8 @@ bool skipJsonValueBody(Iterator& ptr, Iterator end)
 
     ensure
     (
-        skipCstr(s, end) ||
-        skipFloat(s, end) ||
+        skipJsonStr(s, end) ||
+        skipFloat(s, end, false) ||
         skipText(s, end, STR("true")) ||
         skipText(s, end, STR("false")) ||
         skipText(s, end, STR("null"))
@@ -88,7 +88,7 @@ bool parseMember(Iterator& paramPtr, const Kit<Iterator>& kit)
     ////
 
     auto keyStart = s;
-    ENSURE(skipCstr(s, end), s);
+    ENSURE(skipJsonStr(s, end), s);
 
     ENSURE(s >= keyStart + 2, keyStart);
 
@@ -218,7 +218,7 @@ void getRowCol(const Range<Iterator>& buffer, Iterator place, int& resX, int& re
     auto p = buffer.ptr;
     auto end = buffer.end;
 
-    resX = 0; 
+    resX = 0;
     resY = 0;
 
     for (int row = 0; ; ++row)

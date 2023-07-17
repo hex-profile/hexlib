@@ -3,7 +3,7 @@
 #include "userOutput/diagnosticKit.h"
 #include "userOutput/msgLog.h"
 #include "errorLog/errorLog.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "formatting/messageFormatter.h"
 
 //================================================================
@@ -18,8 +18,8 @@ class DiagnosticKitNull : public DiagnosticKit
 public:
 
     inline DiagnosticKitNull()
-        : 
-        DiagnosticKit(kitCombine(MessageFormatterKit(formatterNull), ErrorLogKit(errorLogNull), MsgLogKit(msgLogNull), ErrorLogExKit(errorLogExNull)))
+        :
+        DiagnosticKit(kitCombine(MessageFormatterKit(formatterNull), ErrorLogKit(errorLogNull), MsgLogKit(msgLogNull), MsgLogExKit(msgLogExNull)))
     {
     }
 
@@ -28,6 +28,6 @@ private:
     MessageFormatterNull formatterNull;
     MsgLogNull msgLogNull;
     ErrorLogNull errorLogNull;
-    ErrorLogExNull errorLogExNull;
+    MsgLogExNull msgLogExNull;
 
 };

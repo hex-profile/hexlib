@@ -163,7 +163,7 @@ stdbool CudaInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
 //================================================================
 
 int getCudaCoresPerMultiprocessor(int version)
-{  
+{
     int cores = 0;
 
     switch (version)
@@ -173,12 +173,12 @@ int getCudaCoresPerMultiprocessor(int version)
         case 0x11:
         case 0x12:
         case 0x13:
-            cores = 8; 
+            cores = 8;
             break;
 
         // Fermi
         case 0x20:
-            cores = 32; 
+            cores = 32;
             break;
 
         case 0x21:
@@ -224,7 +224,7 @@ int getCudaCoresPerMultiprocessor(int version)
 
     return cores;
 }
- 
+
 //================================================================
 //
 // CudaInitApiThunk::getProperties
@@ -275,7 +275,7 @@ stdbool CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& proper
     int maxWarpsPerMultiprocessor = maxThreadsPerMultiprocessor / warpSize;
 
     // Max warps is the best, but 32 warps is also ok.
-    int goodWarpsPerMultiprocessor = clampMax(32, maxWarpsPerMultiprocessor); 
+    int goodWarpsPerMultiprocessor = clampMax(32, maxWarpsPerMultiprocessor);
 
     ////
 
@@ -346,7 +346,7 @@ class ContextEx
 public:
 
     ~ContextEx() {destroy();}
-    stdbool create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(ErrorLogExKit));
+    stdbool create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(MsgLogExKit));
     void destroy();
 
     //----------------------------------------------------------------
@@ -397,7 +397,7 @@ public:
 //
 //================================================================
 
-stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(ErrorLogExKit))
+stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(MsgLogExKit))
 {
     destroy();
     baseContext = 0;
@@ -411,17 +411,36 @@ stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties,
 
     unsigned flags = 0;
 
+    auto policy = STR("");
+
     if (gpuScheduling == GpuScheduling::Spin)
+    {
         flags = CU_CTX_SCHED_SPIN;
+        policy = STR("CU_CTX_SCHED_SPIN");
+    }
     else if (gpuScheduling == GpuScheduling::Yield)
+    {
         flags = CU_CTX_SCHED_YIELD;
+        policy = STR("CU_CTX_SCHED_YIELD");
+    }
     else if (gpuScheduling == GpuScheduling::Block)
+    {
         flags = CU_CTX_SCHED_BLOCKING_SYNC;
+        policy = STR("CU_CTX_SCHED_BLOCKING_SYNC");
+    }
     else if (gpuScheduling == GpuScheduling::Auto)
+    {
         flags = CU_CTX_SCHED_AUTO;
+        policy = STR("CU_CTX_SCHED_AUTO");
+    }
     else
+    {
         REQUIRE_TRACE(false, STR("Unknown GPU scheduling value"));
-    
+    }
+
+    if (0)
+        printMsgTrace(kit.msgLogEx, STR("Creating GPU context with % policy."), policy, msgInfo, stdPass);
+
     ////
 
     REQUIRE_CUDA(cuCtxCreate(&cuContext, flags, deviceId));
@@ -582,7 +601,7 @@ stdbool CudaInitApiThunk::threadContextRestore(const GpuThreadContextSave& save,
 
     if (newContext != currentContext)
         REQUIRE_CUDA(cuCtxSetCurrent(newContext));
-    
+
     returnTrue;
 }
 
@@ -986,7 +1005,7 @@ void CudaInitApiThunk::destroyTexture(GpuTextureDeallocContext& deallocContext)
 //
 //================================================================
 
-using GpuCoverageKit = KitCombine<ErrorLogKit, ErrorLogExKit>;
+using GpuCoverageKit = KitCombine<ErrorLogKit, MsgLogExKit>;
 
 //================================================================
 //
@@ -1005,7 +1024,7 @@ struct CoverageEvent
 // Because of bad NVIDIA event interface, a context switch can happen between two events
 // resulting in totally wrong measured kernel time.
 //
-// Such events are not random, they may hit a regular place inside the frame loop, 
+// Such events are not random, they may hit a regular place inside the frame loop,
 // caused by repainting or something else.
 //
 // So several methods of fighting it are implemented:
@@ -1341,11 +1360,11 @@ struct StreamEx
 
 public:
 
-    using AllocKit = KitCombine<MallocKit, ErrorLogKit, ErrorLogExKit>;
+    using AllocKit = KitCombine<MallocKit, ErrorLogKit, MsgLogExKit>;
 
     ~StreamEx() {destroy();}
 
-    stdbool create(const GpuContext& context, bool nullStream, void*& baseStream, stdPars(AllocKit));
+    stdbool create(const GpuContext& context, bool nullStream, stdPars(AllocKit));
     void destroy();
 
 public:
@@ -1385,10 +1404,9 @@ void StreamEx::destroy()
 //
 //================================================================
 
-stdbool StreamEx::create(const GpuContext& context, bool nullStream, void*& baseStream, stdPars(AllocKit))
+stdbool StreamEx::create(const GpuContext& context, bool nullStream, stdPars(AllocKit))
 {
     destroy();
-    baseStream = 0;
 
     ////
 
@@ -1409,7 +1427,6 @@ stdbool StreamEx::create(const GpuContext& context, bool nullStream, void*& base
 
     parentContext = context;
     cuStreamCleanup.cancel();
-    baseStream = cuStream;
 
     returnTrue;
 }
@@ -1423,6 +1440,17 @@ stdbool StreamEx::create(const GpuContext& context, bool nullStream, void*& base
 inline StreamEx& uncast(const GpuStream& stream)
 {
     return *stream.recast<StreamEx*>();
+}
+
+//================================================================
+//
+// getNativeHandle
+//
+//================================================================
+
+void* getNativeHandle(const GpuStream& stream)
+{
+    return uncast(stream).cuStream;
 }
 
 //================================================================
@@ -1492,10 +1520,9 @@ void CudaInitApiThunk::coverageClearSyncFlag(const GpuStream& stream)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars)
+stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars)
 {
     result.clear();
-    baseStream = 0;
 
     ////
 
@@ -1503,7 +1530,7 @@ stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStrea
     REQUIRE(streamEx != 0);
     REMEMBER_CLEANUP_EX(streamAllocCleanup, delete streamEx);
 
-    require(streamEx->create(context, nullStream, baseStream, stdPass));
+    require(streamEx->create(context, nullStream, stdPass));
 
     ////
 
@@ -1778,8 +1805,8 @@ stdbool CudaExecApiThunk::copyArrayCpuCpu(CpuAddrU srcPtr, CpuAddrU dstPtr, Spac
 stdbool CudaExecApiThunk::copyArrayCpuGpu(CpuAddrU srcPtr, GpuAddrU dstPtr, Space size, const GpuStream& stream, stdNullPars)
 {
     GPU_COVERAGE_BEGIN(0, 0);
-    
-    if (gpuEnqueueMode == GpuEnqueueNormal) 
+
+    if (gpuEnqueueMode == GpuEnqueueNormal)
         REQUIRE_CUDA(cuMemcpyHtoDAsync(CUdeviceptr(dstPtr), (void*) srcPtr, size, uncast(stream).cuStream));
 
     GPU_COVERAGE_END;
@@ -1800,8 +1827,8 @@ stdbool CudaExecApiThunk::copyArrayGpuCpu(GpuAddrU srcPtr, CpuAddrU dstPtr, Spac
 stdbool CudaExecApiThunk::copyArrayGpuGpu(GpuAddrU srcPtr, GpuAddrU dstPtr, Space size, const GpuStream& stream, stdNullPars)
 {
     GPU_COVERAGE_BEGIN(0, 0);
-    
-    if (gpuEnqueueMode == GpuEnqueueNormal) 
+
+    if (gpuEnqueueMode == GpuEnqueueNormal)
         REQUIRE_CUDA(cuMemcpyDtoDAsync(CUdeviceptr(dstPtr), CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
 
     GPU_COVERAGE_END;
@@ -1892,10 +1919,10 @@ inline stdbool genericMatrixCopy
         returnTrue; \
     }
 
-TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU, CU_MEMORYTYPE_HOST, CU_MEMORYTYPE_HOST);
-TMP_MACRO(copyMatrixCpuGpu, CpuAddrU, GpuAddrU, CU_MEMORYTYPE_HOST, CU_MEMORYTYPE_DEVICE);
-TMP_MACRO(copyMatrixGpuCpu, GpuAddrU, CpuAddrU, CU_MEMORYTYPE_DEVICE, CU_MEMORYTYPE_HOST);
-TMP_MACRO(copyMatrixGpuGpu, GpuAddrU, GpuAddrU, CU_MEMORYTYPE_DEVICE, CU_MEMORYTYPE_DEVICE);
+TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU, CU_MEMORYTYPE_HOST, CU_MEMORYTYPE_HOST)
+TMP_MACRO(copyMatrixCpuGpu, CpuAddrU, GpuAddrU, CU_MEMORYTYPE_HOST, CU_MEMORYTYPE_DEVICE)
+TMP_MACRO(copyMatrixGpuCpu, GpuAddrU, CpuAddrU, CU_MEMORYTYPE_DEVICE, CU_MEMORYTYPE_HOST)
+TMP_MACRO(copyMatrixGpuGpu, GpuAddrU, GpuAddrU, CU_MEMORYTYPE_DEVICE, CU_MEMORYTYPE_DEVICE)
 
 #undef TMP_MACRO
 
@@ -2245,7 +2272,7 @@ stdbool CudaExecApiThunk::callKernel
 
             if_not (cudaErr == CUDA_SUCCESS)
             {
-                printMsgTrace(kit.errorLogEx, STR("CUDA error: kernel returned %0, groupCount {%1}, threadCount {%2}."),
+                printMsgTrace(kit.msgLogEx, STR("CUDA error: kernel returned %0, groupCount {%1}, threadCount {%2}."),
                     cudaErr, groupCount, threadCount, msgErr, stdPassThru);
 
                 returnFalse;
@@ -2305,7 +2332,7 @@ stdbool CudaExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool CudaExecApiThunk::putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+stdbool CudaExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
 {
     REQUIRE_CUDA(cuEventRecord(uncast(event), uncast(stream).cuStream));
     returnTrue;
@@ -2314,13 +2341,6 @@ stdbool CudaExecApiThunk::putEvent(const GpuEvent& event, const GpuStream& strea
 stdbool CudaExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
 {
     REQUIRE_CUDA(cuStreamWaitEvent(uncast(stream).cuStream, uncast(event), 0));
-    returnTrue;
-}
-
-stdbool CudaExecApiThunk::checkEvent(const GpuEvent& event, stdNullPars)
-{
-    CUresult result = cuEventQuery(uncast(event));
-    require(result == CUDA_SUCCESS);
     returnTrue;
 }
 

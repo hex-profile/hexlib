@@ -2,21 +2,14 @@
 
 #include "allocation/mallocKit.h"
 #include "baseInterfaces/baseImageConsole.h"
-#include "configFile/cfgSerialization.h"
 #include "kits/moduleHeader.h"
 #include "memController/memController.h"
-#include "storage/smartPtr.h"
 #include "minimalShell/minimalShellTypes.h"
+#include "storage/smartPtr.h"
+#include "userOutput/diagnosticKit.h"
+#include "imageConsole/gpuImageConsole.h"
 
 namespace minimalShell {
-
-//================================================================
-//
-// ParamsKit
-//
-//================================================================
-
-KIT_CREATE4(ParamsKit, EngineModule&, engineModule, MemController&, engineMemory, bool, runExecutionPhase, bool&, sysAllocHappened);
 
 //================================================================
 //
@@ -26,7 +19,13 @@ KIT_CREATE4(ParamsKit, EngineModule&, engineModule, MemController&, engineMemory
 //
 //================================================================
 
-KIT_CREATE2(BaseImageConsolesKit, BaseImageConsole*, baseImageConsole, BaseVideoOverlay*, baseVideoOverlay);
+KIT_CREATE3
+(
+    BaseImageConsolesKit,
+    GpuBaseConsole*, gpuBaseConsole,
+    BaseImageConsole*, baseImageConsole,
+    BaseVideoOverlay*, baseVideoOverlay
+);
 
 //================================================================
 //
@@ -34,47 +33,80 @@ KIT_CREATE2(BaseImageConsolesKit, BaseImageConsole*, baseImageConsole, BaseVideo
 //
 //================================================================
 
-class MinimalShell : public CfgSerialization
+struct MinimalShell
 {
 
-public:
+    //----------------------------------------------------------------
+    //
+    // Creation.
+    //
+    //----------------------------------------------------------------
 
     static UniquePtr<MinimalShell> create();
+
     virtual ~MinimalShell() {}
 
-public:
+    //----------------------------------------------------------------
+    //
+    // Settings.
+    //
+    //----------------------------------------------------------------
 
     virtual void serialize(const CfgSerializeKit& kit) =0;
 
     virtual Settings& settings() =0;
 
-public:
+    //----------------------------------------------------------------
+    //
+    // Init / deinit state (apart from settings).
+    //
+    // The initialization may be done in two modes:
+    // * The shell is the maintainer of gpu context and stream OR
+    // * The shell will use externally provided gpu context and stream.
+    //
+    // The initialization is controlled by "gpu context maintainer" setting.
+    //
+    // If the shell is initialized in the external mode, the user has to pass
+    // non-null external context pointer to processing functions.
+    //
+    //----------------------------------------------------------------
 
-    virtual bool isInitialized() const =0;
+    using InitKit = KitCombine<DiagnosticKit, MallocKit>;
 
-    using InitKit = KitCombine<ErrorLogKit, MsgLogsKit, ErrorLogExKit, TimerKit, MallocKit>;
     virtual stdbool init(stdPars(InitKit)) =0;
 
-public:
+    //----------------------------------------------------------------
+    //
+    // Process.
+    //
+    //----------------------------------------------------------------
 
-    using ProcessKit = KitCombine<InitKit, BaseImageConsolesKit, UserPointKit>;
+    struct ProcessArgs
+    {
+        const GpuExternalContext* externalContext;
+        EngineModule& engineModule;
+        MemController& engineMemory;
+        bool runExecutionPhase;
+        bool& sysAllocHappened;
+    };
 
-    stdbool process(EngineModule& engineModule, MemController& engineMemory, bool runExecutionPhase, bool& sysAllocHappened, stdPars(ProcessKit))
-        {return processEntry(stdPassThruKit(kitCombine(kit, ParamsKit(engineModule, engineMemory, runExecutionPhase, sysAllocHappened))));}
+    using BaseProcessKit = KitCombine<ErrorLogKit, MsgLogsKit, MsgLogExKit, TimerKit, MallocKit>;
 
-public:
+    using ProcessKit = KitCombine<BaseProcessKit, BaseImageConsolesKit, UserPointKit, DesiredOutputSizeKit>;
 
-    using ProcessEntryKit = KitCombine<ProcessKit, ParamsKit>;
+    virtual stdbool process(const ProcessArgs& args, stdPars(ProcessKit)) =0;
 
-    virtual stdbool processEntry(stdPars(ProcessEntryKit)) =0;
-
-public:
+    //----------------------------------------------------------------
+    //
+    // Profiling.
+    //
+    //----------------------------------------------------------------
 
     virtual bool profilingActive() const =0;
 
-    using ReportKit = InitKit;
+    using ReportKit = BaseProcessKit;
 
-    virtual stdbool profilingReport(stdPars(ReportKit)) =0;
+    virtual stdbool profilingReport(const GpuExternalContext* externalContext, stdPars(ReportKit)) =0;
 
 };
 

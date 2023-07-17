@@ -21,7 +21,7 @@ namespace gaussSincResampling {
 //
 //================================================================
 
-template <typename Src, typename Interm, typename Dst>              
+template <typename Src, typename Interm, typename Dst>
 stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 ////

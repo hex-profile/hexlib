@@ -36,12 +36,12 @@ public:
     {
     }
 
-    void execute() override
+    void execute()
     {
         action();
     }
 
-    Action* constructCopy(void* memory) override
+    Action* constructCopy(void* memory)
     {
         return new (memory) ActionImpl(*this);
     }

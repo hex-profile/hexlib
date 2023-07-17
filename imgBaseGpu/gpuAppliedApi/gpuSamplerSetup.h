@@ -105,7 +105,7 @@ public:
     inline SamplerOption(bool value)
         : value{value} {}
 
-    inline bool on() const 
+    inline bool on() const
         {return value;}
 
 private:

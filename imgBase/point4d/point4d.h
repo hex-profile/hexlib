@@ -44,7 +44,7 @@ struct DefImpl<Point4D<Type>>
     {
         return Point4D<bool>
         {
-            def(value.X), 
+            def(value.X),
             def(value.Y),
             def(value.Z),
             def(value.W)
@@ -231,7 +231,7 @@ struct ConvertImpl<Point4DFamily, Point4DFamily, check, rounding, hint>
         {
             return point4D
             (
-                BaseImpl::func(srcPoint.X), 
+                BaseImpl::func(srcPoint.X),
                 BaseImpl::func(srcPoint.Y),
                 BaseImpl::func(srcPoint.Z),
                 BaseImpl::func(srcPoint.W)
@@ -306,7 +306,7 @@ sysinline void exchange(Point4D<Type>& A, Point4D<Type>& B)
 #define POINT4D_DEFINE_FUNC1(func) \
     template <typename Type> \
     sysinline auto func(const Point4D<Type>& P) \
-        {return point4D(func(P.X), func(P.Y), func(P.Z), func(P.W));} 
+        {return point4D(func(P.X), func(P.Y), func(P.Z), func(P.W));}
 
 //----------------------------------------------------------------
 

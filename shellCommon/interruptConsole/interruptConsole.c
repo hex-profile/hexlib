@@ -1,5 +1,7 @@
 #include "interruptConsole.h"
 
+#include <atomic>
+
 #if defined(_WIN32)
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
@@ -12,10 +14,12 @@
 //================================================================
 //
 // interruptSignal
+// interruptSignaller
 //
 //================================================================
 
-volatile bool interruptSignal = false;
+std::atomic<bool> interruptSignal{false};
+std::atomic<InterruptSignaller*> interruptSignaller{nullptr};
 
 //================================================================
 //
@@ -30,6 +34,17 @@ bool InterruptConsole::operator() ()
 
 //================================================================
 //
+// InterruptConsole::setSignaller
+//
+//================================================================
+
+void InterruptConsole::setSignaller(InterruptSignaller* signaller)
+{
+    interruptSignaller = signaller;
+}
+
+//================================================================
+//
 // Win32
 //
 //================================================================
@@ -39,6 +54,12 @@ bool InterruptConsole::operator() ()
 BOOL WINAPI consoleCtrlHandler(DWORD dwCtrlType)
 {
     interruptSignal = true;
+
+    auto signaller = interruptSignaller.load();
+
+    if (signaller)
+        (*signaller)();
+
     return true;
 }
 
@@ -61,6 +82,11 @@ InterruptConsole::InterruptConsole()
 void signalHandler(int)
 {
     interruptSignal = true;
+
+    auto signaller = interruptSignaller.load();
+
+    if (signaller)
+        (*signaller)();
 }
 
 InterruptConsole::InterruptConsole()
@@ -70,6 +96,7 @@ InterruptConsole::InterruptConsole()
     sigemptyset(&handler.sa_mask);
     handler.sa_flags = 0;
     sigaction(SIGINT, &handler, NULL);
+    sigaction(SIGTERM, &handler, NULL);
 }
 
 #endif

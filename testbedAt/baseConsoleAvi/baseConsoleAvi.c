@@ -15,7 +15,7 @@
 #include "userOutput/printMsg.h"
 #include "dataAlloc/gpuArrayMemory.h"
 #include "flipMatrix.h"
-#include "formattedOutput/messageFormatterStdio.h"
+#include "formattedOutput/formatters/messageFormatterImpl.h"
 #include "data/spacex.h"
 #include "baseInterfaces/imageProviderMemcpy.h"
 #include "userOutput/paramMsg.h"
@@ -125,7 +125,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
     ARRAY_EXPOSE_UNSAFE(result);
-    MessageFormatterStdio formatter{result};
+    MessageFormatterImpl formatter{result};
 
     v.func(v.value, formatter);
     REQUIRE(formatter.valid());
@@ -400,7 +400,7 @@ private:
     }
 
 private:
-    
+
     bool opened() const {return aviFile && aviStreamBase && aviStreamCompressed;}
 
 private:

@@ -16,7 +16,7 @@
 #include "numbers/int/intType.h"
 #include "osErrors/errorLinux.h"
 #include "storage/rememberCleanup.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "userOutput/printMsg.h"
 #include "numbers/int/intCompare.h"
 
@@ -26,7 +26,7 @@
 //
 //================================================================
 
-COMPILE_ASSERT(sizeof(off_t) * CHAR_BIT == 64);
+COMPILE_ASSERT(TYPE_BIT_COUNT(off_t) == 64);
 COMPILE_ASSERT(TYPE_IS_SIGNED(off_t));
 
 COMPILE_ASSERT(sizeof(off_t) <= sizeof(uint64));
@@ -67,7 +67,7 @@ void BinaryFileLinux::close()
 stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
 {
     close();
-    
+
     ////
 
     REQUIRE(filename.size >= 0);

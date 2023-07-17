@@ -69,10 +69,10 @@ public:
     AtProviderFromCpuImage(const Matrix<ColorPixel>& cpuImage, const ErrorLogKit& kit)
         : cpuImage(cpuImage), kit(kit) {}
 
-    Space desiredBaseByteAlignment() const 
+    Space desiredBaseByteAlignment() const
         {return cpuBaseByteAlignment;}
 
-    Space desiredPitch() const 
+    Space desiredPitch() const
         {return cpuImage.memPitch();}
 
     stdbool saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars);
@@ -367,13 +367,7 @@ class ErrorLogDebugBreak : public ErrorLog
 
 public:
 
-    bool isThreadProtected() const override
-        {return true;}
-
-    void addErrorSimple(const CharType* message) override
-        {DEBUG_BREAK_INLINE();}
-
-    void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) override
+    void addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
         {DEBUG_BREAK_INLINE();}
 
 };

@@ -16,7 +16,7 @@ class SerializeMultiSwitchIntVariable : public SerializeNumericVar<size_t>
 public:
 
     inline SerializeMultiSwitchIntVariable(NumericVar<size_t>& targetVar, const CharArray& nameDesc, size_t positionCount, const NameKeyCommentStruct descPtr[], bool prefix)
-        : 
+        :
         SerializeNumericVar(targetVar, nameDesc, STR(""), STR("")),
         positionCount(positionCount),
         descPtr(descPtr),
@@ -125,7 +125,7 @@ public:
     virtual bool getName(CfgOutputString& result) const
     {
         ensure(result.addStr(prefix));
-        ensure(result.addStr(STR("/-> ")));
+        ensure(result.addStr(STR("/Set ")));
         return SerializeStandardSignal::getName(result);
     }
 
@@ -153,14 +153,14 @@ bool serializeMultiSwitch
 
 
     SerializeMultiSwitchIntVariable serializeVar(value, name, positionCount, descPtr, cfgValuePrefix);
-    kit.visitor(kit.scope, serializeVar);
+    kit.visitVar(serializeVar);
 
     for_count (k, positionCount)
     {
         if (signalPrefix)
         {
             SerializeSignalWithPrefix serializeSignal(signals[k], name, descPtr[k].name, descPtr[k].key, descPtr[k].comment);
-            kit.visitor(kit.scope, serializeSignal);
+            kit.visitSignal(serializeSignal);
         }
         else
         {

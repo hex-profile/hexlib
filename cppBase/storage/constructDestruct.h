@@ -4,11 +4,6 @@
 
 //================================================================
 //
-// constructDefault
-// constructCopy
-// constructParams
-// destruct
-//
 // Explicit calls of constructors and destructor.
 //
 //================================================================
@@ -28,7 +23,12 @@ inline void operator delete(void*, NewLocalizer*)
 {
 }
 
-//----------------------------------------------------------------
+//================================================================
+//
+// constructDefault
+// constructDefaultInit
+//
+//================================================================
 
 template <typename Type>
 inline void constructDefault(Type& x)
@@ -44,12 +44,35 @@ inline void constructDefaultInit(Type& x)
     new ((NewLocalizer*) (void*) &x) Type{};
 }
 
-//----------------------------------------------------------------
+//================================================================
+//
+// constructCopy
+//
+//================================================================
 
 template <typename Type>
 inline void constructCopy(Type& x, const Type& v)
 {
     new ((NewLocalizer*) (void*) &x) Type(v);
+}
+
+//----------------------------------------------------------------
+
+template <typename Type>
+inline void constructCopyNoWarning(Type& x, const Type& v)
+{
+
+#ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+
+    new ((NewLocalizer*) (void*) &x) Type(v);
+
+#ifdef __GNUC__
+    #pragma GCC diagnostic pop
+#endif
+
 }
 
 //================================================================
@@ -59,27 +82,10 @@ inline void constructCopy(Type& x, const Type& v)
 //================================================================
 
 template <typename Type, typename... Params>
-inline void constructParamsVariadic(Type& x, Params&... params)
+inline void constructParamsVariadic(Type& x, Params&&... params)
 {
     new ((NewLocalizer*) (void*) &x) Type(params...);
 }
-
-//================================================================
-//
-// constructParams
-//
-//================================================================
-
-template <typename Type>
-inline Type& constructParamsAux__(Type& x)
-{
-    return x;
-}
-
-//----------------------------------------------------------------
-
-#define constructParams(x, ClassName, params) \
-    (new ((NewLocalizer*) (void*) &(constructParamsAux__<ClassName>(x))) ClassName params)
 
 //================================================================
 //

@@ -73,7 +73,7 @@ bool SStringBuffer<Type>::realloc(size_t newSize)
     ////
 
     Type* newPtr = EmptyString<Type>::cstr();
-        
+
     if (newSize)
         newPtr = (Type*) malloc((newSize + 1) * sizeof(Type));
 
@@ -191,7 +191,7 @@ void SimpleStringEx<Type>::append(const Type* thatPtr, size_t thatSize)
 template <>
 void formatOutput(const SimpleStringEx<CharType>& value, FormatOutputStream& outputStream)
 {
-    outputStream << value.charArray();
+    outputStream << value.str();
 }
 
 //================================================================

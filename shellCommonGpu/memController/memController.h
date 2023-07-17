@@ -5,6 +5,7 @@
 #include "numbers/interface/numberInterface.h"
 #include "cfgTools/numericVar.h"
 #include "dataAlloc/arrayObjectMemory.h"
+#include "storage/adapters/lambdaThunk.h"
 
 namespace memController {
 
@@ -63,7 +64,7 @@ struct ReallocActivity
 
 inline bool uncommonActivity(const ReallocActivity& stateActivity, const ReallocActivity& tempActivity)
 {
-    return 
+    return
         stateActivity.sysAllocCount ||
         stateActivity.fastAllocCount || // Report even fast realloc of the state.
         stateActivity.curveAllocCount ||
@@ -83,6 +84,18 @@ struct MemControllerReallocTarget
     virtual stdbool realloc(stdPars(FastAllocToolkit)) =0;
 };
 
+////
+
+LAMBDA_THUNK2
+(
+    memControllerReallocThunk,
+    MemControllerReallocTarget,
+    bool reallocValid() const,
+    lambda0(),
+    stdbool realloc(stdPars(FastAllocToolkit)),
+    lambda1(stdPassThru)
+)
+
 //================================================================
 //
 // MemControllerProcessTarget
@@ -93,6 +106,16 @@ struct MemControllerProcessTarget
 {
     virtual stdbool process(stdPars(FastAllocToolkit)) =0;
 };
+
+////
+
+LAMBDA_THUNK
+(
+    memControllerProcessThunk,
+    MemControllerProcessTarget,
+    stdbool process(stdPars(FastAllocToolkit)),
+    lambda(stdPassThru)
+)
 
 //================================================================
 //
@@ -121,7 +144,7 @@ KIT_CREATE3(
 //
 //================================================================
 
-using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, ProfilerKit, MsgLogsKit>;
+using ProcessKit = KitCombine<ErrorLogKit, MsgLogExKit, ProfilerKit, MsgLogsKit>;
 
 //================================================================
 //
@@ -134,6 +157,8 @@ struct MemState
 {
     FlatMemoryHolder<AddrU> memory;
     AddrU alignment = 1;
+
+    void dealloc() {memory.dealloc();}
 };
 
 //================================================================
@@ -181,13 +206,21 @@ public:
 
     stdbool processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit));
 
+    //
+    // Dealloc.
+    //
+
+public:
+
+    void dealloc();
+
 private:
 
     stdbool curveReallocBuffers(ReallocActivity& activity, stdPars(ProcessKit));
 
 private:
 
-    NumericVar<Space> curveCapacity{0, spaceMax, 0};
+    NumericVar<Space> curveCapacity{0, spaceMax, 8192};
     ArrayObjectMemory<CpuAddrU> cpuCurveBuffer;
     ArrayObjectMemory<GpuAddrU> gpuCurveBuffer;
 
@@ -217,5 +250,6 @@ using memController::MemController;
 using memController::MemoryUsage;
 using memController::ReallocActivity;
 using memController::MemControllerProcessTarget;
+using memController::memControllerProcessThunk;
 using memController::MemControllerReallocTarget;
-
+using memController::memControllerReallocThunk;

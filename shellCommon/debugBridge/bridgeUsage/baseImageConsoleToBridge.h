@@ -4,7 +4,7 @@
 #include "debugBridge/bridge/debugBridge.h"
 #include "kits/msgLogsKit.h"
 #include "errorLog/errorLogKit.h"
-#include "userOutput/errorLogExKit.h"
+#include "userOutput/msgLogExKit.h"
 
 namespace baseImageConsoleToBridge {
 
@@ -14,7 +14,7 @@ namespace baseImageConsoleToBridge {
 //
 //================================================================
 
-using Kit = KitCombine<LocalLogKit, ErrorLogKit, ErrorLogExKit, MessageFormatterKit>;
+using Kit = KitCombine<LocalLogKit, ErrorLogKit, MsgLogExKit, MessageFormatterKit>;
 
 //================================================================
 //
@@ -32,9 +32,10 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars);
-    stdbool setImageFake(stdNullPars);
-    stdbool updateImage(stdNullPars);
+    stdbool overlayClear(stdNullPars);
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars);
+    stdbool overlaySetFake(stdNullPars);
+    stdbool overlayUpdate(stdNullPars);
 
 private:
 

@@ -6,17 +6,28 @@
 
 //================================================================
 //
-// saturate
+// saturatev
 //
 // Clamps a value to [0, 1] range.
 //
 //================================================================
 
+template <typename Float>
+sysinline Float saturatev(const Float& value)
+    MISSING_FUNCTION_BODY
+
+////
+
 #if defined(__CUDA_ARCH__)
+
+    template <>
+    sysinline float32 saturatev(const float32& value)
+        {return __saturatef(value);}
 
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
 
-    sysinline float32 saturate(float32 value)
+    template <>
+    sysinline float32 saturatev(const float32& value)
         {return clampRange(value, 0.f, 1.f);}
 
 #else

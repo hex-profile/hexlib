@@ -11,7 +11,7 @@
 //
 // Define vector types.
 //
-// The header should define the following vector types: base_x2 and base_x4 
+// The header should define the following vector types: base_x2 and base_x4
 // where the base is {bool, int8, uint8, int16, uint16, int32, uint32, float16, float32}.
 //
 // For each type, the function make_[type] should be defined,

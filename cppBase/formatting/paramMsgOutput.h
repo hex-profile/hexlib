@@ -33,7 +33,7 @@ public:
         func = outputFunc;
     }
 
-    const FormatOutputAtom& operator ~() const 
+    const FormatOutputAtom& operator ~() const
     {
         return *this;
     }

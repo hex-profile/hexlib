@@ -28,7 +28,7 @@ public:
     uint64 getSize() const
         {return currentSize;}
 
-    uint64 getPosition() const 
+    uint64 getPosition() const
         {return currentPosition;}
 
     stdbool setPosition(uint64 pos, stdPars(FileDiagKit));

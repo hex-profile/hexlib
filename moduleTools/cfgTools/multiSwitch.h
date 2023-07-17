@@ -169,7 +169,7 @@ private:
 template <typename EnumType, EnumType positionCount, size_t baseID>
 class ExclusiveMultiSwitch
 {
-    
+
     COMPILE_ASSERT(positionCount >= EnumType(1));
 
     using Base = MultiSwitch<size_t, size_t(positionCount), 0>;

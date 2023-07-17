@@ -5,16 +5,7 @@ namespace safeint32TestImpl {
 
 //================================================================
 //
-// TYPE_BIT_COUNT
 //
-//================================================================
-
-#define TYPE_BIT_COUNT(Type) \
-    (sizeof(Type) * CHAR_BIT)
-
-//================================================================
-//
-// 
 //
 //================================================================
 
@@ -38,7 +29,7 @@ stdbool typeTest1
 
 //================================================================
 //
-// 
+//
 //
 //================================================================
 
@@ -62,7 +53,7 @@ stdbool typeTest2
                 (
                     Perk::equal
                     (
-                        Perk::opStd(sampleA[iA], sampleB[iB]), 
+                        Perk::opStd(sampleA[iA], sampleB[iB]),
                         Perk::opTest(sampleA[iA], sampleB[iB])
                     )
                 )
@@ -89,7 +80,7 @@ COMPILE_ASSERT(TYPE_BIT_COUNT(uint32) <= DBL_MANT_DIG); // Can be represented in
 
 //================================================================
 //
-// 
+//
 //
 //================================================================
 
@@ -115,7 +106,7 @@ struct StdTest
 
 //================================================================
 //
-// 
+//
 //
 //================================================================
 
@@ -164,7 +155,7 @@ static const uint32 specialCases[] =
 
 //================================================================
 //
-// 
+//
 //
 //================================================================
 
@@ -220,7 +211,7 @@ static const uint32 shiftCases[] =
 
 //================================================================
 //
-// 
+//
 //
 //================================================================
 
@@ -287,11 +278,11 @@ struct UnaryMinus : StdTest<Perk>
 template <typename Perk>
 struct UnaryPlus : StdTest<Perk>
 {
-    static uint32 opStd(uint32 X) 
+    static uint32 opStd(uint32 X)
         {return X;}
-    
 
-    static uint32 opTest(uint32 X) 
+
+    static uint32 opTest(uint32 X)
         {return uint32(convertExact<TYPE_MAKE_UNCONTROLLED(Perk)>(+convertExact<Perk>(int32(X))));}
 };
 
@@ -359,7 +350,7 @@ struct Name : StdTest<Perk> \
 
 //================================================================
 //
-// 
+//
 //
 //================================================================
 
@@ -488,7 +479,7 @@ struct Division : StdTest<Perk>
             (
                 operator / // @ccfix
                 (
-                    convertExact<Perk>(int32(A)), 
+                    convertExact<Perk>(int32(A)),
                     convertExact<Perk>(int32(B))
                 )
             )
@@ -616,7 +607,7 @@ struct ShiftRight : StdTest<Perk>
         if (A != nan() && B != nan())
         {
             double Bd = toDbl(B);
-            
+
 
             if (Bd >= 0 && Bd <= 31)
             {
@@ -658,12 +649,12 @@ struct ShiftLeft : StdTest<Perk>
         if (A != nan() && B != nan())
         {
             double Bd = toDbl(B);
-            
+
 
             if (Bd >= 0 && Bd <= 31)
             {
                 double tmp = ldexpv(toDbl(A), +int(Bd)); // @ccfix
-                result = fromDbl(floorv(tmp)); 
+                result = fromDbl(floorv(tmp));
             }
         }
 

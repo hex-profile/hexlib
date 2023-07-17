@@ -116,8 +116,15 @@ struct DevSamplerResult<texture<DeclType, dim, texReadMode>>
 //
 //================================================================
 
-#define devTex2D(sampler, X, Y) \
-    tex2D(sampler, X, Y)
+template <typename SamplerType>
+sysinline auto devTex2D(SamplerType sampler, float32 X, float32 Y)
+{
+    #pragma nv_diag_suppress 1215
+
+    return tex2D(sampler, X, Y);
+
+    #pragma nv_diag_default 1215
+}
 
 //================================================================
 //
@@ -125,8 +132,11 @@ struct DevSamplerResult<texture<DeclType, dim, texReadMode>>
 //
 //================================================================
 
-#define devTex1Dfetch(sampler, offset) \
-    tex1Dfetch(sampler, offset)
+template <typename SamplerType>
+inline auto devTex1Dfetch(SamplerType sampler, int offset)
+{
+    return tex1Dfetch(sampler, offset)
+}
 
 //----------------------------------------------------------------
 

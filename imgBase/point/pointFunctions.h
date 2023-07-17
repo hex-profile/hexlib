@@ -53,7 +53,7 @@ sysinline Value linerp2D(const Point<Selector>& condition, const Value& v00, con
 //
 //================================================================
 
-POINT_DEFINE_FUNC1(saturate)
+POINT_DEFINE_FUNC1(saturatev)
 
 POINT_DEFINE_FUNC3(linerp)
 POINT_DEFINE_FUNC3(linearIf)

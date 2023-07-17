@@ -13,8 +13,6 @@
 
 struct ErrorLog
 {
-    virtual bool isThreadProtected() const =0;
-    virtual void addErrorSimple(const CharType* message) =0;
     virtual void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) =0;
 };
 
@@ -26,12 +24,6 @@ struct ErrorLog
 
 class ErrorLogNull : public ErrorLog
 {
-    virtual bool isThreadProtected() const
-        {return true;}
-
-    virtual void addErrorSimple(const CharType* message)
-        {}
-
     virtual void addErrorTrace(const CharType* message, TRACE_PARAMS(trace))
         {}
 };

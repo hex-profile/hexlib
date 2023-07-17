@@ -5,7 +5,7 @@
 
 FORMAT_OUTPUT_ENUM
 (
-    MsgKind, 
+    MsgKind,
     ((msgInfo, "Info"))
     ((msgWarn, "Warning"))
     ((msgErr, "Error"))

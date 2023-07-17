@@ -7,12 +7,12 @@
 
 #include "errorLog/debugBreak.h"
 #include "errorLog/errorLog.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/printMsg.h"
 #include "compileTools/classContext.h"
 #include "formatting/formatModifiers.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "numbers/int/intType.h"
 #include "osErrors/errorWin32.h"
 

@@ -56,7 +56,7 @@ stdbool GpuMatrixMemory<Type>::reallocEx(const Point<Space>& size, Space baseByt
 
     //
     // align image size X
-    // 
+    //
 
     Space sizeXplusMask = 0;
     REQUIRE(safeAdd(sizeX, alignmentMask, sizeXplusMask));

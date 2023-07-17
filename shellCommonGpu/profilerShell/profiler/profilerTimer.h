@@ -108,7 +108,6 @@ sysinline ProfilerMoment ProfilerTimer::moment()
 
 #endif
 
-    return 0;
 }
 
 //================================================================

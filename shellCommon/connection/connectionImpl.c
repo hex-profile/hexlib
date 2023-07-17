@@ -25,7 +25,7 @@
 #include "storage/rememberCleanup.h"
 #include "errorLog/debugBreak.h"
 #include "numbers/int/intType.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 
 namespace connection {
 
@@ -262,7 +262,7 @@ stdbool ConnectionImpl::reopen(const Address& address, stdPars(Kit))
     //
     //----------------------------------------------------------------
 
-    REQUIRE(address.port >= 0 && address.port <= 0xFFFF); 
+    REQUIRE(address.port >= 0 && address.port <= 0xFFFF);
     constexpr int maxDigits = 5; // at most 5 decimal digits.
 
     char portStr[maxDigits + 1];
@@ -316,7 +316,7 @@ void ConnectionImpl::close()
         theHost.clear();
         thePort = 0;
 
-        theStatus = Status::LibUsed; 
+        theStatus = Status::LibUsed;
     }
 
     ////
@@ -368,7 +368,7 @@ stdbool ConnectionImpl::reconnect(stdPars(Kit))
 
     auto ai = (addrinfo*) theAddrInfo;
 
-    REQUIRE_TRACE3(connect(theSocket, ai->ai_addr, int(ai->ai_addrlen)) == 0, 
+    REQUIRE_TRACE3(connect(theSocket, ai->ai_addr, int(ai->ai_addrlen)) == 0,
         STR("Connection: Cannot connect to %0:%1. %2"), theHost.cstr(), thePort, getSocketError());
 
     //----------------------------------------------------------------

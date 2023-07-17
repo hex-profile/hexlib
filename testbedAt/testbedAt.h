@@ -1,7 +1,7 @@
 #pragma once
 
 #include "at_client.h"
-#include "atEngine/atEngine.h"
+#include "testModule/testModule.h"
 
 //================================================================
 //
@@ -11,6 +11,6 @@
 //
 //================================================================
 
-void atClientCreate(void** instance, const at_api_create* api, const AtEngineFactory& engineFactory);
+void atClientCreate(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory);
 void atClientDestroy(void* instance, const at_api_destroy* api);
 void atClientProcess(void* instance, const at_api_process* api);

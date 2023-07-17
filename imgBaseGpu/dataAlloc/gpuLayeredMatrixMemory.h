@@ -36,7 +36,7 @@ public:
     sysinline GpuLayeredMatrix<Type>& operator () ()
         {return *this;}
 
-    sysinline const GpuLayeredMatrix<Type>& operator () () const 
+    sysinline const GpuLayeredMatrix<Type>& operator () () const
         {return *this;}
 
 public:

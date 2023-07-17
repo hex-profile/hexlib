@@ -4,7 +4,7 @@
 
 #include "gpuLayer/gpuLayer.h"
 #include "errorLog/errorLogKit.h"
-#include "userOutput/errorLogExKit.h"
+#include "userOutput/msgLogExKit.h"
 #include "gpuLayer/gpuLayerEmu/emuMultiProc.h"
 #include "allocation/mallocAllocator/mallocAllocator.h"
 #include "allocation/mallocKit.h"
@@ -42,8 +42,8 @@ private:
 //
 //================================================================
 
-using EmuInitApiToolkit = KitCombine<ErrorLogKit, ErrorLogExKit, MallocKit>;
-using EmuExecApiToolkit = KitCombine<ErrorLogKit, ErrorLogExKit>;
+using EmuInitApiToolkit = KitCombine<ErrorLogKit, MsgLogExKit, MallocKit>;
+using EmuExecApiToolkit = KitCombine<ErrorLogKit, MsgLogExKit>;
 
 //================================================================
 //
@@ -125,7 +125,7 @@ public:
     // Stream creation
     //
 
-    stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars);
+    stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars);
     static void destroyStream(GpuStreamDeallocContext& deallocContext);
 
     //
@@ -286,9 +286,8 @@ public:
     // Events
     //
 
-    stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars);
+    stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars);
     stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars);
-    stdbool checkEvent(const GpuEvent& event, stdNullPars);
     stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars);
     stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars);
 

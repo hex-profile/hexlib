@@ -6,6 +6,7 @@
 #include "point/point.h"
 #include "numbers/float/floatBase.h"
 #include "numbers/int/intBase.h"
+#include "storage/optionalObject.h"
 
 //================================================================
 //
@@ -94,22 +95,29 @@ class DisplayedScaleIndex
 
 public:
 
-    inline DisplayedScaleIndex(int32 index)
-        : index(index) {}
+    inline DisplayedScaleIndex(int32 index, bool steady)
+        : theIndex(index), theSteady(steady) {}
 
     inline operator int32 () const
-        {return index;}
+        {return theIndex;}
 
     inline auto operator () (int32 minVal, int32 maxVal)
     {
-        if (index < minVal) index = minVal;
-        if (index > maxVal) index = maxVal;
-        return index;
+        if (theIndex < minVal) theIndex = minVal;
+        if (theIndex > maxVal) theIndex = maxVal;
+        return theIndex;
     }
+
+    inline void set(int32 value)
+        {theIndex = value;}
+
+    inline bool steady() const
+        {return theSteady;}
 
 private:
 
-    int32 index;
+    int32 theIndex;
+    bool theSteady;
 
 };
 
@@ -195,33 +203,46 @@ class DisplayedRangeIndexEx
 
 public:
 
-    inline DisplayedRangeIndexEx(int32 index, bool displayAll)
-        : index(index), displayAll(displayAll) {}
+    inline DisplayedRangeIndexEx(int32 index, bool steady, bool displayAll)
+        :
+        theIndex(index),
+        theSteady(steady),
+        theDisplayAll(displayAll)
+    {
+    }
 
     inline auto singleValue() const
-        {return index;}
+    {
+        return theIndex;
+    }
 
     inline DisplayedRange operator ()(int32 minVal, int32 maxVal)
     {
-        if (index < minVal) index = minVal;
-        if (index > maxVal) index = maxVal;
+        if (theIndex < minVal) theIndex = minVal;
+        if (theIndex > maxVal) theIndex = maxVal;
 
-        return displayAll ?
-            DisplayedRange{index, minVal, maxVal + 1} :
-            DisplayedRange{index, index, index + 1};
+        return theDisplayAll ?
+            DisplayedRange{theIndex, minVal, maxVal + 1} :
+            DisplayedRange{theIndex, theIndex, theIndex + 1};
     }
 
     inline auto singleValue(int32 minVal, int32 maxVal)
     {
-        if (index < minVal) index = minVal;
-        if (index > maxVal) index = maxVal;
-        return index;
+        if (theIndex < minVal) theIndex = minVal;
+        if (theIndex > maxVal) theIndex = maxVal;
+        return theIndex;
+    }
+
+    inline bool steady() const
+    {
+        return theSteady;
     }
 
 private:
 
-    int32 index;
-    bool displayAll;
+    int32 theIndex;
+    bool theSteady;
+    bool theDisplayAll;
 
 };
 
@@ -259,6 +280,9 @@ struct DisplayParams
 
     // Input frame size used to as full-screen target resolution.
     Point<Space> screenSize;
+
+    // Desired visualization size to better fit into display system.
+    OptionalObject<Point<Space>> desiredOutputSize;
 
     // User desire to see interpolated data.
     bool const interpolation;

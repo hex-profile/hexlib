@@ -65,7 +65,6 @@ public:
 
 private:
 
-    bool ok = false;
     std::mutex mutex;
 
 };

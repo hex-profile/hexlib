@@ -9,15 +9,15 @@
 enum class DisplayMode
 {
     // Display an image upsampled to the original frame size.
-    Fullscreen, 
+    Fullscreen,
 
     // Display a true-sized image at the screen center,
     // on top of black image of the original frame size.
-    Centered, 
+    Centered,
 
     // Display a true-sized image at the left upper corner.
-    Original, 
-    
+    Original,
+
     COUNT
 };
 

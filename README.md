@@ -1,3 +1,10 @@
-# hexlib
+﻿EN [RU](README.ru.md)
 
-My framework, mainly for GPU image processing. It's still under development.
+hexlib
+======
+
+A library for GPU-based image processing.
+
+Currently, unfortunately, only the new graphical interface is documented:
+
+* [Graphical Shell Documentation](testbedGL/README.md).

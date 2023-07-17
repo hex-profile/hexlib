@@ -16,7 +16,7 @@
 #include "cfgTools/multiSwitch.h"
 #include "cfgTools/numericVar.h"
 #include "cfgTools/rangeValueControl.h"
-#include "configFile/cfgSimpleString.h"
+#include "cfgTools/cfgSimpleString.h"
 #include "copyMatrixAsArray.h"
 #include "dataAlloc/arrayMemory.inl"
 #include "dataAlloc/gpuArrayMemory.h"
@@ -27,7 +27,7 @@
 #include "gpuMatrixSet/gpuMatrixSet.h"
 #include "history/historyObject.h"
 #include "kits/displayParamsKit.h"
-#include "kits/userPoint.h"
+#include "kits/userPointKit.h"
 #include "mathFuncs/rotationMath.h"
 #include "baseConsoleAvi/baseConsoleAvi.h"
 #include "baseConsoleBmp/baseConsoleBmp.h"
@@ -41,6 +41,7 @@
 #include "displayParamsImpl/displayParamsImpl.h"
 #include "atInterface/atInterface.h"
 #include "timer/changesMonitor.h"
+#include "kits/userPoint.h"
 
 ////
 
@@ -102,21 +103,27 @@ class AtOverlayMonitor : public BaseVideoOverlay
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool overlayClear(stdNullPars)
     {
-        overlayIsSet = true; 
-        return base.setImage(size, dataProcessing, imageProvider, desc, id, textEnabled, stdNullPassThru);
+        overlayIsSet = false;
+        return base.overlayClear(stdNullPassThru);
     }
 
-    stdbool setImageFake(stdNullPars)
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
-        overlayIsSet = true; 
-        return base.setImageFake(stdNullPassThru);
+        overlayIsSet = true;
+        return base.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdNullPassThru);
     }
 
-    stdbool updateImage(stdNullPars)
+    stdbool overlaySetFake(stdNullPars)
     {
-        return base.updateImage(stdNullPassThru);
+        overlayIsSet = true;
+        return base.overlaySetFake(stdNullPassThru);
+    }
+
+    stdbool overlayUpdate(stdNullPars)
+    {
+        return base.overlayUpdate(stdNullPassThru);
     }
 
 public:
@@ -170,7 +177,7 @@ public:
         savingActive.serialize(kit, STR("Active"), STR("Shift+Alt+V"));
         outputFps.serialize(kit, STR("Playback FPS"), STR("Playback framerate specified in AVI header"));
 
-        outputDir.serialize(kit, outputDirName(), STR("Use double backslashes, for example C:\\\\Temp"));
+        outputDir.serialize(kit, outputDirName());
         outputCodec.serialize(kit, STR("Compressor FourCC"), STR("Use 'DIB ' for uncompressed, 'ffds' for ffdshow"));
 
         maxSegmentFrames.serialize(kit, STR("Max Video Segment Frames"));
@@ -334,7 +341,7 @@ private:
     AviConfig aviConfig;
     BaseConsoleAvi aviConsole;
 
-    UniquePtr<BaseConsoleBmp> bmpConsole = BaseConsoleBmp::create();
+    UniqueInstance<BaseConsoleBmp> bmpConsole;
     uint32 processCounter = 0;
 
 private:
@@ -356,7 +363,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
         CFG_NAMESPACE("Display Params");
 
         bool altVersionSteady = true;
-        displayParams.serialize(kit, altVersionSteady);
+        displayParams.serialize(kit, true, altVersionSteady);
         altVersionMonitor.touch(!altVersionSteady);
         check_flag(altVersionSteady, prepParamsSteady);
     }
@@ -420,7 +427,7 @@ void VideoPreprocessorImpl::serialize(const ModuleSerializeKit& kit)
 
     {
         CFG_NAMESPACE("Saving BMP Files");
-        bmpConsole->serialize(kit);
+        bmpConsole->serialize(kit, true);
     }
 
     {
@@ -549,7 +556,7 @@ stdbool VideoPreprocessorImpl::processTarget
     ////
 
     bool aviOk = false;
-    
+
     if (aviConfig.savingActive)
     {
         aviOk = errorBlock(aviSetOutput());
@@ -573,7 +580,7 @@ stdbool VideoPreprocessorImpl::processTarget
     // Saving to BMPs.
     //
     //----------------------------------------------------------------
-    
+
     BaseConsoleBmpThunk bmpThunk(*bmpConsole, *atImageConsole, *atVideoOverlay, kit);
 
     if (bmpConsole->active())
@@ -581,7 +588,7 @@ stdbool VideoPreprocessorImpl::processTarget
         bmpConsole->setLockstepCounter(processCounter);
 
         printMsgL(kit, STR("Image Saving: Files are saved to %0"), bmpConsole->getOutputDir());
-        atImageConsole = &bmpThunk; 
+        atImageConsole = &bmpThunk;
         atVideoOverlay = &bmpThunk;
     }
 
@@ -592,8 +599,8 @@ stdbool VideoPreprocessorImpl::processTarget
     //
     //----------------------------------------------------------------
 
-    GpuBaseConsoleProhibitThunk gpuBaseConsoleProhibited(kit);
-    GpuBaseConsoleByCpuThunk gpuBaseConsoleAt(*atImageConsole, *atVideoOverlay, kit);
+    GpuBaseConsoleProhibitThunk gpuBaseConsoleProhibited;
+    GpuBaseConsoleByCpuThunk gpuBaseConsoleAt(*atImageConsole, *atVideoOverlay);
 
     GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleProhibited;
 
@@ -606,11 +613,11 @@ stdbool VideoPreprocessorImpl::processTarget
 
     GpuImageConsoleThunk gpuImageConsole(*gpuBaseConsole, dp.displayMode(), dp.vectorMode(), kit);
 
-    DisplayParamsThunk displayParamsThunk{inputFrame.size(), displayParams};
+    DisplayParamsThunk displayParamsThunk{inputFrame.size(), {}, displayParams};
 
     ////
 
-    auto oldKit = kit;
+    auto& oldKit = kit;
     auto kit = kitCombine(oldKit, GpuImageConsoleKit(gpuImageConsole), displayParamsThunk.getKit());
 
     //----------------------------------------------------------------
@@ -631,7 +638,7 @@ stdbool VideoPreprocessorImpl::processTarget
 
             auto img = makeConst(frameHistory[-i]->frameMemory);
 
-            require(kit.gpuImageConsole.addRgbColorImage(img, 0x00, 0xFF * kit.display.factor, point(1.f), INTERP_NEAREST, 
+            require(kit.gpuImageConsole.addRgbColorImage(img, 0x00, 0xFF * kit.display.factor, point(1.f), INTERP_NEAREST,
                 img.size(), BORDER_ZERO, paramMsg(STR("Video Preprocessor: Frame history [%0]"), i), stdPass));
         }
     }
@@ -675,7 +682,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 
 #if USE_OVERLAY_SMOOTHER
 
-    auto oldKit = kit;
+    auto& oldKit = kit;
 
     if_not (overlaySmootherTried)
     {
@@ -890,7 +897,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
         GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(processedFrame, stdPass));
 
-        require(kit.atVideoOverlay.setImage(processedFrame.size(), kit.dataProcessing, imageProvider, STR("Rotated Frame"), 0, true, stdPass));
+        require(kit.atVideoOverlay.overlaySet(processedFrame.size(), kit.dataProcessing, imageProvider, STR("Rotated Frame"), 0, true, stdPass));
     }
 
     ////
@@ -946,7 +953,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
     auto userPoint = kit.userPoint;
 
-    if_not (userPoint.position >= 0 && userPoint.position < cropSize)
+    if_not (userPoint.floatPos >= 0 && userPoint.floatPos <= cropSize)
         userPoint.valid = false;
 
     UserPointKit newUserPointKit(userPoint);
@@ -971,7 +978,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
         GpuBaseImageProvider imageProvider(kit);
         require(imageProvider.setImage(croppedFrame, stdPass));
 
-        require(kit.atVideoOverlay.setImage(croppedFrame.size(), kit.dataProcessing, imageProvider, STR(""), 0, false, stdPass));
+        require(kit.atVideoOverlay.overlaySet(croppedFrame.size(), kit.dataProcessing, imageProvider, STR(""), 0, false, stdPass));
     }
 
     ////
@@ -1039,7 +1046,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
     GpuCopyThunk cpuFrameSender;
 
     ////
-    
+
     HistoryState historyState;
     frameHistory.saveState(historyState);
     REMEMBER_CLEANUP_EX(historyRestore, frameHistory.restoreState(historyState));
@@ -1081,7 +1088,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
     if (internalProcess && !kit.dataProcessing)
         pipeControl.rollbackFrames = 0;
 
-    auto oldKit = kit;
+    auto& oldKit = kit;
     ProcessKit kit = kitReplace(oldKit, PipeControlKit(pipeControl));
 
     ////

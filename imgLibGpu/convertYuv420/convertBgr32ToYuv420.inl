@@ -93,15 +93,15 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
     READ_ITER(0, 0); READ_ITER(1, 0);
     READ_ITER(0, 1); READ_ITER(1, 1);
 
-    if (extraX) 
+    if (extraX)
     {
-        READ_ITER(2, 0); 
+        READ_ITER(2, 0);
         READ_ITER(2, 1);
     }
 
     if (extraY)
     {
-        READ_ITER(0, 2); 
+        READ_ITER(0, 2);
         READ_ITER(1, 2);
     }
 
@@ -212,7 +212,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
     }
 }
 
-#endif 
+#endif
 
 //================================================================
 //

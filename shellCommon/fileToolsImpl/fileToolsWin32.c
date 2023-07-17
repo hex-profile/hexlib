@@ -30,7 +30,7 @@ inline bool isFileEx(const CharType* filename, const Check& check)
 
     bool yes = (handle != INVALID_HANDLE_VALUE) && check(data);
 
-    if (handle != INVALID_HANDLE_VALUE) 
+    if (handle != INVALID_HANDLE_VALUE)
         FindClose(handle);
 
     return yes;
@@ -128,7 +128,7 @@ bool expandPath(const CharType* filename, GetString& result)
     DWORD n = GetFullPathName(filename, size, pathPtr, &dummy);
     ensure(n == size - 1);
 
-    ensure(result.setBuffer(pathPtr, n));
+    ensure(result({pathPtr, n}));
     return true;
 }
 

@@ -13,7 +13,7 @@
 //
 // Provider that copies GPU image to CPU destination.
 //
-// On set image, preallocates intermediate GPU buffer assuming 
+// On set image, preallocates intermediate GPU buffer assuming
 // max expected CPU row byte alignment.
 //
 //================================================================
@@ -69,15 +69,15 @@ class GpuBaseConsoleByCpuThunk : public GpuBaseConsole
 
 public:
 
-    stdbool clear(stdNullPars)
+    stdbool clear(stdPars(Kit))
     {
-        if (kit.dataProcessing) 
-            require(baseImageConsole.clear(stdPassThru)); 
+        if (kit.dataProcessing)
+            require(baseImageConsole.clear(stdPassThru));
 
         returnTrue;
     }
 
-    stdbool update(stdNullPars)
+    stdbool update(stdPars(Kit))
     {
         if (kit.dataProcessing)
             require(baseImageConsole.update(stdPassThru));
@@ -87,25 +87,33 @@ public:
 
 public:
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars)
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
         {return addImageCopyImpl(img, hint, stdPassThru);}
 
 public:
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars);
-
-    stdbool overlaySetFakeImage(stdNullPars)
+    stdbool overlayClear(stdPars(Kit))
     {
         if (kit.dataProcessing)
-            require(baseVideoOverlay.setImageFake(stdPassThru));
+            require(baseVideoOverlay.overlayClear(stdPassThru));
 
         returnTrue;
     }
 
-    stdbool overlayUpdate(stdNullPars)
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit));
+
+    stdbool overlaySetImageFake(stdPars(Kit))
     {
-        if (kit.dataProcessing) 
-            require(baseVideoOverlay.updateImage(stdPassThru));
+        if (kit.dataProcessing)
+            require(baseVideoOverlay.overlaySetFake(stdPassThru));
+
+        returnTrue;
+    }
+
+    stdbool overlayUpdate(stdPars(Kit))
+    {
+        if (kit.dataProcessing)
+            require(baseVideoOverlay.overlayUpdate(stdPassThru));
 
         returnTrue;
     }
@@ -121,21 +129,17 @@ public:
 public:
 
     template <typename Type>
-    stdbool addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdNullPars);
+    stdbool addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit));
 
 public:
 
-    using Kit = KitCombine<GpuProcessKit, MsgLogsKit>;
-
-    inline GpuBaseConsoleByCpuThunk(BaseImageConsole& baseImageConsole, BaseVideoOverlay& baseVideoOverlay, const Kit& kit)
-        : baseImageConsole(baseImageConsole), baseVideoOverlay(baseVideoOverlay), kit(kit) {}
+    inline GpuBaseConsoleByCpuThunk(BaseImageConsole& baseImageConsole, BaseVideoOverlay& baseVideoOverlay)
+        : baseImageConsole(baseImageConsole), baseVideoOverlay(baseVideoOverlay) {}
 
 private:
 
     BaseImageConsole& baseImageConsole;
     BaseVideoOverlay& baseVideoOverlay;
-    bool overlaySet = false;
     bool textEnabled = true;
-    Kit kit;
 
 };

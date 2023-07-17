@@ -11,7 +11,7 @@
 // Application of camera intrinsics is:
 // (u, v) = (x/z, y/z) * focal + center
 //
-// focal = (L / W) * resolution, 
+// focal = (L / W) * resolution,
 // where L is the distance from the eye to the screen and W is the screen size.
 //
 // L / W = 1 / (2 * tan(fov / 2))
@@ -21,8 +21,8 @@
 // focal = (1 / (2 * tan(fov / 2))) * resolution
 //
 // In normal case, the center is normal coordinates: 0th pixel center is at 0.5.
-// 
-// In OpenCV case, focal is (fx, fy), center is (cx, cy) 
+//
+// In OpenCV case, focal is (fx, fy), center is (cx, cy)
 // and the center is in "index coordinates": 0th pixel center is at 0.
 //
 //================================================================
@@ -44,9 +44,9 @@ struct CameraIntrinsics
 template <typename Float>
 HEXLIB_INLINE bool completelyEqual(const CameraIntrinsics<Float>& a, const CameraIntrinsics<Float>& b)
 {
-    return 
-        a.center.X == b.center.X && 
-        a.center.Y == b.center.Y && 
+    return
+        a.center.X == b.center.X &&
+        a.center.Y == b.center.Y &&
         a.focal.X == b.focal.X &&
         a.focal.Y == b.focal.Y;
 }
@@ -55,7 +55,7 @@ HEXLIB_INLINE bool completelyEqual(const CameraIntrinsics<Float>& a, const Camer
 //
 // CameraDistortion
 //
-// Camera distortion parameters in OpenCV format 
+// Camera distortion parameters in OpenCV format
 // (see initUndistortRectifyMap for reference).
 //
 //================================================================

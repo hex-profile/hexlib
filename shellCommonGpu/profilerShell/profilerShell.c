@@ -16,26 +16,30 @@
 //
 //================================================================
 
-void ProfilerShell::serialize(const CfgSerializeKit& kit)
+void ProfilerShell::serialize(const CfgSerializeKit& kit, bool hotkeys)
 {
+    #define HOTSTR(s) (!hotkeys ? STR("") : STR(s))
+
     {
         CFG_NAMESPACE("Profiling");
-        displayFrameTime.serialize(kit, STR("Display Frame Time"), STR("Ctrl+T"));
-    
-        profilerActiveSteady = profilerActive.serialize(kit, STR("Profiler Active"), STR("Alt+P"));
+        displayFrameTime.serialize(kit, STR("Display Frame Time"), HOTSTR("Ctrl+T"));
 
-        profilerResetSignal.serialize(kit, STR("Profiler Reset"), STR("Ctrl+P"));
+        profilerActiveSteady = profilerActive.serialize(kit, STR("Profiler Active"), HOTSTR("Alt+P"));
+
+        profilerResetSignal.serialize(kit, STR("Profiler Reset"), HOTSTR("Ctrl+P"));
 
         if (profilerResetSignal) profilerActiveSteady = false;
 
-        htmlReportSignal.serialize(kit, STR("Generate Report"), STR("P"));
+        htmlReportSignal.serialize(kit, STR("Generate Report"), HOTSTR("P"));
 
         {
             CFG_NAMESPACE("HTML Report");
-            htmlOutputDir.serialize(kit, htmlOutputDirName(), STR("For example, C:/Temp"));
+            htmlOutputDir.serialize(kit, htmlOutputDirName(), HOTSTR("For example, C:/Temp"));
             htmlReport.serialize(kit);
         }
     }
+
+    #undef HOTSTR
 }
 
 //================================================================
@@ -63,7 +67,7 @@ stdbool ProfilerShell::init(stdPars(InitKit))
 void ProfilerShell::deinit()
 {
     profilerImpl.dealloc();
- 
+
     externalScopeIsEntered = false;
     cycleCount = 0;
 }
@@ -109,10 +113,10 @@ stdbool ProfilerShell::makeHtmlReport(float32 processingThroughput, stdPars(Repo
     require(CHECK(profilerImpl.checkResetScope()));
 
     TimeMoment reportBegin = kit.timer.moment();
-    
+
     auto kitEx = kit; // kitReplace(kit, MsgLogKit(kit.localLog));
 
-    require(htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), 
+    require(htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(),
         cycleCount, processingThroughput, outputDir.cstr()}, stdPassKit(kitEx)));
 
     float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
@@ -233,7 +237,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         TimeMoment processBeg = kit.timer.moment();
         REMEMBER_CLEANUP(*frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment()));
 
-        require(target.process(stdPassKit(ProfilerKit(nullptr))));
+        require(target(stdPassKit(ProfilerKit(nullptr))));
         returnTrue;
     }
 
@@ -257,7 +261,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         ProfilerThunk profilerThunk(profilerImpl);
 
         TimeMoment processBeg = kit.timer.moment();
-        processOk = errorBlock(target.process(stdPassKit(ProfilerKit(&profilerThunk))));
+        processOk = errorBlock(target(stdPassKit(ProfilerKit(&profilerThunk))));
         *frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment());
 
         CHECK(profilerImpl.checkResetScope());
@@ -274,7 +278,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         CHECK(profilerImpl.checkResetScope());
 
         TimeMoment reportBegin = kit.timer.moment();
-    
+
         auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
         errorBlock(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx)));

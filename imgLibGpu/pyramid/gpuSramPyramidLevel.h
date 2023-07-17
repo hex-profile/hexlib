@@ -15,13 +15,13 @@ class GpuSramPyramidLevel
 
 public:
 
-    sysinline Space layers() const 
+    sysinline Space layers() const
         {return theLayers;}
 
-    sysinline Point<Space> size() const 
+    sysinline Point<Space> size() const
         {return layout.size;}
 
-    sysinline Space pitch() const 
+    sysinline Space pitch() const
         {return layout.pitch;}
 
     sysinline Space layerBytePitch() const

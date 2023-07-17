@@ -3,6 +3,7 @@
 #include "charType/charArray.h"
 #include "numbers/int/intType.h"
 #include "numbers/float/floatType.h"
+#include "storage/adapters/lambdaThunk.h"
 
 //================================================================
 //
@@ -41,7 +42,7 @@ struct CfgWriteStream
 
     virtual bool writeChars(const CharType* arrayPtr, size_t arraySize) =0;
 
-    inline bool writeStr(const CharArray& str)
+    sysinline bool writeStr(const CharArray& str)
         {return writeChars(str.ptr, str.size);}
 
     //
@@ -49,7 +50,7 @@ struct CfgWriteStream
     //
 
     #define TMP_MACRO(Type, o) \
-        virtual bool write(Type value) =0;
+        virtual bool writeValue(const Type& value) =0;
 
     BUILTIN_INT_FOREACH(TMP_MACRO, o)
 
@@ -60,7 +61,7 @@ struct CfgWriteStream
     //
 
     #define TMP_MACRO(Type, o) \
-        virtual bool write(Type value, int32 precision) =0;
+        virtual bool writeValue(const Type& value) =0;
 
     BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
 
@@ -81,9 +82,17 @@ struct CfgOutputString
 {
     virtual bool addBuf(const CharType* bufArray, size_t bufSize) =0;
 
-    inline bool addStr(const CharArray& str)
+    sysinline bool addStr(const CharArray& str)
         {return addBuf(str.ptr, str.size);}
 };
+
+LAMBDA_THUNK
+(
+    cfgOutputString,
+    CfgOutputString,
+    bool addBuf(const CharType* bufArray, size_t bufSize),
+    lambda(bufArray, bufSize)
+)
 
 //================================================================
 //
@@ -97,24 +106,23 @@ struct CfgReadStream
 {
 
     //
-    // Insert back one read character.
-    // Works successfully only if the character has been read and not more than once.
+    // Skip spaces and tabs.
     //
 
-    virtual bool unreadChar() =0;
+    virtual void skipSpaces() =0;
 
     //
-    // Read specified number of characters.
+    // Skip the specified text.
     //
 
-    virtual bool readChars(CharType* result, size_t size) =0;
+    virtual bool skipText(const CharArray& text) =0;
 
     //
     // Read builtin integers.
     //
 
     #define TMP_MACRO(Type, o) \
-        virtual bool read(Type& value) =0;
+        virtual bool readValue(Type& value) =0;
 
     BUILTIN_INT_FOREACH(TMP_MACRO, o)
     BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
@@ -125,7 +133,7 @@ struct CfgReadStream
     // Read string: reads everything until the stream's end.
     //
 
-    virtual bool readString(CfgOutputString& result) =0;
+    virtual bool readAll(CfgOutputString& result) =0;
 
 };
 
@@ -156,7 +164,7 @@ struct CfgWrite;
 //----------------------------------------------------------------
 
 template <typename Type>
-inline bool cfgWrite(CfgWriteStream& s, const Type& value)
+sysinline bool cfgWrite(CfgWriteStream& s, const Type& value)
     {return CfgWrite<typename CfgFamily<Type>::T>::func(s, value);}
 
 //================================================================
@@ -173,8 +181,8 @@ template <>
 struct CfgWrite<BuiltinInt>
 {
     template <typename Type>
-    static inline bool func(CfgWriteStream& s, const Type& value)
-        {return s.write(value);}
+    static sysinline bool func(CfgWriteStream& s, const Type& value)
+        {return s.writeValue(value);}
 };
 
 //
@@ -185,8 +193,8 @@ template <>
 struct CfgWrite<BuiltinFloat>
 {
     template <typename Type>
-    static inline bool func(CfgWriteStream& s, const Type& value)
-        {return s.write(value, 0);}
+    static sysinline bool func(CfgWriteStream& s, const Type& value)
+        {return s.writeValue(value);}
 };
 
 //
@@ -196,19 +204,8 @@ struct CfgWrite<BuiltinFloat>
 template <>
 struct CfgWrite<CharArray>
 {
-    static inline bool func(CfgWriteStream& s, const CharArray& value)
+    static sysinline bool func(CfgWriteStream& s, const CharArray& value)
         {return s.writeStr(value);}
-};
-
-//
-// bool
-//
-
-template <>
-struct CfgWrite<bool>
-{
-    static inline bool func(CfgWriteStream& s, const bool& value)
-        {return s.writeStr(value ? STR("y") : STR("n"));}
 };
 
 //================================================================
@@ -226,7 +223,7 @@ struct CfgRead;
 //----------------------------------------------------------------
 
 template <typename Type>
-inline bool cfgRead(CfgReadStream& s, Type& value)
+sysinline bool cfgRead(CfgReadStream& s, Type& value)
     {return CfgRead<typename CfgFamily<Type>::T>::func(s, value);}
 
 //================================================================
@@ -243,24 +240,14 @@ template <>
 struct CfgRead<BuiltinInt>
 {
     template <typename Type>
-    static inline bool func(CfgReadStream& s, Type& value)
-        {return s.read(value);}
+    static sysinline bool func(CfgReadStream& s, Type& value)
+        {return s.readValue(value);}
 };
 
 template <>
 struct CfgRead<BuiltinFloat>
 {
     template <typename Type>
-    static inline bool func(CfgReadStream& s, Type& value)
-        {return s.read(value);}
-};
-
-//
-// bool
-//
-
-template <>
-struct CfgRead<bool>
-{
-    static bool func(CfgReadStream& s, bool& value);
+    static sysinline bool func(CfgReadStream& s, Type& value)
+        {return s.readValue(value);}
 };

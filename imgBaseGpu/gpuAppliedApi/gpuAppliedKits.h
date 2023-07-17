@@ -6,6 +6,15 @@
 
 //================================================================
 //
+// OpaqueStruct
+//
+//================================================================
+
+template <size_t size, unsigned hash>
+class OpaqueStruct;
+
+//================================================================
+//
 // GpuProperties
 //
 //================================================================
@@ -26,11 +35,11 @@ KIT_CREATE(GpuFastAllocKit, AllocatorInterface<GpuAddrU>&, gpuFastAlloc);
 //
 // GpuCurrentContextKit
 //
-// Default GPU command queue.
+// Current GPU context.
 //
 //================================================================
 
-struct GpuContext;
+using GpuContext = OpaqueStruct<8, 0xAD23E3A0u>;
 
 KIT_CREATE(GpuCurrentContextKit, const GpuContext&, gpuCurrentContext);
 
@@ -38,11 +47,11 @@ KIT_CREATE(GpuCurrentContextKit, const GpuContext&, gpuCurrentContext);
 //
 // GpuCurrentStreamKit
 //
-// Default GPU command queue.
+// Current GPU command queue.
 //
 //================================================================
 
-struct GpuStream;
+using GpuStream = OpaqueStruct<8, 0x98F6A9F0u>;
 
 KIT_CREATE(GpuCurrentStreamKit, const GpuStream&, gpuCurrentStream);
 

@@ -23,9 +23,6 @@ public:
 
 public:
 
-    bool isThreadProtected() const
-        {return base.isThreadProtected();}
-
     void lock()
         {return base.lock();}
 
@@ -61,16 +58,13 @@ public:
     DiagLogByMsgLog(MsgLog& base)
         : base(base) {}
 
-    virtual bool isThreadProtected() const
-        {return base.isThreadProtected();}
-
-    virtual void lock() override
+    virtual void lock()
         {return base.lock();}
 
-    virtual void unlock() override
+    virtual void unlock()
         {return base.unlock();}
 
-    virtual bool addMsg(const CharType* msgPtr, MsgKind msgKind) override
+    virtual bool addMsg(const CharType* msgPtr, MsgKind msgKind)
         {return base.addMsg(FormatOutputAtom(charArrayFromPtr(msgPtr)), msgKind);}
 
     virtual bool clear()

@@ -2,7 +2,7 @@
 
 #include "errorLog/errorLog.h"
 #include "userOutput/msgLog.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 
 //================================================================
 //
@@ -18,9 +18,7 @@ public:
     inline ErrorLogByMsgLog(MsgLog& msgLog)
         : msgLog(&msgLog) {}
 
-    bool isThreadProtected() const override;
-    void addErrorSimple(const CharType* message) override;
-    void addErrorTrace(const CharType* message, TRACE_PARAMS(trace)) override;
+    void addErrorTrace(const CharType* message, TRACE_PARAMS(trace));
 
 public:
 
@@ -38,25 +36,23 @@ private:
 
 //================================================================
 //
-// ErrorLogExByMsgLog
+// MsgLogExByMsgLog
 //
 //================================================================
 
-class ErrorLogExByMsgLog : public ErrorLogEx
+class MsgLogExByMsgLog : public MsgLogEx
 {
 
 public:
-
-    bool isThreadProtected() const;
 
     bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars);
 
 public:
 
-    inline ErrorLogExByMsgLog()
+    inline MsgLogExByMsgLog()
         {}
 
-    inline ErrorLogExByMsgLog(MsgLog& msgLog)
+    inline MsgLogExByMsgLog(MsgLog& msgLog)
         : msgLog(&msgLog) {}
 
     inline void setup(MsgLog& msgLog)

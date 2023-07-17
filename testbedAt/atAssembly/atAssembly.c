@@ -4,11 +4,11 @@
 
 #include "atAssembly/frameAdvanceKit.h"
 #include "atAssembly/frameChange.h"
-#include "atEngine/atEngine.h"
+#include "testModule/testModule.h"
 #include "cfgTools/boolSwitch.h"
 #include "compileTools/classContext.h"
-#include "configFile/cfgSimpleString.h"
-#include "configFile/configFile.h"
+#include "cfgTools/cfgSimpleString.h"
+#include "cfgVars/configFile/configFile.h"
 #include "errorLog/debugBreak.h"
 #include "formattedOutput/errorBreakThunks.h"
 #include "formattedOutput/userOutputThunks.h"
@@ -20,7 +20,7 @@
 #include "memController/memoryUsageReport.h"
 #include "overlayTakeover/overlayTakeoverThunk.h"
 #include "profilerShell/profilerShell.h"
-#include "signalsImpl/signalsImpl.h"
+#include "signalsTools/legacySignalsImpl.h"
 #include "storage/classThunks.h"
 #include "storage/optionalObject.h"
 #include "storage/rememberCleanup.h"
@@ -29,6 +29,8 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsgEx.h"
 #include "videoPreprocessor/videoPreprocessor.h"
+#include "imageRead/positionTools.h"
+#include "kits/userPoint.h"
 
 namespace atStartup {
 
@@ -138,7 +140,7 @@ private:
 //
 //================================================================
 
-using EngineBaseKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit, OverlayTakeoverKit, ProfilerKit, gpuShell::GpuShellKit>;
+using EngineBaseKit = KitCombine<ErrorLogKit, MsgLogExKit, MsgLogsKit, TimerKit, OverlayTakeoverKit, ProfilerKit, gpuShell::GpuShellKit>;
 
 //================================================================
 //
@@ -163,12 +165,12 @@ public:
 
 public:
 
-    inline EngineReallocThunk(AtEngine& engine, const EngineBaseKit& baseGpuKit)
+    inline EngineReallocThunk(TestModule& engine, const EngineBaseKit& baseGpuKit)
         : engine(engine), baseGpuKit(baseGpuKit) {}
 
 private:
 
-    AtEngine& engine;
+    TestModule& engine;
     EngineBaseKit baseGpuKit;
 
 };
@@ -193,18 +195,18 @@ public:
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         EngineBaseKit gpuKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
-        AtEngineProcessKit resultKit = kitCombine(kit, gpuKit, extraKit);
+        auto resultKit = kitCombine(kit, gpuKit, extraKit);
         return engine.process(stdPassThruKit(resultKit));
     }
 
 public:
 
-    inline EngineMemControllerTarget(AtEngine& engine, const EngineBaseKit& baseKit, const ExtraKit& extraKit)
+    inline EngineMemControllerTarget(TestModule& engine, const EngineBaseKit& baseKit, const ExtraKit& extraKit)
         : engine(engine), baseKit(baseKit), extraKit(extraKit) {}
 
 private:
 
-    AtEngine& engine;
+    TestModule& engine;
     EngineBaseKit baseKit;
     ExtraKit extraKit;
 
@@ -234,12 +236,12 @@ public:
 
 public:
 
-    inline EngineTempCountToolTarget(AtEngine& engine, MemController& memController, MemoryUsage& tempUsage, ReallocActivity& tempActivity, const EngineBaseKit& baseKit)
+    inline EngineTempCountToolTarget(TestModule& engine, MemController& memController, MemoryUsage& tempUsage, ReallocActivity& tempActivity, const EngineBaseKit& baseKit)
         : engine(engine), memController(memController), tempUsage(tempUsage), tempActivity(tempActivity), baseKit(baseKit) {}
 
 private:
 
-    AtEngine& engine;
+    TestModule& engine;
     MemController& memController;
     MemoryUsage& tempUsage;
     ReallocActivity& tempActivity;
@@ -273,12 +275,12 @@ public:
 
 public:
 
-    inline EngineTempDistribToolTarget(AtEngine& engine, MemController& memController, MemoryUsage& tempUsage, const EngineBaseKit& baseKit)
+    inline EngineTempDistribToolTarget(TestModule& engine, MemController& memController, MemoryUsage& tempUsage, const EngineBaseKit& baseKit)
         : engine(engine), memController(memController), tempUsage(tempUsage), baseKit(baseKit) {}
 
 private:
 
-    AtEngine& engine;
+    TestModule& engine;
     MemController& memController;
     MemoryUsage& tempUsage;
     EngineBaseKit baseKit;
@@ -304,7 +306,7 @@ struct FileProperties
 
 inline bool operator==(const FileProperties& a, const FileProperties& b)
 {
-    return 
+    return
         (a.exists == b.exists) &&
         (a.changeTime == b.changeTime) &&
         (a.fileSize == b.fileSize);
@@ -370,7 +372,7 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSeriali
     // The same input name?
     //
 
-    if_not (strEqual(inputName, currentInputName.charArray()))
+    if_not (strEqual(inputName, currentInputName.str()))
         returnTrue;
 
     //
@@ -379,7 +381,7 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSeriali
 
     FileProperties properties;
     require(getFileProperties(currentConfigName.cstr(), properties, stdPass));
-    
+
     if_not (properties == currentProperties)
         returnTrue;
 
@@ -419,9 +421,9 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
     printMsgL(kit, STR("Reloading metadata config."), msgWarn);
 
-    // cfgvarResetValue(serialization);
+    // cfgvarsResetValue(serialization);
 
-    REMEMBER_CLEANUP_EX(resetStateCleanup, {resetObject(*this); cfgvarResetValue(serialization);});
+    REMEMBER_CLEANUP_EX(resetStateCleanup, {resetObject(*this); cfgvarsResetValue(serialization);});
 
     //----------------------------------------------------------------
     //
@@ -439,7 +441,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     size_t usedLength = dotPos - inputName.ptr;
 
     currentConfigName.assign(inputName.ptr, usedLength);
-    currentConfigName += ".cfg";
+    currentConfigName += ".json";
     REQUIRE(def(currentConfigName));
 
     ////
@@ -452,7 +454,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     //
     //----------------------------------------------------------------
 
-    auto metadataConfig = ConfigFile::create();
+    UniqueInstance<ConfigFile> metadataConfig;
 
     if (currentProperties.exists)
         require(metadataConfig->loadFile(currentConfigName, stdPass));
@@ -463,13 +465,12 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     //
     //----------------------------------------------------------------
 
-    metadataConfig->loadVars(serialization);
-
-    metadataConfig->saveVars(serialization, true);
-    errorBlock(metadataConfig->updateFile(true, stdPass)); // Correct the config file.
+    require(metadataConfig->loadVars(serialization, true, stdPass));
+    require(metadataConfig->saveVars(serialization, true, stdPass));
+    require(metadataConfig->updateFile(true, stdPass)); // Correct the config file.
 
     // Update the file properties after correction.
-    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass)); 
+    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
 
     //----------------------------------------------------------------
     //
@@ -496,7 +497,7 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
     //
     //----------------------------------------------------------------
 
-    if_not (cfgvarChanged(serialization))
+    if (cfgvarsSynced(serialization))
         returnTrue;
 
     if_not (currentProperties.exists)
@@ -514,14 +515,14 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
 
     ////
 
-    auto metadataConfig = ConfigFile::create();
+    UniqueInstance<ConfigFile> metadataConfig;
     require(metadataConfig->loadFile(currentConfigName, stdPass));
 
-    metadataConfig->saveVars(serialization, false);
+    require(metadataConfig->saveVars(serialization, false, stdPass));
     require(metadataConfig->updateFile(false, stdPass));
 
     // Update the file properties.
-    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass)); 
+    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
 
     resetStateCleanup.cancel();
 
@@ -544,16 +545,13 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
 //
 //================================================================
 
-class AtEngineTestWrapper : public AtEngine
+class AtEngineTestWrapper : public TestModule
 {
 
 public:
 
-    AtEngineTestWrapper(UniquePtr<AtEngine> base)
+    AtEngineTestWrapper(UniquePtr<TestModule> base)
         : base{move(base)} {}
-
-    virtual CharType* getName() const
-        {return base->getName();}
 
     virtual void setInputResolution(const Point<Space>& frameSize)
         {base->setInputResolution(frameSize);}
@@ -570,23 +568,29 @@ public:
     virtual bool reallocValid() const
         {return base->reallocValid();}
 
-    virtual stdbool realloc(stdPars(AtEngineReallocKit))
+    virtual stdbool realloc(stdPars(ReallocKit))
         {return base->realloc(stdPassThru);}
+
+    virtual void dealloc()
+        {base->dealloc();}
 
     virtual void inspectProcess(ProcessInspector& inspector)
         {return base->inspectProcess(inspector);}
 
-    virtual stdbool process(stdPars(AtEngineProcessKit))
+    virtual stdbool process(stdPars(ProcessKit))
     {
-        auto processLambda = [&] (stdNullPars) {return base->process(stdPass);};
-        auto processApi = testShell::processByLambda(processLambda);
+        auto processApi = testShell::Process::O | [&] (stdNullPars)
+        {
+            return base->process(stdPass);
+        };
+
         return testShell->process(processApi, stdPassThru);
     }
 
 private:
 
-    UniquePtr<AtEngine> base;
-    UniquePtr<TestShell> testShell = TestShell::create();
+    UniquePtr<TestModule> base;
+    UniqueInstance<TestShell> testShell;
 
 };
 
@@ -596,15 +600,23 @@ private:
 //
 //================================================================
 
-class AtAssemblyImpl : public CfgSerialization
+class AtAssemblyImpl
 {
 
 public:
 
-    stdbool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
+    void serialize(const CfgSerializeKit& kit);
+
+    auto cfgSerialization()
+    {
+        return cfgSerializationThunk | [&] (auto& kit) {return serialize(kit);};
+    }
+
+public:
+
+    stdbool init(const TestModuleFactory& engineFactory, stdPars(InitKit));
     void finalize(stdPars(InitKit));
     stdbool process(stdPars(ProcessKit));
-    void serialize(const CfgSerializeKit& kit);
 
 public:
 
@@ -627,15 +639,17 @@ private:
 
     static const CharType* getDefaultConfigEditor()
     {
-        const CharType* result = getenv(CT("HEXLIB_CONFIG_EDITOR"));
+        const CharType* result = getenv(CT("HEXLIB_TEXT_EDITOR"));
         if (!result) result = CT("notepad");
         return result;
     }
 
-    UniquePtr<ConfigFile> configFilePtr = ConfigFile::create();
+    UniqueInstance<ConfigFile> configFilePtr;
     ConfigFile& configFile = *configFilePtr;
     ConfigUpdateDecimator configUpdateDecimator;
+
     SimpleStringVar configEditor{getDefaultConfigEditor()};
+
     StandardSignal configEditSignal;
 
     //
@@ -685,7 +699,7 @@ private:
     ToolModule toolModule;
 
     MemController engineMemory; // construct before the module, destruct after it
-    UniquePtr<AtEngine> engineModule;
+    UniquePtr<TestModule> engineModule;
 
 };
 
@@ -699,8 +713,8 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
 {
     {
         OverlayTakeoverThunk overlayTakeover(overlayOwnerID);
-        const CfgSerializeKit& kitOld = kit;
-        ModuleSerializeKit kit = kitCombine(kitOld, OverlayTakeoverKit(overlayTakeover));
+        auto& oldKit = kit;
+        ModuleSerializeKit kit = kitCombine(oldKit, OverlayTakeoverKit(overlayTakeover));
 
         //
         // AtAssembly
@@ -711,13 +725,13 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
 
             {
                 CFG_NAMESPACE("Config");
-                configEditSignal.serialize(kit, STR("Edit"), STR("`"), STR("Press Tilde"));
                 configEditor.serialize(kit, STR("Editor"));
+                configEditSignal.serialize(kit, STR("Edit"), STR("`"), STR("Press Tilde"));
             }
 
-            profilerShell.serialize(kit);
-            
-            gpuShell.serialize(kit);
+            profilerShell.serialize(kit, true);
+
+            gpuShell.serialize(kit, true);
             gpuContextHelper.serialize(kit);
 
             deactivateOverlay.serialize(kit, STR("Deactivate Overlay"), STR("\\"));
@@ -751,7 +765,7 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
+stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(InitKit))
 {
     initialized = false;
 
@@ -767,14 +781,23 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     // Config file
     //
 
-    SimpleString configFilename; configFilename << engineModule->getName() << CT(".cfg");
+    SimpleString configFilename; configFilename << engineFactory.configName() << CT(".json");
     errorBlock(configFile.loadFile(configFilename, stdPass));
     REMEMBER_CLEANUP_EX(configFileCleanup, configFile.unloadFile());
 
-    configFile.loadVars(*this);
+    ////
 
-    configFile.saveVars(*this, true);
-    errorBlock(configFile.updateFile(true, stdPass)); // fix potential errors
+    auto serialization = cfgSerializationThunk | [&] (auto& kit) {serialize(kit);};
+
+    auto handleConfig = [&] ()
+    {
+        require(configFile.loadVars(serialization, true, stdPass));
+        require(configFile.saveVars(serialization, true, stdPass));
+        require(configFile.updateFile(true, stdPass));
+        returnTrue;
+    };
+
+    errorBlock(handleConfig());
 
     //
     // Register signals
@@ -783,7 +806,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
     using namespace signalImpl;
 
     int32 signalCount{};
-    registerSignals(*this, 0, kit.atSignalSet, signalCount);
+    require(registerSignals(serialization, kit.atSignalSet, signalCount, stdPass));
 
     require(signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
 
@@ -811,8 +834,7 @@ stdbool AtAssemblyImpl::init(const AtEngineFactory& engineFactory, stdPars(InitK
 
     ////
 
-    void* baseStream = 0;
-    require(gpuInitKit.gpuStreamCreation.createStream(gpuContext, true, gpuStream, baseStream, stdPass));
+    require(gpuInitKit.gpuStreamCreation.createStream(gpuContext, true, gpuStream, stdPass));
 
     //
     // Record success
@@ -843,7 +865,9 @@ void AtAssemblyImpl::finalize(stdPars(InitKit))
     // Make finalization work
     //
 
-    configFile.saveVars(*this, false);
+    auto serialization = cfgSerialization();
+
+    errorBlock(configFile.saveVars(serialization, false, stdPass)) &&
     errorBlock(configFile.updateFile(false, stdPass));
 }
 
@@ -891,16 +915,14 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     //
     //----------------------------------------------------------------
 
-    class SerializeInputMetadata : public CfgSerialization
-    {
-        void serialize(const CfgSerializeKit& kit) 
-            {engine.inputMetadataSerialize(kitCombine(kit, extraKit));}
-
-        CLASS_CONTEXT(SerializeInputMetadata, ((AtEngine&, engine)) ((InputVideoNameKit, extraKit)));
-    };
-
     InputVideoNameKit inputVideoNameKit(kit.atVideoInfo.videofileName);
-    SerializeInputMetadata metadataSerialization(*engineModule, inputVideoNameKit);
+
+    ////
+
+    auto metadataSerialization = cfgSerializationThunk | [&] (auto& kit)
+    {
+        engineModule->inputMetadataSerialize(kitCombine(kit, inputVideoNameKit));
+    };
 
     ////
 
@@ -1033,31 +1055,6 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
 //================================================================
 //
-// GpuShellExecAppImpl
-//
-//================================================================
-
-template <typename BaseKit>
-class GpuShellExecAppImpl : public gpuShell::GpuShellTarget
-{
-
-public:
-
-    stdbool exec(stdPars(gpuShell::GpuShellKit))
-        {return base.processFinal(stdPassThruKit(kitCombine(baseKit, kit)));}
-
-    inline GpuShellExecAppImpl(AtAssemblyImpl& base, const BaseKit& baseKit)
-        : base(base), baseKit(baseKit) {}
-
-private:
-
-    AtAssemblyImpl& base;
-    BaseKit const baseKit;
-
-};
-
-//================================================================
-//
 // AtAssemblyImpl::processWithProfiler
 //
 //================================================================
@@ -1070,20 +1067,28 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
     //
     //----------------------------------------------------------------
 
+    auto serialization = cfgSerialization();
+
     if (configEditSignal)
     {
-        // Flush current vars to disk
-        configFile.saveVars(*this, false);
+        auto action = [&] ()
+        {
+            // Flush current vars to disk
+            require(configFile.saveVars(serialization, false, stdPass));
 
-        // Edit the file
-        errorBlock(configFile.editFile(configEditor(), stdPass));
+            // Edit the file
+            require(configFile.editFile(configEditor(), stdPass));
 
-        // Load vars
-        configFile.loadVars(*this);
+            // Load vars
+            require(configFile.loadVars(serialization, true, stdPass));
 
-        // Fix incorrect values in the file
-        configFile.saveVars(*this, true);
-        errorBlock(configFile.updateFile(true, stdPass));
+            // Fix incorrect values in the file
+            require(configFile.saveVars(serialization, true, stdPass));
+            require(configFile.updateFile(true, stdPass));
+            returnTrue;
+        };
+
+        errorBlock(action());
     }
 
     //----------------------------------------------------------------
@@ -1097,7 +1102,7 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 
     ////
 
-    gpuShell::ExecCyclicToolkit gpuShellToolkit = kitCombine
+    auto gpuShellToolkit = kitCombine
     (
         kit,
         gpuShell::GpuApiImplKit(gpuInitApi, gpuExecApi),
@@ -1108,7 +1113,13 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 
     ////
 
-    GpuShellExecAppImpl<ProcessProfilerKit> gpuExecToAssembly(*this, kit);
+    auto baseKit = kit;
+
+    auto gpuExecToAssembly = gpuShell::GpuShellTarget::O | [&] (stdPars(gpuShell::GpuShellKit))
+    {
+        return processFinal(stdPassThruKit(kitCombine(baseKit, kit)));
+    };
+
     require(gpuShell.execCyclicShell(gpuExecToAssembly, stdPassKit(gpuShellToolkit)));
 
     //----------------------------------------------------------------
@@ -1120,7 +1131,8 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
     if (configUpdateDecimator.shouldUpdate(kit.timer))
     {
         bool updateHappened = false;
-        configFile.saveVars(*this, false, &updateHappened);
+
+        errorBlock(configFile.saveVars(serialization, false, updateHappened, stdPass)) &&
         errorBlock(configFile.updateFile(false, stdPass));
 
         if (updateHappened)
@@ -1131,31 +1143,6 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 
     returnTrue;
 }
-
-//================================================================
-//
-// ProfilerTargetToAssembly
-//
-//================================================================
-
-template <typename BaseKit>
-class ProfilerTargetToAssembly : public ProfilerTarget
-{
-
-public:
-
-    stdbool process(stdPars(ProfilerKit))
-        {return base.processWithProfiler(stdPassThruKit(kitCombine(kit, baseKit)));}
-
-    inline ProfilerTargetToAssembly(AtAssemblyImpl& base, const BaseKit& baseKit)
-        : base(base), baseKit(baseKit) {}
-
-private:
-
-    AtAssemblyImpl& base;
-    BaseKit baseKit;
-
-};
 
 //================================================================
 //
@@ -1181,14 +1168,14 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     ErrorLogBreakShell errorLog(kit.errorLog, debugBreakOnErrors);
     ErrorLogKit errorLogKit(errorLog);
 
-    ErrorLogExBreakShell errorLogEx(kit.errorLogEx, debugBreakOnErrors);
-    ErrorLogExKit errorLogExKit(errorLogEx);
+    MsgLogExBreakShell msgLogEx(kit.msgLogEx, debugBreakOnErrors);
+    MsgLogExKit msgLogExKit(msgLogEx);
 
     ////
 
-    auto oldKit = kit;
+    auto& oldKit = kit;
 
-    auto kit = kitReplace(oldKit, kitCombine(msgLogKit, errorLogKit, errorLogExKit));
+    auto kit = kitReplace(oldKit, kitCombine(msgLogKit, errorLogKit, msgLogExKit));
 
     //----------------------------------------------------------------
     //
@@ -1196,12 +1183,16 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //
     //----------------------------------------------------------------
 
+    auto serialization = cfgSerialization();
+
+    ////
+
     using namespace signalImpl;
 
     SignalsOverview overview;
     prepareSignalHistogram(kit.atSignalTest, signalHist, overview);
 
-    handleSignals(*this, signalHist, overlayOwnerID, deactivateOverlay);
+    handleSignals(serialization, signalHist, overlayOwnerID, deactivateOverlay);
 
     //----------------------------------------------------------------
     //
@@ -1236,8 +1227,14 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 
     PipeControl pipeControl{frameAdvance ? 0 : 1, false};
 
-    UserPoint userPoint{kit.atUserPointValid, kit.atUserPoint, 
-        overview.mouseLeftSet != 0, overview.mouseLeftReset != 0, overview.mouseRightSet != 0, overview.mouseRightReset != 0};
+    UserPoint userPoint;
+
+    userPoint.valid = kit.atUserPointValid;
+    userPoint.floatPos = convertIndexToPos(kit.atUserPointIdx);
+    userPoint.leftSet = !!overview.mouseLeftSet;
+    userPoint.leftReset = !!overview.mouseLeftReset;
+    userPoint.rightSet = !!overview.mouseRightSet;
+    userPoint.rightReset = !!overview.mouseRightReset;
 
     ////
 
@@ -1246,7 +1243,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     ////
 
     {
-        auto oldKit = kit;
+        auto& oldKit = kit;
 
         auto kit = kitCombine
         (
@@ -1258,7 +1255,13 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
             FrameAdvanceKit(frameAdvance)
         );
 
-        ProfilerTargetToAssembly<decltype(kit)> profilerTarget(*this, kit);
+        auto baseKit = kit;
+
+        auto profilerTarget = ProfilerTarget::O | [&] (stdPars(ProfilerKit))
+        {
+            return processWithProfiler(stdPassThruKit(kitCombine(kit, baseKit)));
+        };
+
         require(profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass));
     }
 
@@ -1273,13 +1276,13 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 //
 //================================================================
 
-AtAssembly::AtAssembly() 
+AtAssembly::AtAssembly()
     {}
 
 AtAssembly::~AtAssembly()
     {}
 
-stdbool AtAssembly::init(const AtEngineFactory& engineFactory, stdPars(InitKit))
+stdbool AtAssembly::init(const TestModuleFactory& engineFactory, stdPars(InitKit))
     {return instance->init(engineFactory, stdPassThru);}
 
 void AtAssembly::finalize(stdPars(InitKit))

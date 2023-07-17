@@ -33,7 +33,7 @@ void RangeValueControl<Type>::feedIncrements(int32 sigDec, int32 sigInc, int32 s
             tmpValue += increment;
 
         Type period = value.maxValue() - value.minValue();
-    
+
         while_not (tmpValue < value.maxValue())
             tmpValue -= period;
 
@@ -59,12 +59,44 @@ void RangeValueControl<Type>::feedIncrements(int32 sigDec, int32 sigInc, int32 s
                 value = value * incFactor;
         }
     }
-  
+
     ////
 
     if (sigReset)
         value = value.defaultValue();
 }
+
+//================================================================
+//
+// SerializeSignalWithPostfix
+//
+//================================================================
+
+class SerializeSignalWithPostfix : public SerializeStandardSignal
+{
+
+    const CharArray namePostfix;
+
+public:
+
+    inline SerializeSignalWithPostfix(StandardSignal& baseSignal, const CharArray& name, const CharArray& namePostfix, const CharArray& key, const CharArray& comment)
+        :
+        SerializeStandardSignal(baseSignal, name, key, comment),
+        namePostfix(namePostfix)
+    {
+    }
+
+    virtual bool getName(CfgOutputString& result) const
+    {
+        ensure(SerializeStandardSignal::getName(result));
+
+        if (namePostfix.size)
+            ensure(result.addStr(namePostfix));
+
+        return true;
+    }
+
+};
 
 //================================================================
 //
@@ -81,9 +113,15 @@ bool RangeValueControl<Type>::serialize(const CfgSerializeKit& kit, const CharAr
 
     value.serialize(kit, name);
 
-    signalDec.serialize(kit, STR(""), keyDec);
-    signalInc.serialize(kit, STR(""), keyInc);
-    signalReset.serialize(kit, STR(""), keyReset);
+
+    SerializeSignalWithPostfix serializeDec(signalDec, name, STR(" -"), keyDec, STR(""));
+    kit.visitSignal(serializeDec);
+
+    SerializeSignalWithPostfix serializeInc(signalInc, name, STR(" +"), keyInc, STR(""));
+    kit.visitSignal(serializeInc);
+
+    SerializeSignalWithPostfix serializeReset(signalReset, name, STR(" Reset"), keyReset, STR(""));
+    kit.visitSignal(serializeReset);
 
     ////
 

@@ -2,8 +2,9 @@
 
 #include "stdFunc/stdFunc.h"
 #include "data/matrix.h"
-#include "imageConsole/imageConsole.h"
+#include "imageConsole/imageConsoleTypes.h"
 #include "vectorTypes/vectorBase.h"
+#include "storage/adapters/lambdaThunk.h"
 
 //================================================================
 //
@@ -62,21 +63,42 @@ struct BaseImageProvider
 
 struct BaseVideoOverlay
 {
-    virtual stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars) =0;
-    virtual stdbool setImageFake(stdNullPars) =0;
-    virtual stdbool updateImage(stdNullPars) =0;
+    virtual stdbool overlayClear(stdNullPars) =0;
+
+    virtual stdbool overlaySet
+    (
+        const Point<Space>& size,
+        bool dataProcessing,
+        BaseImageProvider& imageProvider,
+        const FormatOutputAtom& desc,
+        uint32 id,
+        bool textEnabled,
+        stdNullPars
+    )
+    =0;
+
+    virtual stdbool overlaySetFake(stdNullPars) =0;
+
+    virtual stdbool overlayUpdate(stdNullPars) =0;
 };
 
-//----------------------------------------------------------------
+//================================================================
+//
+// BaseVideoOverlayNull
+//
+//================================================================
 
 class BaseVideoOverlayNull : public BaseVideoOverlay
 {
-    virtual stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    virtual stdbool overlayClear(stdNullPars)
         {returnTrue;}
 
-    virtual stdbool setImageFake(stdNullPars)
+    virtual stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
         {returnTrue;}
 
-    virtual stdbool updateImage(stdNullPars)
+    virtual stdbool overlaySetFake(stdNullPars)
+        {returnTrue;}
+
+    virtual stdbool overlayUpdate(stdNullPars)
         {returnTrue;}
 };

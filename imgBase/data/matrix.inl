@@ -5,7 +5,7 @@
 //================================================================
 //
 // matrixParamsAreValid
-// 
+//
 // (1) sizeX >= 0 && sizeY >= 0
 // (2) sizeX <= |pitch|
 // (3) (sizeY * pitch * elemSize) fits into Space type.

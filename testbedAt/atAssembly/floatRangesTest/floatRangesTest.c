@@ -33,7 +33,7 @@ private:
 //
 //================================================================
 
-void FloatRangesTestImpl::serialize(const ModuleSerializeKit& kit) 
+void FloatRangesTestImpl::serialize(const ModuleSerializeKit& kit)
 {
     testSignal.serialize(kit, STR("Float Ranges Test"), STR(""));
 }

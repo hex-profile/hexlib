@@ -3,7 +3,7 @@
 #include "cpuFuncKit.h"
 #include "errorLog/errorLog.h"
 #include "formattedOutput/requireMsg.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 
 namespace yuvFile {
 

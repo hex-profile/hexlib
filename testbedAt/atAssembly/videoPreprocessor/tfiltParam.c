@@ -16,14 +16,14 @@ float32 npassDecayAlpha(float32 A, float32 N)
     float32 binp_2divN = powf(2, divN);
     float32 binp_4divN = binp_2divN * binp_2divN;
 
-    return 
+    return
     (
-        1 - 
+        1 -
 
         expf
         (
             logf(1 - A) *
-            sqrtf(15) * binp_2divN / 
+            sqrtf(15) * binp_2divN /
             (binp_4divN - 1) * sqrtf(1 - 1 / binp_4divN)
         )
     );
@@ -123,7 +123,7 @@ bool TfiltNorm<Type, n>::add(const Type& value, const TempoScale& periodUp, cons
 
 //================================================================
 //
-// TfiltNorm<Type, n>::operator () () 
+// TfiltNorm<Type, n>::operator () ()
 //
 //================================================================
 
@@ -132,8 +132,8 @@ Type TfiltNorm<Type, n>::operator () () const
 {
     Single denom = avg1();
 
-    return denom > convertNearest<Single>(0) ? 
-        avgV() / denom : 
+    return denom > convertNearest<Single>(0) ?
+        avgV() / denom :
         convertNearest<Type>(0);
 }
 

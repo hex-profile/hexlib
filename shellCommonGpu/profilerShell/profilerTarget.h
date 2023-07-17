@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdFunc/stdFunc.h"
+#include "storage/adapters/callable.h"
 
 //================================================================
 //
@@ -10,7 +11,4 @@
 //
 //================================================================
 
-struct ProfilerTarget
-{
-    virtual stdbool process(stdPars(ProfilerKit)) =0;
-};
+using ProfilerTarget = Callable<stdbool (stdPars(ProfilerKit))>;

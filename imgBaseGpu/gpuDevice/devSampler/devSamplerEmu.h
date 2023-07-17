@@ -10,7 +10,7 @@
 //
 //================================================================
 
-using EmuSamplerData = OpaqueStruct<32>;
+using EmuSamplerData = OpaqueStruct<32, 0x2F7CF136u>;
 
 //================================================================
 //
@@ -116,38 +116,15 @@ struct DevSamplerResult<EmuSampler<samplerType, readMode, rank>>
 
 //================================================================
 //
-// emuTex2D
-//
-//================================================================
-
-template <DevSamplerType samplerType, DevSamplerReadMode readMode, int rank>
-inline typename DevSamplerReturnType<readMode, rank>::T emuTex2D(const EmuSampler<samplerType, readMode, rank>& sampler, float32 X, float32 Y)
-{
-    typename DevSamplerReturnType<readMode, rank>::T result;
-    sampler.link.state->tex2D(sampler.link.state->data, X, Y, &result);
-    return result;
-}
-
-//================================================================
-//
 // devTex2D
 //
 //================================================================
 
-#define devTex2D(sampler, X, Y) \
-    emuTex2D(sampler, X, Y)
-
-//================================================================
-//
-// emuTex1Dfetch
-//
-//================================================================
-
 template <DevSamplerType samplerType, DevSamplerReadMode readMode, int rank>
-inline typename DevSamplerReturnType<readMode, rank>::T emuTex1Dfetch(const EmuSampler<samplerType, readMode, rank>& sampler, Space offset)
+inline typename DevSamplerReturnType<readMode, rank>::T devTex2D(const EmuSampler<samplerType, readMode, rank>& sampler, float32 X, float32 Y)
 {
     typename DevSamplerReturnType<readMode, rank>::T result;
-    sampler.link.state->tex1Dfetch(sampler.link.state->data, offset, &result);
+    sampler.link.state->tex2D(sampler.link.state->data, X, Y, &result);
     return result;
 }
 
@@ -157,5 +134,10 @@ inline typename DevSamplerReturnType<readMode, rank>::T emuTex1Dfetch(const EmuS
 //
 //================================================================
 
-#define devTex1Dfetch(sampler, offset) \
-    emuTex1Dfetch(sampler, offset)
+template <DevSamplerType samplerType, DevSamplerReadMode readMode, int rank>
+inline typename DevSamplerReturnType<readMode, rank>::T devTex1Dfetch(const EmuSampler<samplerType, readMode, rank>& sampler, int offset)
+{
+    typename DevSamplerReturnType<readMode, rank>::T result;
+    sampler.link.state->tex1Dfetch(sampler.link.state->data, offset, &result);
+    return result;
+}

@@ -39,7 +39,7 @@ stdbool visualizeComplexFilter
     // Pre-upsampling with high quality filter.
     //
     //----------------------------------------------------------------
-                     
+
     GpuMatrixMemory<ComplexFloat> preUpsampleImage;
 
     int preUpsampleFactor = 1;

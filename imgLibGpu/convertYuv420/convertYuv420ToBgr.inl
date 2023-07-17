@@ -105,7 +105,7 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
             float32 v3 = srcBuffer((bX) + devThreadX, devThreadY + 3); \
             dstBuffer((bX) + devThreadX, 2*devThreadY + 0) = C1*v0 + C3*v1 + C5*v2 + C7*v3; \
             dstBuffer((bX) + devThreadX, 2*devThreadY + 1) = C0*v0 + C2*v1 + C4*v2 + C6*v3; \
-        } 
+        }
 
     UPSAMPLE_VERTICAL(SRC_BUFFERU, TMP_BUFFERU, 0 * threadCountX);
     UPSAMPLE_VERTICAL(SRC_BUFFERV, TMP_BUFFERV, 0 * threadCountX);
@@ -251,13 +251,13 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
 template <typename SrcPixel, typename SrcPixel2, typename DST_PIXEL>
 stdbool PREP_PASTE(convertYuv420To, SUFFIX)
 (
-    const GpuMatrix<const SrcPixel>& srcLuma, 
+    const GpuMatrix<const SrcPixel>& srcLuma,
     const GpuMatrix<const SrcPixel2>& srcChromaPacked,
     const GpuMatrix<const SrcPixel>& srcChromaU,
     const GpuMatrix<const SrcPixel>& srcChromaV,
     const Point<Space>& srcOffset,
     const DST_PIXEL& outerColor,
-    const GpuMatrix<DST_PIXEL>& dst, 
+    const GpuMatrix<DST_PIXEL>& dst,
     stdPars(GpuProcessKit)
 )
 {
@@ -315,7 +315,7 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
 
     //----------------------------------------------------------------
     //
-    // 
+    //
     //
     //----------------------------------------------------------------
 
@@ -338,8 +338,8 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
         computeTexstep(srcLuma),
         chromaIsPacked,
         computeTexstep(chromaSize),
-        srcOffset / 2, srcLuma.size(), 
-        outerColor, 
+        srcOffset / 2, srcLuma.size(),
+        outerColor,
         dst
     };
 

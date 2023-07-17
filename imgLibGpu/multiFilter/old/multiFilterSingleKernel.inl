@@ -46,7 +46,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
     #define TMP_MACRO(k, _) \
         COMPILE_ASSERT(COMPILE_ARRAY_SIZE(FILTER(k)) == filterSize);
 
-    PREP_FOR(FILTER_COUNT, TMP_MACRO, _) 
+    PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
 
@@ -108,7 +108,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 
     Point<Space> dstIdx = dstBase + devThreadIdx;
 
-    if_not (matrixValidAccess(o.dstSize, dstIdx)) 
+    if_not (matrixValidAccess(o.dstSize, dstIdx))
         return;
 
     //----------------------------------------------------------------
@@ -125,7 +125,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
     #undef TMP_MACRO
 
     ////
-  
+
 
     Point<Space> cacheReadPos = devThreadIdx;
     cacheReadPos.DIR(X, Y) *= downsampleFactor; // Potential bank conflicts, but not important
@@ -206,7 +206,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
     #define TMP_MACRO(k, _) \
         COMPILE_ASSERT(COMPILE_ARRAY_SIZE(FILTER(k)) == filterSize);
 
-    PREP_FOR(FILTER_COUNT, TMP_MACRO, _) 
+    PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
 
@@ -267,7 +267,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
     // Convolve
     //
     //----------------------------------------------------------------
-  
+
 
     Point<Space> cacheReadPos = devThreadIdx;
     cacheReadPos.DIR(X, Y) *= downsampleFactor; // Potential bank conflicts, but not important
@@ -306,7 +306,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams
 
     Point<Space> dstIdx = dstBase + devThreadIdx;
 
-    if_not (matrixValidAccess(o.dstSize, dstIdx)) 
+    if_not (matrixValidAccess(o.dstSize, dstIdx))
         return;
 
     //----------------------------------------------------------------

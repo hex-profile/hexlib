@@ -50,7 +50,6 @@ private:
 
 private:
 
-    using Align = FormatBitfield<0, 2>;
     using Fill = FormatBitfield<2, 3>;
     using Base = FormatBitfield<3, 4>;
     using Plus = FormatBitfield<4, 5>;
@@ -99,19 +98,6 @@ public:
     sysinline char filledWith() const {return fillIsSpace() ? ' ' : '0';}
 
     //
-    // Alignment
-    //
-
-    sysinline FormatNumberOptions& alignLeft() {Align::set(theData, 0); return *this;}
-    sysinline bool alignIsLeft() const {return Align::equal(theData, 0);}
-
-    sysinline FormatNumberOptions& alignRight() {Align::set(theData, 1); return *this;}
-    sysinline bool alignIsRight() const {return Align::equal(theData, 1);}
-
-    sysinline FormatNumberOptions& alignInternal() {Align::set(theData, 2); return *this;}
-    sysinline bool alignIsInternal() const {return Align::equal(theData, 2);}
-
-    //
     // Numbers base
     //
 
@@ -135,11 +121,11 @@ public:
     // Float representation
     //
 
-    sysinline FormatNumberOptions& fformF() {Fform::set(theData, 0); return *this;}
-    sysinline bool fformIsF() const {return Fform::equal(theData, 0);}
+    sysinline FormatNumberOptions& fformG() {Fform::set(theData, 0); return *this;}
+    sysinline bool fformIsG() const {return Fform::equal(theData, 0);}
 
-    sysinline FormatNumberOptions& fformG() {Fform::set(theData, 1); return *this;}
-    sysinline bool fformIsG() const {return Fform::equal(theData, 1);}
+    sysinline FormatNumberOptions& fformF() {Fform::set(theData, 1); return *this;}
+    sysinline bool fformIsF() const {return Fform::equal(theData, 1);}
 
     sysinline FormatNumberOptions& fformE() {Fform::set(theData, 2); return *this;}
     sysinline bool fformIsE() const {return Fform::equal(theData, 2);}

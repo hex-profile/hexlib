@@ -38,7 +38,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE2(Kit, Type0, name0, Type1, name1) \
     KIT__CREATE2(Kit, Type0, name0, Type1, name1)
 
@@ -89,7 +89,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE3(Kit, Type0, name0, Type1, name1, Type2, name2) \
     KIT__CREATE3(Kit, Type0, name0, Type1, name1, Type2, name2)
 
@@ -146,7 +146,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE4(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3) \
     KIT__CREATE4(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3)
 
@@ -209,7 +209,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE5(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4) \
     KIT__CREATE5(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4)
 
@@ -278,7 +278,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE6(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5) \
     KIT__CREATE6(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5)
 
@@ -353,7 +353,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE7(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6) \
     KIT__CREATE7(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6)
 
@@ -434,7 +434,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE8(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7) \
     KIT__CREATE8(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7)
 
@@ -521,7 +521,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE9(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8) \
     KIT__CREATE9(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8)
 
@@ -614,7 +614,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE10(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9) \
     KIT__CREATE10(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9)
 
@@ -713,7 +713,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE11(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10) \
     KIT__CREATE11(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10)
 
@@ -818,7 +818,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE12(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11) \
     KIT__CREATE12(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11)
 
@@ -929,7 +929,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE13(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12) \
     KIT__CREATE13(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12)
 
@@ -1046,7 +1046,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE14(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12, Type13, name13) \
     KIT__CREATE14(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12, Type13, name13)
 
@@ -1169,7 +1169,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE15(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12, Type13, name13, Type14, name14) \
     KIT__CREATE15(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12, Type13, name13, Type14, name14)
 
@@ -1298,7 +1298,7 @@
         { \
         } \
     }
-    
+
 #define KIT_CREATE16(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12, Type13, name13, Type14, name14, Type15, name15) \
     KIT__CREATE16(Kit, Type0, name0, Type1, name1, Type2, name2, Type3, name3, Type4, name4, Type5, name5, Type6, name6, Type7, name7, Type8, name8, Type9, name9, Type10, name10, Type11, name11, Type12, name12, Type13, name13, Type14, name14, Type15, name15)
 

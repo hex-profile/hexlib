@@ -2,30 +2,7 @@
 
 #include "parseTools/charSet.h"
 #include "compileTools/compileTools.h"
-#include "numbers/int/intBase.h"
-
-//================================================================
-//
-// readHexDigit
-//
-//================================================================
-
-template <typename Value>
-inline int readHexDigit(Value c)
-{
-    int result = -1;
-
-    if (c >= '0' && c <= '9')
-        result = c - '0';
-
-    if (c >= 'A' && c <= 'F')
-        result = c - 'A' + 10;
-
-    if (c >= 'a' && c <= 'f')
-        result = c - 'a' + 10;
-
-    return result;
-}
+#include "numbers/int/intType.h"
 
 //================================================================
 //
@@ -36,19 +13,13 @@ inline int readHexDigit(Value c)
 template <typename Iterator, typename Result>
 inline bool readHexByte(Iterator& ptr, Iterator end, Result& result)
 {
-    Iterator s = ptr;
+    auto p = ptr;
 
-    ensure(s != end);
-    auto v0 = readHexDigit(*s++);
+    result = 0;
+    ensure(p != end && readAccumHexDigit(*p++, result));
+    ensure(p != end && readAccumHexDigit(*p++, result));
 
-    ensure(s != end);
-    auto v1 = readHexDigit(*s++);
-
-    ensure(v0 >= 0 && v1 >= 0);
-
-    result = 16 * v0 + v1;
-
-    ptr = s;
+    ptr = p;
     return true;
 }
 
@@ -61,15 +32,17 @@ inline bool readHexByte(Iterator& ptr, Iterator end, Result& result)
 template <typename Iterator, typename Uint>
 inline bool readUint(Iterator& ptr, Iterator end, Uint& result)
 {
-    Iterator s = ptr;
+    COMPILE_ASSERT(TYPE_IS_BUILTIN_INT(Uint));
+
+    auto s = ptr;
 
     Uint value = 0;
     constexpr Uint maxValue = TYPE_MAX(Uint);
-    constexpr Uint maxValueDiv10Floor = maxValue / 10;
+    constexpr Uint maxValueDiv10 = maxValue / 10;
 
     for (; s != end && isDigit(*s); ++s)
     {
-        ensure(value <= maxValueDiv10Floor);
+        ensure(value <= maxValueDiv10);
         value *= 10;
 
         Uint digit = *s - '0';
@@ -88,14 +61,16 @@ inline bool readUint(Iterator& ptr, Iterator end, Uint& result)
 //
 // readInt
 //
-// (doesn't support INT_MIN)
+// Doesn't support INT_MIN.
 //
 //================================================================
 
 template <typename Iterator, typename Int>
 inline bool readInt(Iterator& ptr, Iterator end, Int& result)
 {
-    Iterator s = ptr;
+    COMPILE_ASSERT(TYPE_IS_BUILTIN_INT(Int));
+
+    auto s = ptr;
 
     ////
 
@@ -197,8 +172,67 @@ inline bool readFloatApprox(Iterator& ptr, Iterator end, Float& result)
 
         ////
 
-        constexpr Float C = Float(2.302585092994045684017991454684364);
-        value *= exp(C * exponent);
+        constexpr int maxExpo = 12;
+
+        static const Float expoArray[] =
+        {
+            Float(1e-12),
+            Float(1e-11),
+            Float(1e-10),
+            Float(1e-09),
+            Float(1e-08),
+            Float(1e-07),
+            Float(1e-06),
+            Float(1e-05),
+            Float(1e-04),
+            Float(1e-03),
+            Float(1e-02),
+            Float(1e-01),
+
+            Float(1),
+
+            Float(1e+01),
+            Float(1e+02),
+            Float(1e+03),
+            Float(1e+04),
+            Float(1e+05),
+            Float(1e+06),
+            Float(1e+07),
+            Float(1e+08),
+            Float(1e+09),
+            Float(1e+10),
+            Float(1e+11),
+            Float(1e+12)
+        };
+
+        COMPILE_ASSERT(COMPILE_ARRAY_SIZE(expoArray) == 2 * maxExpo + 1);
+        auto expos = expoArray + maxExpo;
+
+        ////
+
+        if (absv(exponent) >= 8 * maxExpo)
+        {
+            constexpr Float C = Float(2.302585092994045684017991454684364);
+            value *= exp(C * exponent);
+        }
+        else
+        {
+            while (!(exponent >= -maxExpo))
+            {
+                value *= expos[-maxExpo];
+                exponent += maxExpo;
+            }
+
+            while (!(exponent <= +maxExpo))
+            {
+                value *= expos[+maxExpo];
+                exponent -= maxExpo;
+            }
+
+            ensure(exponent >= -maxExpo && exponent <= +maxExpo);
+
+            value *= expos[exponent];
+        }
     }
 
     //

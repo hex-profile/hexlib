@@ -36,29 +36,6 @@ static const int32 maxTraceDepth = 8;
 
 //================================================================
 //
-// ErrorLogByMsgLog::isThreadProtected
-//
-//================================================================
-
-bool ErrorLogByMsgLog::isThreadProtected() const 
-{
-    return msgLog ? msgLog->isThreadProtected() : true;
-}
-
-//================================================================
-//
-// ErrorLogByMsgLog::addErrorSimple
-//
-//================================================================
-
-void ErrorLogByMsgLog::addErrorSimple(const CharType* message)
-{
-    if (msgLog)
-        printMsg(*msgLog, STR("%0"), charArrayFromPtr(message), msgErr);
-}
-
-//================================================================
-//
 // ErrorLogByMsgLog::addErrorTrace
 //
 //================================================================
@@ -90,22 +67,11 @@ void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace
 
 //================================================================
 //
-// ErrorLogExByMsgLog::isThreadProtected
+// MsgLogExByMsgLog::addMsgTrace
 //
 //================================================================
 
-bool ErrorLogExByMsgLog::isThreadProtected() const
-{
-    return msgLog ? msgLog->isThreadProtected() : true;
-}
-
-//================================================================
-//
-// ErrorLogExByMsgLog::addMsgTrace
-//
-//================================================================
-
-bool ErrorLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+bool MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
 {
     const TraceScope* p = &trace;
 

@@ -87,3 +87,14 @@ private:
     bool constructed = false;
 
 };
+
+//================================================================
+//
+// ARRAY_OBJECT_HEAP_ALLOC
+//
+//================================================================
+
+#define ARRAY_OBJECT_HEAP_ALLOC(name, Type, size) \
+    \
+    ArrayObjectMemory<Type> name; \
+    require(name.reallocInHeap(size, stdPass))

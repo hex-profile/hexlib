@@ -24,7 +24,7 @@ template <typename Dst>
 devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResampleParams<Dst>& o, Space taskIdx, devPars)
 {
     using FloatType = VECTOR_REBASE(Dst, float32);
-    
+
     ////
 
     const Space threadCountX = DIR(horThreadCountX, verThreadCountX);
@@ -45,7 +45,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
     #define TMP_MACRO(k, _) \
         COMPILE_ASSERT(COMPILE_ARRAY_SIZE(FILTER##k) == filterSize);
 
-    PREP_FOR(PACK_SIZE, TMP_MACRO, _) 
+    PREP_FOR(PACK_SIZE, TMP_MACRO, _)
 
     #undef TMP_MACRO
 
@@ -144,7 +144,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
 
     //----------------------------------------------------------------
     //
-    // 
+    //
     //
     //----------------------------------------------------------------
 
@@ -165,7 +165,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
 
     //----------------------------------------------------------------
     //
-    // 
+    //
     //
     //----------------------------------------------------------------
 
@@ -176,7 +176,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
             auto dstPtr##k = MATRIX_POINTER_(dst, dstIdx##k); \
             if (dstValid##k) storeNorm(dstPtr##k, result##k); \
         }
-    
+
 
     PREP_FOR(PACK_SIZE, TMP_MACRO, _);
 

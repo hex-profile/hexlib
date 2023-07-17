@@ -23,7 +23,9 @@ public:
     }
 
     inline ~FlatMemoryHolder()
-        {dealloc();}
+    {
+        dealloc();
+    }
 
 private:
 
@@ -71,7 +73,9 @@ public:
     ////
 
     inline void resizeNull()
-        {currentSize = 0;}
+    {
+        currentSize = 0;
+    }
 
     bool resize(AddrU size) // rearrange without reallocation
     {

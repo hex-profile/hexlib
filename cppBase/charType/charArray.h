@@ -2,52 +2,9 @@
 
 #include "charType/charType.h"
 #include "compileTools/compileTools.h"
+#include "extLib/types/charArray.h"
 
 #include <string.h>
-
-//================================================================
-//
-// CharType array definitions.
-//
-// A pair of (pointer, size) is more efficient than null-terminated strings.
-//
-//================================================================
-
-//================================================================
-//
-// CharArrayEx
-//
-//================================================================
-
-template <typename Type>
-class CharArrayEx
-{
-
-public:
-
-    sysinline CharArrayEx(int=0)
-        : size(0) {}
-
-    sysinline CharArrayEx(const Type* ptr, size_t size)
-        : ptr(ptr), size(size) {}
-
-public:
-
-    const Type* ptr;
-    size_t size;
-
-};
-
-//----------------------------------------------------------------
-
-template <typename Type>
-sysinline auto charArray(const Type* ptr, size_t size)
-    {return CharArrayEx<Type>(ptr, size);}
-
-//----------------------------------------------------------------
-
-using CharArray = CharArrayEx<CharType>;
-using CharArrayChar = CharArrayEx<char>;
 
 //================================================================
 //
@@ -64,9 +21,6 @@ using CharArrayChar = CharArrayEx<char>;
 
 #define CHARARRAY_LITERAL(x) \
     CharArray(CT(x) CT("@"), COMPILE_ARRAY_SIZE(x) - 1)
-
-#define CHARARRAY_STATIC(x) \
-    {CT(x) CT("@"), COMPILE_ARRAY_SIZE(x) - 1}
 
 // Ensure that compiler computes it correctly.
 COMPILE_ASSERT(COMPILE_ARRAY_SIZE(CT("1234")) == 5);

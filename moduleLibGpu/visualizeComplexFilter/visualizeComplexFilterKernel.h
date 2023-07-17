@@ -15,7 +15,7 @@ namespace visualizeComplex {
 
 stdbool visualizeComplexFilterFunc
 (
-    const GpuMatrix<const ComplexFloat>& src, 
+    const GpuMatrix<const ComplexFloat>& src,
     const GpuMatrix<ComplexFloat>& dst,
     const Point<float32>& upsampleFactor,
     bool interpolation,

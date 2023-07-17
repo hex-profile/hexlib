@@ -39,7 +39,7 @@ namespace SIGNATURE {
 #if !(defined(SIGNATURE) && defined(FUNCNAME) && defined(RANK) && defined(SRC_TYPE) && defined(INTERM_TYPE) && defined(DST_TYPE))
     #error Parameters need to be defined.
 #endif
-                                         
+
 //================================================================
 //
 // TASK_COUNT
@@ -99,10 +99,10 @@ PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
 
 #ifndef LINEAR_COMBINATION
 
-    #define LINEAR_ONLY(s) 
-    #define LINEAR_ONLY_COMMA(s) 
+    #define LINEAR_ONLY(s)
+    #define LINEAR_ONLY_COMMA(s)
 
-#else 
+#else
 
     #define LINEAR_ONLY(s) s
     #define LINEAR_ONLY_COMMA(s) s,
@@ -118,7 +118,7 @@ PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
 struct IntermParams
 {
     Point<float32> srcTexstep;
-    Point<Space> dstSize; 
+    Point<Space> dstSize;
 
     GpuMatrix<INTERM_TYPE> dst[TASK_COUNT][FILTER_COUNT];
 };
@@ -133,7 +133,7 @@ struct FinalParams
 {
 
     Point<float32> srcTexstep;
-    Point<Space> dstSize; 
+    Point<Space> dstSize;
 
 #ifndef LINEAR_COMBINATION
 
@@ -200,7 +200,7 @@ struct FinalParams
 
     #define FUNC_PARAMETERS_EX(t, Src, Interm, Dst) \
         const GpuMatrix<const Src>& src##t, \
-        PREP_ENUM_LR(FILTER_COUNT, const GpuMatrix<Dst>& dst, t), 
+        PREP_ENUM_LR(FILTER_COUNT, const GpuMatrix<Dst>& dst, t),
 
 #else
 
@@ -227,7 +227,7 @@ stdbool FUNCNAME
 (
     PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, (Src, Interm, Dst))
     LINEAR_ONLY_COMMA(const float32* filterMixCoeffs)
-    BorderMode borderMode, 
+    BorderMode borderMode,
     stdPars(GpuProcessKit)
 );
 
@@ -238,7 +238,7 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
 (
     PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, (SRC_TYPE, INTERM_TYPE, DST_TYPE))
     LINEAR_ONLY_COMMA(const float32* filterMixCoeffs)
-    BorderMode borderMode, 
+    BorderMode borderMode,
     stdPars(GpuProcessKit)
 )
 {
@@ -402,7 +402,7 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
             areaOf(dstSize),
             PREP_PASTE3(SIGNATURE, Final, DIR(Ver, Hor)),
             finalParams,
-            kit.gpuCurrentStream,                                          
+            kit.gpuCurrentStream,
             stdPass
         )
     );

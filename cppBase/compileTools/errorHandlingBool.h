@@ -26,18 +26,19 @@
 
 #else
 
-    class stdbool 
+    class
     #if (__cplusplus >= 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L) && (_MSC_VER >= 1913))
         [[nodiscard]]
     #endif
+    stdbool
     {
 
     public:
-    
+
         sysinline explicit stdbool(bool value)
             : value(value) {}
 
-        sysinline bool getSuccessValue() const 
+        sysinline bool getSuccessValue() const
             {return value;}
 
     private:

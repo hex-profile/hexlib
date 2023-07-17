@@ -4,7 +4,7 @@
 #include "atInterface/atInterfaceKit.h"
 #include "kits/moduleHeader.h"
 #include "storage/dynamicClass.h"
-#include "atEngine/atEngine.h"
+#include "testModule/testModule.h"
 
 namespace atStartup {
 
@@ -23,8 +23,8 @@ namespace atStartup {
 //
 //================================================================
 
-using InitKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtCommonKit, MallocKit, SetBusyStatusKit>;
-using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, AtProcessKit, MallocKit, SetBusyStatusKit>;
+using InitKit = KitCombine<ErrorLogKit, MsgLogExKit, MsgLogsKit, AtCommonKit, MallocKit, SetBusyStatusKit>;
+using ProcessKit = KitCombine<ErrorLogKit, MsgLogExKit, MsgLogsKit, AtProcessKit, MallocKit, SetBusyStatusKit>;
 
 //================================================================
 //
@@ -42,7 +42,7 @@ public:
 
 public:
 
-    stdbool init(const AtEngineFactory& engineFactory, stdPars(InitKit));
+    stdbool init(const TestModuleFactory& engineFactory, stdPars(InitKit));
     void finalize(stdPars(InitKit));
 
     stdbool process(stdPars(ProcessKit));

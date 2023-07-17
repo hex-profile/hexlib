@@ -1,10 +1,10 @@
 #include "baseImageConsoleToBridge.h"
 
-#include "errorLog/blockExceptions.h"
-#include "errorLog/errorLog.h"
-#include "userOutput/printMsg.h"
-#include "formatting/messageFormatter.h"
 #include "charType/strUtils.h"
+#include "errorLog/convertExceptions.h"
+#include "errorLog/errorLog.h"
+#include "formatting/messageFormatter.h"
+#include "userOutput/printMsg.h"
 
 namespace baseImageConsoleToBridge {
 
@@ -65,17 +65,29 @@ private:
 
 //================================================================
 //
-// BaseVideoOverlayToBridge::setImage
+// BaseVideoOverlayToBridge::overlayClear
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+stdbool BaseVideoOverlayToBridge::overlayClear(stdNullPars)
+{
+    convertExceptions(destOverlay.clear());
+    returnTrue;
+}
+
+//================================================================
+//
+// BaseVideoOverlayToBridge::overlaySet
+//
+//================================================================
+
+stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
 {
     BridgeImageProviderThunk bridgeProvider(imageProvider, stdPass);
 
     if_not (dataProcessing)
     {
-        // Imitates the processing on counting phase. The pitch on execution phase may differ, 
+        // Imitates the processing on counting phase. The pitch on execution phase may differ,
         // but the provider implementation is tolerant to it up to some maximal row alignment.
 
         auto image = Matrix<uint8_x4>{nullptr, imageProvider.desiredPitch(), size.X, size.Y, MatrixValidityAssertion{}};
@@ -86,7 +98,7 @@ stdbool BaseVideoOverlayToBridge::setImage(const Point<Space>& size, bool dataPr
         if (textEnabled)
             printMsg(kit.localLog, STR("OVERLAY: %"), desc);
 
-        require(blockExceptionsVoid(destOverlay.set(ImagePoint{size.X, size.Y}, bridgeProvider, "")));
+        convertExceptions(destOverlay.set(ImagePoint{size.X, size.Y}, bridgeProvider, ""));
     }
 
     ////
@@ -96,22 +108,22 @@ stdbool BaseVideoOverlayToBridge::setImage(const Point<Space>& size, bool dataPr
 
 //================================================================
 //
-// BaseVideoOverlayToBridge::setImageFake
+// BaseVideoOverlayToBridge::overlaySetFake
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::setImageFake(stdNullPars)
+stdbool BaseVideoOverlayToBridge::overlaySetFake(stdNullPars)
 {
     returnTrue;
 }
 
 //================================================================
 //
-// BaseVideoOverlayToBridge::updateImage
+// BaseVideoOverlayToBridge::overlayUpdate
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::updateImage(stdNullPars) 
+stdbool BaseVideoOverlayToBridge::overlayUpdate(stdNullPars)
 {
     returnTrue;
 }

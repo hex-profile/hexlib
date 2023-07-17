@@ -223,8 +223,8 @@ bool matrixParamsAreValid(Space sizeX, Space sizeY, Space pitch);
 //================================================================
 
 template <typename Pointer>
-class MatrixEx 
-    : 
+class MatrixEx
+    :
     public MatrixBase<typename PtrElemType<Pointer>::T, Pointer>
 {
 

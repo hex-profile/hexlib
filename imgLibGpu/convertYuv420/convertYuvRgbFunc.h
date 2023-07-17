@@ -59,7 +59,7 @@ sysinline void convertBgrToYPbPr(const float32_x4& bgrValue, float32& Ys, float3
 //================================================================
 //
 // convertRgbToPCA
-// 
+//
 // PCA colorspace is a projection to the first three PCA vectors of natural images.
 //
 //================================================================
@@ -91,7 +91,7 @@ sysinline float32_x4 convertPCAToBgr(const float32_x4& opponentValue)
     float32 cY = opponentValue.z;
 
     float32 R = +0.5773502693f * c0 - 0.7071067811f * cX - 0.4082482906f * cY;
-    float32 G = +0.5773502693f * c0 + 0.8164965809f * cY; 
+    float32 G = +0.5773502693f * c0 + 0.8164965809f * cY;
     float32 B = +0.5773502693f * c0 + 0.7071067816f * cX - 0.4082482906f * cY;
 
     return make_float32_x4(B, G, R, 0);

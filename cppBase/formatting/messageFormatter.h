@@ -14,7 +14,7 @@ struct MessageFormatter : public FormatOutputStream
     virtual bool valid() =0;
     virtual size_t size() =0;
     virtual const CharType* cstr() =0;
-    virtual CharArray charArray() =0;
+    virtual CharArray str() =0;
 };
 
 //================================================================
@@ -42,7 +42,7 @@ struct MessageFormatterNull : public MessageFormatter
 
     ////
 
-    virtual void clear() 
+    virtual void clear()
         {}
 
     virtual bool valid()
@@ -54,7 +54,7 @@ struct MessageFormatterNull : public MessageFormatter
     virtual const CharType* cstr()
         {return CT("");}
 
-    virtual CharArray charArray()
+    virtual CharArray str()
         {return CharArray();}
 
 };

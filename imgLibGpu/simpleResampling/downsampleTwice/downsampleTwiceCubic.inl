@@ -68,15 +68,15 @@ devDecl void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Ds
     READ_ITER(0, 0); READ_ITER(1, 0);
     READ_ITER(0, 1); READ_ITER(1, 1);
 
-    if (extraX) 
+    if (extraX)
     {
-        READ_ITER(2, 0); 
+        READ_ITER(2, 0);
         READ_ITER(2, 1);
     }
 
     if (extraY)
     {
-        READ_ITER(0, 2); 
+        READ_ITER(0, 2);
         READ_ITER(1, 2);
     }
 
@@ -131,7 +131,7 @@ devDecl void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Ds
 
     Space bX = 2 * devThreadX;
 
-    FloatType result = 
+    FloatType result =
         FilterX::C0() * TMP_BUFFER(bX + 0, devThreadY) +
         FilterX::C1() * TMP_BUFFER(bX + 1, devThreadY) +
         FilterX::C2() * TMP_BUFFER(bX + 2, devThreadY) +

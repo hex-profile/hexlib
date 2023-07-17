@@ -1,6 +1,16 @@
 #pragma once
 
-#include "kit/kit.h"
+#include "storage/opaqueStructFwd.h"
+
+//================================================================
+//
+// CfgScopeContext
+//
+// Specific data of a scope visitor.
+//
+//================================================================
+
+using CfgScopeContext = OpaqueStruct<4 * sizeof(void*), 0x3CA8C539u>;
 
 //================================================================
 //
@@ -8,13 +18,15 @@
 //
 //================================================================
 
-class CfgNamespace;
-struct CfgVisitor;
+struct CfgVisitVar;
+struct CfgVisitSignal;
+struct CfgScopeVisitor;
 
 //----------------------------------------------------------------
 
 struct CfgSerializeKit
 {
-    CfgVisitor& visitor; 
-    const CfgNamespace* scope;
+    const CfgVisitVar& visitVar;
+    const CfgVisitSignal& visitSignal;
+    const CfgScopeVisitor& scopeVisitor;
 };

@@ -30,7 +30,7 @@ GPUTOOL_2D
 //
 //================================================================
 
-#if HOSTCODE 
+#if HOSTCODE
 
 stdbool CircleTableHolder::realloc(Space size, stdPars(GpuProcessKit))
 {

@@ -53,7 +53,7 @@ GPUTOOL_2D_BEG
             sumWeightColor += spatialWeight * presence * pureColor; \
             sumWeight += spatialWeight * presence; \
             maxWeight = maxv(maxWeight, spatialWeight * presence); \
-        } 
+        }
 
     PREP_FOR(LAYERS, TMP_MACRO, o)
 
@@ -61,7 +61,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    float32 vectorPresence = saturate(independentPresenceMode ? maxWeight : sumWeight); 
+    float32 vectorPresence = saturatev(independentPresenceMode ? maxWeight : sumWeight);
     auto vectorColor = fastRecipZero(sumWeight) * sumWeightColor;
 
     ////
@@ -102,7 +102,7 @@ GPUTOOL_2D_BEG
 
     //----------------------------------------------------------------
     //
-    // 
+    //
     //
     //----------------------------------------------------------------
 
@@ -211,7 +211,7 @@ GPUTOOL_2D_BEG
 
     ////
 
-    auto resultColor = linerp(saturate(filteredPresence), make_float32_x4(0.5f, 0.5f, 0.5f, 0), filteredColor);
+    auto resultColor = linerp(saturatev(filteredPresence), make_float32_x4(0.5f, 0.5f, 0.5f, 0), filteredColor);
 
     ////
 
@@ -250,7 +250,7 @@ GPUTOOL_2D_BEG
     //----------------------------------------------------------------
 
     #define TMP_MACRO(i, _) \
-        float32 t##i = saturate(loadNorm(srcPresence##i)); \
+        float32 t##i = saturatev(loadNorm(srcPresence##i)); \
         float32 currentPresence##i = t##i; \
         float32_x2 vector##i = loadNorm(srcVector##i);
 
@@ -265,7 +265,7 @@ GPUTOOL_2D_BEG
     //----------------------------------------------------------------
 
     #define TMP_MACRO(i, j, _) \
-        float32 p##i##j = saturate(gaussExpoApprox<4>(rsqVectorProximity * vectorLengthSq(vector##i - vector##j)));
+        float32 p##i##j = saturatev(gaussExpoApprox<4>(rsqVectorProximity * vectorLengthSq(vector##i - vector##j)));
 
     PREP_FOR_2D(LAYERS, LAYERS, TMP_MACRO, _)
 
@@ -292,8 +292,8 @@ GPUTOOL_2D_BEG
 //    currentPresence0 = (p01*t1-t0) * divider;
 //    currentPresence1 = (p01*t0-t1) * divider;
 //
-//    currentPresence0 = saturate(currentPresence0);
-//    currentPresence1 = saturate(currentPresence1);
+//    currentPresence0 = saturatev(currentPresence0);
+//    currentPresence1 = saturatev(currentPresence1);
 //  }
 
 #else

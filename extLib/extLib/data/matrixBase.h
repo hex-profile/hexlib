@@ -58,7 +58,7 @@ public:
 
     template <typename OtherPointer>
     HEXLIB_INLINE MatrixBase(OtherPointer memPtr, Space memPitch, Space sizeX, Space sizeY)
-        : 
+        :
         theMemPtrUnsafe{memPtr},
         theMemPitch{memPitch},
         theSizeX{sizeX},
@@ -68,13 +68,13 @@ public:
 
 public:
 
-    HEXLIB_INLINE Pointer memPtr() const 
+    HEXLIB_INLINE Pointer memPtr() const
         {return theMemPtrUnsafe;}
 
-    HEXLIB_INLINE Space memPitch() const 
+    HEXLIB_INLINE Space memPitch() const
         {return theMemPitch;}
 
-    HEXLIB_INLINE Point<Space> size() const 
+    HEXLIB_INLINE Point<Space> size() const
         {return point(theSizeX, theSizeY);}
 
 protected:

@@ -27,12 +27,12 @@ void floatIntConvTest(CharArray name, MsgLog& msgLog)
 {
 
 #if defined(_WIN32)
-        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_LOWEST);
 #endif
 
-        ////
+    ////
 
-        volatile bool globOk = true;
+    volatile bool globOk = true;
     uint32 globBadValue = 0;
 
     ////
@@ -61,9 +61,9 @@ void floatIntConvTest(CharArray name, MsgLog& msgLog)
                 ////
 
                 volatile float64 testVald = testVal;
-                
 
-                Int ref = 
+
+                Int ref =
                     rounding == RoundDown ? Int(floorv(testVald)) :
                     rounding == RoundUp ? Int(ceilv(testVald)) :
                     rounding == RoundNearest ? Int(floorv(testVald + 0.5)) :

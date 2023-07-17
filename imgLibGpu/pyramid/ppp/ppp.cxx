@@ -24,10 +24,10 @@ namespace ppp {
 
 stdbool getTotalPyramidTileCount
 (
-    const PyramidStructure& pyramid, 
-    const Point<Space>& tileSize, 
-    Space& resultTileCount, 
-    uint32& configHash, 
+    const PyramidStructure& pyramid,
+    const Point<Space>& tileSize,
+    Space& resultTileCount,
+    uint32& configHash,
     stdPars(ErrorLogKit)
 )
 {
@@ -63,7 +63,7 @@ stdbool getTotalPyramidTileCount
     ////
 
     resultTileCount = totalTileCount;
-    configHash = hash; 
+    configHash = hash;
 
     returnTrue;
 }
@@ -80,10 +80,10 @@ stdbool getTotalPyramidTileCount
 
 stdbool getTotalPyramidTileCount
 (
-    const GpuPyramidLayout& layout, 
-    const Point<Space>& tileSize, 
-    Space& resultTotalTileCount, 
-    uint32& configHash, 
+    const GpuPyramidLayout& layout,
+    const Point<Space>& tileSize,
+    Space& resultTotalTileCount,
+    uint32& configHash,
     stdPars(ErrorLogKit)
 )
 {
@@ -94,7 +94,7 @@ stdbool getTotalPyramidTileCount
     ////
 
     Space levels = layout.levels;
-  
+
     rndgen16(hash); hash ^= levels;
     rndgen16(hash); hash ^= tileSize.X;
     rndgen16(hash); hash ^= tileSize.Y;
@@ -118,7 +118,7 @@ stdbool getTotalPyramidTileCount
     ////
 
     resultTotalTileCount = totalTileCount;
-    configHash = hash; 
+    configHash = hash;
 
     returnTrue;
 }
@@ -206,7 +206,7 @@ GPUTOOL_PLAIN_BEG
 
     ////
 
-    GuidingElement value; 
+    GuidingElement value;
 
     devAbortCheck(SpaceU(level) < SpaceU(pyramidStructure.levels));
     value.data.level = level;
@@ -232,9 +232,9 @@ GPUTOOL_PLAIN_END
 
 stdbool prepareGuidingArray
 (
-    const PyramidStructure& pyramid, 
-    const Point<Space>& tileSize, 
-    const GpuArray<GuidingElement>& result, 
+    const PyramidStructure& pyramid,
+    const Point<Space>& tileSize,
+    const GpuArray<GuidingElement>& result,
     stdPars(GpuProcessKit)
 )
 {
@@ -258,7 +258,7 @@ stdbool prepareGuidingArray
         pyramidStructure.tileCount[l] = tileCount;
         totalTileCount += areaOf(tileCount);
     }
-    
+
     ////
 
     REQUIRE(result.size() == totalTileCount);

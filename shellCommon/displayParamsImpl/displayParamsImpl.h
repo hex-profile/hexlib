@@ -18,14 +18,14 @@ class DisplayParamsImpl
 
 public:
 
-    void serialize(const CfgSerializeKit& kit, bool& altVersionSteady);
+    void serialize(const CfgSerializeKit& kit, bool hotkeys, bool& altVersionSteady);
 
 public:
 
-    DisplayMode displayMode() const 
+    DisplayMode displayMode() const
         {return theDisplayMode;}
 
-    VectorMode vectorMode() const 
+    VectorMode vectorMode() const
         {return theVectorMode;}
 
     bool alternative() const
@@ -55,11 +55,15 @@ private:
     BoolSwitch displayModulation{false};
 
     RangeValueControl<int32> viewIndex{0, 32, 0, 1, RangeValueLinear};
+    bool viewIndexSteady = true;
     BoolSwitch viewIndexDisplayAll{false};
 
     RangeValueControl<int32> temporalIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
     RangeValueControl<int32> circularIndex{-0x7FFFFFFF-1, +0x7FFFFFFF, 0, 1, RangeValueLinear};
+
     RangeValueControl<int32> scaleIndex{-32, +128, 0, 1, RangeValueLinear};
+    bool scaleIndexSteady = true;
+
     RangeValueControl<int32> stageIndex{-32, +32, 0, 1, RangeValueLinear};
     RangeValueControl<int32> channelIndex{0, 128, 0, 1, RangeValueLinear};
 
@@ -76,12 +80,17 @@ class DisplayParamsThunk
 
 public:
 
-    DisplayParamsThunk(const Point<Space>& screenSize, DisplayParamsImpl& o)
+    DisplayParamsThunk
+    (
+        const Point<Space>& screenSize,
+        const OptionalObject<Point<Space>>& desiredOutputSize,
+        DisplayParamsImpl& o
+    )
         :
         o(o),
 
-        viewIndexThunk(o.viewIndex, o.viewIndexDisplayAll),
-        scaleIndexThunk(o.scaleIndex),
+        viewIndexThunk(o.viewIndex, o.viewIndexSteady, o.viewIndexDisplayAll),
+        scaleIndexThunk(o.scaleIndex, o.scaleIndexSteady),
         circularIndexThunk(o.circularIndex),
         temporalIndexThunk(o.temporalIndex),
         stageIndexThunk(o.stageIndex),
@@ -91,11 +100,12 @@ public:
         {
             o.theDisplayMode == DisplayMode::Fullscreen,
             o.displayFactor,
-            screenSize, 
+            screenSize,
+            desiredOutputSize,
             o.displayInterpolation,
             o.displayModulation,
-            viewIndexThunk, 
-            temporalIndexThunk, 
+            viewIndexThunk,
+            temporalIndexThunk,
             scaleIndexThunk,
             circularIndexThunk,
             stageIndexThunk,

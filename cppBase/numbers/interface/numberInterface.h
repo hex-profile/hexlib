@@ -114,6 +114,15 @@ sysinline TYPE_CLEANSE(Vector) vectorExtend(const VECTOR_BASE(Vector)& value)
 
 //================================================================
 //
+// TYPE_BIT_COUNT
+//
+//================================================================
+
+#define TYPE_BIT_COUNT(Type) \
+    (sizeof(Type) * CHAR_BIT)
+
+//================================================================
+//
 // TYPE_IS_SIGNED
 //
 // Determines if the numeric type can have negative value.
@@ -534,7 +543,7 @@ enum ConvertHint
 // The conversion can be checked or unchecked (for arithmetic overflows and undefined inputs).
 //
 // If the conversion is checked (specified by parameter),
-// the success flag is stored in the destination type, 
+// the success flag is stored in the destination type,
 // which should have built-in error state (like IEEE float).
 //
 // If the conversion is unchecked, no arithmetic check is performed,
@@ -750,7 +759,7 @@ struct ConvertVectorFlag
     using ConvertScalarScalar = typename ConvertScalarFlag<SrcBase, DstBase, rounding, hint>::Code;
 
     // Should be implemented as ConvertImplFlag
-    using ConvertVectorVector = typename ConvertImplFlagCall<Src, Dst, rounding, hint>::Code; 
+    using ConvertVectorVector = typename ConvertImplFlagCall<Src, Dst, rounding, hint>::Code;
 
     struct ConvertVectorScalarProhibited;
 
@@ -970,7 +979,7 @@ TMP_MACRO(maxv)
 
 template <typename Type>
 sysinline Type absv(const Type& value)
-    MISSING_FUNCTION_BODY;
+    MISSING_FUNCTION_BODY
 
 //================================================================
 //
@@ -981,11 +990,11 @@ sysinline Type absv(const Type& value)
 
 template <typename Type>
 sysinline Type floorv(const Type& value)
-    MISSING_FUNCTION_BODY;
+    MISSING_FUNCTION_BODY
 
 template <typename Type>
 sysinline Type ceilv(const Type& value)
-    MISSING_FUNCTION_BODY;
+    MISSING_FUNCTION_BODY
 
 //================================================================
 //
@@ -998,7 +1007,7 @@ sysinline Type ceilv(const Type& value)
 
 template <typename Type>
 sysinline bool isPower2(const Type& value)
-    MISSING_FUNCTION_BODY;
+    MISSING_FUNCTION_BODY
 
 //================================================================
 //

@@ -107,7 +107,7 @@ inline auto makeIndex(Index index)
 template <typename Iterator>
 inline bool operator ==(const Key<Iterator>& A, const Key<Iterator>& B)
 {
-    return 
+    return
         A.index == B.index &&
         A.name == B.name;
 }
@@ -121,8 +121,8 @@ inline bool operator ==(const Key<Iterator>& A, const Key<Iterator>& B)
 template <typename Iterator>
 inline bool operator ==(const Range<Iterator>& A, const Range<Iterator>& B)
 {
-    auto sizeA = A.end - A.ptr; 
-    auto sizeB = B.end - B.ptr; 
+    auto sizeA = A.end - A.ptr;
+    auto sizeB = B.end - B.ptr;
 
     ensure(sizeA == sizeB);
 
@@ -146,8 +146,8 @@ inline bool operator ==(const Range<Iterator>& A, const Range<Iterator>& B)
 
 template <typename Iterator>
 struct Visitor
-{               
-    // Enter namespace and leave namespace. 
+{
+    // Enter namespace and leave namespace.
     // Enter function should control max depth and return false in case of error.
     virtual bool enter(const Key<Iterator>& key) =0;
     virtual void leave() =0;
@@ -199,7 +199,7 @@ public:
 
     virtual void leave()
     {
-        if (depth) 
+        if (depth)
             --depth;
     }
 

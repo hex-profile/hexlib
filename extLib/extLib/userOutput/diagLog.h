@@ -16,12 +16,6 @@
 struct DiagLog
 {
     //
-    // Can the instance be shared among multiple threads?
-    //
-
-    virtual bool isThreadProtected() const =0;
-
-    //
     // An interface to output contiguous message blocks in a multithreaded environment.
     // Used only for pretty printing, so the implementation may be omitted.
     //
@@ -49,9 +43,6 @@ struct DiagLog
 
 struct DiagLogNull : public DiagLog
 {
-    bool isThreadProtected() const
-        {return true;}
-
     void lock()
         {}
 

@@ -28,7 +28,7 @@ public:
     uint64 getSize() const
         {return currentSize;}
 
-    uint64 getPosition() const 
+    uint64 getPosition() const
         {return currentPosition;}
 
     stdbool setPosition(uint64 pos, stdPars(FileDiagKit));
@@ -44,8 +44,8 @@ public:
     {
         exchange(A.currentHandle, B.currentHandle);
         exchange(A.currentFilename, B.currentFilename);
-        exchange(A.currentSize, B.currentSize);
-        exchange(A.currentPosition, B.currentPosition);
+        exchangeByCopying(A.currentSize, B.currentSize);
+        exchangeByCopying(A.currentPosition, B.currentPosition);
     }
 
 private:

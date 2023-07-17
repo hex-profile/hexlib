@@ -19,16 +19,9 @@ public:
 
 public:
 
-    TimeMoment moment() override;
-    float32 diff(const TimeMoment& t1, const TimeMoment& t2) override;
-    TimeMoment add(const TimeMoment& baseMoment, float32 difference) override;
-
-public:
-
-    bool isThreadProtected() const override
-    {
-        return true; // Win32 API is protected, all class fields are runtime-constant
-    }
+    TimeMoment moment();
+    float32 diff(const TimeMoment& t1, const TimeMoment& t2);
+    TimeMoment add(const TimeMoment& baseMoment, float32 difference);
 
 private:
 

@@ -18,21 +18,21 @@ sysinline float32 negExpApprox(float32 x, float32 argScale);
 template <>
 sysinline float32 negExpApprox<2>(float32 x, float32 argScale)
 {
-    float32 arg = saturate(1 + (-0.25f * argScale) * x);
+    float32 arg = saturatev(1 + (-0.25f * argScale) * x);
     return square(square(arg));
 }
 
 template <>
 sysinline float32 negExpApprox<3>(float32 x, float32 argScale)
 {
-    float32 arg = saturate(1 + (-0.125f * argScale) * x);
+    float32 arg = saturatev(1 + (-0.125f * argScale) * x);
     return square(square(square(arg)));
 }
 
 template <>
 sysinline float32 negExpApprox<4>(float32 x, float32 argScale)
 {
-    float32 arg = saturate(1 + (-0.0625f * argScale) * x);
+    float32 arg = saturatev(1 + (-0.0625f * argScale) * x);
     return square(square(square(square(arg))));
 }
 

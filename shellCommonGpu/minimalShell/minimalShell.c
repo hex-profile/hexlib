@@ -1,25 +1,25 @@
 #include "minimalShell.h"
 
+#include "baseConsoleBmp/baseConsoleBmp.h"
 #include "cfgTools/boolSwitch.h"
+#include "cfgTools/cfgSimpleString.h"
+#include "displayParamsImpl/displayParamsImpl.h"
 #include "errorLog/debugBreak.h"
 #include "formattedOutput/errorBreakThunks.h"
+#include "gpuBaseConsoleByCpu/gpuBaseConsoleByCpu.h"
+#include "gpuImageConsoleImpl/gpuImageConsoleImpl.h"
 #include "gpuLayer/gpuCallsProhibition.h"
 #include "gpuShell/gpuShell.h"
 #include "imageConsole/gpuImageConsole.h"
 #include "kits/setBusyStatus.h"
 #include "memController/memoryUsageReport.h"
+#include "profilerShell/profilerShell.h"
 #include "storage/classThunks.h"
 #include "storage/optionalObject.h"
 #include "storage/rememberCleanup.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
-#include "displayParamsImpl/displayParamsImpl.h"
-#include "baseConsoleBmp/baseConsoleBmp.h"
-#include "configFile/cfgSimpleString.h"
 #include "userOutput/printMsgEx.h"
-#include "gpuImageConsoleImpl/gpuImageConsoleImpl.h"
-#include "gpuBaseConsoleByCpu/gpuBaseConsoleByCpu.h"
-#include "profilerShell/profilerShell.h"
 
 namespace minimalShell {
 
@@ -34,11 +34,32 @@ using namespace gpuShell;
 class MinimalShellImpl : public MinimalShell, public Settings
 {
 
-public:
+    //----------------------------------------------------------------
+    //
+    // Settings.
+    //
+    //----------------------------------------------------------------
 
     virtual Settings& settings() {return *this;}
 
-public:
+    ////
+
+    virtual void setGpuContextMaintainer(bool value)
+        {gpuContextMaintainer = value;}
+
+    virtual void setGpuShellHotkeys(bool value)
+        {gpuShellHotkeys = value;}
+
+    virtual void setProfilerShellHotkeys(bool value)
+        {profilerShellHotkeys = value;}
+
+    virtual void setDisplayParamsHotkeys(bool value)
+        {displayParamsHotkeys = value;}
+
+    virtual void setBmpConsoleHotkeys(bool value)
+        {bmpConsoleHotkeys = value;}
+
+    ////
 
     virtual void setImageSavingActive(bool active)
         {bmpConsole->setActive(active);}
@@ -52,60 +73,79 @@ public:
     virtual const CharType* getImageSavingDir() const
         {return bmpConsole->getOutputDir();}
 
-public:
+    ////
 
     void serialize(const CfgSerializeKit& kit);
 
-public:
-
-    bool isInitialized() const {return initialized;}
+    //----------------------------------------------------------------
+    //
+    // Init.
+    //
+    //----------------------------------------------------------------
 
     stdbool init(stdPars(InitKit));
 
-public:
+    //----------------------------------------------------------------
+    //
+    // Processing.
+    //
+    //----------------------------------------------------------------
 
-    stdbool processEntry(stdPars(ProcessEntryKit));
+    stdbool process(const ProcessArgs& args, stdPars(ProcessKit));
 
-public:
+    //----------------------------------------------------------------
+    //
+    // Profiling.
+    //
+    //----------------------------------------------------------------
 
-    bool profilingActive() const 
+    bool profilingActive() const
     {
         return profilerShell.profilingActive();
     }
 
-    stdbool profilingReport(stdPars(ReportKit))
+    stdbool profilingReport(const GpuExternalContext* externalContext, stdPars(ReportKit))
     {
-        REQUIRE(initialized);
+        REQUIRE(level >= Level::InitExternal);
+
+        auto& gpuProperties = (level == Level::InitInternal) ? gpuPropertiesInternal : externalContext->gpuProperties;
+
         return profilerShell.makeReport(gpuProperties.totalThroughput, stdPass);
     }
 
     //----------------------------------------------------------------
     //
-    //
+    // Private funcs.
     //
     //----------------------------------------------------------------
 
 private:
 
-    using ProcessWithProfilerKit = KitCombine<ProcessEntryKit, ProfilerKit>;
+    using ProcessWithProfilerKit = KitCombine<ProcessKit, ProfilerKit>;
 
-    stdbool processWithProfiler(stdPars(ProcessWithProfilerKit));
+    stdbool processWithProfiler(const ProcessArgs& args, stdPars(ProcessWithProfilerKit));
 
-private:
+    ////
 
     using ProcessWithGpuKit = KitCombine<ProcessWithProfilerKit, GpuShellKit>;
 
-    stdbool processWithGpu(stdPars(ProcessWithGpuKit));
+    stdbool processWithGpu(const ProcessArgs& args, stdPars(ProcessWithGpuKit));
 
-private:
+    ////
 
     using ProcessWithAllocatorsKit = KitCombine<ProcessWithGpuKit, memController::FastAllocToolkit, PipeControlKit>;
 
-    stdbool processWithAllocators(stdPars(ProcessWithAllocatorsKit));
+    stdbool processWithAllocators(const ProcessArgs& args, stdPars(ProcessWithAllocatorsKit));
 
-private:
+    //----------------------------------------------------------------
+    //
+    // Status.
+    //
+    //----------------------------------------------------------------
 
-    bool initialized = false;
+    enum class Level {None, InitExternal, InitInternal};
+
+    Level level = Level::None;
 
     //----------------------------------------------------------------
     //
@@ -113,19 +153,32 @@ private:
     //
     //----------------------------------------------------------------
 
+    bool profilerShellHotkeys = true;
     ProfilerShell profilerShell;
 
     //----------------------------------------------------------------
     //
-    // GPU layer
+    // GPU context and stream.
     //
     //----------------------------------------------------------------
 
-    GpuContextHelper gpuContextHelper;
-    GpuProperties gpuProperties;
-    GpuContextOwner gpuContext;
-    GpuStreamOwner gpuStream;
+    bool gpuContextMaintainer = true;
 
+    ////
+
+    GpuContextHelper gpuContextHelper;
+
+    GpuProperties gpuPropertiesInternal;
+    GpuContextOwner gpuContextInternal;
+    GpuStreamOwner gpuStreamInternal;
+
+    //----------------------------------------------------------------
+    //
+    // Gpu shell.
+    //
+    //----------------------------------------------------------------
+
+    bool gpuShellHotkeys = true;
     GpuShellImpl gpuShell;
 
     //----------------------------------------------------------------
@@ -137,9 +190,12 @@ private:
     BoolSwitch displayMemoryUsage{false};
     BoolSwitch debugBreakOnErrors{false};
 
+    bool displayParamsHotkeys = true;
     DisplayParamsImpl displayParams;
 
-    UniquePtr<BaseConsoleBmp> bmpConsole = BaseConsoleBmp::create();
+    bool bmpConsoleHotkeys = true;
+    UniqueInstance<BaseConsoleBmp> bmpConsole;
+    baseConsoleBmp::Counter bmpCounter = 0;
 
 };
 
@@ -158,28 +214,36 @@ UniquePtr<MinimalShell> MinimalShell::create()
 
 void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 {
-    {
-        CFG_NAMESPACE("~Shell");
+    profilerShell.serialize(kit, profilerShellHotkeys);
 
-        profilerShell.serialize(kit);
+    ////
 
-        gpuShell.serialize(kit);
+    if (gpuContextMaintainer)
         gpuContextHelper.serialize(kit);
 
-        displayMemoryUsage.serialize(kit, STR("Display Memory Usage"));
-        debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"));
+    ////
 
-        {
-            CFG_NAMESPACE("Display Params");
+    gpuShell.serialize(kit, gpuShellHotkeys);
 
-            bool unused = false;
-            displayParams.serialize(kit, unused);
-        }
+    ////
 
-        {
-            CFG_NAMESPACE("Saving BMP Files");
-            bmpConsole->serialize(kit);
-        }
+    displayMemoryUsage.serialize(kit, STR("Display Memory Usage"));
+    debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"));
+
+    ////
+
+    {
+        CFG_NAMESPACE("Display Params");
+
+        bool unused = false;
+        displayParams.serialize(kit, displayParamsHotkeys, unused);
+    }
+
+    ////
+
+    {
+        CFG_NAMESPACE("Saving BMP Files");
+        bmpConsole->serialize(kit, bmpConsoleHotkeys);
     }
 }
 
@@ -191,55 +255,64 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 
 stdbool MinimalShellImpl::init(stdPars(InitKit))
 {
-    initialized = false;
 
+    //----------------------------------------------------------------
     //
     // Profiler
     //
+    //----------------------------------------------------------------
 
     require(profilerShell.init(stdPass));
     REMEMBER_CLEANUP_EX(profilerCleanup, profilerShell.deinit());
 
+    //----------------------------------------------------------------
     //
     // GPU init
     //
+    //----------------------------------------------------------------
 
-    GpuInitApiImpl gpuInitApi(kit);
-    require(gpuInitApi.initialize(stdPass));
-    GpuInitKit gpuInitKit = gpuInitApi.getKit();
+    if (gpuContextMaintainer)
+    {
+        GpuInitApiImpl gpuInitApi(kit);
+        require(gpuInitApi.initialize(stdPass));
+        GpuInitKit gpuInitKit = gpuInitApi.getKit();
 
-    ////
+        ////
 
-    require(gpuContextHelper.createContext(gpuProperties, gpuContext, stdPassKit(kitCombine(kit, gpuInitKit))));
-    REMEMBER_CLEANUP_EX(gpuContextCleanup, gpuContext.clear());
+        require(gpuContextHelper.createContext(gpuPropertiesInternal, gpuContextInternal, stdPassKit(kitCombine(kit, gpuInitKit))));
+        REMEMBER_CLEANUP_EX(gpuContextCleanup, gpuContextInternal.clear(););
 
-    ////
+        ////
 
-    void* baseStream = 0;
-    require(gpuInitKit.gpuStreamCreation.createStream(gpuContext, true, gpuStream, baseStream, stdPass));
+        require(gpuInitKit.gpuStreamCreation.createStream(gpuContextInternal, true, gpuStreamInternal, stdPass));
 
+        gpuContextCleanup.cancel();
+    }
+
+    //----------------------------------------------------------------
     //
     // Record success
     //
+    //----------------------------------------------------------------
 
-    gpuContextCleanup.cancel();
     profilerCleanup.cancel();
-    initialized = true;
+
+    level = gpuContextMaintainer ? Level::InitInternal : Level::InitExternal;
 
     returnTrue;
 }
 
 //================================================================
 //
-// MinimalShellImpl::processEntry
+// MinimalShellImpl::process
 //
 //================================================================
 
-stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
+stdbool MinimalShellImpl::process(const ProcessArgs& args, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
-    REQUIRE_EX(initialized, printMsg(kit.localLog, STR("Initialization failed, processing is disabled"), msgWarn));
+    REQUIRE_EX(level >= Level::InitExternal, printMsg(kit.localLog, STR("Initialization failed, processing is disabled"), msgWarn));
 
     //----------------------------------------------------------------
     //
@@ -253,35 +326,11 @@ stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
     ErrorLogBreakShell errorLog(kit.errorLog, debugBreakOnErrors);
     ErrorLogKit errorLogKit(errorLog);
 
-    ErrorLogExBreakShell errorLogEx(kit.errorLogEx, debugBreakOnErrors);
-    ErrorLogExKit errorLogExKit(errorLogEx);
+    MsgLogExBreakShell msgLogEx(kit.msgLogEx, debugBreakOnErrors);
+    MsgLogExKit msgLogExKit(msgLogEx);
 
     auto originalKit = kit;
-    auto kit = kitReplace(originalKit, kitCombine(msgLogKit, errorLogKit, errorLogExKit));
-
-    //----------------------------------------------------------------
-    //
-    // ProfilerTargetThunk
-    //
-    //----------------------------------------------------------------
-
-    class ProfilerTargetThunk : public ProfilerTarget
-    {
-
-    public:
-
-        stdbool process(stdPars(ProfilerKit))
-            {return base.processWithProfiler(stdPassThruKit(kitCombine(kit, baseKit)));}
-
-        inline ProfilerTargetThunk(MinimalShellImpl& base, const ProcessEntryKit& baseKit)
-            : base(base), baseKit(baseKit) {}
-
-    private:
-
-        MinimalShellImpl& base;
-        ProcessEntryKit baseKit;
-
-    };
+    auto kit = kitReplace(originalKit, kitCombine(msgLogKit, errorLogKit, msgLogExKit));
 
     //----------------------------------------------------------------
     //
@@ -289,7 +338,18 @@ stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
     //
     //----------------------------------------------------------------
 
-    ProfilerTargetThunk profilerTarget(*this, kit);
+    auto& oldKit = kit;
+
+    auto profilerTarget = ProfilerTarget::O | [&] (stdPars(ProfilerKit))
+    {
+        return processWithProfiler(args, stdPassThruKit(kitCombine(oldKit, kit)));
+    };
+
+    ////
+
+    auto& gpuProperties = (level == Level::InitInternal) ?
+        gpuPropertiesInternal : args.externalContext->gpuProperties;
+
     require(profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass));
 
     ////
@@ -303,7 +363,7 @@ stdbool MinimalShellImpl::processEntry(stdPars(ProcessEntryKit))
 //
 //================================================================
 
-stdbool MinimalShellImpl::processWithProfiler(stdPars(ProcessWithProfilerKit))
+stdbool MinimalShellImpl::processWithProfiler(const ProcessArgs& args, stdPars(ProcessWithProfilerKit))
 {
 
     //----------------------------------------------------------------
@@ -316,26 +376,44 @@ stdbool MinimalShellImpl::processWithProfiler(stdPars(ProcessWithProfilerKit))
 
     ////
 
-    auto gpuShellExec = [this, &baseKit] (stdPars(GpuShellKit))
-    {
-        return processWithGpu(stdPassThruKit(kitCombine(baseKit, kit)));
-    };
+    GpuInitApiImpl gpuInitApi(baseKit);
+    GpuExecApiImpl gpuExecApi(baseKit);
 
     ////
 
-    GpuInitApiImpl gpuInitApi(baseKit);
-    GpuExecApiImpl gpuExecApi(baseKit);
+    const GpuProperties* gpuProperties = &gpuPropertiesInternal;
+    const GpuContext* gpuContext = &gpuContextInternal;
+    const GpuStream* gpuStream = &gpuStreamInternal;
+
+    if (level == Level::InitExternal)
+    {
+        REQUIRE(args.externalContext);
+        auto& externalContext = *args.externalContext;
+
+        gpuProperties = &externalContext.gpuProperties;
+        gpuContext = &externalContext.gpuContext;
+        gpuStream = &externalContext.gpuStream;
+    }
+
+    ////
 
     auto kitEx = kitCombine
     (
         baseKit,
         GpuApiImplKit{gpuInitApi, gpuExecApi},
-        GpuPropertiesKit{gpuProperties},
-        GpuCurrentContextKit{gpuContext},
-        GpuCurrentStreamKit{gpuStream}
+        GpuPropertiesKit{*gpuProperties},
+        GpuCurrentContextKit{*gpuContext},
+        GpuCurrentStreamKit{*gpuStream}
     );
 
-    require(gpuShell.execCyclicShellLambda(gpuShellExec, stdPassKit(kitEx)));
+    ////
+
+    auto gpuShellTarget = GpuShellTarget::O | [&] (stdPars(GpuShellKit))
+    {
+        return processWithGpu(args, stdPassThruKit(kitCombine(baseKit, kit)));
+    };
+
+    require(gpuShell.execCyclicShell(gpuShellTarget, stdPassKit(kitEx)));
 
     returnTrue;
 }
@@ -346,10 +424,10 @@ stdbool MinimalShellImpl::processWithProfiler(stdPars(ProcessWithProfilerKit))
 //
 //================================================================
 
-stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
+stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(ProcessWithGpuKit))
 {
 
-    kit.sysAllocHappened = false;
+    args.sysAllocHappened = false;
 
     //----------------------------------------------------------------
     //
@@ -363,44 +441,36 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
     //----------------------------------------------------------------
     //
-    // ReallocThunk
-    //
-    //----------------------------------------------------------------
-
-    class ReallocThunk : public MemControllerReallocTarget
-    {
-        using BaseKit = ProcessWithGpuKit;
-
-        bool reallocValid() const
-        {
-            return engineModule.reallocValid();
-        }
-
-        stdbool realloc(stdPars(memController::FastAllocToolkit))
-        {
-            GpuProhibitedExecApiThunk prohibitedApi(baseKit);
-            BaseKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
-
-            return engineModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
-        }
-
-        CLASS_CONTEXT(ReallocThunk, ((EngineModule&, engineModule)) ((BaseKit, baseKit)));
-    };
-
-    //----------------------------------------------------------------
-    //
-    // Engine module state memory
+    // Engine module state memory.
     //
     //----------------------------------------------------------------
 
     MemoryUsage engineStateUsage;
     ReallocActivity engineStateActivity;
 
-    ////
-
     {
-        ReallocThunk reallocThunk(kit.engineModule, kit);
-        require(kit.engineMemory.handleStateRealloc(reallocThunk, kit, engineStateUsage, engineStateActivity, stdPass));
+        GpuProhibitedExecApiThunk prohibitedApi{kit};
+        auto countKit = kitReplace(kit, prohibitedApi.getKit());
+        auto execKit = kit;
+
+        ////
+
+        auto reallocValid = [&]
+        {
+            return args.engineModule.reallocValid();
+        };
+
+        auto realloc = [&] (stdPars(auto))
+        {
+            auto joinKit = kit.dataProcessing ? execKit : countKit;
+            return args.engineModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
+        };
+
+        ////
+
+        auto reallocTarget = memControllerReallocThunk(reallocValid, realloc);
+
+        require(args.engineMemory.handleStateRealloc(reallocTarget, kit, engineStateUsage, engineStateActivity, stdPass));
     }
 
     ////
@@ -411,28 +481,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     ////
 
     if (engineStateActivity.sysAllocCount)
-        kit.sysAllocHappened = true;
-
-    //----------------------------------------------------------------
-    //
-    // ProcessThunk
-    //
-    //----------------------------------------------------------------
-
-    class ProcessThunk : public MemControllerProcessTarget
-    {
-        using BaseKit = KitCombine<ProcessWithGpuKit, PipeControlKit>;
-
-        stdbool process(stdPars(memController::FastAllocToolkit))
-        {
-            GpuProhibitedExecApiThunk prohibitedApi(baseKit);
-            BaseKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
-
-            return shell.processWithAllocators(stdPassThruKit(kitCombine(kit, joinKit)));
-        }
-
-        CLASS_CONTEXT(ProcessThunk, ((MinimalShellImpl&, shell)) ((BaseKit, baseKit)));
-    };
+        args.sysAllocHappened = true;
 
     //----------------------------------------------------------------
     //
@@ -453,8 +502,17 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
         ////
 
-        ProcessThunk processThunk{*this, kitEx};
-        require(kit.engineMemory.processCountTemp(processThunk, engineTempUsage, engineTempActivity, stdPassKit(kitEx)));
+        GpuProhibitedExecApiThunk prohibitedApi{kitEx}; // Prohibit GPU calls on counting.
+        auto countKit = kitReplace(kitEx, prohibitedApi.getKit());
+
+        ////
+
+        auto processThunk = memControllerProcessThunk | [&] (stdPars(auto))
+        {
+            return processWithAllocators(args, stdPassThruKit(kitCombine(countKit, kit)));
+        };
+
+        require(args.engineMemory.processCountTemp(processThunk, engineTempUsage, engineTempActivity, stdPassKit(kitEx)));
     }
 
     //----------------------------------------------------------------
@@ -463,7 +521,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     //
     //----------------------------------------------------------------
 
-    require(kit.engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
+    require(args.engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
 
     REQUIRE(engineTempActivity.fastAllocCount <= 1);
     REQUIRE(engineTempActivity.sysAllocCount <= 1);
@@ -471,7 +529,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     ////
 
     if (engineTempActivity.sysAllocCount)
-        kit.sysAllocHappened = true;
+        args.sysAllocHappened = true;
 
     ////
 
@@ -484,7 +542,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
     //
     //----------------------------------------------------------------
 
-    if_not (kit.runExecutionPhase)
+    if_not (args.runExecutionPhase)
         returnTrue;
 
     //----------------------------------------------------------------
@@ -503,10 +561,16 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 
         ////
 
-        ProcessThunk processThunk{*this, kitEx};
+        auto processTarget = memControllerProcessThunk | [&] (stdPars(auto))
+        {
+            return processWithAllocators(args, stdPassThruKit(kitCombine(kit, kitEx)));
+        };
+
+        ////
+
         MemoryUsage actualEngineTempUsage;
 
-        require(kit.engineMemory.processAllocTemp(processThunk, kitEx, actualEngineTempUsage, stdPass));
+        require(args.engineMemory.processAllocTemp(processTarget, kitEx, actualEngineTempUsage, stdPass));
 
         CHECK(actualEngineTempUsage == engineTempUsage);
     }
@@ -522,7 +586,7 @@ stdbool MinimalShellImpl::processWithGpu(stdPars(ProcessWithGpuKit))
 //
 //================================================================
 
-stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit))
+stdbool MinimalShellImpl::processWithAllocators(const ProcessArgs& args, stdPars(ProcessWithAllocatorsKit))
 {
     stdScopedBegin;
 
@@ -534,7 +598,7 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 
     SetBusyStatusNull setBusyStatus;
 
-    auto oldKit = kit;
+    auto& oldKit = kit;
 
     auto kit = kitCombine
     (
@@ -572,8 +636,39 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
     if (bmpConsole->active())
     {
         printMsgL(kit, STR("Image Saving: Files are saved to %0"), bmpConsole->getOutputDir());
-        baseConsole = &bmpThunk; 
+        baseConsole = &bmpThunk;
         baseOverlay = &bmpThunk;
+
+        bmpConsole->setLockstepCounter(bmpCounter);
+
+        if (kit.dataProcessing)
+            bmpCounter++;
+    }
+
+    ////
+
+    GpuBaseConsoleByCpuThunk gpuBaseConsoleCpuThunk{*baseConsole, *baseOverlay};
+
+    auto gpuBaseConsoleCpuThunkEmpty = (baseConsole == &baseConsoleNull) && (baseOverlay == &baseOverlayNull);
+
+    //----------------------------------------------------------------
+    //
+    // GPU base console.
+    //
+    //----------------------------------------------------------------
+
+    GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleCpuThunk;
+
+    GpuBaseConsoleSplitter gpuBaseConsoleSplitter{*kit.gpuBaseConsole, gpuBaseConsoleCpuThunk};
+
+    ////
+
+    if (kit.gpuBaseConsole)
+    {
+        if (gpuBaseConsoleCpuThunkEmpty)
+            gpuBaseConsole = kit.gpuBaseConsole;
+        else
+            gpuBaseConsole = &gpuBaseConsoleSplitter;
     }
 
     //----------------------------------------------------------------
@@ -586,14 +681,10 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 
     ////
 
-    GpuBaseConsoleProhibitThunk gpuBaseConsoleDisabled(kit);
+    GpuBaseConsoleProhibitThunk gpuBaseConsoleProhibited;
 
-    GpuBaseConsoleByCpuThunk gpuBaseConsoleEnabled(*baseConsole, *baseOverlay, kit);
-
-    GpuBaseConsole* gpuBaseConsole = &gpuBaseConsoleDisabled;
-
-    if (kit.verbosity >= Verbosity::On)
-        gpuBaseConsole = &gpuBaseConsoleEnabled;
+    if_not (kit.verbosity >= Verbosity::On)
+        gpuBaseConsole = &gpuBaseConsoleProhibited;
 
     ////
 
@@ -607,7 +698,7 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
     //
     //----------------------------------------------------------------
 
-    DisplayParamsThunk displayParamsThunk{point(1), displayParams}; // Screen size not supported well.
+    DisplayParamsThunk displayParamsThunk{point(1), kit.desiredOutputSize, displayParams}; // Screen size not supported well.
 
     ////
 
@@ -620,7 +711,7 @@ stdbool MinimalShellImpl::processWithAllocators(stdPars(ProcessWithAllocatorsKit
 
     ////
 
-    require(kit.engineModule.process(stdPassKit(kitEx)));
+    require(args.engineModule.process(stdPassKit(kitEx)));
 
     ////
 

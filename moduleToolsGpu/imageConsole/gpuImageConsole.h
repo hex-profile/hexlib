@@ -1,66 +1,10 @@
 #pragma once
 
+#include "imageConsole/gpuBaseConsole.h"
 #include "numbers/float/floatBase.h"
-#include "stdFunc/stdFunc.h"
 #include "imageRead/borderMode.h"
 #include "imageRead/interpType.h"
 #include "data/gpuImageYuv.h"
-#include "data/gpuMatrix.h"
-#include "vectorTypes/vectorBase.h"
-#include "imageConsole/imageConsole.h"
-#include "imageConsole/gpuImageConsoleKit.h"
-
-//================================================================
-//
-// GpuImageProviderBgr32
-//
-//================================================================
-
-struct GpuImageProviderBgr32
-{
-    virtual stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const =0;
-};
-
-//================================================================
-//
-// GpuBaseConsole
-//
-// Abstract interface of image output console taking GPU images.
-//
-//================================================================
-
-struct GpuBaseConsole
-{
-
-    //
-    // Basic control functions.
-    //
-
-    virtual stdbool clear(stdNullPars) =0;
-    virtual stdbool update(stdNullPars) =0;
-
-    //
-    // Basic output interaces.
-    //
-
-    virtual stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) =0;
-
-    //
-    // Video overlay output.
-    //
-
-    virtual stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars) =0;
-    virtual stdbool overlaySetFakeImage(stdNullPars) =0;
-    virtual stdbool overlayUpdate(stdNullPars) =0;
-
-    //
-    //
-    //
-
-    virtual bool getTextEnabled() =0;
-    virtual void setTextEnabled(bool textEnabled) =0;
-
-};
 
 //================================================================
 //
@@ -348,26 +292,27 @@ struct GpuImageConsoleNull : public GpuImageConsole
     // Basic control functions.
     //
 
-    stdbool clear(stdNullPars) {returnTrue;}
-    stdbool update(stdNullPars) {returnTrue;}
+    stdbool clear(stdPars(Kit)) {returnTrue;}
+    stdbool update(stdPars(Kit)) {returnTrue;}
 
     //
     // Basic output interaces.
     //
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdNullPars) {returnTrue;}
+    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) {returnTrue;}
 
 
     //
     // Video overlay output.
     //
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdNullPars) {returnTrue;}
-    stdbool overlaySetFakeImage(stdNullPars) {returnTrue;}
-    stdbool overlayUpdate(stdNullPars) {returnTrue;}
+    stdbool overlayClear(stdPars(Kit)) {returnTrue;}
+    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit)) {returnTrue;}
+    stdbool overlaySetImageFake(stdPars(Kit)) {returnTrue;}
+    stdbool overlayUpdate(stdPars(Kit)) {returnTrue;}
 
     //
-    //
+    // Text enabled.
     //
 
     bool getTextEnabled() {return false;}

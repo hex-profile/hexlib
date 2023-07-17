@@ -8,11 +8,11 @@
 #include "errorLog/errorLog.h"
 #include "numbers/int/intType.h"
 #include "userOutput/msgLog.h"
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "atInterface/atInterface.h"
 #include "checkHeap.h"
 #include "formattedOutput/userOutputThunks.h"
-#include "formattedOutput/messageFormatterStdio.h"
+#include "formattedOutput/formatters/messageFormatterImpl.h"
 #include "atAssembly/atAssembly.h"
 #include "dataAlloc/arrayMemory.h"
 #include "errorLog/debugBreak.h"
@@ -130,11 +130,6 @@ public:
     {
     }
 
-    bool isThreadProtected() const
-    {
-        return false;
-    }
-
     void lock()
     {
     }
@@ -245,7 +240,7 @@ private:
 
 //================================================================
 //
-// SetBusyStatusByAt<AtApi>::operator () 
+// SetBusyStatusByAt<AtApi>::operator ()
 //
 //================================================================
 
@@ -296,11 +291,11 @@ public:
         (
             api->outimg_gray8
             (
-                api, 
+                api,
                 unsafePtr(imgMemPtr, imgSizeX, imgSizeY), imgMemPitch, imgSizeX, imgSizeY,
                 hint.id, hint.minSize.X, hint.minSize.Y, hint.newLine,
                 formatter.cstr()
-            ) 
+            )
             != 0
         );
 
@@ -329,11 +324,11 @@ public:
         (
             api->outimg_rgb32
             (
-                api, 
+                api,
                 (const at_pixel_rgb32*) imgPtr, imgMemPitch, imgSizeX, imgSizeY,
                 hint.id, hint.minSize.X, hint.minSize.Y, hint.newLine,
                 formatter.cstr()
-            ) 
+            )
             != 0
         );
 
@@ -397,7 +392,7 @@ public:
     bool actsetUpdate()
         {return api->actset_update(api) != 0;}
 
-    bool actsetAdd(BaseActionId id, const CharType* key, const CharType* name, const CharType* comment)
+    bool actsetAdd(ActionId id, ActionKey key, const CharType* name, const CharType* comment)
         {return api->actset_add(api, id, key, name, comment) != 0;}
 
 public:
@@ -443,7 +438,7 @@ public:
 
         for_count (i, count)
         {
-            BaseActionId id{};
+            ActionId id{};
 
             if_not (api->action_item(api, i, &id) != 0)
                 continue;
@@ -504,6 +499,24 @@ private:
 
 //================================================================
 //
+// atImageProviderNull
+//
+//================================================================
+
+at_bool AT_CALL atImageProviderNull
+(
+    void* context,
+    at_pixel_rgb32* mem_ptr,
+    at_image_space mem_pitch,
+    at_image_space size_X,
+    at_image_space size_Y
+)
+{
+    return true;
+}
+
+//================================================================
+//
 // AtVideoOverlayThunk
 //
 //================================================================
@@ -517,20 +530,26 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool overlayClear(stdNullPars)
+    {
+        require(api->video_image_set(api, 0, 0, nullptr, atImageProviderNull) != 0);
+        returnTrue;
+    }
+
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
         AtImageProviderThunk atProvider(imageProvider, trace);
 
         if_not (dataProcessing)
         {
-            // Imitates the processing on counting phase. The pitch on execution phase may differ, 
+            // Imitates the processing on counting phase. The pitch on execution phase may differ,
             // but the provider implementation is tolerant to it up to some maximal row alignment.
 
             require(atProvider.callbackFunc(&atProvider, nullptr, imageProvider.desiredPitch(), size.X, size.Y) != 0);
         }
         else
         {
-            if (textEnabled) 
+            if (textEnabled)
                 printMsg(kit.localLog, STR("OVERLAY: %"), desc);
 
             require(api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
@@ -539,12 +558,12 @@ public:
         returnTrue;
     }
 
-    stdbool setImageFake(stdNullPars)
+    stdbool overlaySetFake(stdNullPars)
     {
         returnTrue;
     }
 
-    stdbool updateImage(stdNullPars)
+    stdbool overlayUpdate(stdNullPars)
     {
         at_bool result = api->video_image_update(api);
         require(DEBUG_BREAK_CHECK(result != 0));
@@ -625,7 +644,7 @@ private:
 
 #define COMMON_KIT_IMPL(AtApi, baseKit) \
     \
-    MessageFormatterStdio formatter{makeArray(client->formatterArray, client->formatterSize)}; \
+    MessageFormatterImpl formatter{makeArray(client->formatterArray, client->formatterSize)}; \
     \
     OutputLogByAt<AtApi> msgLog({api->gcon_print_ex, api->gcon_clear, api->gcon_update}, \
         {api->lcon_print_ex, api->lcon_clear, api->lcon_update}, api, true, formatter); \
@@ -635,7 +654,7 @@ private:
     \
     ErrorLogByMsgLog errorLog(msgLog); \
     ErrorLogKit errorLogKit(errorLog); \
-    ErrorLogExByMsgLog errorLogEx(msgLog); \
+    MsgLogExByMsgLog msgLogEx(msgLog); \
     \
     MAKE_MALLOC_ALLOCATOR(errorLogKit); \
     \
@@ -649,7 +668,7 @@ private:
     ( \
         MessageFormatterKit(formatter), \
         ErrorLogKit(errorLog), \
-        ErrorLogExKit(errorLogEx), \
+        MsgLogExKit(msgLogEx), \
         MsgLogKit(msgLog), \
         LocalLogKit(localLog), \
         LocalLogAuxKit(false, localLog), \
@@ -754,7 +773,7 @@ struct Client
 //
 //================================================================
 
-stdbool atClientCreateCore(void** instance, const at_api_create* api, const AtEngineFactory& engineFactory)
+stdbool atClientCreateCore(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory)
 {
     *instance = 0;
 
@@ -798,7 +817,7 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const AtEn
 
 //----------------------------------------------------------------
 
-void atClientCreate(void** instance, const at_api_create* api, const AtEngineFactory& engineFactory)
+void atClientCreate(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory)
 {
     errorBlock(atClientCreateCore(instance, api, engineFactory));
 }
@@ -812,7 +831,7 @@ void atClientCreate(void** instance, const at_api_create* api, const AtEngineFac
 void atClientDestroy(void* instance, const at_api_destroy* api)
 {
     bool finalExit = api->final_exit(api) != 0;
-    
+
     Client* client = (Client*) instance;
     REQUIRE_AT_EX(client != 0, finalExit, return);
 

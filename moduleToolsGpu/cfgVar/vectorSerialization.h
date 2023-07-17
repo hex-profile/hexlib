@@ -47,31 +47,15 @@ struct CfgWrite<VectorX4>
 
 //================================================================
 //
-// readVectorSeparator
+// skipComma
 //
 //================================================================
 
-inline bool readVectorSeparator(CfgReadStream& s)
+inline bool skipComma(CfgReadStream& s)
 {
-    CharType tmp(0);
-
-    ensure(s.readChars(&tmp, 1));
-
-    if_not (tmp == ' ')
-        ensure(s.unreadChar());
-
-    ////
-
-    ensure(s.readChars(&tmp, 1));
-    ensure(tmp == ',');
-
-    ////
-
-    ensure(s.readChars(&tmp, 1));
-
-    if_not (tmp == ' ')
-        ensure(s.unreadChar());
-
+    s.skipSpaces();
+    ensure(s.skipText(STR(",")));
+    s.skipSpaces();
     return true;
 }
 
@@ -87,10 +71,10 @@ struct CfgRead<VectorX2>
     template <typename VectorType>
     static bool func(CfgReadStream& s, VectorType& value)
     {
-        VectorType newValue(value);
+        VectorType newValue;
 
         ensure(cfgRead(s, newValue.x));
-        ensure(readVectorSeparator(s));
+        ensure(skipComma(s));
         ensure(cfgRead(s, newValue.y));
 
         value = newValue;
@@ -111,16 +95,16 @@ struct CfgRead<VectorX4>
     template <typename VectorType>
     static bool func(CfgReadStream& s, VectorType& value)
     {
-        VectorType newValue(value);
+        VectorType newValue;
 
         ensure(cfgRead(s, newValue.x));
-        ensure(readVectorSeparator(s));
+        ensure(skipComma(s));
 
         ensure(cfgRead(s, newValue.y));
-        ensure(readVectorSeparator(s));
+        ensure(skipComma(s));
 
         ensure(cfgRead(s, newValue.z));
-        ensure(readVectorSeparator(s));
+        ensure(skipComma(s));
 
         ensure(cfgRead(s, newValue.w));
 

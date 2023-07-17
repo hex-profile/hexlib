@@ -11,7 +11,7 @@
 //
 // * Each warp 0th lane saves the result to SRAM array
 // (devWarpSize=32 times less elements than the thread count).
-// 
+//
 // * The main 0th warp reads all valid results.
 // * The main warp reduces value finally, also in registers.
 //

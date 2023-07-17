@@ -7,7 +7,7 @@
 //
 // REDUCECLASSIC__PREPARE
 //
-// Allocates SRAM arrays for all enumerated parameters, 
+// Allocates SRAM arrays for all enumerated parameters,
 // each array for N=outerSize simultaneous reductions.
 //
 // Flat size and flat member are total ones for the flattened arrays.

@@ -32,9 +32,6 @@ public:
     sysinline FormatOutputAtom(const void* value, FormatOutputAtomFunc* func)
         : value(value), func(func) {}
 
-    sysinline FormatOutputAtom(const FormatOutputAtom& that)
-        : value(that.value), func(that.func) {}
-
     //
     // Makes output atom from a value using standard overloaded "formatOutput" function.
     // Attention: stores pointer to the value (not value).
@@ -44,13 +41,13 @@ public:
 
     template <typename Type>
     sysinline FormatOutputAtom(const Type& value)
-        : value(&value), func((FormatOutputAtomFunc*) FormatOutputFunc<Type>::get()) {}
+        : value(&value), func((FormatOutputAtomFunc*) (void*) FormatOutputFunc<Type>::get()) {}
 
     template <typename Type>
     sysinline void setup(const Type& value)
     {
         this->value = &value;
-        this->func = (FormatOutputAtomFunc*) formatOutput<Type>;
+        this->func = (FormatOutputAtomFunc*) (void*) formatOutput<Type>;
     }
 
 };

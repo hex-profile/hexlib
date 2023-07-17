@@ -70,7 +70,7 @@ public:
 //----------------------------------------------------------------
 
 // Check the same size for both CPU and GPU
-COMPILE_ASSERT(sizeof(GpuMatrix<uint8>) == (HEXLIB_GPU_BITNESS == 32 ? 16 : 24)); 
+COMPILE_ASSERT(sizeof(GpuMatrix<uint8>) == (HEXLIB_GPU_BITNESS == 32 ? 16 : 24));
 COMPILE_ASSERT(alignof(GpuMatrix<uint8>) == HEXLIB_GPU_BITNESS / 8);
 
 //================================================================

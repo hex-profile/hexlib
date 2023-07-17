@@ -30,7 +30,7 @@ struct GpuInitialization
 //
 //================================================================
 
-using GpuContextDeallocContext = DeallocContext<8, 0xBBE3292F>;
+using GpuContextDeallocContext = OpaqueStruct<8, 0xBBE3292Fu>;
 
 //----------------------------------------------------------------
 
@@ -53,7 +53,7 @@ struct GpuContextCreation
 //
 //================================================================
 
-struct GpuThreadContextSave : public OpaqueStruct<8> {};
+using GpuThreadContextSave = OpaqueStruct<8, 0xFD45FC43u>;
 
 //----------------------------------------------------------------
 
@@ -75,7 +75,7 @@ struct GpuContextSetting
 //
 //================================================================
 
-struct GpuModule : public OpaqueStruct<8> {};
+using GpuModule = OpaqueStruct<8, 0xB6F8F12Fu>;
 
 //================================================================
 //
@@ -83,7 +83,7 @@ struct GpuModule : public OpaqueStruct<8> {};
 //
 //================================================================
 
-using GpuModuleDeallocContext = DeallocContext<8, 0xAE2EDBDE>;
+using GpuModuleDeallocContext = OpaqueStruct<8, 0xAE2EDBDEu>;
 
 //----------------------------------------------------------------
 
@@ -106,7 +106,7 @@ struct GpuModuleCreation
 //
 //================================================================
 
-struct GpuKernel : public OpaqueStruct<8> {};
+using GpuKernel = OpaqueStruct<8, 0x5A486D88u>;
 
 //================================================================
 //
@@ -114,7 +114,7 @@ struct GpuKernel : public OpaqueStruct<8> {};
 //
 //================================================================
 
-using GpuKernelDeallocContext = DeallocContext<8, 0x2DF01161>;
+using GpuKernelDeallocContext = OpaqueStruct<8, 0x2DF01161u>;
 
 //----------------------------------------------------------------
 
@@ -137,7 +137,7 @@ struct GpuKernelLoading
 //
 //================================================================
 
-struct GpuSampler : public OpaqueStruct<8> {};
+using GpuSampler = OpaqueStruct<8, 0x729E550Fu>;
 
 //================================================================
 //
@@ -145,7 +145,7 @@ struct GpuSampler : public OpaqueStruct<8> {};
 //
 //================================================================
 
-using GpuSamplerDeallocContext = DeallocContext<8, 0x8E62DB13>;
+using GpuSamplerDeallocContext = OpaqueStruct<8, 0x8E62DB13u>;
 
 //----------------------------------------------------------------
 
@@ -196,7 +196,7 @@ struct GpuMemoryAllocation
 //
 //================================================================
 
-using GpuStreamDeallocContext = DeallocContext<8, 0x31209B08>;
+using GpuStreamDeallocContext = OpaqueStruct<8, 0x31209B08u>;
 
 //----------------------------------------------------------------
 
@@ -210,7 +210,7 @@ struct GpuStreamOwner : public GpuStream
 
 struct GpuStreamCreation
 {
-    virtual stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, void*& baseStream, stdNullPars) =0;
+    virtual stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars) =0;
 };
 
 //================================================================
@@ -273,3 +273,11 @@ struct GpuExecApi
     public GpuBenchmarkingControl
 {
 };
+
+//================================================================
+//
+// getNativeHandle
+//
+//================================================================
+
+void* getNativeHandle(const GpuStream& stream);

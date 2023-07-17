@@ -25,7 +25,7 @@ GPUTOOL_2D_BEG
     convertBgrToYPbPr<false>(loadNorm(src), Y, Pb, Pr);
     storeNorm(dst, Y);
 }
-#endif    
+#endif
 GPUTOOL_2D_END
 
 //================================================================
@@ -47,7 +47,7 @@ GPUTOOL_2D_BEG
     auto value = *src;
     *dst = make_uint8_x4(value, value, value, 0);
 }
-#endif    
+#endif
 GPUTOOL_2D_END
 
 //================================================================
@@ -70,7 +70,7 @@ GPUTOOL_2D_BEG
     convertBgrToYPbPr<false>(loadNorm(src), Y, Pb, Pr);
     storeNorm(dst, make_float32_x4(Y, Y, Y, 0.f));
 }
-#endif    
+#endif
 GPUTOOL_2D_END
 
 //================================================================
@@ -97,8 +97,8 @@ GPUTOOL_2D_BEG
 
     ////
 
-    auto dstValid = 
-        monoX + 3 <= dstSizeX && 
+    auto dstValid =
+        monoX + 3 <= dstSizeX &&
         monoY < dstSizeY;
 
     if_not (dstValid)
@@ -114,7 +114,7 @@ GPUTOOL_2D_BEG
     dstPtr[1] = value.y;
     dstPtr[2] = value.z;
 }
-#endif    
+#endif
 GPUTOOL_2D_END
 
 //----------------------------------------------------------------
@@ -159,7 +159,7 @@ GPUTOOL_2D_BEG
 
     *dst = result;
 }
-#endif    
+#endif
 GPUTOOL_2D_END
 
 //----------------------------------------------------------------
@@ -208,7 +208,7 @@ GPUTOOL_2D_BEG
 
     *dst = result;
 }
-#endif    
+#endif
 GPUTOOL_2D_END
 
 //----------------------------------------------------------------

@@ -11,8 +11,8 @@
 template <typename Type>
 sysinline void outputPoint(const Point<Type>& value, FormatOutputStream& outputStream)
 {
-    outputStream 
-        << value.X << STR(", ") 
+    outputStream
+        << value.X << STR(", ")
         << value.Y;
 }
 
@@ -25,8 +25,8 @@ sysinline void outputPoint(const Point<Type>& value, FormatOutputStream& outputS
 template <typename Type>
 sysinline void outputPoint(const FormatNumber<Point<Type>>& number, FormatOutputStream& outputStream)
 {
-    outputStream 
-        << formatNumber(number.value.X, number) << STR(", ") 
+    outputStream
+        << formatNumber(number.value.X, number) << STR(", ")
         << formatNumber(number.value.Y, number);
 }
 

@@ -25,6 +25,7 @@
 #include "diagTools/readGpuElement.h"
 #include "userOutput/printMsgEx.h"
 #include "dataAlloc/gpuLayeredMatrixMemory.h"
+#include "kits/userPoint.h"
 #endif
 
 namespace layeredVisualization {
@@ -78,9 +79,9 @@ namespace layeredVisualization {
 
 stdbool displayVectorSet
 (
-    const GpuLayeredMatrix<const VectorType>& vectors, 
-    const GpuLayeredMatrix<const PresenceType>& presences, 
-    bool independentPresenceMode, 
+    const GpuLayeredMatrix<const VectorType>& vectors,
+    const GpuLayeredMatrix<const PresenceType>& presences,
+    bool independentPresenceMode,
     const Point<float32>& pos,
     float32 vectorFactor,
     Space matrixSize,
@@ -157,7 +158,7 @@ stdbool convertIndependentPresenceToAdditive
     #define TMP_MACRO2(n, _) \
         if (layers == n) TMP_MACRO(n); else
 
-    PREP_FOR1_FROM1_TO_COUNT(VISUALIZATION_MAX_LAYERS, TMP_MACRO2, _) 
+    PREP_FOR1_FROM1_TO_COUNT(VISUALIZATION_MAX_LAYERS, TMP_MACRO2, _)
     REQUIRE(false);
 
     #undef TMP_MACRO
@@ -196,11 +197,11 @@ public:
         bool upsampleInterpolation,
         const GpuModuleProcessKit& kit
     )
-        : 
-        vectorValue(vectorValue), 
-        vectorPresence(vectorPresence), 
-        maxVector(maxVector), 
-        upsampleFactor(upsampleFactor), 
+        :
+        vectorValue(vectorValue),
+        vectorPresence(vectorPresence),
+        maxVector(maxVector),
+        upsampleFactor(upsampleFactor),
         upsampleInterpolation(upsampleInterpolation),
         kit(kit)
     {
@@ -271,7 +272,7 @@ stdbool visualizeLayeredVector
 (
     const GpuLayeredMatrix<const VectorType>& vectorValue,
     const GpuLayeredMatrix<const PresenceType>& vectorPresence,
-    bool independentPresenceMode, 
+    bool independentPresenceMode,
     float32 maxVector,
     const Point<float32>& upsampleFactor,
     const Point<Space>& upsampleSize,
@@ -286,7 +287,7 @@ stdbool visualizeLayeredVector
 
     REQUIRE(equalSize(vectorValue, vectorPresence));
     Point<Space> size = vectorValue.size();
-  
+
     Space displayedLayer = kit.display.circularIndex(layers);
 
     //----------------------------------------------------------------
@@ -325,7 +326,7 @@ stdbool visualizeLayeredVector
 
         ////
 
-        Point<float32> userPosScreen = convertFloat32(kit.userPoint.position) + 0.5f; // Space format
+        Point<float32> userPosScreen = kit.userPoint.floatPos;
         Point<float32> userPosData = userPosScreen * (1.f / upsampleFactor);
 
         require(displayVectorSet(vectorValue, makeConst(vectorPresence), independentPresenceMode, userPosData, 1 / maxVector, 192, 2.5f, hint, stdPass));

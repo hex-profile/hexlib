@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string.h>
-
 #include "storage/opaqueStruct.h"
 #include "storage/constructDestruct.h"
 
@@ -25,7 +23,7 @@ class OptionalObject
 
 public:
 
-    sysinline explicit operator bool () const 
+    sysinline explicit operator bool () const
         {return constructorCalled;}
 
     ////
@@ -88,7 +86,7 @@ public:
 
             if (that.constructorCalled)
             {
-                constructCopy(memory.template recast<Type>(), *that);
+                constructCopyNoWarning(memory.template recast<Type>(), *that);
                 constructorCalled = true;
             }
         }
@@ -157,7 +155,7 @@ public:
 
 private:
 
-    OpaqueStruct<sizeof(Type)> memory;
+    OpaqueStruct<sizeof(Type), 0> memory;
 
     bool constructorCalled = false;
 

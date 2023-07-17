@@ -196,7 +196,8 @@ float32 unpackFloat16(const float16& value)
 
     ////
 
-    uint32 result = (sign << 31) | (dstBiasedExponent << 23) | (dstMantissa & 0x7FFFFF);
+    union {float32 f32; uint32 u32;} result;
 
-    return (float32&) result;
+    result.u32 = (sign << 31) | (dstBiasedExponent << 23) | (dstMantissa & 0x7FFFFF);
+    return result.f32;
 }

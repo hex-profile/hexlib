@@ -38,17 +38,17 @@ const Space copyThreadCountX = 64;
 
 //----------------------------------------------------------------
 
-#if DEVCODE 
+#if DEVCODE
 
 devDefineKernel(copyRectKernel, CopyRectKernel, o)
 {
     MATRIX_EXPOSE_EX(o.dst, dst);
- 
+
     Space X = devGroupX * copyThreadCountX + devThreadX;
     Space Y = devGroupY;
- 
+
     if_not (X < dstSizeX) return;
- 
+
     float32 srcXs = X + o.ofsPlusHalf.X;
     float32 srcYs = Y + o.ofsPlusHalf.Y;
 
@@ -89,7 +89,7 @@ stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& 
 
     ////
 
-    require(kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastElement<const uint32>(tmpSrc), BORDER_ZERO, 
+    require(kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastElement<const uint32>(tmpSrc), BORDER_ZERO,
         LinearInterpolation{false}, ReadNormalizedFloat{false}, NormalizedCoords{false}, stdPass));
 
     ////
@@ -165,7 +165,7 @@ GPUTOOL_2D_BEG
     Point<float32> srcPos = complexMul(point(Xs, Ys), transMul) + transAdd;
     auto ofs = srcPos.X - 0.5f * vGlobSize.X;
 
-    auto blurredEdge = [=] (float32 x) 
+    auto blurredEdge = [=] (float32 x)
     {
         auto divSqrtTwo = 0.70710678118654752f;
         return erff(x * divSqrtTwo * divSigma);

@@ -40,7 +40,7 @@ private:
 
 public:
 
-    bool changed = false;
+    bool synced = false;
 
 public:
 
@@ -79,7 +79,7 @@ public:
         {
             this->defaultVal = fixValue;
             this->value = fixValue;
-            this->changed = true;
+            this->synced = false;
         }
     }
 
@@ -95,7 +95,7 @@ public:
         if_not (newValue == value)
         {
             value = newValue;
-            changed = true;
+            synced = false;
         }
 
         return *this;
@@ -242,11 +242,11 @@ public:
     {
     }
 
-    bool changed() const 
-        {return targetVar.changed;}
+    bool synced() const
+        {return targetVar.synced;}
 
-    void clearChanged() const 
-        {targetVar.changed = false;}
+    void setSynced(bool value) const
+        {targetVar.synced = value;}
 
     void resetValue() const
         {targetVar = targetVar.defaultValue();}
@@ -272,7 +272,7 @@ inline bool NumericVar<Type>::serialize(const CfgSerializeKit& kit, const CharAr
 {
     Type oldValue = value;
     SerializeNumericVar<Type> serializeVar(*this, name, comment, blockComment);
-    kit.visitor(kit.scope, serializeVar);
+    kit.visitVar(serializeVar);
     return allv(oldValue == value);
 }
 
@@ -330,7 +330,7 @@ public:
         int32 oldValue = Base::operator()();
 
         SerializeBoolVar serializeVar(*this, name, comment, blockComment);
-        kit.visitor(kit.scope, serializeVar);
+        kit.visitVar(serializeVar);
 
         return Base::operator()() == oldValue;
     }

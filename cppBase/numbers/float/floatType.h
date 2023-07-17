@@ -123,7 +123,7 @@ TYPE_MIN_MAX_IMPL_RUNTIME(double, -DBL_MAX, +DBL_MAX)
 //----------------------------------------------------------------
 
 COMPILE_ASSERT_EQUAL_LAYOUT(float32, uint32);
-static const int32 ieeeFloat32Nan = 0xFFC00000UL;
+static const int32 ieeeFloat32Nan = int32(0xFFC00000UL);
 
 template <>
 struct NanOfImpl<float32>
@@ -603,11 +603,11 @@ sysinline bool floatFitsInt(Float val)
 TMP_MACRO(float32, int32, RoundDown, val >= -2147483648.f, val < 2147483648.f)
 TMP_MACRO(float32, uint32, RoundDown, val >= 0.f, val < 4294967296.f)
 
-TMP_MACRO(float32, int16, RoundDown, val >= -32768.f, val < 32768.f);
-TMP_MACRO(float32, uint16, RoundDown, val >= 0.f, val < 65536.f);
+TMP_MACRO(float32, int16, RoundDown, val >= -32768.f, val < 32768.f)
+TMP_MACRO(float32, uint16, RoundDown, val >= 0.f, val < 65536.f)
 
-TMP_MACRO(float32, int8, RoundDown, val >= -128.f, val < 128.f);
-TMP_MACRO(float32, uint8, RoundDown, val >= 0.f, val < 256.f);
+TMP_MACRO(float32, int8, RoundDown, val >= -128.f, val < 128.f)
+TMP_MACRO(float32, uint8, RoundDown, val >= 0.f, val < 256.f)
 
 //
 //
@@ -630,10 +630,10 @@ TMP_MACRO(float32, int32, RoundNearest, val >= -2147483648.f, val < 2147483648.f
 TMP_MACRO(float32, uint32, RoundNearest, val >= -0.5f, val < 4294967296.f)
 
 TMP_MACRO(float32, int16, RoundNearest, val >= -32768.5f, val < 32767.5f)
-TMP_MACRO(float32, uint16, RoundNearest, val >= -0.5f, val < 65535.5f);
+TMP_MACRO(float32, uint16, RoundNearest, val >= -0.5f, val < 65535.5f)
 
 TMP_MACRO(float32, int8, RoundNearest, val >= -128.5f, val < 127.5f)
-TMP_MACRO(float32, uint8, RoundNearest, val >= -0.5f, val < 255.5f);
+TMP_MACRO(float32, uint8, RoundNearest, val >= -0.5f, val < 255.5f)
 
 ////
 

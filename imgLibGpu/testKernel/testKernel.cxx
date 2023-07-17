@@ -15,8 +15,13 @@
 
 #if __CUDA_ARCH__
 
-__global__ void testKernel(const float32* src, float32* dst)
+__global__ void testKernel(Space* ptr, Space maxSize)
 {
+    auto value = *ptr;
+
+    value = clampRange(value, 0, maxSize);
+
+    *ptr = value;
 }
 
 ////

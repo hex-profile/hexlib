@@ -23,7 +23,7 @@ public:
 
 private:
 
-    OpaqueStruct<sizeof(Type)> rawMemory;
+    OpaqueStruct<sizeof(Type), 0> rawMemory;
 
 };
 

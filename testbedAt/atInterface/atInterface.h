@@ -4,7 +4,7 @@
 #include "stdFunc/stdFunc.h"
 #include "atInterface/atInterfaceKit.h"
 #include "data/matrix.h"
-#include "imageConsole/imageConsole.h"
+#include "imageConsole/imageConsoleTypes.h"
 #include "vectorTypes/vectorBase.h"
 #include "baseInterfaces/baseImageConsole.h"
 #include "baseInterfaces/baseSignals.h"

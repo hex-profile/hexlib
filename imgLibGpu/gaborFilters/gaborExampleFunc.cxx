@@ -44,7 +44,7 @@ struct PostprocessParams
 #define GABOR_BORDER_MODE BORDER_MIRROR
 
 #define GABOR_PARAMS PostprocessParams
-#define GABOR_PREPROCESS_IMAGES 
+#define GABOR_PREPROCESS_IMAGES
 #define GABOR_PREPROCESS(value, texPos)
 #define GABOR_POSTPROCESS_IMAGES
 #define GABOR_POSTPROCESS(value)
@@ -99,12 +99,12 @@ stdbool gaborExampleFunc
     (
         (horizontallyFirst ? gaborExampleProcessFullHor : gaborExampleProcessFullVer)
         (
-            src, 
-            circleTable, 
-            dst, 
+            src,
+            circleTable,
+            dst,
             demodulateOutput,
             PostprocessParams{},
-            uncachedVersion, 
+            uncachedVersion,
             stdPass
         )
     );

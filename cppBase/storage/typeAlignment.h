@@ -13,7 +13,7 @@
 union MaxNaturalAlignment
 {
     void* alignPtr;
-    
+
     char alignChar;
     signed char alignSignedChar;
     unsigned char alignUnsignedChar;

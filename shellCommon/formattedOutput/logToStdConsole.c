@@ -8,7 +8,7 @@
 #endif
 
 #include "stdFunc/stdFunc.h"
-#include "formattedOutput/messageFormatterStdio.h"
+#include "formattedOutput/formatters/messageFormatterImpl.h"
 #include "errorLog/debugBreak.h"
 
 //================================================================
@@ -30,7 +30,7 @@ bool LogToStdConsole::addMsg(const FormatOutputAtom& v, MsgKind msgKind)
 
         auto* screenStream = stdout;
 
-        if (useStdErr && msgKind >= msgWarn) 
+        if (useStdErr && msgKind >= msgWarn)
             screenStream = stderr;
 
         ensure(fwrite(formatter.cstr(), sizeof(CharType), formatter.size(), screenStream) == formatter.size());

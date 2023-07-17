@@ -49,7 +49,7 @@ devDecl void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParam
     #define TMP_MACRO(k, _) \
         COMPILE_ASSERT(COMPILE_ARRAY_SIZE(FILTER(k)) == filterSize);
 
-    PREP_FOR(FILTER_COUNT, TMP_MACRO, _) 
+    PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
 
@@ -110,7 +110,7 @@ devDecl void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParam
     #define TMP_MACRO(t, _) \
         if (t == taskIdx) {LOAD_SRC_BLOCK_NOSYNC(PREP_PASTE3(SIGNATURE, srcSampler, t));}
 
-    PREP_FOR(TASK_COUNT, TMP_MACRO, _) 
+    PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 
     devSyncThreads();
 
@@ -125,7 +125,7 @@ devDecl void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParam
 
     Point<Space> dstIdx = dstBase + devThreadIdx;
 
-    if_not (matrixValidAccess(o.dstSize, dstIdx)) 
+    if_not (matrixValidAccess(o.dstSize, dstIdx))
         return;
 
     //----------------------------------------------------------------
@@ -142,7 +142,7 @@ devDecl void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParam
     #undef TMP_MACRO
 
     ////
-  
+
 
     Point<Space> cacheReadPos = devThreadIdx;
     cacheReadPos.DIR(X, Y) *= downsampleFactor; // Potential bank conflicts, but not important
@@ -242,7 +242,7 @@ devDecl inline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const Final
     #define TMP_MACRO(k, _) \
         COMPILE_ASSERT(COMPILE_ARRAY_SIZE(FILTER(k)) == filterSize);
 
-    PREP_FOR(FILTER_COUNT, TMP_MACRO, _) 
+    PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
 
@@ -309,7 +309,7 @@ devDecl inline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const Final
     // Convolve
     //
     //----------------------------------------------------------------
-  
+
 
     Point<Space> cacheReadPos = devThreadIdx;
     cacheReadPos.DIR(X, Y) *= downsampleFactor; // Potential bank conflicts, but not important
@@ -338,7 +338,7 @@ devDecl inline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const Final
     PREP_FOR1(FILTER_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO
-    
+
 
     #undef LOAD_SRC_BLOCK_NOSYNC
     #undef LOAD_SRC_BLOCK_ITER
@@ -352,7 +352,7 @@ devDecl inline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const Final
 
     Point<Space> dstIdx = dstBase + devThreadIdx;
 
-    if_not (matrixValidAccess(o.dstSize, dstIdx)) 
+    if_not (matrixValidAccess(o.dstSize, dstIdx))
         return;
 
     //----------------------------------------------------------------
@@ -421,7 +421,7 @@ devDefineKernel(PREP_PASTE3(SIGNATURE, Final, DIR(Hor, Ver)), FinalParams, o)
 {
     #define TMP_MACRO(t, _) \
         if (t == devGroupZ) {PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(o, t, devPass); return;}
-        
+
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
 
     #undef TMP_MACRO

@@ -129,7 +129,7 @@ struct ConvertImpl<CameraIntrinsicsFamily, CameraIntrinsicsFamily, check, roundi
         {
             return CameraIntrinsics<DstBase>
             (
-                BaseImpl::func(src.focal), 
+                BaseImpl::func(src.focal),
                 BaseImpl::func(src.center)
             );
         }

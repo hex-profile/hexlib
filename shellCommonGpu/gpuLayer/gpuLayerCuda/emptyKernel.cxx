@@ -23,7 +23,7 @@ devDefineKernel(emptyKernel, EmptyKernelParams, params)
 //
 //================================================================
 
-#if HOSTCODE 
+#if HOSTCODE
 
 const GpuKernelLink& getEmptyKernelLink()
 {
@@ -63,7 +63,7 @@ devDefineKernel(readMemoryKernel, ReadMemoryKernelParams, params)
 //
 //================================================================
 
-#if HOSTCODE 
+#if HOSTCODE
 
 const GpuKernelLink& getReadMemoryKernelLink()
 {

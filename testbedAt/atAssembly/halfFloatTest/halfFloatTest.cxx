@@ -28,7 +28,7 @@ GPUTOOL_2D
     PREP_EMPTY,
     ((float32, dst)),
     ((uint32, low16bits)),
-  
+
     {
         uint32 index = devGroupX * devThreadCountX + devThreadX;
         uint32 testValue = (index << 16) | low16bits;
@@ -64,7 +64,7 @@ GPUTOOL_2D
     PREP_EMPTY,
     ((float16, dst)),
     PREP_EMPTY,
-  
+
     {
         uint32 index = devGroupX * devThreadCountX + devThreadX;
 
@@ -93,7 +93,7 @@ GPUTOOL_2D
 
 //================================================================
 //
-// 
+//
 //
 //================================================================
 
@@ -292,7 +292,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
     //
     // Process on GPU
     //
-  
+
     GpuArrayMemory<float16> gpuResult;
     require(gpuResult.realloc(packTestSize, stdPass));
     require(packToHalfGpu(src, gpuResult, stdPass));
@@ -332,7 +332,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 
         float32 badValue = srcCopyPtr[badIdx];
 
-        printMsgG(kit, STR("Incorrect value: src value %0 (%1), correct packed %2, but received %3, at pass=%4 idx=%5"), 
+        printMsgG(kit, STR("Incorrect value: src value %0 (%1), correct packed %2, but received %3, at pass=%4 idx=%5"),
             hex((uint32&) badValue, 8),
             fltg(badValue, 8),
             hex((uint16&) gpuResultCopyPtr[badIdx], 4),
@@ -402,7 +402,7 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
     //
     // Process on GPU
     //
-  
+
     GpuArrayMemory<uint32> gpuResult;
     require(gpuResult.realloc(testSize, stdPass));
     require(unpackHalfGpu(src, gpuResult, stdPass));
@@ -442,7 +442,7 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 
         float16 badValue = srcCopyPtr[badIdx];
 
-        printMsgG(kit, STR("Incorrect value: src value %0, correct unpacked %1, but received %2, at idx=%3"), 
+        printMsgG(kit, STR("Incorrect value: src value %0, correct unpacked %1, but received %2, at idx=%3"),
             hex(badValue.data, 4),
             hex(gpuResultCopyPtr[badIdx], 8),
             hex(cpuResultPtr[badIdx], 8),

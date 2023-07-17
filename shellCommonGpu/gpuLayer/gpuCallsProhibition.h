@@ -1,6 +1,6 @@
 #pragma once
 
-#include "userOutput/errorLogEx.h"
+#include "userOutput/printMsgTrace.h"
 #include "errorLog/errorLog.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "gpuLayer/gpuLayer.h"
@@ -162,17 +162,12 @@ public:
     //
     //----------------------------------------------------------------
 
-    stdbool putEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+    stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
     {
         GPU_PROHIBITED_API_CALL;
     }
 
     stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
-    {
-        GPU_PROHIBITED_API_CALL;
-    }
-
-    stdbool checkEvent(const GpuEvent& event, stdNullPars)
     {
         GPU_PROHIBITED_API_CALL;
     }
@@ -231,12 +226,12 @@ public:
     //
     //----------------------------------------------------------------
 
-    inline GpuProhibitedExecApiThunk(const ErrorLogExKit& kit)
+    inline GpuProhibitedExecApiThunk(const MsgLogExKit& kit)
         : kit(kit) {}
 
 private:
 
-    ErrorLogExKit kit;
+    MsgLogExKit kit;
 
 };
 
@@ -257,12 +252,12 @@ public:
         returnTrue;
     }
 
-    GpuEventAllocatorSupressor(const ErrorLogExKit& kit)
+    GpuEventAllocatorSupressor(const MsgLogExKit& kit)
         : kit(kit) {}
 
 private:
 
-    ErrorLogExKit kit;
+    MsgLogExKit kit;
 
 };
 
@@ -283,11 +278,11 @@ public:
         returnTrue;
     }
 
-    GpuTextureAllocatorSupressor(const ErrorLogExKit& kit)
+    GpuTextureAllocatorSupressor(const MsgLogExKit& kit)
         : kit(kit) {}
 
 private:
 
-    ErrorLogExKit kit;
+    MsgLogExKit kit;
 
 };

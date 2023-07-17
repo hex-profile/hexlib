@@ -1,6 +1,6 @@
 #pragma once
 
-#include "userOutput/errorLogExKit.h"
+#include "userOutput/msgLogExKit.h"
 #include "errorLog/errorLogKit.h"
 #include "userOutput/msgLogKit.h"
 #include "formatting/messageFormatterKit.h"
@@ -11,4 +11,4 @@
 //
 //================================================================
 
-using DiagnosticKit = KitCombine<MessageFormatterKit, MsgLogKit, ErrorLogKit, ErrorLogExKit>;
+using DiagnosticKit = KitCombine<MessageFormatterKit, MsgLogKit, ErrorLogKit, MsgLogExKit>;

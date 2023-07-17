@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.23.0 FATAL_ERROR)
+project(hexlib)
 
 #================================================================
 #
@@ -33,6 +34,8 @@ add_subdirectory(shellCommonGpu)
 if (WIN32)
     add_subdirectory(testbedAt)
 endif()
+
+add_subdirectory(testbedGL)
 
 if ($ENV{HEXLIB_ARCHIVE_PROJECTS})
     add_subdirectory(archive)

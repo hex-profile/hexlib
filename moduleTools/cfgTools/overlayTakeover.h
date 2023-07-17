@@ -8,7 +8,7 @@
 //
 //================================================================
 
-class OverlayTakeoverID 
+class OverlayTakeoverID
 {
 
 public:

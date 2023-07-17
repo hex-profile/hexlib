@@ -121,7 +121,7 @@ struct ArrayRef
     inline Type* begin() const
         {return ptr;}
 
-    inline Type* end() const 
+    inline Type* end() const
         {return ptr + size;}
 
     inline Type& operator[](size_t i) const
@@ -196,7 +196,7 @@ public:
     ConfigReceiverByLambda(const Lambda& lambda)
         : lambda{lambda} {}
 
-    virtual void receive(ArrayRef<const Char> config) 
+    virtual void receive(ArrayRef<const Char> config)
         {lambda(config);}
 
 private:
@@ -468,10 +468,10 @@ public:
 
     MousePos() = default;
 
-    inline MousePos(ImagePoint pos) 
+    inline MousePos(ImagePoint pos)
         : posX(pos.X), posY(pos.Y) {}
 
-    inline bool valid() const 
+    inline bool valid() const
         {return posX >= 0 && posY >= 0;}
 
     inline ImagePoint pos()
@@ -632,13 +632,13 @@ struct DebugBridgeProvider : public VirtualDestructor
 
 class ConfigSupportNull : public ConfigSupport
 {
-    void saveConfig(ArrayRef<const Char> config) override
+    void saveConfig(ArrayRef<const Char> config)
         {(void) config;}
-    
-    void loadConfig(ConfigReceiver&) override
+
+    void loadConfig(ConfigReceiver&)
         {}
 
-    void editConfig(ArrayRef<const Char> config, ConfigReceiver&) override
+    void editConfig(ArrayRef<const Char> config, ConfigReceiver&)
         {(void) config;}
 };
 
@@ -650,10 +650,10 @@ class ConfigSupportNull : public ConfigSupport
 
 class ActionSetupNull : public ActionSetup
 {
-    void clear() override 
+    void clear()
         {}
 
-    void add(ArrayRef<const ActionParamsRef> actions) override 
+    void add(ArrayRef<const ActionParamsRef> actions)
         {(void) actions;}
 };
 
@@ -665,7 +665,7 @@ class ActionSetupNull : public ActionSetup
 
 struct ActionReceivingNull : public ActionReceiving
 {
-    void getActions(ActionReceiver&) override
+    void getActions(ActionReceiver&)
         {}
 };
 
@@ -677,10 +677,10 @@ struct ActionReceivingNull : public ActionReceiving
 
 class StatusConsoleNull : public StatusConsole
 {
-    void clear() override
+    void clear()
         {}
 
-    void add(ArrayRef<const MessageRef> messages) override
+    void add(ArrayRef<const MessageRef> messages)
         {(void) messages;}
 };
 
@@ -692,10 +692,10 @@ class StatusConsoleNull : public StatusConsole
 
 class VideoOverlayNull : public VideoOverlay
 {
-    void set(const ImagePoint& size, ImageProvider&, StringPtr description) override
+    void set(const ImagePoint& size, ImageProvider&, StringPtr description)
         {(void) size; (void) description;}
 
-    void clear() override
+    void clear()
         {}
 };
 
@@ -710,18 +710,18 @@ class DebugBridgeNull : public DebugBridge
 
 public:
 
-    bool active() override
+    bool active()
         {return false;}
 
-    void commit() override
+    void commit()
         {}
 
-    ConfigSupport* configSupport() override {return &configSupportNull;}
-    ActionSetup* actionSetup() override {return &actionSetupNull;}
-    ActionReceiving* actionReceiving() override {return &actionReceivingNull;}
-    MessageConsole* messageConsole() override {return &messageConsoleNull;}
-    StatusConsole* statusConsole() override {return &statusConsoleNull;}
-    VideoOverlay* videoOverlay() override {return &videoOverlayNull;}
+    ConfigSupport* configSupport() {return &configSupportNull;}
+    ActionSetup* actionSetup() {return &actionSetupNull;}
+    ActionReceiving* actionReceiving() {return &actionReceivingNull;}
+    MessageConsole* messageConsole() {return &messageConsoleNull;}
+    StatusConsole* statusConsole() {return &statusConsoleNull;}
+    VideoOverlay* videoOverlay() {return &videoOverlayNull;}
 
 private:
 
@@ -745,7 +745,7 @@ class DebugBridgeProviderNull : public DebugBridgeProvider
 
 public:
 
-    DebugBridge* debugBridge() override {return &debugBridgeImpl;}
+    DebugBridge* debugBridge() {return &debugBridgeImpl;}
 
 private:
 

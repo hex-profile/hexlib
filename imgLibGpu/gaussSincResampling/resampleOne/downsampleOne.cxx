@@ -108,7 +108,7 @@ namespace gaussSincResampling {
 //
 //================================================================
 
-template <typename Src, typename Interm, typename Dst>              
+template <typename Src, typename Interm, typename Dst>
 stdbool downsampleOneConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
 {
     REQUIRE(equalLayers(src, dst));
@@ -130,7 +130,7 @@ stdbool downsampleOneConservativeMultitask(const GpuLayeredMatrix<const Src>& sr
     ////
 
     #define MAX_TASKS 4
-    
+
     if (layers == 0)
     {
     }

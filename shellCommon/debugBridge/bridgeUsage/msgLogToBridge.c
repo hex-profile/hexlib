@@ -34,7 +34,7 @@ bool MsgLogToDiagLogAndBridge::addMsg(const FormatOutputAtom& v, MsgKind msgKind
     ////
 
     bool diagOk = true;
-    
+
     {
         diagLog.addMsg(formatter.cstr(), msgKind);
 
@@ -44,15 +44,14 @@ bool MsgLogToDiagLogAndBridge::addMsg(const FormatOutputAtom& v, MsgKind msgKind
 
     ////
 
-    auto bridgeCode = [&] ()
-    {
-        bridgeLog.add(formatter.cstr(), toMessageKind(msgKind));
-    };
-
     bool bridgeOk = true;
 
     if (bridgeActive)
-        bridgeOk = blockExceptionsSilentVoid(bridgeCode());
+    {
+        blockExceptBegin;
+        bridgeLog.add(formatter.cstr(), toMessageKind(msgKind));
+        blockExceptEnd(bridgeOk);
+    }
 
     ////
 

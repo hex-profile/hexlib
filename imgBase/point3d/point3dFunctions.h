@@ -9,7 +9,7 @@
 //
 //================================================================
 
-POINT3D_DEFINE_FUNC1(saturate)
+POINT3D_DEFINE_FUNC1(saturatev)
 
 POINT3D_DEFINE_FUNC3(linerp)
 POINT3D_DEFINE_FUNC3(linearIf)

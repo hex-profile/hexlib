@@ -2,7 +2,7 @@
 
 #include "connectionInterface.h"
 #include "simpleString/simpleString.h"
-#include "storage/noncopyable.h"
+#include "storage/nonCopyable.h"
 
 namespace connection {
 

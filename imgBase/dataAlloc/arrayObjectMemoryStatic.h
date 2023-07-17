@@ -41,10 +41,10 @@ public:
 
 public:
 
-    sysinline ArrayObjectMemoryStatic() 
+    sysinline ArrayObjectMemoryStatic()
         {}
 
-    sysinline ~ArrayObjectMemoryStatic() 
+    sysinline ~ArrayObjectMemoryStatic()
         {dealloc();}
 
     //----------------------------------------------------------------
@@ -122,7 +122,7 @@ public:
     sysinline operator Array<Type> ()
         {return getArray();}
 
-    sysinline operator Array<const Type> () const 
+    sysinline operator Array<const Type> () const
         {return getArray();}
 
     //----------------------------------------------------------------
@@ -175,7 +175,7 @@ public:
 
 public:
 
-    sysinline void resizeNull() 
+    sysinline void resizeNull()
     {
         usedSize = 0;
     }

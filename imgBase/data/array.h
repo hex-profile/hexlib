@@ -147,8 +147,8 @@ sysinline bool arrayValidAccess(Space size, Space pos)
 //================================================================
 
 template <typename Pointer>
-class ArrayEx 
-    : 
+class ArrayEx
+    :
     public ArrayBase<typename PtrElemType<Pointer>::T, Pointer>
 {
 
@@ -435,6 +435,10 @@ template <typename Element>
 sysinline auto makeArray(Element* ptr, Space size)
     {return Array<Element>(ptr, size);}
 
+template <typename Pointer>
+sysinline auto makeArrayEx(Pointer ptr, Space size)
+    {return ArrayEx<Pointer>(ptr, size);}
+
 //================================================================
 //
 // equalSize support
@@ -473,7 +477,7 @@ sysinline const ArrayEx<const Type*>& makeConst(const ArrayEx<Type*>& array)
 //================================================================
 //
 // recastElement
-// 
+//
 // Use with caution!
 //
 //================================================================

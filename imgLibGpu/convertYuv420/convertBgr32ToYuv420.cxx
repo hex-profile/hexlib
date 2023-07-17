@@ -17,7 +17,7 @@
 //================================================================
 //
 // Downsampling 2X in SPACE coordinates.
-// 
+//
 // Compute kth dst element.
 // Xk = k + 0.5 ; to space coord
 // Xi = 2 Xk = 2k + 1 ; space in src
@@ -28,7 +28,7 @@
 //
 // Iminf = 2k + 0.5 - 4
 // Imaxf = 2k + 0.5 + 4
-// 
+//
 // Compute range of covered integer indices:
 // Imin = ceil(2k + 0.5 - 4) = 2k - 4 + ceil(0.5) = 2k - 4 + 1 = 2k - 3
 // Imax = floor(2k + 0.5 + 4) = 2k + 4 + floor(0.5) = 2k + 4

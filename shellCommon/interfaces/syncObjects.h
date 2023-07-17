@@ -14,7 +14,7 @@
 //
 //================================================================
 
-using MutexData = OpaqueStruct<64>;
+using MutexData = OpaqueStruct<64, 0x66CE270Eu>;
 
 //----------------------------------------------------------------
 
@@ -34,10 +34,10 @@ struct Mutex
 
 public:
 
-    inline void lock() 
+    inline void lock()
         {return intrface->lock();}
 
-    inline void unlock() 
+    inline void unlock()
         {return intrface->unlock();}
 
     inline bool tryLock()
@@ -103,7 +103,7 @@ public:
 //
 //================================================================
 
-using EventData = OpaqueStruct<24>;
+using EventData = OpaqueStruct<24, 0x595234CBu>;
 
 //----------------------------------------------------------------
 
@@ -176,7 +176,7 @@ enum ThreadPriority
 //
 //================================================================
 
-using ThreadControlData = OpaqueStruct<64>;
+using ThreadControlData = OpaqueStruct<64, 0x513F8C8Bu>;
 
 //----------------------------------------------------------------
 

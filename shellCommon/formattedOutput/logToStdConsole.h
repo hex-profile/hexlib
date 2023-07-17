@@ -17,28 +17,25 @@ class LogToStdConsole : public MsgLog
 public:
 
     LogToStdConsole(MessageFormatter& formatter, bool useDebugOutput, bool useStdErr)
-        : 
+        :
         formatter(formatter),
         useDebugOutput(useDebugOutput),
         useStdErr(useStdErr)
     {
     }
 
-    bool addMsg(const FormatOutputAtom& v, MsgKind msgKind) override;
+    bool addMsg(const FormatOutputAtom& v, MsgKind msgKind);
 
-    bool clear() override
+    bool clear()
         {return true;}
 
-    bool update() override
+    bool update()
         {return true;}
 
-    bool isThreadProtected() const override
-        {return true;}
-
-    void lock() override
+    void lock()
         {mutex.lock();}
 
-    void unlock() override
+    void unlock()
         {mutex.unlock();}
 
 private:

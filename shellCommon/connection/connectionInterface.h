@@ -89,7 +89,7 @@ struct Opening
     inline bool isConnected() const
         {return state() >= State::Connected;}
 
-    // Resolve address and remember it. 
+    // Resolve address and remember it.
     // On success, the state becomes RESOLVED.
     // On failure, the state drops to NONE.
     virtual stdbool reopen(const Address& address, stdPars(Kit)) =0;

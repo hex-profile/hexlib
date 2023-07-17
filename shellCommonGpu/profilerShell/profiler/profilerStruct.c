@@ -28,12 +28,12 @@ void profilerUpdateDeviceTreeTime(ProfilerNode& node)
     float32 totalOverheadTime = node.deviceNodeOverheadTime + childrenOverhead;
 
     //
-    // If it is leaf, check whether on AVERAGE the overhead 
-    // is likely to be hidden by the kernel own execution, 
+    // If it is leaf, check whether on AVERAGE the overhead
+    // is likely to be hidden by the kernel own execution,
     // or potentially not.
     //
 
-    if_not (node.lastChild) 
+    if_not (node.lastChild)
     {
         if (node.deviceNodeOverheadTime <= 0.8f * node.deviceNodeTime)
             totalOverheadTime = 0; // assume it goes parallel

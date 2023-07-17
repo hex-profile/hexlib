@@ -24,7 +24,7 @@ GPUTOOL_2D_BEG
 #if DEVCODE
 {
     const float32* c = cameraDistortion.coeffs;
-    float32 k1 = c[0x0], k2 = c[0x1], p1 = c[0x2], p2 = c[0x3]; 
+    float32 k1 = c[0x0], k2 = c[0x1], p1 = c[0x2], p2 = c[0x3];
     float32 k3 = c[0x4], k4 = c[0x5], k5 = c[0x6], k6 = c[0x7];
     float32 s1 = c[0x8], s2 = c[0x9], s3 = c[0xA], s4 = c[0xB];
 

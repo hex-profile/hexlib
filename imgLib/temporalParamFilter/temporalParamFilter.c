@@ -172,15 +172,15 @@ Type TemporalWeightedFilter<Type, n>::operator () () const
     template class TemporalFilterNorm<Type, stageCount>; \
 
 #define TMP_MACRO(Type, stageCount) \
-    TMP_MACRO_EX(Type, stageCount); \
-    TMP_MACRO_EX(Point<Type>, stageCount); \
-    TMP_MACRO_EX(Point3D<Type>, stageCount); \
-    TMP_MACRO_EX(Point4D<Type>, stageCount); \
+    TMP_MACRO_EX(Type, stageCount) \
+    TMP_MACRO_EX(Point<Type>, stageCount) \
+    TMP_MACRO_EX(Point3D<Type>, stageCount) \
+    TMP_MACRO_EX(Point4D<Type>, stageCount) \
 
-TMP_MACRO(float32, 8);
-TMP_MACRO(float32, 4);
-TMP_MACRO(float32, 2);
-TMP_MACRO(float32, 1);
+TMP_MACRO(float32, 8)
+TMP_MACRO(float32, 4)
+TMP_MACRO(float32, 2)
+TMP_MACRO(float32, 1)
 
 #undef TMP_MACRO
 #undef TMP_MACRO_EX

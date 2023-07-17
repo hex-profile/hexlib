@@ -3,38 +3,8 @@
 #include "charType/charType.h"
 #include "cfg/cfgTextSerialization.h"
 #include "cfg/cfgInterfaceFwd.h"
-
-//================================================================
-//
-// CfgNamespace
-//
-//================================================================
-
-class CfgNamespace
-{
-
-public:
-
-    CharArray desc;
-    const CfgNamespace* prev;
-
-public:
-
-    inline CfgNamespace(const CharArray& desc, const CfgNamespace* prev)
-        : desc(desc), prev(prev) {}
-
-};
-
-//----------------------------------------------------------------
-
-#define CFG_NAMESPACE_EX(name) \
-    CfgNamespace PREP_PASTE(newFrame, __LINE__)(name, kit.scope); \
-    auto oldKit = kit; \
-    auto kit = oldKit; \
-    kit.scope = &PREP_PASTE(newFrame, __LINE__)
-
-#define CFG_NAMESPACE(name) \
-    CFG_NAMESPACE_EX(STR(name))
+#include "storage/adapters/lambdaThunk.h"
+#include "storage/opaqueStruct.h"
 
 //================================================================
 //
@@ -46,10 +16,9 @@ public:
 
 struct CfgSerializeVariable
 {
-
-    // Dirty flag. Should be set internally when the variable is changed.
-    virtual bool changed() const =0;
-    virtual void clearChanged() const =0;
+    // Synced flag. Should be reset when the variable is changed.
+    virtual bool synced() const =0;
+    virtual void setSynced(bool value) const =0;
 
     // Set default variable value.
     virtual void resetValue() const =0;
@@ -68,7 +37,6 @@ struct CfgSerializeVariable
     // Block comment can be multi-line.
     virtual bool getTextComment(CfgWriteStream& s) const =0;
     virtual bool getBlockComment(CfgWriteStream& s) const =0;
-
 };
 
 //================================================================
@@ -100,12 +68,138 @@ struct CfgSerializeSignal
 
 //================================================================
 //
-// CfgVisitor
+// CfgVisitVar
 //
 //================================================================
 
-struct CfgVisitor
+struct CfgVisitVar
 {
-    virtual void operator()(const CfgNamespace* scope, const CfgSerializeVariable& var) =0;
-    virtual void operator()(const CfgNamespace* scope, const CfgSerializeSignal& signal) =0;
+    virtual void operator()(const CfgSerializeVariable& var) const =0;
 };
+
+////
+
+LAMBDA_THUNK
+(
+    cfgVisitVar,
+    CfgVisitVar,
+    void operator()(const CfgSerializeVariable& var) const,
+    lambda(var)
+)
+
+////
+
+struct CfgVisitVarNull : public CfgVisitVar
+{
+    virtual void operator()(const CfgSerializeVariable& var) const {}
+};
+
+//================================================================
+//
+// CfgVisitSignal
+//
+//================================================================
+
+struct CfgVisitSignal
+{
+    virtual void operator()(const CfgSerializeSignal& signal) const =0;
+};
+
+////
+
+LAMBDA_THUNK
+(
+    cfgVisitSignal,
+    CfgVisitSignal,
+    void operator()(const CfgSerializeSignal& signal) const,
+    lambda(signal)
+)
+
+////
+
+struct CfgVisitSignalNull : public CfgVisitSignal
+{
+    virtual void operator()(const CfgSerializeSignal& signal) const {}
+};
+
+//================================================================
+//
+// CfgScopeVisitor
+//
+//================================================================
+
+struct CfgScopeVisitor
+{
+    virtual void enter(CfgScopeContext& context, const CharArray& name) const =0;
+    virtual void leave(CfgScopeContext& context) const =0;
+};
+
+////
+
+LAMBDA_THUNK2
+(
+    cfgScopeVisitor,
+    CfgScopeVisitor,
+    void enter(CfgScopeContext& context, const CharArray& name) const,
+    lambda0(context, name),
+    void leave(CfgScopeContext& context) const,
+    lambda1(context)
+)
+
+////
+
+struct CfgScopeVisitorNull : public CfgScopeVisitor
+{
+    virtual void enter(CfgScopeContext& context, const CharArray& name) const {}
+    virtual void leave(CfgScopeContext& context) const {}
+};
+
+//================================================================
+//
+// CfgScopeVisitorCaller
+//
+//================================================================
+
+class CfgScopeVisitorCaller
+{
+
+public:
+
+    sysinline CfgScopeVisitorCaller
+    (
+        const CfgScopeVisitor& visitor,
+        CfgScopeContext& context,
+        const CharArray& name
+    )
+        :
+        visitor{visitor},
+        context{context}
+    {
+        visitor.enter(context, name);
+    }
+
+    sysinline ~CfgScopeVisitorCaller()
+    {
+        visitor.leave(context);
+    }
+
+private:
+
+    const CfgScopeVisitor& visitor;
+    CfgScopeContext& context;
+
+};
+
+//================================================================
+//
+// CFG_NAMESPACE*
+//
+//================================================================
+
+#define CFG_NAMESPACE(name) \
+    CFG_NAMESPACE_EX(STR(name))
+
+#define CFG_NAMESPACE_EX(newName) \
+    CfgScopeContext __cfgScopeContext; \
+    CharArray __cfgScopeName = (newName); \
+    CfgScopeVisitorCaller __cfgScopeVisitorCaller{kit.scopeVisitor, __cfgScopeContext, __cfgScopeName};

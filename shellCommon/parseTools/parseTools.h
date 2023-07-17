@@ -2,6 +2,7 @@
 
 #include "parseTools/charSet.h"
 #include "compileTools/compileTools.h"
+#include "numbers/int/intType.h"
 
 //================================================================
 //
@@ -10,9 +11,9 @@
 //================================================================
 
 template <typename Iterator>
-inline bool skipSpaceTab(Iterator& ptr, Iterator end)
+sysinline bool skipSpaceTab(Iterator& ptr, Iterator end)
 {
-    Iterator s = ptr;
+    auto s = ptr;
 
     while (s != end && isSpaceTab(*s))
         ++s;
@@ -30,9 +31,9 @@ inline bool skipSpaceTab(Iterator& ptr, Iterator end)
 //================================================================
 
 template <typename Iterator>
-inline bool skipAnySpace(Iterator& ptr, Iterator end)
+sysinline bool skipAnySpace(Iterator& ptr, Iterator end)
 {
-    Iterator s = ptr;
+    auto s = ptr;
 
     while (s != end && isAnySpace(*s))
         ++s;
@@ -50,9 +51,9 @@ inline bool skipAnySpace(Iterator& ptr, Iterator end)
 //================================================================
 
 template <typename Iterator>
-inline bool skipNonSpaceCharacters(Iterator& ptr, Iterator end)
+sysinline bool skipNonSpaceCharacters(Iterator& ptr, Iterator end)
 {
-    Iterator s = ptr;
+    auto s = ptr;
 
     while (s != end && !isSpaceTab(*s))
         ++s;
@@ -66,17 +67,17 @@ inline bool skipNonSpaceCharacters(Iterator& ptr, Iterator end)
 //
 // skipIdent
 //
-// Parses a C/C++ identifier
+// Parses a C/C++ identifier.
 //
-// Returns an indication of successful parsing
-// if parsing is not successful, does not move pointer.
+// Returns an indication of successful parsing.
+// If parsing is not successful, does not move the pointer.
 //
 //================================================================
 
 template <typename Iterator>
-inline bool skipIdent(Iterator& ptr, Iterator end)
+sysinline bool skipIdent(Iterator& ptr, Iterator end)
 {
-    Iterator s = ptr;
+    auto s = ptr;
 
     ensure(s != end && isIdent1st(*s));
 
@@ -91,92 +92,19 @@ inline bool skipIdent(Iterator& ptr, Iterator end)
 
 //================================================================
 //
-// skipCppComment
-//
-// Parses C++ comment.
-//
-// Returns an indication of successful parsing
-// if parsing is not successful, does not move pointer.
-//
-//================================================================
-
-template <typename Iterator>
-inline bool skipCppComment(Iterator& ptr, Iterator end)
-{
-    Iterator s = ptr;
-
-    ensure(s != end && *s == '/');
-    ++s;
-
-    ensure(s != end && *s == '/');
-	++s;
-
-    s = end;
-
-    ptr = s;
-    return true;
-}
-
-//================================================================
-//
-// skipCstr
-//
-// Parses and skips C/C++ string literal like "..." or '...'.
-//
-// returns an indication of successful parsing
-// if parsing is not successful, does not move pointer
-//
-//================================================================
-
-template <typename Iterator>
-inline bool skipCstr(Iterator& ptr, Iterator end)
-{
-    Iterator s = ptr;
-
-    ////
-
-    ensure(s != end && (*s == '"' || *s == '\''));
-    auto quote = *s;
-    ++s;
-
-    ////
-
-    bool slash = false;
-
-    while (s != end && (*s != quote || slash))
-    {
-        slash = !slash && (*s == '\\');
-        ++s;
-    }
-
-    ensure(s != end && *s == quote);
-    ++s;
-
-    ptr = s;
-    return true;
-}
-
-//================================================================
-//
 // skipText
 //
 // Parses and skips specified text literally.
 //
 // Returns an indication of successful parsing.
-// If parsing is not successful, it does not move the pointer.
+// If parsing is not successful, does not move the pointer.
 //
 //================================================================
 
 template <typename Iterator, typename TextIterator>
-inline bool skipText
-(
-    Iterator& strPtr,
-    Iterator strEnd,
-    TextIterator textPtr,
-    TextIterator textEnd
-)
+sysinline bool skipText(Iterator& strPtr, Iterator strEnd, TextIterator textPtr, TextIterator textEnd)
 {
-    Iterator ptr = strPtr;
+    auto ptr = strPtr;
 
     while (ptr != strEnd && textPtr != textEnd && *ptr == *textPtr)
         {++ptr; ++textPtr;}
@@ -191,7 +119,7 @@ inline bool skipText
 //----------------------------------------------------------------
 
 template <typename Iterator, typename Text>
-inline bool skipText(Iterator& strPtr, Iterator strEnd, const Text& text)
+sysinline bool skipText(Iterator& strPtr, Iterator strEnd, const Text& text)
     {return skipText(strPtr, strEnd, text.ptr, text.ptr + text.size);}
 
 //================================================================
@@ -201,7 +129,7 @@ inline bool skipText(Iterator& strPtr, Iterator strEnd, const Text& text)
 //================================================================
 
 template <typename Iterator, typename Text>
-inline bool skipTextThenSpaceTab(Iterator& strPtr, Iterator strEnd, const Text& text)
+sysinline bool skipTextThenSpaceTab(Iterator& strPtr, Iterator strEnd, const Text& text)
 {
     ensure(skipText(strPtr, strEnd, text));
     skipSpaceTab(strPtr, strEnd);
@@ -215,7 +143,7 @@ inline bool skipTextThenSpaceTab(Iterator& strPtr, Iterator strEnd, const Text& 
 //================================================================
 
 template <typename Iterator, typename Text>
-inline bool skipTextThenAnySpace(Iterator& strPtr, Iterator strEnd, const Text& text)
+sysinline bool skipTextThenAnySpace(Iterator& strPtr, Iterator strEnd, const Text& text)
 {
     ensure(skipText(strPtr, strEnd, text));
     skipAnySpace(strPtr, strEnd);
@@ -232,9 +160,9 @@ inline bool skipTextThenAnySpace(Iterator& strPtr, Iterator strEnd, const Text& 
 //================================================================
 
 template <typename Iterator>
-inline bool getNextLine(Iterator& ptr, Iterator end, Iterator& resultBeg, Iterator& resultEnd)
+sysinline bool getNextLine(Iterator& ptr, Iterator end, Iterator& resultBeg, Iterator& resultEnd)
 {
-    Iterator s = ptr;
+    auto s = ptr;
 
     resultBeg = s;
 
@@ -265,9 +193,9 @@ inline bool getNextLine(Iterator& ptr, Iterator end, Iterator& resultBeg, Iterat
 //================================================================
 
 template <typename Iterator>
-inline bool skipUint(Iterator& ptr, Iterator end)
+sysinline bool skipUint(Iterator& ptr, Iterator end)
 {
-    Iterator s = ptr;
+    auto s = ptr;
 
     while (s != end && isDigit(*s))
         ++s;
@@ -285,11 +213,15 @@ inline bool skipUint(Iterator& ptr, Iterator end)
 //================================================================
 
 template <typename Iterator>
-inline bool skipInt(Iterator& ptr, Iterator end)
+sysinline bool skipInt(Iterator& ptr, Iterator end, bool allowPlus)
 {
-    Iterator s = ptr;
+    auto s = ptr;
 
-    if (s != end && (*s == '-' || *s == '+'))
+    ensure(ptr != end);
+
+    if (*s == '-')
+        ++s;
+    else if (*s == '+' && allowPlus)
         ++s;
 
     ensure(skipUint(s, end));
@@ -302,16 +234,18 @@ inline bool skipInt(Iterator& ptr, Iterator end)
 //
 // skipFloat
 //
+// If parsing is not successful, does not move the pointer.
+//
 //================================================================
 
 template <typename Iterator>
-bool skipFloat(Iterator& ptr, Iterator end)
+sysinline bool skipFloat(Iterator& ptr, Iterator end, bool allowBodyPlus)
 {
     auto s = ptr;
 
     ////
 
-    ensure(skipInt(s, end));
+    ensure(skipInt(s, end, allowBodyPlus));
 
     ////
 
@@ -328,11 +262,193 @@ bool skipFloat(Iterator& ptr, Iterator end)
     {
         ++s;
 
-        ensure(skipInt(s, end));
+        ensure(skipInt(s, end, true));
     }
 
     ////
 
     ptr = s;
     return true;
+}
+
+//================================================================
+//
+// decodeJsonStr
+//
+// Parses and decodes JSON string literal.
+// If parsing is not successful, does not move the pointer.
+//
+//================================================================
+
+template <typename Iterator, typename Writer>
+sysinline bool decodeJsonStr(Iterator& ptr, Iterator end, Writer& writer)
+{
+    auto s = ptr;
+
+    ////
+
+    constexpr auto quote = '"';
+
+    ////
+
+    ensure(s != end && *s == quote);
+    ++s;
+
+    ////
+
+    for (;;)
+    {
+        auto scanStart = s;
+
+        while (s != end && *s != '\\' && *s != quote)
+            ++s;
+
+        ensure(s != end);
+
+        writer(scanStart, s - scanStart);
+
+        if (*s == quote)
+            break;
+
+        ////
+
+        ++s;
+        ensure(s != end);
+
+        auto c = *s++;
+        auto dstChar = c;
+
+        ////
+
+        if (c == '"' || c == '\\' || c == '/')
+        {
+        }
+
+        #define TMP_MACRO(src, dst) \
+            else if (c == (src)) dstChar = (dst);
+
+        TMP_MACRO('n', '\n')
+        TMP_MACRO('r', '\r')
+        TMP_MACRO('t', '\t')
+        TMP_MACRO('b', '\b')
+        TMP_MACRO('f', '\f')
+
+        #undef TMP_MACRO
+
+        else if (c == 'u')
+        {
+            unsigned result = 0;
+
+            for_count (i, 4)
+                ensure(s != end && readAccumHexDigit(*s++, result));
+
+            using Char = decltype(dstChar);
+            dstChar = Char(result);
+        }
+
+        writer(&dstChar, 1);
+    }
+
+    ////
+
+    ensure(s != end && *s == quote);
+    ++s;
+
+    ptr = s;
+    return true;
+}
+
+//================================================================
+//
+// skipJsonStr
+//
+//================================================================
+
+template <typename Iterator>
+sysinline bool skipJsonStr(Iterator& ptr, Iterator end)
+{
+    auto writer = [&] (auto* ptr, auto size) {};
+    return decodeJsonStr(ptr, end, writer);
+}
+
+//================================================================
+//
+// encodeJsonStr
+//
+// Encodes JSON string. Does not include surrounding quotes.
+//
+//================================================================
+
+template <typename Iterator, typename Writer>
+sysinline void encodeJsonStr(Iterator ptr, Iterator end, Writer& writer)
+{
+    auto s = ptr;
+
+    for (;;)
+    {
+        //
+        // The only characters that MUST be escaped are \, ", and anything less than U+0020.
+        //
+
+        auto scanStart = s;
+
+        while (s != end && *s != '\\' && *s != '"' && unsigned(*s) >= 0x20)
+            ++s;
+
+        writer(scanStart, s - scanStart);
+
+        if (s == end)
+            break;
+
+        ////
+
+        auto c = *s++;
+
+        using Char = decltype(c);
+        Char dstChar = 0;
+
+        {
+            if (unsigned(c) >= 0x20)
+                dstChar = c;
+
+            #define TMP_MACRO(dst, src) \
+                else if (c == (src)) dstChar = (dst);
+
+            TMP_MACRO('n', '\n')
+            TMP_MACRO('r', '\r')
+            TMP_MACRO('t', '\t')
+            TMP_MACRO('b', '\b')
+            TMP_MACRO('f', '\f')
+
+            #undef TMP_MACRO
+        }
+
+        if (dstChar != 0)
+        {
+            Char buffer[] = {'\\', dstChar};
+            writer(buffer, COMPILE_ARRAY_SIZE(buffer));
+            continue;
+        }
+
+        ////
+
+        {
+            Char buffer[6];
+            auto bufPtr = buffer + COMPILE_ARRAY_SIZE(buffer);
+
+            using UChar = TYPE_MAKE_UNSIGNED(Char);
+            auto value = unsigned(UChar(c));
+
+            for_count (i, 4)
+            {
+                *--bufPtr = "0123456789ABCDEF"[value & 0xF];
+                value >>= 4;
+            }
+
+            *--bufPtr = 'u';
+            *--bufPtr = '\\';
+
+            writer(buffer, COMPILE_ARRAY_SIZE(buffer));
+        }
+    }
 }

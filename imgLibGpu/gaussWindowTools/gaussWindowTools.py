@@ -7,7 +7,7 @@ import numpy as np
 #
 #================================================================
 
-def gauss(x, s): 
+def gauss(x, s):
     return exp(-square(x) / square(s) / 2) / sqrt(2 * pi) / s
 
 #================================================================
@@ -50,7 +50,7 @@ def gaussCoverage(filterCenter, taps, sigma):
 #================================================================
 
 def movingCoverage(taps, sigma):
-    
+
     filterCenters = linspace(0, 1, num=101)
 
     worstCoverage = 1

@@ -14,7 +14,7 @@ class UniformPartition
 
 public:
 
-    sysinline UniformPartition() 
+    sysinline UniformPartition()
     {
     }
 

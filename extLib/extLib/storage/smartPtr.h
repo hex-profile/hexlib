@@ -28,6 +28,22 @@ inline UniquePtr<Type> makeUnique(Args&&... args)
 
 //================================================================
 //
+// UniqueInstance
+//
+//================================================================
+
+template <typename Type>
+struct UniqueInstance : UniquePtr<Type>
+{
+    inline UniqueInstance()
+        :
+        UniquePtr<Type>(Type::create())
+    {
+    }
+};
+
+//================================================================
+//
 // SharedPtr
 //
 //================================================================
@@ -45,3 +61,4 @@ inline SharedPtr<Type> makeShared(Args&&... args)
 {
     return std::make_shared<Type>(std::forward<Args>(args)...);
 }
+

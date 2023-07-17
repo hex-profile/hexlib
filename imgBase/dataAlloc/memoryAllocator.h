@@ -13,7 +13,7 @@
 //
 //================================================================
 
-using MemoryDeallocContext = DeallocContext<24, 0x4C0E823E>;
+using MemoryDeallocContext = OpaqueStruct<24, 0x4C0E823Eu>;
 
 ////
 
@@ -33,25 +33,4 @@ template <typename AddrU>
 struct AllocatorInterface
 {
     virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars) =0;
-};
-
-//================================================================
-//
-// AllocatorInterface
-//
-// The allocator of raw memory buffers for application-level data containers.
-//
-// The allocator can have fast "stack" implementation.
-//
-//================================================================
-
-template <typename AddrU>
-struct AllocatorNull : public AllocatorInterface<AddrU>
-{
-    virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
-    {
-        owner.clear();
-        result = 0;
-        returnTrue;
-    }
 };

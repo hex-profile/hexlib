@@ -1,6 +1,0 @@
-How to make it easier to use:
-
-* Make config file less cluttered.
-* Supports both exception-based and "return bool" compilation modes for error handling.
-* Kits are unusual and badly supported by IDEs.
-* Reallocation scheme with measure/execute phases is unusal.

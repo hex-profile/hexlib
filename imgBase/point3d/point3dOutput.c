@@ -11,7 +11,7 @@
 template <typename Type>
 sysinline void outputPoint(const Point3D<Type>& value, FormatOutputStream& outputStream)
 {
-    outputStream 
+    outputStream
         << value.X << STR(", ")
         << value.Y << STR(", ")
         << value.Z;

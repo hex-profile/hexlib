@@ -30,7 +30,7 @@ private:
 
 public:
 
-    PointerEmulator() 
+    PointerEmulator()
         {addr = 0xBAADF00D;}
 
     //
@@ -121,7 +121,7 @@ public:
         addr += AddrS(ofs) * AddrS(sizeof(Type));
         return *this;
     }
-   
+
     template <typename Ofs>
     inline Self& operator -=(Ofs ofs)
     {
@@ -130,7 +130,7 @@ public:
         addr -= AddrS(ofs) * AddrS(sizeof(Type));
         return *this;
     }
-   
+
     template <typename Ofs>
     inline Self operator +(Ofs ofs) const
     {
@@ -139,7 +139,7 @@ public:
         AddrU newAddr = addr + AddrS(ofs) * AddrS(sizeof(Type));
         return Self(newAddr);
     }
-   
+
     template <typename Ofs>
     inline Self operator -(Ofs ofs) const
     {

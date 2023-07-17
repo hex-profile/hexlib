@@ -1,5 +1,7 @@
 #pragma once
 
+#include "compileTools/compileTools.h"
+
 //================================================================
 //
 // REMEMBER_CLEANUP
@@ -45,10 +47,10 @@ class RememberCleanup
 
 public:
 
-    inline RememberCleanup(const Action& action)
+    sysinline RememberCleanup(const Action& action)
         : action(action) {}
 
-    inline ~RememberCleanup()
+    sysinline ~RememberCleanup()
         {action();}
 
 private:
@@ -60,7 +62,7 @@ private:
 //----------------------------------------------------------------
 
 template <typename Action>
-inline RememberCleanup<Action> rememberCleanup(const Action& action)
+sysinline RememberCleanup<Action> rememberCleanup(const Action& action)
     {return RememberCleanup<Action>(action);}
 
 //----------------------------------------------------------------
@@ -85,19 +87,19 @@ class RememberCleanupEx
 
 public:
 
-    inline RememberCleanupEx(const Action& action)
+    sysinline RememberCleanupEx(const Action& action)
         : action(action) {}
 
-    inline ~RememberCleanupEx()
+    sysinline ~RememberCleanupEx()
         {if (active) action();}
 
-    void cancel()
+    sysinline void cancel()
         {active = false;}
 
-    void activate()
+    sysinline void activate()
         {active = true;}
 
-    void setActive(bool active)
+    sysinline void setActive(bool active)
         {this->active = active;}
 
 private:
@@ -110,7 +112,7 @@ private:
 //----------------------------------------------------------------
 
 template <typename Action>
-inline RememberCleanupEx<Action> rememberCleanupEx(const Action& action)
+sysinline RememberCleanupEx<Action> rememberCleanupEx(const Action& action)
     {return RememberCleanupEx<Action>(action);}
 
 //----------------------------------------------------------------

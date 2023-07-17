@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cfgTools/boolSwitch.h"
-#include "configFile/cfgSimpleString.h"
+#include "cfgTools/cfgSimpleString.h"
 #include "history/historyObject.h"
 #include "kits/moduleKit.h"
 #include "profilerShell/profiler/profilerImpl.h"
@@ -27,12 +27,12 @@ public:
 
     using InitKit = KitCombine<ProfilerImpl::AllocKit, MsgLogKit>;
     using DeinitKit = KitCombine<ErrorLogKit, MsgLogKit>;
-    using ProcessKit = KitCombine<ErrorLogKit, ErrorLogExKit, MsgLogsKit, TimerKit>;
+    using ProcessKit = KitCombine<ErrorLogKit, MsgLogExKit, MsgLogsKit, TimerKit>;
     using ReportKit = ProcessKit;
 
 public:
 
-    void serialize(const CfgSerializeKit& kit);
+    void serialize(const CfgSerializeKit& kit, bool hotkeys);
 
     stdbool init(stdPars(InitKit));
     void deinit();
@@ -69,7 +69,7 @@ private:
     ////
 
     StandardSignal htmlReportSignal;
-    
+
     static CharArray htmlOutputDirName() {return STR("Output Directory");}
     SimpleStringVar htmlOutputDir{STR("")};
 

@@ -12,8 +12,8 @@
 template <bool horizontal, Space compressOctaves, typename SamplerType, typename FilterCoeffs>
 sysinline auto simpleConvolutionSeparable
 (
-    SamplerType srcSampler, 
-    const Point<float32>& srcTexstep, 
+    SamplerType srcSampler,
+    const Point<float32>& srcTexstep,
     const Point<float32>& dstPos,
     const FilterCoeffs& filterCoeffs
 )
@@ -52,9 +52,9 @@ sysinline auto simpleConvolutionSeparable
 
         sum += filterCoeffs[i] * value;
 
-        if (horizontal) 
+        if (horizontal)
             texPos.X += srcTexstep.X;
-        else 
+        else
             texPos.Y += srcTexstep.Y;
     }
 
@@ -68,8 +68,8 @@ sysinline auto simpleConvolutionSeparable
 template <Space compressOctaves, typename SamplerType, typename FilterCoeffs>
 sysinline auto simpleConvolutionSeparableDynaAxis
 (
-    SamplerType srcSampler, 
-    const Point<float32>& srcTexstep, 
+    SamplerType srcSampler,
+    const Point<float32>& srcTexstep,
     const Point<float32>& dstPos,
     const FilterCoeffs& filterCoeffs,
     bool horizontal
@@ -90,8 +90,8 @@ sysinline auto simpleConvolutionSeparableDynaAxis
 template <bool horizontal, Space compressOctaves, typename SamplerType, typename FilterCoeffs>
 sysinline void simpleConvolutionValueAndSquare
 (
-    SamplerType srcSampler, 
-    const Point<float32>& srcTexstep, 
+    SamplerType srcSampler,
+    const Point<float32>& srcTexstep,
     const Point<float32>& dstPos,
     const FilterCoeffs& filterCoeffs,
     typename DevSamplerResult<SamplerType>::T& resultAvg,
@@ -137,9 +137,9 @@ sysinline void simpleConvolutionValueAndSquare
         sum += filterCoeffs[i] * value;
         sumSq += filterCoeffs[i] * square(value);
 
-        if (horizontal) 
+        if (horizontal)
             texPos.X += srcTexstep.X;
-        else 
+        else
             texPos.Y += srcTexstep.Y;
     }
 

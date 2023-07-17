@@ -13,7 +13,7 @@
 //
 //================================================================
 
-using TimeMoment = OpaqueStruct<8>;
+using TimeMoment = OpaqueStruct<8, 0xACEBC3B1u>;
 
 //================================================================
 //
@@ -39,9 +39,6 @@ using TimeMicroseconds = uint64_t;
 
 struct Timer
 {
-    // Can the instance be shared among multiple threads?
-    virtual bool isThreadProtected() const =0;
-
     // Get the current moment.
     virtual TimeMoment moment() const =0;
 

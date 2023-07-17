@@ -2,7 +2,7 @@
 
 #include "formatting/formatOutputAtom.h"
 #include "extLib/userOutput/msgKind.h"
-          
+
 //================================================================
 //
 // MsgLogThreading
@@ -16,12 +16,6 @@
 
 struct MsgLogThreading
 {
-    //
-    // Can the instance be shared among multiple threads?
-    //
-
-    virtual bool isThreadProtected() const =0;
-
     //
     // An interface to output contiguous message blocks in a multithreaded environment.
     // Used only for pretty printing, so the implementation may be omitted.
@@ -82,9 +76,6 @@ class MsgLogNull : public MsgLog
         {return true;}
 
     virtual bool update()
-        {return true;}
-
-    virtual bool isThreadProtected() const
         {return true;}
 
     virtual void lock()

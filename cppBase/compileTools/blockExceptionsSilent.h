@@ -4,55 +4,32 @@
 
 //================================================================
 //
-// blockExceptionsSilent
-// blockExceptionsSilentVoid
-// blockExceptionsSilentBool
+// blockExceptBegin
+// blockExceptEnd
 //
-// Blocks all exceptions silently.
+// Silently catches any exception and makes a specified action.
 //
 //================================================================
 
-#define blockExceptionsSilentVoid(action) \
-    blockExceptionsSilentHelper([&] () -> bool {action; return true;})
+#define blockExceptBegin \
+    try \
+    {
 
-#define blockExceptionsSilentBool(action) \
-    blockExceptionsSilentHelper([&] () -> bool {return action;})
+#define blockExceptEnd(errorAction) \
+    } \
+    catch (...) \
+    { \
+        errorAction; \
+    }
+
+#define blockExceptEndIgnore \
+    blockExceptEnd({})
 
 //----------------------------------------------------------------
 
-#if HEXLIB_ERROR_HANDLING == 0
+#define boolFuncExceptBegin \
+    blockExceptBegin
 
-    #define blockExceptionsSilent(action) \
-        blockExceptionsSilentHelper([&] () -> bool {return errorBlock(action);})
-
-#elif HEXLIB_ERROR_HANDLING == 1
-
-    #define blockExceptionsSilent(action) \
-        blockExceptionsSilentVoid(action) // more efficient: avoid two nested catches
-
-#else
-
-    #error
-
-#endif
-
-//================================================================
-//
-// blockExceptionsSilentHelper
-//
-//================================================================
-
-template <typename Action>
-sysinline bool blockExceptionsSilentHelper(const Action& action)
-{
-    try
-    {
-        return action();
-    }
-    catch (...) 
-    {
-        return false;
-    }
-
-    return true;
-}
+#define boolFuncExceptEnd \
+    blockExceptEnd(return false); \
+    return true

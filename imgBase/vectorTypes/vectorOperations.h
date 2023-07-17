@@ -463,7 +463,7 @@ sysinline float32 componentSum(const float32_x4& vec)
 //================================================================
 //
 // pi
-// 
+//
 // (cannot use template constants because of MSVC bugs)
 //
 //================================================================
@@ -522,9 +522,9 @@ sysinline void vectorDecompose(const float32_x2& vec, float32& vectorLengthSq, f
 
     if (vectorLengthSq == 0)
     {
-        vectorLength = 0; 
+        vectorLength = 0;
 
-        vectorDir.x = 1; 
+        vectorDir.x = 1;
         vectorDir.y = 0;
     }
 }
@@ -540,11 +540,11 @@ sysinline void vectorDecompose(const float32_x4& vec, float32& vectorLengthSq, f
 
     if (vectorLengthSq == 0)
     {
-        vectorLength = 0; 
+        vectorLength = 0;
 
-        vectorDir.x = 1; 
-        vectorDir.y = 0; 
-        vectorDir.z = 0; 
+        vectorDir.x = 1;
+        vectorDir.y = 0;
+        vectorDir.z = 0;
         vectorDir.w = 0;
     }
 }

@@ -29,7 +29,7 @@
         using GpuAddrS = int64;
         using GpuAddrU = uint64;
 
-    #else 
+    #else
 
         #error
 

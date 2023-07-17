@@ -70,6 +70,6 @@ public:
 
 private:
 
-    OpaqueStruct<classSize> memory;
+    OpaqueStruct<classSize, 0> memory;
 
 };

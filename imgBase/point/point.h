@@ -44,7 +44,7 @@ struct DefImpl<Point<Type>>
     {
         return Point<bool>
         {
-            def(value.X), 
+            def(value.X),
             def(value.Y)
         };
     }
@@ -225,7 +225,7 @@ struct ConvertImpl<PointFamily, PointFamily, check, rounding, hint>
         {
             return point
             (
-                BaseImpl::func(srcPoint.X), 
+                BaseImpl::func(srcPoint.X),
                 BaseImpl::func(srcPoint.Y)
             );
         }
@@ -294,7 +294,7 @@ sysinline void exchange(Point<Type>& A, Point<Type>& B)
 #define POINT_DEFINE_FUNC1(func) \
     template <typename Type> \
     sysinline auto func(const Point<Type>& P) \
-        {return point(func(P.X), func(P.Y));} 
+        {return point(func(P.X), func(P.Y));}
 
 //----------------------------------------------------------------
 

@@ -58,11 +58,11 @@ devDefineKernel(PREP_PASTE(upsampleTwiceKernel, DST), UpsampleParams<DST>, o)
 
     READ_ITER(0, 0);
 
-    if (extraX) 
-        READ_ITER(1, 0); 
+    if (extraX)
+        READ_ITER(1, 0);
 
     if (extraY)
-        READ_ITER(0, 1); 
+        READ_ITER(0, 1);
 
     if (extraX && extraY)
         READ_ITER(1, 1);
@@ -92,7 +92,7 @@ devDefineKernel(PREP_PASTE(upsampleTwiceKernel, DST), UpsampleParams<DST>, o)
             FloatType v3 = SRC_BUFFER(bX + devThreadX, devThreadY + 3); \
             TMP_BUFFER(bX + devThreadX, 2*devThreadY + 0) = C1*v0 + C3*v1 + C5*v2 + C7*v3; \
             TMP_BUFFER(bX + devThreadX, 2*devThreadY + 1) = C0*v0 + C2*v1 + C4*v2 + C6*v3; \
-        } 
+        }
 
     UPSAMPLE_VERTICAL(0 * threadCountX);
 

@@ -146,7 +146,7 @@ namespace gaussMaskResampling {
 //
 //================================================================
 
-template <typename Src, typename Interm, typename Dst>              
+template <typename Src, typename Interm, typename Dst>
 stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
 {
     REQUIRE(equalLayers(src, dst));

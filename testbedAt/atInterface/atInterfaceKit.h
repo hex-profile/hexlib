@@ -1,7 +1,8 @@
 #pragma once
 
 #include "kit/kit.h"
-#include "kits/userPoint.h"
+#include "point/pointBase.h"
+#include "data/space.h"
 
 //================================================================
 //
@@ -81,7 +82,7 @@ KIT_CREATE(AtVideoInfoKit, const AtVideoInfo&, atVideoInfo);
 //
 //================================================================
 
-KIT_CREATE2(AtUserPointKit, bool, atUserPointValid, Point<Space>, atUserPoint);
+KIT_CREATE2(AtUserPointKit, bool, atUserPointValid, Point<Space>, atUserPointIdx);
 
 //================================================================
 //
@@ -110,6 +111,6 @@ KIT_CREATE(AtSetBusyStatusKit, AtSetBusyStatus&, atSetBusyStatus);
 
 using AtCommonKit = KitCombine<AtImgConsoleKit, AtSignalSetKit>;
 
-using AtProcessKit = KitCombine<AtCommonKit, AtVideoFrameKit, AtVideoOverlayKit, AtAsyncOverlayKit, 
+using AtProcessKit = KitCombine<AtCommonKit, AtVideoFrameKit, AtVideoOverlayKit, AtAsyncOverlayKit,
     AtSignalTestKit, AtVideoInfoKit, AtUserPointKit, AtContinousModeKit>;
 

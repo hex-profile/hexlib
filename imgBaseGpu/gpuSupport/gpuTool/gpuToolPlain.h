@@ -51,7 +51,7 @@
 
 #define GPT_PLAIN_MAKE_CALLER(prefix, samplerList, paramList, chunkSize) \
     \
-    hostDeclareKernel(prefix##Kernel, prefix##Params, o); \
+    hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
     stdbool prefix \
     ( \

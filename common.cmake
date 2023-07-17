@@ -64,7 +64,7 @@ endfunction()
 #
 #================================================================
 
-function (setupCuda)
+function (setupCuda projectName)
 
     checkDefs()
 
@@ -93,20 +93,27 @@ function (setupCuda)
 
         ###
 
+        target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_ARCH=${HEXLIB_GPU_ARCH})
+
+        ###
+
         if (NOT EXISTS "${cudaRoot}/include/cuda.h")
             message(FATAL_ERROR "Problem with cudaRoot path.")
         endif()
 
-        include_directories("${cudaRoot}/include")
+        target_include_directories(${projectName} PRIVATE "${cudaRoot}/include")
 
         ###
 
-        if (NOT (EXISTS "${cudaLib}/cuda.lib" OR EXISTS "${cudaLib}/libcuda.so" OR EXISTS "${cudaLib}/stubs/libcuda.so"))
-            message(FATAL_ERROR "Problem with cudaLib path.")
+        if (EXISTS "${cudaLib}/cuda.lib")
+            target_link_libraries(${projectName} PRIVATE "${cudaLib}/cuda.lib")
+        elseif (EXISTS "${cudaLib}/libcuda.so")
+            target_link_libraries(${projectName} PRIVATE "${cudaLib}/libcuda.so")
+        elseif (EXISTS "${cudaLib}/stubs/libcuda.so")
+            target_link_libraries(${projectName} PRIVATE "${cudaLib}/stubs/libcuda.so")
+        else()
+            message(FATAL_ERROR "Cannot find CUDA library. Problem with cudaLib path.")
         endif()
-
-        link_directories(${cudaLib})
-        link_directories(${cudaLib}/stubs)
 
     endif()
 
@@ -134,14 +141,14 @@ function (defineMakeGpuCompiler)
 
         ###
 
-        set(commonCmakeDir ${CMAKE_CURRENT_LIST_DIR}) 
+        set(commonCmakeDir ${CMAKE_CURRENT_LIST_DIR})
 
         ###
 
         add_custom_command(
             OUTPUT "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild/gpuCC${binaryExt}"
 
-            COMMAND 
+            COMMAND
                 "${commonCmakeDir}/gpuCompiler/makeGpuCompiler${scriptExt}"
                 "${CMAKE_CURRENT_SOURCE_DIR}"
                 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild"
@@ -153,6 +160,28 @@ function (defineMakeGpuCompiler)
         add_custom_target(makeGpuCompiler DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild/gpuCC${binaryExt})
 
     endif()
+
+endfunction()
+
+#================================================================
+#
+# addHeadersRecursive
+#
+#================================================================
+
+function (addHeadersRecursive result dirs)
+
+    set (internalHeaders "")
+
+    foreach (dir ${dirs})
+        file (GLOB_RECURSE tmp ${dir}/*.h ${dir}/*.hpp)
+        list (APPEND internalHeaders ${tmp})
+    endforeach()
+
+    set_source_files_properties(${internalHeaders} PROPERTIES LANGUAGE CXX)
+
+    set(resultValue ${${result}} ${internalHeaders})
+    set(${result} ${resultValue} PARENT_SCOPE)
 
 endfunction()
 
@@ -173,20 +202,11 @@ function (addSourcesRecursive result dirs)
 
     ###
 
-    set (internalHeaders "")
-
-    foreach (dir ${dirs})
-        file (GLOB_RECURSE tmp ${dir}/*.h ${dir}/*.hpp)
-        list (APPEND internalHeaders ${tmp})
-    endforeach()
-
-    ###
-
     set_source_files_properties(${internalSources} PROPERTIES LANGUAGE CXX)
 
     ###
 
-    set(resultValue ${${result}} ${internalSources} ${internalHeaders})
+    set(resultValue ${${result}} ${internalSources})
     set(${result} ${resultValue} PARENT_SCOPE)
 
 endfunction()
@@ -198,7 +218,7 @@ endfunction()
 #================================================================
 
 function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects requiresGpuCompiler folderName)
-    
+
     checkDefs()
 
     #----------------------------------------------------------------
@@ -207,34 +227,76 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #
     #----------------------------------------------------------------
 
+    if (libType STREQUAL "EXECUTABLE")
+        add_executable(${projectName})
+    else()
+        add_library(${projectName} ${libType})
+    endif()
+
+    #----------------------------------------------------------------
+    #
+    # Find sources and headers.
+    #
+    #----------------------------------------------------------------
+
+    set(sources "")
+    set(headers "")
+
     foreach (dir IN LISTS sourceDirs)
         addSourcesRecursive(sources ${dir})
+        addHeadersRecursive(headers ${dir})
     endforeach()
 
-    ###
+    #----------------------------------------------------------------
+    #
+    # RVISION build support:
+    # target headers and install config.
+    #
+    #----------------------------------------------------------------
 
-    if (libType STREQUAL "EXECUTABLE")
-        add_executable(${projectName} ${sources})
-    else()
-        add_library(${projectName} ${libType} ${sources})
+    if (headers)
+        target_sources(${projectName} PUBLIC
+            FILE_SET headers TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/ FILES "${headers}"
+        )
+    endif()
+
+    if (DEFINED RVISION_PLATFORM_BUILD AND DEFINED namespace)
+        install(TARGETS ${projectName} EXPORT "${namespace}-targets"
+            COMPONENT ${projectName}
+            FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hexbase
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        )
     endif()
 
     #----------------------------------------------------------------
     #
-    # Compiler specifics.
+    # Target sources.
     #
     #----------------------------------------------------------------
 
-    if (MSVC)
-        target_compile_options(${projectName} PRIVATE "/wd5040")
-        target_compile_options(${projectName} PRIVATE "/we4239")
-        target_compile_definitions(${projectName} PRIVATE _CRT_SECURE_NO_WARNINGS=1)
-        target_compile_definitions(${projectName} PRIVATE _SCL_SECURE_NO_WARNINGS=1)
+    target_sources(${projectName} PRIVATE ${sources})
+
+    #----------------------------------------------------------------
+    #
+    # Target include dirs.
+    #
+    #----------------------------------------------------------------
+
+    set(visibility PUBLIC)
+
+    if (libType STREQUAL "INTERFACE")
+        set(visibility INTERFACE)
+    endif()
+
+    target_include_directories(${projectName} ${visibility} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+
+    if (libType STREQUAL "INTERFACE")
+        return()
     endif()
 
     #----------------------------------------------------------------
     #
-    # Target properties
+    # Namespace (for old platform).
     #
     #----------------------------------------------------------------
 
@@ -242,15 +304,21 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         set_target_properties(${projectName} PROPERTIES FOLDER ${folderName})
     endif()
 
-    target_include_directories(${projectName} PUBLIC .)
-
-    ###
+    #----------------------------------------------------------------
+    #
+    # Link dependencies.
+    #
+    #----------------------------------------------------------------
 
     if (dependentProjects)
         target_link_libraries(${projectName} PUBLIC ${dependentProjects})
     endif()
 
-    ###
+    #----------------------------------------------------------------
+    #
+    # Compiler options and defines.
+    #
+    #----------------------------------------------------------------
 
     target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
@@ -262,6 +330,19 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     ###
 
+    if (MSVC)
+        target_compile_options(${projectName} PRIVATE "/wd5040")
+        target_compile_options(${projectName} PRIVATE "/we4239")
+        target_compile_definitions(${projectName} PRIVATE _CRT_SECURE_NO_WARNINGS=1)
+        target_compile_definitions(${projectName} PRIVATE _SCL_SECURE_NO_WARNINGS=1)
+    endif()
+
+    #----------------------------------------------------------------
+    #
+    # GPU support.
+    #
+    #----------------------------------------------------------------
+
     if (${requiresGpuCompiler})
 
         if (HEXLIB_PLATFORM EQUAL 0)
@@ -271,12 +352,9 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         elseif(HEXLIB_PLATFORM EQUAL 1)
 
             add_dependencies(${projectName} makeGpuCompiler)
-
-            target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_ARCH=${HEXLIB_GPU_ARCH})
-
-            target_link_libraries(${projectName} PRIVATE cuda)
-
             set(CMAKE_CXX_COMPILER "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/gpuCompilerBuild/gpuCC" PARENT_SCOPE)
+
+            setupCuda(${projectName})
 
         else()
 
@@ -294,5 +372,4 @@ endfunction()
 #
 #================================================================
 
-setupCuda()
 defineMakeGpuCompiler()

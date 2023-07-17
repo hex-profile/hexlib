@@ -3,6 +3,7 @@
 #include "charType/charArray.h"
 #include "kit/kit.h"
 #include "numbers/int/intBase.h"
+#include "storage/adapters/callable.h"
 
 namespace fileTools {
 
@@ -14,10 +15,7 @@ namespace fileTools {
 //
 //================================================================
 
-struct GetString
-{
-    virtual bool setBuffer(const CharType* bufArray, size_t bufSize) =0;
-};
+using GetString = Callable<bool (const CharArray& str)>;
 
 //================================================================
 //

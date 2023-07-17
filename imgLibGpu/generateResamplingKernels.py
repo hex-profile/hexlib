@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     # parser.add_argument('--frames', default="20")
-    
+
     args = parser.parse_args()
 
     print()
@@ -221,7 +221,7 @@ if __name__ == '__main__':
 
         #generateFilterPack('Gauss-Sinc Downsample 1.5X', qualitySelect(29, 43), [2, 3], kernelConservative)
         #generateFilterPack('Gauss-Sinc Upsample 1.5X', qualitySelect(16, 25), [3, 2], kernelBalanced)
-   
+
         #
         # 1.333X
         #

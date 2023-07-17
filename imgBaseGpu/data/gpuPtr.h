@@ -89,27 +89,15 @@ COMPILE_ASSERT_EQUAL_LAYOUT(GpuPtr(int), GpuAddrU);
     #define GpuArrayPtr(Element) \
         ArrayPtr(Element)
 
-    #define GpuArrayPtrCreate(Type, memPtr, memSize, preconditions) \
-        ArrayPtrCreate(Type, memPtr, memSize, preconditions)
-
     #define GpuMatrixPtr(Element) \
         MatrixPtr(Element)
-
-    #define GpuMatrixPtrCreate(Element, memPtr, memPitch, memSizeX, memSizeY, preconditions) \
-        MatrixPtrCreate(Element, memPtr, memPitch, memSizeX, memSizeY, preconditions)
 
 #else
 
     #define GpuArrayPtr(Element) \
         GpuPtr(Element)
 
-    #define GpuArrayPtrCreate(Type, memPtr, memSize, preconditions) \
-        (memPtr)
-
     #define GpuMatrixPtr(Element) \
         GpuPtr(Element)
-
-    #define GpuMatrixPtrCreate(Element, memPtr, memPitch, memSizeX, memSizeY, preconditions) \
-        (memPtr)
 
 #endif

@@ -34,7 +34,7 @@ sysinline float32_x4 computeVectorVisualization(const float32_x2& value, bool gr
     // vector to H(S)V
     //
 
-    float32 H = fastPhase(point(value.x, value.y)); 
+    float32 H = fastPhase(point(value.x, value.y));
     if (H < 0) H += 1;
 
     float32 length = vectorLength(value);

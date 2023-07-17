@@ -69,7 +69,7 @@
 
 #define GPT_MAKE_CALLER_2D(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport) \
     \
-    hostDeclareKernel(prefix##Kernel, prefix##Params, o); \
+    hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
     stdbool prefix \
     ( \

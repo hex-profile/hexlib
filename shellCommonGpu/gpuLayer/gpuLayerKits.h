@@ -92,7 +92,7 @@ KIT_CREATE(GpuBenchmarkingControlKit, GpuBenchmarkingControl&, gpuBenchmarkingCo
 //================================================================
 
 using GpuInitKit = KitCombine<GpuInitializationKit, GpuContextCreationKit, GpuContextSettingKit,
-    GpuModuleCreationKit, GpuKernelLoadingKit, GpuSamplerLoadingKit, GpuMemoryAllocationKit, GpuTextureAllocKit, 
+    GpuModuleCreationKit, GpuKernelLoadingKit, GpuSamplerLoadingKit, GpuMemoryAllocationKit, GpuTextureAllocKit,
     GpuStreamCreationKit, GpuEventAllocKit>;
 
 using GpuExecKit = KitCombine<GpuTransferKit, GpuSamplerSetupKit, GpuKernelCallingKit, GpuStreamWaitingKit,

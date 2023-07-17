@@ -7,7 +7,7 @@ import numpy as np
 #
 #================================================================
 
-def cosShape(x): 
+def cosShape(x):
     t = x * (pi / 2);
     c = cos(t)
     return where(abs(x) >= 1, 0, c * c)

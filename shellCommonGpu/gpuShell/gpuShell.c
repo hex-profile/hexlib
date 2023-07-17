@@ -16,7 +16,7 @@ namespace gpuShell {
 bool GpuContextHelper::serialize(const CfgSerializeKit& kit)
 {
     bool indexSteady = gpuDeviceIndex.serialize(kit, STR("GPU Device Index"));
-        
+
     bool schedulingSteady = gpuScheduling.serialize
     (
         kit, STR("GPU Scheduling"),
@@ -49,8 +49,8 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
     // Use selected GPU device
     //
 
-    REQUIRE_EX(gpuDeviceIndex >= 0 && gpuDeviceIndex < gpuDeviceCount, 
-        printMsg(kit.msgLog, STR("GPU device index % cannot be selected (totally % GPUs found)"), 
+    REQUIRE_EX(gpuDeviceIndex >= 0 && gpuDeviceIndex < gpuDeviceCount,
+        printMsg(kit.msgLog, STR("GPU device index % cannot be selected (totally % GPUs found)"),
             gpuDeviceIndex(), gpuDeviceCount, msgErr));
 
     require(kit.gpuInitialization.getProperties(gpuDeviceIndex, gpuProperties, stdPass));
@@ -110,15 +110,15 @@ private:
 //
 //================================================================
 
-void GpuShellImpl::serialize(const CfgSerializeKit& kit)
+void GpuShellImpl::serialize(const CfgSerializeKit& kit, bool hotkeys)
 {
     {
         CFG_NAMESPACE("GPU Shell");
 
-        gpuEnqueueModeCycle.serialize(kit, STR("GPU Skip Mode"), STR("Alt+."));
+        gpuEnqueueModeCycle.serialize(kit, STR("GPU Skip Mode"), hotkeys ? STR("Alt+.") : STR(""));
         gpuEnqueueModeVar = (gpuEnqueueModeVar + gpuEnqueueModeCycle) % 3;
 
-        gpuCoverageModeVar.serialize(kit, STR("GPU Coverage Mode"), STR("Ctrl+."));
+        gpuCoverageModeVar.serialize(kit, STR("GPU Coverage Mode"), hotkeys ? STR("Ctrl+.") : STR(""));
         coverageQueueCapacity.serialize(kit, STR("Coverage Queue Capacity"));
     }
 }
@@ -206,7 +206,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
     //
     //----------------------------------------------------------------
 
-    require(app.exec(stdPassKit(execAppKit)));
+    require(app(stdPassKit(execAppKit)));
 
     //----------------------------------------------------------------
     //

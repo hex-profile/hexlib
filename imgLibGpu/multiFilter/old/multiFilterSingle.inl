@@ -78,10 +78,10 @@ PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
 
 #ifndef LINEAR_COMBINATION
 
-    #define LINEAR_ONLY(s) 
-    #define LINEAR_ONLY_COMMA(s) 
+    #define LINEAR_ONLY(s)
+    #define LINEAR_ONLY_COMMA(s)
 
-#else 
+#else
 
     #define LINEAR_ONLY(s) s
     #define LINEAR_ONLY_COMMA(s) s,
@@ -98,7 +98,7 @@ template <typename Dst>
 struct IntermParams
 {
     Point<float32> srcTexstep;
-    Point<Space> dstSize; 
+    Point<Space> dstSize;
     GpuMatrix<Dst> dst[FILTER_COUNT];
 };
 
@@ -112,7 +112,7 @@ template <typename Dst>
 struct FinalParams
 {
     Point<float32> srcTexstep;
-    Point<Space> dstSize; 
+    Point<Space> dstSize;
 
 #ifndef LINEAR_COMBINATION
 
@@ -234,18 +234,18 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), Fin
 template <typename Src, typename Dst>
 stdbool FUNCNAME
 (
-    const GpuMatrix<const Src>& src, 
+    const GpuMatrix<const Src>& src,
 
 #ifndef LINEAR_COMBINATION
-    PREP_ENUM_INDEXED(FILTER_COUNT, const GpuMatrix<Dst>& dst), 
+    PREP_ENUM_INDEXED(FILTER_COUNT, const GpuMatrix<Dst>& dst),
 #else
     const GpuMatrix<const Dst>& dstMixImage,
     float32 dstMixCoeff,
-    const GpuMatrix<Dst>& dst, 
+    const GpuMatrix<Dst>& dst,
     const float32* filterMixCoeffs,
 #endif
 
-    BorderMode borderMode, 
+    BorderMode borderMode,
     stdPars(GpuProcessKit)
 )
 {
@@ -382,7 +382,7 @@ stdbool FUNCNAME
             areaOf(dstSize),
             PREP_PASTE3(FUNCNAME, Final, DIR(VerLink, HorLink))<Dst>(),
             finalParams,
-            kit.gpuCurrentStream,                                          
+            kit.gpuCurrentStream,
             stdPass
         )
     );
@@ -396,7 +396,7 @@ stdbool FUNCNAME
 
 //----------------------------------------------------------------
 
-#if HOSTCODE 
+#if HOSTCODE
 
 INSTANTIATE_FUNC_EX((FUNCNAME<uint8, uint8>), FUNCNAME)
 INSTANTIATE_FUNC_EX((FUNCNAME<int8, int8>), FUNCNAME)

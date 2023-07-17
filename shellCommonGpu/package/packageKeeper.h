@@ -2,8 +2,9 @@
 
 #include "storage/smartPtr.h"
 #include "package/starterKit.h"
-#include "configFile/cfgSerialization.h"
+#include "cfg/cfgSerialization.h"
 #include "minimalShell/minimalShellTypes.h"
+#include "storage/adapters/lambdaThunk.h"
 
 namespace packageImpl {
 namespace packageKeeper {
@@ -52,6 +53,16 @@ struct SerializeTarget
     virtual void serialize(const ModuleSerializeKit& kit) =0;
 };
 
+////
+
+LAMBDA_THUNK
+(
+    serializeTargetThunk,
+    SerializeTarget,
+    void serialize(const ModuleSerializeKit& kit),
+    lambda(kit)
+)
+
 //================================================================
 //
 // ProcessTarget
@@ -62,99 +73,21 @@ struct ProcessTarget : public SerializeTarget, public EngineModule
 {
 };
 
-//================================================================
-//
-// SerializeTargetMaker
-//
-//================================================================
+////
 
-template <typename SerializeFunc>
-class SerializeTargetMaker : public SerializeTarget
-{
-
-public:
-
-    SerializeTargetMaker(const SerializeFunc& serializeFunc)
-        : serializeFunc{serializeFunc} {}
-
-    virtual void serialize(const ModuleSerializeKit& kit)
-        {return serializeFunc(kit);}
-
-private:
-    
-    SerializeFunc const serializeFunc;
-
-};
-
-//----------------------------------------------------------------
-
-template <typename SerializeFunc>
-inline auto serializeTargetMaker(const SerializeFunc& serializeFunc)
-{
-    return SerializeTargetMaker<SerializeFunc>{serializeFunc};
-}
-
-//================================================================
-//
-// ProcessTargetMaker
-//
-//================================================================
-
-template <typename SerializeFunc, typename ReallocValidFunc, typename ReallocFunc, typename ProcessFunc>
-class ProcessTargetMaker : public ProcessTarget
-{
-
-public:
-
-    ProcessTargetMaker
-    (
-        const SerializeFunc& serializeFunc,
-        const ReallocValidFunc& reallocValidFunc,
-        const ReallocFunc& reallocFunc,
-        const ProcessFunc& processFunc
-    )
-        : 
-        serializeFunc{serializeFunc},
-        reallocValidFunc{reallocValidFunc},
-        reallocFunc{reallocFunc},
-        processFunc{processFunc} 
-    {
-    }
-
-    virtual void serialize(const ModuleSerializeKit& kit)
-        {return serializeFunc(kit);}
-
-    virtual bool reallocValid() const
-        {return reallocValidFunc();}
-
-    virtual stdbool realloc(stdPars(EngineReallocKit))
-        {return reallocFunc(stdPassThru);}
-
-    virtual stdbool process(stdPars(EngineProcessKit))
-        {return processFunc(stdPassThru);}
-
-private:
-    
-    SerializeFunc const serializeFunc;
-    ReallocValidFunc const reallocValidFunc;
-    ReallocFunc const reallocFunc;
-    ProcessFunc const processFunc;
-
-};
-
-//----------------------------------------------------------------
-
-template <typename SerializeFunc, typename ReallocValidFunc, typename ReallocFunc, typename ProcessFunc>
-inline ProcessTargetMaker<SerializeFunc, ReallocValidFunc, ReallocFunc, ProcessFunc> processTargetMaker
+LAMBDA_THUNK4
 (
-    const SerializeFunc& serializeFunc,
-    const ReallocValidFunc& reallocValidFunc,
-    const ReallocFunc& reallocFunc,
-    const ProcessFunc& processFunc
+    processTargetThunk,
+    ProcessTarget,
+    void serialize(const ModuleSerializeKit& kit),
+    lambda0(kit),
+    bool reallocValid() const,
+    lambda1(),
+    stdbool realloc(stdPars(EngineReallocKit)),
+    lambda2(stdPassThru),
+    stdbool process(stdPars(EngineProcessKit)),
+    lambda3(stdPassThru)
 )
-{
-    return {serializeFunc, reallocValidFunc, reallocFunc, processFunc};
-}
 
 //================================================================
 //
@@ -180,7 +113,7 @@ struct PackageKeeper
 }
 
 using packageKeeper::PackageKeeper;
-using packageKeeper::processTargetMaker;
-using packageKeeper::serializeTargetMaker;
+using packageKeeper::processTargetThunk;
+using packageKeeper::serializeTargetThunk;
 
 }

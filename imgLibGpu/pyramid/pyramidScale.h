@@ -9,7 +9,7 @@
 //
 // PyramidScale
 //
-// Defines power table like (baseFactor ^ scale), 
+// Defines power table like (baseFactor ^ scale),
 // where baseFactor >= 1.
 //
 //================================================================
@@ -69,7 +69,7 @@ public:
         return scaleArray[maxScale + clampedScale];
     }
 
-    sysinline Hash hash() const 
+    sysinline Hash hash() const
     {
         return currentHash;
     }
@@ -78,7 +78,7 @@ public:
 
     PyramidScaleArray() =default;
 
-    PyramidScaleArray(float32 baseFactor) 
+    PyramidScaleArray(float32 baseFactor)
         {configure(baseFactor);}
 
     void configure(float32 baseFactor);
@@ -121,10 +121,10 @@ private:
 // Each level's image size is multiplied by the factor,
 // the factor is applied equally to all pyramid levels.
 //
-// * Base level: Sometimes we want to have the base image size 
+// * Base level: Sometimes we want to have the base image size
 // not on 0th level, but on some other level, for example, doing upsampling.
 // The specified level will have the base image size (before resolution factor application).
-// 
+//
 // * Extra border: An integer number of pixels to be added to each level's image size after rounding.
 // For example, if we want 5 extra pixels on all sides, the extra border is 10.
 //
@@ -142,7 +142,7 @@ public:
     auto& resolutionFactor(float32 value)
         {theResolutionFactor = point(value); return *this;}
 
-    auto resolutionFactor() const 
+    auto resolutionFactor() const
         {return theResolutionFactor;}
 
 public:
@@ -153,7 +153,7 @@ public:
     auto& baseLevel(Space value)
         {theBaseLevel = point(value); return *this;}
 
-    auto baseLevel() const 
+    auto baseLevel() const
         {return theBaseLevel;}
 
 public:

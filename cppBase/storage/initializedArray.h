@@ -54,7 +54,7 @@ public:
             constructCopy(data[i], value);
     }
 
-    sysinline ~InitializedArray() 
+    sysinline ~InitializedArray()
     {
         for (size_t i = size; i >= 1; --i)
             destruct(data[i-1]);

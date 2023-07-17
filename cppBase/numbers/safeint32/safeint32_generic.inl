@@ -48,7 +48,7 @@ bool builtinRemTest()
     for (int X = -10; X <= 10; ++X)
     {
         for (int Y = -10; Y <= 10; ++Y)
-        {  
+        {
             if (Y != 0)
             {
                 if ( (X % Y) != (X - (X/Y)*Y))
@@ -77,7 +77,7 @@ safeint32::Type operator %(const safeint32::Type& X, const safeint32::Type& Y)
             COMPILE_ASSERT(safeint32::rangeIsSymmetric);
 
             // the remainder computation should work as tested by "builtinRemTest"
-            result = Xv % Yv; 
+            result = Xv % Yv;
         }
     }
 

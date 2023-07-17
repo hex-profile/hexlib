@@ -60,7 +60,7 @@ sysinline float32 normCoordMirror(float32 x)
     // Tent centered at 1
     float32 tent = absv(value - 1);
 
-    return saturate(tent);
+    return saturatev(tent);
 }
 
 //----------------------------------------------------------------

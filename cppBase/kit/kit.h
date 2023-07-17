@@ -201,7 +201,7 @@ struct Kit_ValueReader
         { \
         } \
     }
-    
+
 //----------------------------------------------------------------
 
 # include "kitCreate.inl"
@@ -228,14 +228,14 @@ struct KitCombine
         Types(otherKit)...
     {
     }
-   
+
     template <typename OldKit, typename NewKit>
     sysinline KitCombine(const OldKit& oldKit, Kit_ReplaceConstructor, const NewKit& newKit)
         :
         Types(oldKit, Kit_ReplaceConstructor(), newKit)...
     {
     }
-   
+
     sysinline KitCombine
     (
         Kit_CombineConstructor,

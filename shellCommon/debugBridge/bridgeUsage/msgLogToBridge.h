@@ -24,19 +24,16 @@ public:
         bool bridgeActive,
         debugBridge::MessageConsole& bridgeLog
     )
-        : 
+        :
         formatter(formatter),
         flushEveryMessage(flushEveryMessage),
         diagLog(diagLog),
         bridgeActive(bridgeActive),
-        bridgeLog(bridgeLog) 
+        bridgeLog(bridgeLog)
     {
     }
 
 public:
-
-    bool isThreadProtected() const
-        {return diagLog.isThreadProtected();}
 
     void lock()
         {return diagLog.lock();}

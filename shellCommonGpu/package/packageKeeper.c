@@ -3,15 +3,19 @@
 #include <stdexcept>
 
 #include "minimalShell/minimalShell.h"
-#include "configFile/configFile.h"
+#include "cfgVars/configFile/configFile.h"
 #include "debugBridge/bridgeUsage/actionReceivingByBridge.h"
 #include "debugBridge/bridgeUsage/actionSetupToBridge.h"
 #include "debugBridge/bridgeUsage/baseImageConsoleToBridge.h"
 #include "storage/rememberCleanup.h"
 #include "dataAlloc/arrayMemory.h"
-#include "signalsImpl/signalsImpl.h"
+#include "signalsTools/legacySignalsImpl.h"
 #include "userOutput/printMsgEx.h"
 #include "overlayTakeover/overlayTakeoverThunk.h"
+#include "storage/adapters/memberLambda.h"
+#include "imageRead/positionTools.h"
+#include "kits/userPoint.h"
+#include "interfaces/fileTools.h"
 
 namespace packageImpl {
 namespace packageKeeper {
@@ -74,7 +78,7 @@ private:
     //
     //----------------------------------------------------------------
 
-    UniquePtr<MinimalShell> shell = MinimalShell::create();
+    UniqueInstance<MinimalShell> shell;
 
     MemController engineMemory;
 
@@ -97,7 +101,7 @@ private:
     //----------------------------------------------------------------
 
     bool configFileActive = false;
-    UniquePtr<ConfigFile> configFilePtr = ConfigFile::create();
+    UniqueInstance<ConfigFile> configFilePtr;
     ConfigFile& configFile = *configFilePtr;
 
 };
@@ -117,13 +121,12 @@ UniquePtr<PackageKeeper> PackageKeeper::create()
 
 void PackageKeeperImpl::serialize(const CfgSerializeKit& kit)
 {
-    shell->serialize(kit);
-
-    ////
-
     {
         CFG_NAMESPACE("~Shell");
-        deactivateOverlay.serialize(kit, STR("Deactivate Overlay"), STR("\\"));
+
+        shell->serialize(kit);
+
+        deactivateOverlay.serialize(kit, STR("Deactivate Overlay"), STR("\\"), STR("Deactivate Overlay"));
 
         {
             CFG_NAMESPACE("Engine Memory");
@@ -149,7 +152,8 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
     //
     //----------------------------------------------------------------
 
-    auto serialization = overlaySerializationThunk(target, overlayOwnerID);
+    auto targetLambda = memberLambda(target, &SerializeTarget::serialize);
+    auto serialization = overlaySerializationThunk(targetLambda, overlayOwnerID);
 
     ////
 
@@ -159,10 +163,29 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
 
     if (configFileActive)
     {
-        errorBlock(configFile.loadFile(SimpleString{configName}, stdPass));
-        configFile.loadVars(serialization);
-        configFile.saveVars(serialization, true);
-        errorBlock(configFile.updateFile(true, stdPass));
+        auto action = [&] ()
+        {
+            bool configFound = fileTools::isFile(configName);
+
+            ////
+
+            require(configFile.loadFile(SimpleString{configName}, stdPass));
+            require(configFile.loadVars(serialization, true, stdPass));
+
+            ////
+
+            require(configFile.saveVars(serialization, true, stdPass));
+            require(configFile.updateFile(true, stdPass));
+
+            ////
+
+            if_not (configFound)
+                printMsg(kit.msgLog, STR("Created config file %"), configName, msgWarn);
+
+            returnTrue;
+        };
+
+        errorBlock(action());
     }
 
     //----------------------------------------------------------------
@@ -187,7 +210,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
     ////
 
     int32 signalCount{};
-    signalImpl::registerSignals(serialization, 0, actionSetup, signalCount);
+    require(signalImpl::registerSignals(serialization, actionSetup, signalCount, stdPass));
 
     ////
 
@@ -204,7 +227,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
     //----------------------------------------------------------------
 
     require(shell->init(stdPass));
-  
+
     //----------------------------------------------------------------
     //
     // Success.
@@ -234,11 +257,12 @@ stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebu
     //
     //----------------------------------------------------------------
 
-    auto serialization = overlaySerializationThunk(target, overlayOwnerID);
+    auto targetLambda = memberLambda(target, &SerializeTarget::serialize);
+    auto serialization = overlaySerializationThunk(targetLambda, overlayOwnerID);
 
     if (configFileActive)
     {
-        configFile.saveVars(serialization, true);
+        errorBlock(configFile.saveVars(serialization, true, stdPass)) &&
         errorBlock(configFile.updateFile(false, stdPass));
     }
 
@@ -249,7 +273,7 @@ stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebu
     //----------------------------------------------------------------
 
     if (shell->profilingActive())
-        errorBlock(shell->profilingReport(stdPass));
+        errorBlock(shell->profilingReport(nullptr, stdPass));
 
     returnTrue;
 }
@@ -309,7 +333,8 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 {
     REQUIRE(initialized);
 
-    auto serialization = overlaySerializationThunk(target, overlayOwnerID);
+    auto targetLambda = [&] (const auto& kit) {target.serialize(kit);};
+    auto serialization = overlaySerializationThunk(targetLambda, overlayOwnerID);
 
     //----------------------------------------------------------------
     //
@@ -360,7 +385,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
         ////
 
         int32 signalCount{};
-        signalImpl::registerSignals(serialization, 0, actionSetup, signalCount);
+        require(signalImpl::registerSignals(serialization, actionSetup, signalCount, stdPass));
 
         ////
 
@@ -392,12 +417,16 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         auto configLoaderLambda = [&] (db::ArrayRef<const db::Char> config)
         {
-            if_not (errorBlock(configFile.loadFromString(charArray(config.ptr, config.size), stdPass)))
+            auto action = [&] ()
+            {
+                require(configFile.loadFromString(charArray(config.ptr, config.size), stdPass));
+                require(configFile.loadVars(serialization, true, stdPass));
+                require(configFile.updateFile(true, stdPass));
+                returnTrue;
+            };
+
+            if_not (errorBlock(action()))
                 throw std::runtime_error("Config support error"); // Debug bridge uses exceptions.
-
-            configFile.loadVars(serialization);
-
-            errorBlock(configFile.updateFile(true, stdPass));
         };
 
         ////
@@ -408,10 +437,11 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
         // Update config vars. Also saves to disk if dirty.
         //
 
-        auto configUpdateVars = [&] (stdPars(StarterDebugKit))
+        auto configUpdateVars = [&] (stdPars(auto))
         {
-            configFile.saveVars(serialization, false);
-            errorBlock(configFile.updateFile(false, stdPass));
+            require(configFile.saveVars(serialization, false, stdPass));
+            require(configFile.updateFile(false, stdPass));
+            returnTrue;
         };
 
         //
@@ -420,17 +450,16 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         if (overview.saveConfig)
         {
-            auto configSaverLambda = [&] (const CharArray& str, stdNullPars)
+            auto configSaver = cfgVarsImpl::StringReceiver::O | [&] (const CharArray& str, stdNullPars)
             {
-                require(blockExceptionsVoid(configSupport->saveConfig({str.ptr, str.size})));
-                returnTrue;
+                stdExceptBegin;
+                configSupport->saveConfig({str.ptr, str.size});
+                stdExceptEnd;
             };
-
-            auto configSaver = cfgVarsImpl::stringReceiverByLambda(configSaverLambda);
 
             ////
 
-            configUpdateVars(stdPass);
+            require(configUpdateVars(stdPass));
 
             require(configFile.saveToString(configSaver, stdPass));
         }
@@ -441,7 +470,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         if (overview.loadConfig)
         {
-            require(blockExceptionsVoid(configSupport->loadConfig(configLoader)));
+            convertExceptions(configSupport->loadConfig(configLoader));
         }
 
         //
@@ -450,17 +479,16 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         if (overview.editConfig)
         {
-            auto configEditorLambda = [&] (const CharArray& str, stdNullPars)
+            auto configEditor = cfgVarsImpl::StringReceiver::O | [&] (const CharArray& str, stdNullPars)
             {
-                require(blockExceptionsVoid(configSupport->editConfig({str.ptr, str.size}, configLoader)));
-                returnTrue;
+                stdExceptBegin;
+                configSupport->editConfig({str.ptr, str.size}, configLoader);
+                stdExceptEnd;
             };
-
-            auto configEditor = cfgVarsImpl::stringReceiverByLambda(configEditorLambda);
 
             ////
 
-            configUpdateVars(stdPass);
+            require(configUpdateVars(stdPass));
 
             require(configFile.saveToString(configEditor, stdPass));
         }
@@ -478,7 +506,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
     ////
 
     if (deactivateOverlay)
-        require(blockExceptionsVoid(videoOverlay->clear()));
+        convertExceptions(videoOverlay->clear());
 
     ////
 
@@ -488,7 +516,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
         signalMousePos = overview.mousePos;
 
     userPoint.valid = signalMousePos.valid();
-    userPoint.position = signalMousePos.pos();
+    userPoint.floatPos = convertIndexToPos(signalMousePos.pos());
 
     userPoint.leftSet = (overview.mouseLeftSet != 0);
     userPoint.rightSet = (overview.mouseRightSet != 0);
@@ -502,11 +530,14 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
     ////
 
+    DesiredOutputSize desiredOutputSize;
+
     auto kitEx = kitCombine
     (
         kit,
-        minimalShell::BaseImageConsolesKit{nullptr, &baseOverlay},
-        UserPointKit{userPoint}
+        minimalShell::BaseImageConsolesKit{nullptr, nullptr, &baseOverlay},
+        UserPointKit{userPoint},
+        DesiredOutputSizeKit{desiredOutputSize}
     );
 
     //----------------------------------------------------------------
@@ -527,7 +558,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
     WarmupKitDisabler targetEx{target, warmup};
 
-    require(shell->process(targetEx, engineMemory, true, sysAllocHappened, stdPassKit(kitEx)));
+    require(shell->process({nullptr, targetEx, engineMemory, true, sysAllocHappened}, stdPassKit(kitEx)));
 
     if (sysAllocHappened && !warmup)
         printMsgL(kit, STR("WARNING: System realloc."), msgWarn);

@@ -124,7 +124,7 @@ bool expandPath(const CharType* filename, GetString& result)
 
         if (realPath)
         {
-            result.setBuffer(realPath, strlen(realPath));
+            result(charArrayFromPtr(realPath));
             return true;
         }
 
@@ -189,7 +189,7 @@ bool expandPath(const CharType* filename, GetString& result)
 
         StlString str(realPath);
         str.append(strCurrentEnd, strEnd);
-        result.setBuffer(str.data(), str.size());
+        result(charArrayFromStl(str));
 
     }
     catch (const std::exception& e)

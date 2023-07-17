@@ -21,7 +21,7 @@ struct GaussWindowParams
 
 sysinline bool operator ==(const GaussWindowParams& a, const GaussWindowParams& b)
 {
-    return 
+    return
         a.divSigmaSq == b.divSigmaSq &&
         a.taps == b.taps;
 }
