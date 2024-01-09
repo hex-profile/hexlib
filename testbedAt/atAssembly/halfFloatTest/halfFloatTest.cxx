@@ -321,7 +321,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 
     Space badIdx = 0;
 
-    if_not (errorBlock(checkEqualResults<float16>(gpuResultCopy, cpuResult, badIdx, stdPass)))
+    if_not (errorBlock(checkEqualResults<float16>(gpuResultCopy, cpuResult, badIdx, stdPassNc)))
     {
         ARRAY_EXPOSE(srcCopy);
         ARRAY_EXPOSE(gpuResultCopy);
@@ -431,7 +431,7 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 
     Space badIdx = 0;
 
-    if_not (errorBlock(checkEqualResults<uint32>(gpuResultCopy, cpuResult, badIdx, stdPass)))
+    if_not (errorBlock(checkEqualResults<uint32>(gpuResultCopy, cpuResult, badIdx, stdPassNc)))
     {
         ARRAY_EXPOSE(srcCopy);
         ARRAY_EXPOSE(gpuResultCopy);

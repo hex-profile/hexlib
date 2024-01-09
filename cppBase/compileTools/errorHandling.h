@@ -4,7 +4,7 @@
 //
 // 0: Using bool error code.
 // 1: Using exceptions.
-// 2: Using bool paramter by reference.
+// 2: Using bool parameter by reference.
 //
 //================================================================
 

@@ -433,7 +433,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
 
     if (args.overlay.hasUpdates())
     {
-        auto imageUser = overlayBuffer::ImageUser::O | [&] (bool valid, auto& image, stdNullPars)
+        auto imageUser = overlayBuffer::ImageUser::O | [&] (bool valid, auto& image, stdParsNull)
         {
             auto usedSize = minv(image.size(), outputSize);
 
@@ -515,7 +515,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             returnTrue;
         };
 
-        errorBlock(args.overlay.useImage(imageUser, stdPass));
+        errorBlock(args.overlay.useImage(imageUser, stdPassNc));
     }
 
     //----------------------------------------------------------------
@@ -565,7 +565,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
     {
         auto currentMoment = kit.timer.moment();
 
-        auto textProvider = gpuConsoleDrawing::ColorTextProvider::O | [&] (auto maxCount, auto& colorTextReceiver, stdNullPars)
+        auto textProvider = gpuConsoleDrawing::ColorTextProvider::O | [&] (auto maxCount, auto& colorTextReceiver, stdParsNull)
         {
             REQUIRE(kit.dataProcessing);
             REQUIRE(maxCount >= 0);
@@ -614,7 +614,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
 
     if (allv(localConsoleOrg < localConsoleEnd))
     {
-        auto textProvider = gpuConsoleDrawing::ColorTextProvider::O | [&] (auto maxCount, auto& colorTextReceiver, stdNullPars)
+        auto textProvider = gpuConsoleDrawing::ColorTextProvider::O | [&] (auto maxCount, auto& colorTextReceiver, stdParsNull)
         {
             REQUIRE(kit.dataProcessing);
             REQUIRE(maxCount >= 0);
@@ -652,7 +652,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             {org - shadowRadius, end + shadowRadius, lines.shadowColor()}
         };
 
-        errorBlock(drawFilledRect(args, outputImage, stdPass));
+        errorBlock(drawFilledRect(args, outputImage, stdPassNc));
     }
 
     ////

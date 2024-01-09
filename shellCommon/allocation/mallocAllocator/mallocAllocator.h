@@ -17,7 +17,7 @@ class MallocAllocator : public AllocatorInterface<AddrU>
 
 public:
 
-    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars);
+    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull);
     static void dealloc(MemoryDeallocContext& context);
 
 public:

@@ -75,9 +75,9 @@ public:
     Space desiredPitch() const
         {return cpuImage.memPitch();}
 
-    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars);
+    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull);
 
-    stdbool saveBgr24(const MatrixAP<uint8>& dest, stdNullPars)
+    stdbool saveBgr24(const MatrixAP<uint8>& dest, stdParsNull)
         {REQUIRE(false); returnTrue;}
 
 private:
@@ -93,7 +93,7 @@ private:
 //
 //================================================================
 
-stdbool AtProviderFromCpuImage::saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars)
+stdbool AtProviderFromCpuImage::saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull)
 {
     auto src = cpuImage;
     auto dst = dest;
@@ -568,7 +568,7 @@ void serverFunc(void* param)
     ErrorLogDebugBreak errorLog;
     ErrorLogKit kit(errorLog);
 
-    ensurev(errorBlock(serverFuncCore(shared, stdPass)));
+    ensurev(errorBlock(serverFuncCore(shared, stdPassNc)));
 
     ////
 

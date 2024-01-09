@@ -13,7 +13,7 @@ namespace testShell {
 //
 //================================================================
 
-using Process = Callable<stdbool (stdNullPars)>;
+using Process = Callable<stdbool (stdParsNull)>;
 
 //================================================================
 //

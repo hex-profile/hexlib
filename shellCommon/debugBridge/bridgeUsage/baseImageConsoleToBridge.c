@@ -70,7 +70,7 @@ private:
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlayClear(stdNullPars)
+stdbool BaseVideoOverlayToBridge::overlayClear(stdParsNull)
 {
     convertExceptions(destOverlay.clear());
     returnTrue;
@@ -82,7 +82,7 @@ stdbool BaseVideoOverlayToBridge::overlayClear(stdNullPars)
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
 {
     BridgeImageProviderThunk bridgeProvider(imageProvider, stdPass);
 
@@ -114,7 +114,7 @@ stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool data
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlaySetFake(stdNullPars)
+stdbool BaseVideoOverlayToBridge::overlaySetFake(stdParsNull)
 {
     returnTrue;
 }
@@ -125,7 +125,7 @@ stdbool BaseVideoOverlayToBridge::overlaySetFake(stdNullPars)
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlayUpdate(stdNullPars)
+stdbool BaseVideoOverlayToBridge::overlayUpdate(stdParsNull)
 {
     returnTrue;
 }

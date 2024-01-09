@@ -468,7 +468,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     require(metadataConfig->loadVars(serialization, true, stdPass));
     require(metadataConfig->saveVars(serialization, true, stdPass));
 
-    errorBlock(metadataConfig->updateFile(true, stdPass)); // Correct the config file.
+    errorBlock(metadataConfig->updateFile(true, stdPassNc)); // Correct the config file.
 
     // Update the file properties after correction.
     require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
@@ -580,7 +580,7 @@ public:
 
     virtual stdbool process(stdPars(ProcessKit))
     {
-        auto processApi = testShell::Process::O | [&] (stdNullPars)
+        auto processApi = testShell::Process::O | [&] (stdParsNull)
         {
             return base->process(stdPass);
         };
@@ -616,7 +616,7 @@ public:
 public:
 
     stdbool init(const TestModuleFactory& engineFactory, stdPars(InitKit));
-    void finalize(stdPars(InitKit));
+    stdbool finalize(stdPars(InitKit));
     stdbool process(stdPars(ProcessKit));
 
 public:
@@ -783,7 +783,7 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
     //
 
     SimpleString configFilename; configFilename << engineFactory.configName() << CT(".json");
-    errorBlock(configFile.loadFile(configFilename, stdPass));
+    errorBlock(configFile.loadFile(configFilename, stdPassNc));
     REMEMBER_CLEANUP_EX(configFileCleanup, configFile.unloadFile());
 
     ////
@@ -857,10 +857,10 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
 //
 //================================================================
 
-void AtAssemblyImpl::finalize(stdPars(InitKit))
+stdbool AtAssemblyImpl::finalize(stdPars(InitKit))
 {
     if_not (initialized)
-        return;
+        returnTrue;
 
     //
     // Make finalization work
@@ -868,8 +868,10 @@ void AtAssemblyImpl::finalize(stdPars(InitKit))
 
     auto serialization = cfgSerialization();
 
-    errorBlock(configFile.saveVars(serialization, false, stdPass)) &&
-    errorBlock(configFile.updateFile(false, stdPass));
+    errorBlock(configFile.saveVars(serialization, false, stdPassNc)) &&
+    errorBlock(configFile.updateFile(false, stdPassNc));
+
+    returnTrue;
 }
 
 //================================================================
@@ -933,7 +935,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     ////
 
     require(inputMetadataHandler.reloadFileOnChange(kit.atVideoInfo.videofileName, metadataSerialization, stdPass));
-    REMEMBER_CLEANUP(errorBlock(inputMetadataHandler.saveVariablesOnChange(metadataSerialization, stdPass)));
+    REMEMBER_CLEANUP(errorBlock(inputMetadataHandler.saveVariablesOnChange(metadataSerialization, stdPassNc)));
 
     //----------------------------------------------------------------
     //
@@ -1133,8 +1135,8 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
     {
         bool updateHappened = false;
 
-        errorBlock(configFile.saveVars(serialization, false, updateHappened, stdPass)) &&
-        errorBlock(configFile.updateFile(false, stdPass));
+        errorBlock(configFile.saveVars(serialization, false, updateHappened, stdPassNc)) &&
+        errorBlock(configFile.updateFile(false, stdPassNc));
 
         if (updateHappened)
             printMsgL(kit, STR("Saving config file."), msgWarn);
@@ -1286,7 +1288,7 @@ AtAssembly::~AtAssembly()
 stdbool AtAssembly::init(const TestModuleFactory& engineFactory, stdPars(InitKit))
     {return instance->init(engineFactory, stdPassThru);}
 
-void AtAssembly::finalize(stdPars(InitKit))
+stdbool AtAssembly::finalize(stdPars(InitKit))
     {return instance->finalize(stdPassThru);}
 
 stdbool AtAssembly::process(stdPars(ProcessKit))

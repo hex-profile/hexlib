@@ -43,7 +43,7 @@ public:
 public:
 
     stdbool init(const TestModuleFactory& engineFactory, stdPars(InitKit));
-    void finalize(stdPars(InitKit));
+    stdbool finalize(stdPars(InitKit));
 
     stdbool process(stdPars(ProcessKit));
 

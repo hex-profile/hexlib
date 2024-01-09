@@ -31,7 +31,7 @@ public:
     GpuBaseImageProvider(const GpuProcessKit& kit)
         : kit(kit) {}
 
-    stdbool setImage(const GpuMatrixAP<const ColorPixel>& image, stdNullPars);
+    stdbool setImage(const GpuMatrixAP<const ColorPixel>& image, stdParsNull);
 
 public:
 
@@ -41,9 +41,9 @@ public:
     Space desiredBaseByteAlignment() const
         {return kit.gpuProperties.samplerAndFastTransferBaseAlignment;}
 
-    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars);
+    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull);
 
-    stdbool saveBgr24(const MatrixAP<MonoPixel>& dest, stdNullPars);
+    stdbool saveBgr24(const MatrixAP<MonoPixel>& dest, stdParsNull);
 
 private:
 

@@ -17,25 +17,25 @@
 ////
 
 stdbool GpuBaseConsoleSplitter::clear(stdPars(Kit))
-    {SPLITTER(clear(stdPass))}
+    {SPLITTER(clear(stdPassNc))}
 
 stdbool GpuBaseConsoleSplitter::update(stdPars(Kit))
-    {SPLITTER(update(stdPass))}
+    {SPLITTER(update(stdPassNc))}
 
 stdbool GpuBaseConsoleSplitter::addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
-    {SPLITTER(addImageBgr(img, hint, stdPass))}
+    {SPLITTER(addImageBgr(img, hint, stdPassNc))}
 
 stdbool GpuBaseConsoleSplitter::overlayClear(stdPars(Kit))
-    {SPLITTER(overlayClear(stdPass))}
+    {SPLITTER(overlayClear(stdPassNc))}
 
 stdbool GpuBaseConsoleSplitter::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
-    {SPLITTER(overlaySetImageBgr(size, img, hint, stdPass))}
+    {SPLITTER(overlaySetImageBgr(size, img, hint, stdPassNc))}
 
 stdbool GpuBaseConsoleSplitter::overlaySetImageFake(stdPars(Kit))
-    {SPLITTER(overlaySetImageFake(stdPass))}
+    {SPLITTER(overlaySetImageFake(stdPassNc))}
 
 stdbool GpuBaseConsoleSplitter::overlayUpdate(stdPars(Kit))
-    {SPLITTER(overlayUpdate(stdPass))}
+    {SPLITTER(overlayUpdate(stdPassNc))}
 
 bool GpuBaseConsoleSplitter::getTextEnabled()
     {return a.getTextEnabled();}

@@ -43,13 +43,13 @@ public:
             DstAddr dstAddr, \
             Space size, \
             const GpuStream& stream, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             if (prohibitionEnabled) \
                 GPU_PROHIBITED_API_CALL; \
             \
-            return kit.gpuTransfer.funcName(srcAddr, dstAddr, size, stream, stdNullPassThru); \
+            return kit.gpuTransfer.funcName(srcAddr, dstAddr, size, stream, stdPassNullThru); \
         }
 
     TMP_MACRO(copyArrayCpuCpu, CpuAddrU, CpuAddrU)
@@ -71,13 +71,13 @@ public:
             DstAddr dstAddr, Space dstBytePitch, \
             Space byteSizeX, Space sizeY, \
             const GpuStream& stream, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             if (prohibitionEnabled) \
                 GPU_PROHIBITED_API_CALL; \
             \
-            return kit.gpuTransfer.funcName(srcAddr, srcBytePitch, dstAddr, dstBytePitch, byteSizeX, sizeY, stream, stdNullPassThru); \
+            return kit.gpuTransfer.funcName(srcAddr, srcBytePitch, dstAddr, dstBytePitch, byteSizeX, sizeY, stream, stdPassNullThru); \
         }
 
     TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU)
@@ -105,14 +105,14 @@ public:
         ReadNormalizedFloat readNormalizedFloat,
         NormalizedCoords normalizedCoords,
         const GpuContext& context,
-        stdNullPars
+        stdParsNull
     )
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
         return kit.gpuSamplerSetting.setSamplerArray(sampler, arrayAddr, arrayByteSize, chanType, rank,
-            borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdNullPassThru);
+            borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdPassNullThru);
     }
 
     stdbool setSamplerImageEx
@@ -128,14 +128,14 @@ public:
         ReadNormalizedFloat readNormalizedFloat,
         NormalizedCoords normalizedCoords,
         const GpuContext& context,
-        stdNullPars
+        stdParsNull
     )
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
         return kit.gpuSamplerSetting.setSamplerImageEx(sampler, imageBaseAddr, imageBytePitch, imageSize, chanType,
-            rank, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdNullPassThru);
+            rank, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdPassNullThru);
     }
 
     //----------------------------------------------------------------
@@ -152,13 +152,13 @@ public:
         const GpuKernelLink& kernelLink,
         const void* paramPtr, size_t paramSize,
         const GpuStream& stream,
-        stdNullPars
+        stdParsNull
     )
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuKernelCalling.callKernel(groupCount, threadCount, dbgElemCount, kernelLink, paramPtr, paramSize, stream, stdNullPassThru);
+        return kit.gpuKernelCalling.callKernel(groupCount, threadCount, dbgElemCount, kernelLink, paramPtr, paramSize, stream, stdPassNullThru);
     }
 
     //----------------------------------------------------------------
@@ -167,12 +167,12 @@ public:
     //
     //----------------------------------------------------------------
 
-    stdbool waitStream(const GpuStream& stream, stdNullPars)
+    stdbool waitStream(const GpuStream& stream, stdParsNull)
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuStreamWaiting.waitStream(stream, stdNullPassThru);
+        return kit.gpuStreamWaiting.waitStream(stream, stdPassNullThru);
     }
 
     //----------------------------------------------------------------
@@ -181,36 +181,36 @@ public:
     //
     //----------------------------------------------------------------
 
-    stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+    stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull)
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuEventRecording.recordEvent(event, stream, stdNullPassThru);
+        return kit.gpuEventRecording.recordEvent(event, stream, stdPassNullThru);
     }
 
-    stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+    stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull)
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuEventRecording.putEventDependency(event, stream, stdNullPassThru);
+        return kit.gpuEventRecording.putEventDependency(event, stream, stdPassNullThru);
     }
 
-    stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
+    stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull)
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuEventWaiting.waitEvent(event, realWaitHappened, stdNullPassThru);
+        return kit.gpuEventWaiting.waitEvent(event, realWaitHappened, stdPassNullThru);
     }
 
-    stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
+    stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull)
     {
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuEventWaiting.eventElapsedTime(event1, event2, time, stdNullPassThru);
+        return kit.gpuEventWaiting.eventElapsedTime(event1, event2, time, stdPassNullThru);
     }
 
     //----------------------------------------------------------------

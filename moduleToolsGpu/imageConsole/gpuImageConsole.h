@@ -74,7 +74,7 @@ struct GpuImageConsole : public GpuBaseConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         =0;
 
@@ -94,10 +94,10 @@ struct GpuImageConsole : public GpuBaseConsole
         const Point<Space>& upsampleSize,
         BorderMode borderMode,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     )
     {
-        return addMatrixFunc(makeConst(img), minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdNullPassThru);
+        return addMatrixFunc(makeConst(img), minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
     }
 
     //----------------------------------------------------------------
@@ -118,7 +118,7 @@ struct GpuImageConsole : public GpuBaseConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         =0;
 
@@ -139,10 +139,10 @@ struct GpuImageConsole : public GpuBaseConsole
         const Point<Space>& upsampleSize,
         BorderMode borderMode,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     )
     {
-        return addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdNullPassThru);
+        return addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
     }
 
     ////
@@ -154,10 +154,10 @@ struct GpuImageConsole : public GpuBaseConsole
         int channel,
         float32 minVal, float32 maxVal,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     )
     {
-        return addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, point(1.f), INTERP_NONE, img.size(), BORDER_ZERO, hint, stdNullPassThru);
+        return addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, point(1.f), INTERP_NONE, img.size(), BORDER_ZERO, hint, stdPassNullThru);
     }
 
     //----------------------------------------------------------------
@@ -187,7 +187,7 @@ struct GpuImageConsole : public GpuBaseConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         =0; \
 
@@ -205,10 +205,10 @@ struct GpuImageConsole : public GpuBaseConsole
         const Point<Space>& upsampleSize,
         BorderMode borderMode,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     )
     {
-        return addVectorImageFunc(makeConst(image), maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdNullPassThru);
+        return addVectorImageFunc(makeConst(image), maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
     }
 
     template <typename VectorType, typename Pitch>
@@ -217,10 +217,10 @@ struct GpuImageConsole : public GpuBaseConsole
         const GpuMatrix<VectorType, Pitch>& image,
         float32 maxVector,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     )
     {
-        return addVectorImageFunc(makeConst(image), maxVector, point(1.f), INTERP_NONE, point(0), BORDER_ZERO, hint, stdNullPassThru);
+        return addVectorImageFunc(makeConst(image), maxVector, point(1.f), INTERP_NONE, point(0), BORDER_ZERO, hint, stdPassNullThru);
     }
 
     #undef TMP_MACRO
@@ -243,7 +243,7 @@ struct GpuImageConsole : public GpuBaseConsole
         ( \
             const GpuPackedYuv<const Type>& image, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         =0; \
 
@@ -268,7 +268,7 @@ struct GpuImageConsole : public GpuBaseConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         =0;
 
@@ -341,7 +341,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             returnTrue; \
@@ -369,7 +369,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             returnTrue; \
@@ -396,7 +396,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             returnTrue; \
@@ -414,7 +414,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addYuvImage420(const GpuPackedYuv<const Type>& image, const ImgOutputHint& hint, stdNullPars) \
+        stdbool addYuvImage420(const GpuPackedYuv<const Type>& image, const ImgOutputHint& hint, stdParsNull) \
             {returnTrue;}
 
     IMAGE_CONSOLE_FOREACH_YUV420_TYPE(TMP_MACRO, _)
@@ -438,7 +438,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             returnTrue; \

@@ -78,11 +78,11 @@ struct GpuTextureOwner : public GpuTexture
 
 struct GpuTextureAllocator
 {
-    virtual stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars) =0;
+    virtual stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull) =0;
 
     template <typename Type>
-    inline stdbool createTexture(const Point<Space>& size, GpuTextureOwner& result, stdNullPars)
-        {return createTexture(size, GpuGetChannelType<Type>::val, VectorTypeRank<Type>::val, result, stdNullPassThru);}
+    inline stdbool createTexture(const Point<Space>& size, GpuTextureOwner& result, stdParsNull)
+        {return createTexture(size, GpuGetChannelType<Type>::val, VectorTypeRank<Type>::val, result, stdPassNullThru);}
 };
 
 //================================================================
@@ -95,7 +95,7 @@ struct GpuTextureAllocator
 
 struct GpuStreamWaiting
 {
-    virtual stdbool waitStream(const GpuStream& stream, stdNullPars) =0;
+    virtual stdbool waitStream(const GpuStream& stream, stdParsNull) =0;
 };
 
 //----------------------------------------------------------------
@@ -142,7 +142,7 @@ struct GpuEventOwner : public GpuEvent
 
 struct GpuEventAllocator
 {
-    virtual stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars) =0;
+    virtual stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdParsNull) =0;
 };
 
 //================================================================
@@ -161,7 +161,7 @@ struct GpuEventRecording
     // so waiting on such event will wait for the new work set to finish.
     //
 
-    virtual stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+    virtual stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull) =0;
 
     //
     // Puts into the other stream a command to wait for
@@ -170,7 +170,7 @@ struct GpuEventRecording
     // The wait is performed on GPU without CPU sync.
     //
 
-    virtual stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars) =0;
+    virtual stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull) =0;
 };
 
 //================================================================
@@ -185,17 +185,17 @@ struct GpuEventWaiting
     // Waits on CPU for the event's work set to complete.
     //
 
-    virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars) =0;
+    virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull) =0;
 
-    inline stdbool waitEvent(const GpuEvent& event, stdNullPars)
-        {bool tmp = false; return waitEvent(event, tmp, stdNullPassThru);}
+    inline stdbool waitEvent(const GpuEvent& event, stdParsNull)
+        {bool tmp = false; return waitEvent(event, tmp, stdPassNullThru);}
 
     //
     // Compute time elapsed between two events.
     // Both events should be finished, otherwise error is returned.
     //
 
-    virtual stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars) =0;
+    virtual stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull) =0;
 };
 
 //================================================================
@@ -229,7 +229,7 @@ struct GpuTransfer
             DstAddr dstAddr, \
             Space size, \
             const GpuStream& stream, \
-            stdNullPars \
+            stdParsNull \
         ) \
         =0; \
 
@@ -252,7 +252,7 @@ struct GpuTransfer
             DstAddr dstAddr, Space dstBytePitch, \
             Space byteSizeX, Space sizeY, \
             const GpuStream& stream, \
-            stdNullPars \
+            stdParsNull \
         ) \
         =0; \
         \
@@ -392,7 +392,7 @@ public:
         if (theStream != 0)
         {
             stdTraceRoot;
-            errorBlock(theSyncStream->waitStream(*theStream, stdNullPass));
+            errorBlock(theSyncStream->waitStream(*theStream, stdPassNullNc));
 
             theStream = 0;
             theSyncStream = 0;
@@ -511,7 +511,7 @@ struct GpuKernelCalling
         const struct GpuKernelLink& kernelLink,
         const void* paramPtr, size_t paramSize,
         const GpuStream& stream,
-        stdNullPars
+        stdParsNull
     )
     =0;
 
@@ -524,10 +524,10 @@ struct GpuKernelCalling
         const GpuKernelLink& kernelLink,
         const Params& params,
         const GpuStream& stream,
-        stdNullPars
+        stdParsNull
     )
     {
-        return callKernel(groupCount, threadCount, dbgElemCount, kernelLink, &params, sizeof(params), stream, stdNullPassThru);
+        return callKernel(groupCount, threadCount, dbgElemCount, kernelLink, &params, sizeof(params), stream, stdPassNullThru);
     }
 
 };

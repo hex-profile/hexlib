@@ -88,20 +88,20 @@ public:
 
 public:
 
-    stdbool addImage(const MatrixAP<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    stdbool addImage(const MatrixAP<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
     {
         require(baseConsole.addImage(img, hint, dataProcessing, stdPass));
         require(saver.saveImage(img, hint.desc, hint.id, stdPass));
         returnTrue;
     }
 
-    stdbool clear(stdNullPars)
+    stdbool clear(stdParsNull)
     {
         require(baseConsole.clear(stdPassThru));
         returnTrue;
     }
 
-    stdbool update(stdNullPars)
+    stdbool update(stdParsNull)
     {
         require(baseConsole.update(stdPassThru));
         returnTrue;
@@ -109,24 +109,24 @@ public:
 
 public:
 
-    stdbool overlayClear(stdNullPars)
+    stdbool overlayClear(stdParsNull)
     {
         return baseOverlay.overlayClear(stdPassThru);
     }
 
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
     {
         require(baseOverlay.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
         require(saver.saveImage(size, imageProvider, desc, id, stdPass));
         returnTrue;
     }
 
-    stdbool overlaySetFake(stdNullPars)
+    stdbool overlaySetFake(stdParsNull)
     {
         return baseOverlay.overlaySetFake(stdPassThru);
     }
 
-    stdbool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdParsNull)
     {
         return baseOverlay.overlayUpdate(stdPassThru);
     }

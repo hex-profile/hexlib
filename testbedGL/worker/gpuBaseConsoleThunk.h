@@ -11,7 +11,7 @@ namespace gpuBaseConsoleThunk {
 //
 //================================================================
 
-using OverlayUpdater = Callable<stdbool (stdNullPars)>;
+using OverlayUpdater = Callable<stdbool (stdParsNull)>;
 
 //================================================================
 //
@@ -66,7 +66,7 @@ struct GpuBaseConsoleThunk : public GpuBaseConsole, private ThunkContext
     {
         if (hint.target == ImgOutputOverlay)
         {
-            auto provider = gpuImageProviderBgr32 | [&] (const GpuMatrixAP<uint8_x4>& dest, stdNullPars)
+            auto provider = gpuImageProviderBgr32 | [&] (const GpuMatrixAP<uint8_x4>& dest, stdParsNull)
                 {return gpuMatrixCopy(img, dest, stdPass);};
 
             require(overlaySetImageBgr(img.size(), provider, hint, stdPass));
@@ -107,7 +107,7 @@ struct GpuBaseConsoleThunk : public GpuBaseConsole, private ThunkContext
 
     virtual stdbool overlayUpdate(stdPars(Kit))
     {
-        return overlayUpdater(stdNullPass);
+        return overlayUpdater(stdPassNull);
     }
 };
 

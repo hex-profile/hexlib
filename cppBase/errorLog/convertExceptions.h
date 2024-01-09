@@ -35,7 +35,7 @@ void printExternalExceptions(stdPars(MsgLogExKit)) noexcept;
     } \
     catch (...) \
     { \
-        printExternalExceptions(stdPassNoProfiling); \
+        printExternalExceptions(stdPassNoProfilingNc); \
         errorAction; \
     }
 

@@ -13,6 +13,7 @@
 #define ERROR_HANDLING_PASS
 #define ERROR_HANDLING_MEMBER
 #define ERROR_HANDLING_CAPTURE
+#define ERROR_HANDLING_CHECK
 
 //================================================================
 //

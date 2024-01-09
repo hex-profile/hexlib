@@ -36,7 +36,7 @@ using StringArray = vector<StlString>;
 
 struct SourceCache
 {
-    virtual stdbool getFile(const StlString& filename, StringArray*& result, stdNullPars) =0;
+    virtual stdbool getFile(const StlString& filename, StringArray*& result, stdParsNull) =0;
 };
 
 //================================================================
@@ -633,7 +633,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 
     ////
 
-    bool smartSuccess = errorBlock(cutSmartBlock(text, rowIndex, result.code, o.smartMaxScanRows, stdPass));
+    bool smartSuccess = errorBlock(cutSmartBlock(text, rowIndex, result.code, o.smartMaxScanRows, stdPassNc));
 
     if_not (smartSuccess)
         cutSimpleSurroundingBlock(text, rowIndex, o.simpleCutRadius, o.simpleCutRadius, result.code);
@@ -680,7 +680,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 
 void getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
-    if_not (errorBlock(getCodeBlockCore(location, o, sourceCache, result, stdPassThru)))
+    if_not (errorBlock(getCodeBlockCore(location, o, sourceCache, result, stdPassThruNc)))
     {
         result.clear();
         result.userMsg = location;
@@ -720,7 +720,7 @@ StlString translateStringToHtml(const StlString& str, size_t maxLength)
 
     ////
 
-    for (const CharType* p = strBegin ;;)
+    for (const CharType* p = strBegin; ;)
     {
         const CharType* start = p;
 
@@ -1672,7 +1672,7 @@ class SourceCacheThunk : public SourceCache
 
 public:
 
-    stdbool getFile(const StlString& filename, StringArray*& result, stdNullPars)
+    stdbool getFile(const StlString& filename, StringArray*& result, stdParsNull)
         {return impl.getFile(searchPath, filename, result, stdPassThru);}
 
 public:

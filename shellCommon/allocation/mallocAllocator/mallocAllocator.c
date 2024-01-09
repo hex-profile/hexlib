@@ -34,7 +34,7 @@ struct MallocCore
 //================================================================
 
 template <typename AddrU>
-stdbool MallocAllocator<AddrU>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+stdbool MallocAllocator<AddrU>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
 {
     MallocCore<AddrU> coreAlloc;
     return sysAllocAlignShell<AddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);

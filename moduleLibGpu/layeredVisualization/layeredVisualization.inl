@@ -153,7 +153,7 @@ stdbool convertIndependentPresenceToAdditive
                 square(fastRecipZero(vectorProximity)), \
                 stdPass \
             ) \
-        )
+        ) \
 
     #define TMP_MACRO2(n, _) \
         if (layers == n) TMP_MACRO(n); else
@@ -184,7 +184,7 @@ class LayeredVectorProvider<VectorType, PresenceType> : public GpuImageProviderB
 
 public:
 
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
 
 public:
 
@@ -224,7 +224,7 @@ private:
 //
 //================================================================
 
-stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const
+stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
 {
     REQUIRE(upsampleFactor >= 1);
     Point<float32> divUpsampleFactor = 1.f / upsampleFactor;
@@ -391,7 +391,7 @@ stdbool visualizeLayeredVector
     for_count (r, layers)
         require(gpuMatrixSet(vectorPresence.getLayer(r), convertNearest<float16>(1.f / layers), stdPass));
 
-    require((visualizeLayeredVector<VectorType, float16>(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, upsampleInterpolation, hint, stdPass)));
+    require((visualizeLayeredVector<VectorType, float16>)(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, upsampleInterpolation, hint, stdPass));
 
     returnTrue;
 }

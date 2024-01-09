@@ -103,27 +103,27 @@ class AtOverlayMonitor : public BaseVideoOverlay
 
 public:
 
-    stdbool overlayClear(stdNullPars)
+    stdbool overlayClear(stdParsNull)
     {
         overlayIsSet = false;
-        return base.overlayClear(stdNullPassThru);
+        return base.overlayClear(stdPassNullThru);
     }
 
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
     {
         overlayIsSet = true;
-        return base.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdNullPassThru);
+        return base.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPassNullThru);
     }
 
-    stdbool overlaySetFake(stdNullPars)
+    stdbool overlaySetFake(stdParsNull)
     {
         overlayIsSet = true;
-        return base.overlaySetFake(stdNullPassThru);
+        return base.overlaySetFake(stdPassNullThru);
     }
 
-    stdbool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdParsNull)
     {
-        return base.overlayUpdate(stdNullPassThru);
+        return base.overlayUpdate(stdPassNullThru);
     }
 
 public:
@@ -713,7 +713,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
     //
     //----------------------------------------------------------------
 
-    bool processOk = errorBlock(processPrepFrontend(target, inputFrame, frameIndex, stdPass));
+    bool processOk = errorBlock(processPrepFrontend(target, inputFrame, frameIndex, stdPassNc));
 
     //----------------------------------------------------------------
     //

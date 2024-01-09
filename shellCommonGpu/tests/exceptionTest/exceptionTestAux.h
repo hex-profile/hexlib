@@ -33,14 +33,6 @@ struct Failure{};
 [[noreturn]]
 void throwFailure();
 
-//================================================================
-//
-// newApproachCallee
-//
-//================================================================
-
-void newApproachCallee(bool& successFlag, stdPars(DiagnosticKit));
-
 //----------------------------------------------------------------
 
 }

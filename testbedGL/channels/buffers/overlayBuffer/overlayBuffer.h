@@ -22,7 +22,7 @@ using Type = uint8_x4;
 //
 //================================================================
 
-using ImageUser = Callable<stdbool (bool valid, const GpuMatrix<const Type>& image, stdNullPars)>;
+using ImageUser = Callable<stdbool (bool valid, const GpuMatrix<const Type>& image, stdParsNull)>;
 
 //================================================================
 //

@@ -135,27 +135,6 @@ sysnoinline void exceptionCodeTest(int value)
 
 //================================================================
 //
-// newApproachCaller
-//
-//================================================================
-
-#define stdCall \
-    stdPass); do {if (!successFlag) return;} while (0
-
-//----------------------------------------------------------------
-
-sysnoinline void newApproachCaller(bool& successFlag, int value, stdPars(DiagnosticKit))
-{
-    if (value == 0)
-        newApproachCallee(successFlag, stdCall);
-
-    newApproachCallee(successFlag, stdCall);
-    newApproachCallee(successFlag, stdCall);
-    newApproachCallee(successFlag, stdCall);
-}
-
-//================================================================
-//
 // ExceptionTestImpl
 //
 //================================================================
@@ -224,12 +203,6 @@ stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
     ////
 
     printMsgL(kit, STR("Exception test"));
-
-    ////
-
-    bool successFlag = true;
-
-    newApproachCaller(successFlag, 0, stdPass);
 
     ////
 

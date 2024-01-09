@@ -12,6 +12,8 @@
 
 stdbool pointUsage()
 {
+    stdTraceRoot;
+
     // Type traits: signed/unsigned.
     COMPILE_ASSERT(TYPE_IS_SIGNED(const Point<int>));
     COMPILE_ASSERT(TYPE_EQUAL(TYPE_MAKE_UNSIGNED_(Point<int>), Point<unsigned>));

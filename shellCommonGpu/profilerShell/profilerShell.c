@@ -252,7 +252,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     else
     {
         TimeMoment processStart = kit.timer.moment();
-        REMEMBER_CLEANUP(errorBlock(ftmUpdate(kit.timer.diff(processStart, kit.timer.moment()), stdPass)));
+        REMEMBER_CLEANUP(errorBlock(ftmUpdate(kit.timer.diff(processStart, kit.timer.moment()), stdPassNc)));
 
         require(target(stdPassKit(ProfilerKit(nullptr))));
         returnTrue;
@@ -278,9 +278,9 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         ProfilerThunk profilerThunk(profilerImpl);
 
         TimeMoment processStart = kit.timer.moment();
-        REMEMBER_CLEANUP(errorBlock(ftmUpdate(kit.timer.diff(processStart, kit.timer.moment()), stdPass)));
+        REMEMBER_CLEANUP(errorBlock(ftmUpdate(kit.timer.diff(processStart, kit.timer.moment()), stdPassNc)));
 
-        processOk = errorBlock(target(stdPassKit(ProfilerKit(&profilerThunk))));
+        processOk = errorBlock(target(stdPassKitNc(ProfilerKit(&profilerThunk))));
 
         CHECK(profilerImpl.checkResetScope());
         ++cycleCount;
@@ -297,7 +297,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 
         auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
-        errorBlock(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx)));
+        errorBlock(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKitNc(kitEx)));
     }
 
     //----------------------------------------------------------------
@@ -307,7 +307,7 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     //----------------------------------------------------------------
 
     if (htmlReportSignal != 0)
-        errorBlock(makeHtmlReport(processingThroughput, stdPass));
+        errorBlock(makeHtmlReport(processingThroughput, stdPassNc));
 
     //----------------------------------------------------------------
     //
@@ -334,5 +334,6 @@ stdbool ProfilerShell::makeReport(float32 processingThroughput, stdPars(ReportKi
 {
     leaveExternalScope();
     REMEMBER_CLEANUP(enterExternalScope());
-    return makeHtmlReport(processingThroughput, stdPass);
+    require(makeHtmlReport(processingThroughput, stdPass));
+    returnTrue;
 }

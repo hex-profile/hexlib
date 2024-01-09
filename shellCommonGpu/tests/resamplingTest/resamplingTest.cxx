@@ -475,7 +475,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     if (test == Test::InterpolationUnserBspline)
     {
         GPU_MATRIX_ALLOC(srcImagePrefiltered, FloatPixel, srcSize);
-        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass)));
+        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));
         require(upsampleTexCubicBspline(srcImagePrefiltered, dstImage, 1.f/resampleFactor, stdPass));
     }
 
@@ -495,53 +495,41 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     using namespace gaussSincResampling;
 
     if (test == Test::DownsampleOneAndHalf)
-        require((downsampleOneAndHalfConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((downsampleOneAndHalfConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     if (test == Test::UpsampleOneAndHalf)
-        require((upsampleOneAndHalfBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((upsampleOneAndHalfBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     ////
 
     if (test == Test::DownsampleOneAndThird)
-        require((downsampleOneAndThirdConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((downsampleOneAndThirdConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     if (test == Test::UpsampleOneAndThird)
-        require((upsampleOneAndThirdBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((upsampleOneAndThirdBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     ////
 
     if (test == Test::DownsampleOneAndQuarter)
-        require((downsampleOneAndQuarterConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((downsampleOneAndQuarterConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     if (test == Test::UpsampleOneAndQuarter)
-        require((upsampleOneAndQuarterBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((upsampleOneAndQuarterBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     ////
 
     if (test == Test::DownsampleOne)
-        require((downsampleOneConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((downsampleOneConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     ////
 
     if (test == Test::DownsampleTwice)
-        require((downsampleTwiceConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((downsampleTwiceConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     if (test == Test::UpsampleTwice)
-        require((upsampleTwiceBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((upsampleTwiceBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     ////
 
     if (test == Test::UpsampleThreeTimes)
-        require((upsampleThreeTimesBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((upsampleThreeTimesBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     ////
 
     if (test == Test::DownsampleFourTimes)
-        require((downsampleFourTimesConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((downsampleFourTimesConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     if (test == Test::UpsampleFourTimes)
-        require((upsampleFourTimesBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass)));
-
+        require((upsampleFourTimesBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
     ////
 
     if (test == Test::InterpolationBicubic)
@@ -552,8 +540,7 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     if (test == Test::InterpolationUnserBspline)
     {
         GPU_MATRIX_ALLOC(srcImagePrefiltered, FloatPixel, srcSize);
-        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass)));
-        require(upsampleTexCubicBsplineFast(srcImagePrefiltered, dstImageTest, 1.f/resampleFactor, stdPass));
+        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));        require(upsampleTexCubicBsplineFast(srcImagePrefiltered, dstImageTest, 1.f/resampleFactor, stdPass));
     }
 
     ////
@@ -561,11 +548,9 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     if (test == Test::UnprefilterUnserBspline)
     {
         GPU_MATRIX_ALLOC(srcImagePrefiltered, FloatPixel, srcSize);
-        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass)));
-
+        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));
         GPU_MATRIX_ALLOC(tmp, int8, srcSize);
-        require((bsplineCubicUnprefilter<FloatPixel, FloatPixel, int8>(makeConst(srcImagePrefiltered), tmp, point(1.f), BORDER_MIRROR, stdPass)));
-
+        require((bsplineCubicUnprefilter<FloatPixel, FloatPixel, int8>)(makeConst(srcImagePrefiltered), tmp, point(1.f), BORDER_MIRROR, stdPass));
         require(convertToFloatPixelEx(tmp, dstImageTest, 1.f, stdPass));
     }
 

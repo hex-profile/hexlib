@@ -26,8 +26,8 @@ using minimalShell::GpuExternalContext;
 
 struct ContextBinderGL
 {
-    virtual stdbool bind(stdNullPars) =0;
-    virtual stdbool unbind(stdNullPars) =0;
+    virtual stdbool bind(stdParsNull) =0;
+    virtual stdbool unbind(stdParsNull) =0;
 };
 
 //================================================================

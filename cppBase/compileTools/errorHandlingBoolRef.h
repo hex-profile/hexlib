@@ -9,31 +9,22 @@
 //================================================================
 
 #define ERROR_HANDLING_ROOT \
-    bool __ok = true;
+    bool __success = true;
 
 #define ERROR_HANDLING_PARAMS \
-    bool& __ok,
+    bool& __success,
 
 #define ERROR_HANDLING_PASS \
-    __ok,
+    __success,
 
 #define ERROR_HANDLING_MEMBER \
-    bool& __ok;
+    bool& __success;
 
 #define ERROR_HANDLING_CAPTURE \
-    __ok{__ok},
+    __success{__success},
 
-//================================================================
-//
-// HEXLIB_STDBOOL_CLASS
-//
-//================================================================
-
-#ifdef _DEBUG
-    #define HEXLIB_STDBOOL_CLASS 1
-#else
-    #define HEXLIB_STDBOOL_CLASS 0
-#endif
+#define ERROR_HANDLING_CHECK \
+    ); do {if (!__success) return stdbool{};} while (0
 
 //================================================================
 //
@@ -41,36 +32,7 @@
 //
 //================================================================
 
-#if !HEXLIB_STDBOOL_CLASS
-
-    using stdbool = bool;
-
-#else
-
-    class sysnodiscard stdbool
-    {
-
-    public:
-
-        sysinline explicit stdbool(bool value)
-            : value(value) {}
-
-        sysinline bool getSuccessValue() const
-            {return value;}
-
-    private:
-
-        bool value;
-
-    };
-
-    ////
-
-    sysinline stdbool allv(const stdbool& value)
-        {return value;}
-
-#endif
-
+struct stdbool {};
 
 //================================================================
 //
@@ -80,31 +42,26 @@
 //================================================================
 
 #define returnTrue \
-    return stdbool(true)
+    return stdbool{}
 
 #define returnFalse \
-    return stdbool(false)
+    do {__success = false; return stdbool{};} while (0)
 
 //================================================================
 //
-// require
-//
-// Check and fail without user message.
+// requireHelper
 //
 //================================================================
 
 template <typename Type>
-sysinline bool requireHelper(const Type& value);
+sysinline bool requireHelper(const Type& value)
+    MISSING_FUNCTION_BODY
 
 ////
 
-#if HEXLIB_STDBOOL_CLASS
-
-    template <>
-    sysinline bool requireHelper(const stdbool& value)
-        {return value.getSuccessValue();}
-
-#endif
+template <>
+sysinline bool requireHelper(const stdbool& value)
+    {return true;}
 
 ////
 
@@ -112,10 +69,33 @@ template <>
 sysinline bool requireHelper(const bool& value)
     {return value;}
 
-//----------------------------------------------------------------
+//================================================================
+//
+// allv
+//
+//================================================================
 
-#define require(condition) \
-    if (requireHelper(allv(condition))) ; else return stdbool(false)
+sysinline stdbool allv(const stdbool& value)
+    {return value;}
+
+//================================================================
+//
+// require
+//
+//================================================================
+
+#define require(code) \
+    \
+    do \
+    { \
+        auto __require_result = code; \
+        \
+        if (requireHelper(allv(__require_result))) \
+            ; \
+        else \
+            returnFalse; \
+    } \
+    while (0)
 
 //================================================================
 //
@@ -123,13 +103,12 @@ sysinline bool requireHelper(const bool& value)
 //
 //================================================================
 
-sysinline bool errorBlock(const stdbool& value)
+sysinline bool errorBlockHelper(bool& __success)
 {
-
-#if !HEXLIB_STDBOOL_CLASS
-    return value;
-#else
-    return value.getSuccessValue();
-#endif
-
+    bool result = __success;
+    __success = true;
+    return result;
 }
+
+#define errorBlock(code) \
+    ((code), errorBlockHelper(__success))

@@ -37,7 +37,7 @@ struct InitArgs
 //
 //================================================================
 
-using EventSource = Callable<stdbool (bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdNullPars)>;
+using EventSource = Callable<stdbool (bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdParsNull)>;
 
 //================================================================
 //
@@ -45,7 +45,7 @@ using EventSource = Callable<stdbool (bool waitEvents, const OptionalObject<uint
 //
 //================================================================
 
-using Drawer = Callable<stdbool (const GpuMatrix<uint8_x4>& dstImage, stdNullPars)>;
+using Drawer = Callable<stdbool (const GpuMatrix<uint8_x4>& dstImage, stdParsNull)>;
 
 //================================================================
 //
@@ -53,7 +53,7 @@ using Drawer = Callable<stdbool (const GpuMatrix<uint8_x4>& dstImage, stdNullPar
 //
 //================================================================
 
-using DrawReceiver = Callable<void (Drawer& drawer, stdNullPars)>;
+using DrawReceiver = Callable<void (Drawer& drawer, stdParsNull)>;
 
 //================================================================
 //

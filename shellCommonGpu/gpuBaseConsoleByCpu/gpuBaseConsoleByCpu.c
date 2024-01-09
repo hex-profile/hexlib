@@ -29,7 +29,7 @@
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& image, stdNullPars)
+stdbool GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& image, stdParsNull)
 {
     Space absPitch = absv(image.memPitch());
     REQUIRE(image.sizeX() <= absPitch);
@@ -66,7 +66,7 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& imag
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars)
+stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull)
 {
     auto src = gpuImage;
     auto dst = dest;
@@ -124,7 +124,7 @@ stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdNul
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::saveBgr24(const MatrixAP<MonoPixel>& dest, stdNullPars)
+stdbool GpuBaseImageProvider::saveBgr24(const MatrixAP<MonoPixel>& dest, stdParsNull)
 {
     auto src = gpuImage;
     auto dst = dest;
