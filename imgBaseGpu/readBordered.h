@@ -90,16 +90,16 @@ struct ReadBordered;
 template <>
 struct ReadBordered<BORDER_ZERO>
 {
-    template <typename LoadElement, typename SrcPointer>
-    static sysinline typename PtrElemType<SrcPointer>::T func(const MatrixEx<SrcPointer>& img, Space X, Space Y)
+    template <typename LoadElement, typename Pointer, typename Pitch>
+    static sysinline auto func(const MatrixEx<Pointer, Pitch>& img, Space X, Space Y)
     {
-        using Src = typename PtrElemType<SrcPointer>::T;
+        using Src = typename PtrElemType<Pointer>::T;
 
         MATRIX_EXPOSE(img);
 
         bool valid = MATRIX_VALID_ACCESS(img, X, Y);
         auto ptr = MATRIX_POINTER(img, X, Y);
-        TYPE_CLEANSE(Src) result = zeroOf<Src>();
+        auto result = zeroOf<Src>();
 
         if (valid)
             result = LoadElement::func(&helpRead(*ptr));
@@ -117,10 +117,10 @@ struct ReadBordered<BORDER_ZERO>
 template <>
 struct ReadBordered<BORDER_CLAMP>
 {
-    template <typename LoadElement, typename SrcPointer>
-    static sysinline typename PtrElemType<SrcPointer>::T func(const MatrixEx<SrcPointer>& img, Space X, Space Y)
+    template <typename LoadElement, typename Pointer, typename Pitch>
+    static sysinline auto func(const MatrixEx<Pointer, Pitch>& img, Space X, Space Y)
     {
-        using Src = typename PtrElemType<SrcPointer>::T;
+        using Src = typename PtrElemType<Pointer>::T;
 
         MATRIX_EXPOSE(img);
 
@@ -134,7 +134,7 @@ struct ReadBordered<BORDER_CLAMP>
 
         auto ptr = MATRIX_POINTER(img, X, Y);
 
-        TYPE_CLEANSE(Src) result = zeroOf<Src>();
+        auto result = zeroOf<Src>();
         if (valid) result = LoadElement::func(&helpRead(*ptr));
 
         return result;
@@ -150,10 +150,10 @@ struct ReadBordered<BORDER_CLAMP>
 template <>
 struct ReadBordered<BORDER_MIRROR>
 {
-    template <typename LoadElement, typename SrcPointer>
-    static sysinline typename PtrElemType<SrcPointer>::T func(const MatrixEx<SrcPointer>& img, Space X, Space Y)
+    template <typename LoadElement, typename Pointer, typename Pitch>
+    static sysinline auto func(const MatrixEx<Pointer, Pitch>& img, Space X, Space Y)
     {
-        using Src = typename PtrElemType<SrcPointer>::T;
+        using Src = typename PtrElemType<Pointer>::T;
 
         MATRIX_EXPOSE(img);
 
@@ -167,7 +167,7 @@ struct ReadBordered<BORDER_MIRROR>
         auto ptr = MATRIX_POINTER(img, X, Y);
         bool valid = MATRIX_VALID_ACCESS(img, X, Y);
 
-        TYPE_CLEANSE(Src) result = zeroOf<Src>();
+        auto result = zeroOf<Src>();
         if (valid) result = LoadElement::func(&helpRead(*ptr));
 
         return result;
@@ -183,14 +183,14 @@ struct ReadBordered<BORDER_MIRROR>
 template <>
 struct ReadBordered<BORDER_WRAP>
 {
-    template <typename LoadElement, typename SrcPointer>
-    static sysinline typename PtrElemType<SrcPointer>::T func(const MatrixEx<SrcPointer>& img, Space X, Space Y)
+    template <typename LoadElement, typename Pointer, typename Pitch>
+    static sysinline auto func(const MatrixEx<Pointer, Pitch>& img, Space X, Space Y)
     {
-        using Src = typename PtrElemType<SrcPointer>::T;
+        using Src = typename PtrElemType<Pointer>::T;
 
         MATRIX_EXPOSE(img);
 
-        TYPE_CLEANSE(Src) result = zeroOf<Src>();
+        auto result = zeroOf<Src>();
 
         ////
 
@@ -227,20 +227,20 @@ struct ReadBordered<BORDER_WRAP>
 //
 //================================================================
 
-template <BorderMode borderMode, typename SrcPointer>
-sysinline typename PtrElemType<SrcPointer>::T readBordered(const MatrixEx<SrcPointer>& img, Space X, Space Y)
+template <BorderMode borderMode, typename Pointer, typename Pitch>
+sysinline auto readBordered(const MatrixEx<Pointer, Pitch>& img, Space X, Space Y)
     {return ReadBordered<borderMode>::template func<struct LoadNormal>(img, X, Y);}
 
-template <BorderMode borderMode, typename SrcPointer>
-sysinline typename PtrElemType<SrcPointer>::T readBordered(const MatrixEx<SrcPointer>& img, const Point<Space>& pos)
+template <BorderMode borderMode, typename Pointer, typename Pitch>
+sysinline auto readBordered(const MatrixEx<Pointer, Pitch>& img, const Point<Space>& pos)
     {return ReadBordered<borderMode>::template func<struct LoadNormal>(img, pos.X, pos.Y);}
 
 //----------------------------------------------------------------
 
-template <BorderMode borderMode, typename SrcPointer>
-sysinline typename PtrElemType<SrcPointer>::T readBorderedViaSamplerCache(const MatrixEx<SrcPointer>& img, Space X, Space Y)
+template <BorderMode borderMode, typename Pointer, typename Pitch>
+sysinline auto readBorderedViaSamplerCache(const MatrixEx<Pointer, Pitch>& img, Space X, Space Y)
     {return ReadBordered<borderMode>::template func<struct LoadViaSamplerCache>(img, X, Y);}
 
-template <BorderMode borderMode, typename SrcPointer>
-sysinline typename PtrElemType<SrcPointer>::T readBorderedViaSamplerCache(const MatrixEx<SrcPointer>& img, const Point<Space>& pos)
+template <BorderMode borderMode, typename Pointer, typename Pitch>
+sysinline auto readBorderedViaSamplerCache(const MatrixEx<Pointer, Pitch>& img, const Point<Space>& pos)
     {return ReadBordered<borderMode>::template func<struct LoadViaSamplerCache>(img, pos.X, pos.Y);}

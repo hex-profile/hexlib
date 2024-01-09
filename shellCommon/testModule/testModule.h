@@ -6,6 +6,7 @@
 #include "kits/inputVideoNameKit.h"
 #include "kits/processInspector.h"
 #include "storage/smartPtr.h"
+#include "gpuLayer/gpuLayerKits.h"
 
 //================================================================
 //
@@ -52,7 +53,7 @@ struct TestModule
 
     ////
 
-    using ProcessKit = KitCombine<GpuModuleProcessKit, GpuRgbFrameKit>;
+    using ProcessKit = KitCombine<GpuModuleProcessKit, GpuRgbFrameKit, GpuMemoryAllocationKit>;
     virtual void inspectProcess(ProcessInspector& inspector) =0;
     virtual stdbool process(stdPars(ProcessKit)) =0;
 };

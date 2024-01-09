@@ -71,12 +71,11 @@ public:
         {
             Pointer resultPtr = allocPtr + r * currentLayerPitch;
 
-            result.assign
+            result.assignUnsafe
             (
                 resultPtr,
                 currentImagePitch,
-                currentImageSize.X, currentImageSize.Y,
-                MatrixValidityAssertion{}
+                currentImageSize.X, currentImageSize.Y
             );
         }
 

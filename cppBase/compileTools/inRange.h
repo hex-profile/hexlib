@@ -1,5 +1,7 @@
 #pragma once
 
+#include "compileTools/compileTools.h"
+
 //================================================================
 //
 // inRange

@@ -3,6 +3,7 @@
 #include "gpuModuleKit.h"
 #include "gpuAppliedApi/gpuAppliedApi.h"
 #include "storage/adapters/lambdaThunk.h"
+#include "gpuLayer/gpuLayerKits.h"
 
 namespace minimalShell {
 
@@ -33,7 +34,7 @@ KIT_CREATE(GpuExternalContextKit, const GpuExternalContext*, gpuExternalContext)
 //================================================================
 
 using EngineReallocKit = GpuModuleReallocKit;
-using EngineProcessKit = GpuModuleProcessKit;
+using EngineProcessKit = KitCombine<GpuModuleProcessKit, GpuMemoryAllocationKit>;
 
 //================================================================
 //

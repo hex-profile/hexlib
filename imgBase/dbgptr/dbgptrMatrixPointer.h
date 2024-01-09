@@ -49,7 +49,7 @@ public:
 
 private:
 
-    inline void copyFrom(const DebugMatrixPointerByteEngine& that);
+    sysinline void copyFrom(const DebugMatrixPointerByteEngine& that);
 
     //
     // Import array pointer
@@ -73,7 +73,7 @@ public:
 
 public:
 
-    inline void validateSingleByte() const
+    sysinline void validateSingleByte() const
     {
         if_not ((currentPtr - cachedRow) < matrixSizeX)
             validateSingleByteSlow();
@@ -89,7 +89,7 @@ private:
 
 public:
 
-    inline void validateArray(bool ok, DbgptrAddrU testSizeX) const
+    sysinline void validateArray(bool ok, DbgptrAddrU testSizeX) const
     {
         bool fastOk = ok;
         check_flag(testSizeX <= matrixSizeX, fastOk);
@@ -118,7 +118,7 @@ public:
 private:
 
     bool rowUpdateSlow() const;
-    inline bool rowUpdate() const;
+    sysinline bool rowUpdate() const;
 
 public:
 
@@ -199,7 +199,7 @@ public:
 
 public:
 
-    inline DebugMatrixPointer()
+    sysinline DebugMatrixPointer()
         :
         base(DebugMatrixPointerByteEngine::ConstructUnintialized())
     {
@@ -210,7 +210,7 @@ public:
 
     struct Null;
 
-    inline DebugMatrixPointer(Null*)
+    sysinline DebugMatrixPointer(Null*)
         :
         base(DebugMatrixPointerByteEngine::ConstructUnintialized())
     {
@@ -223,7 +223,7 @@ public:
 
 public:
 
-    inline DebugMatrixPointer(Element* matrMemPtr, Space matrMemPitch, Space matrSizeX, Space matrSizeY, const DbgptrMatrixPreconditions&)
+    sysinline DebugMatrixPointer(Element* matrMemPtr, Space matrMemPitch, Space matrSizeX, Space matrSizeY, const DbgptrMatrixPreconditions&)
         :
         base(DebugMatrixPointerByteEngine::ConstructUnintialized())
     {
@@ -239,7 +239,7 @@ public:
 
 public:
 
-    inline DebugMatrixPointer(const DebugArrayPointer<Element>& that)
+    sysinline DebugMatrixPointer(const DebugArrayPointer<Element>& that)
         :
         base(DebugMatrixPointerByteEngine::ConstructUnintialized())
     {
@@ -252,13 +252,13 @@ public:
 
 public:
 
-    inline DebugMatrixPointer(const Self& that)
+    sysinline DebugMatrixPointer(const Self& that)
         :
         base(that.base)
     {
     }
 
-    inline DebugMatrixPointer<Element>& operator =(const Self& that)
+    sysinline DebugMatrixPointer<Element>& operator =(const Self& that)
     {
         base = that.base;
         return *this;
@@ -271,7 +271,7 @@ public:
 public:
 
     template <typename Other>
-    inline DebugMatrixPointer(const DebugMatrixPointer<Other>& that)
+    sysinline DebugMatrixPointer(const DebugMatrixPointer<Other>& that)
         :
         base(that.base)
     {
@@ -279,7 +279,7 @@ public:
     }
 
     template <typename Other>
-    inline DebugMatrixPointer<Element>& operator =(const DebugMatrixPointer<Other>& that)
+    sysinline DebugMatrixPointer<Element>& operator =(const DebugMatrixPointer<Other>& that)
     {
         Element* checkConversion = (Other*) 0; checkConversion = checkConversion;
 
@@ -293,7 +293,7 @@ public:
 
 public:
 
-    inline operator DebugArrayPointer<Element> ()
+    sysinline operator DebugArrayPointer<Element> ()
     {
         DebugArrayPointerByteEngine result;
         base.exportArrayPointer(result);
@@ -306,7 +306,7 @@ public:
 
 public:
 
-    inline Element* getPtrForInternalUsageOnly() const
+    sysinline Element* getPtrForInternalUsageOnly() const
         {return (Element*) base.currentPtr;}
 
     //
@@ -316,22 +316,22 @@ public:
 
 public:
 
-    inline Self& operator ++()
+    sysinline Self& operator ++()
     {
         base.currentPtr += sizeof(Element);
         return *this;
     }
 
-    inline Self& operator --()
+    sysinline Self& operator --()
     {
         base.currentPtr -= sizeof(Element);
         return *this;
     }
 
-    inline Self operator ++(int)
+    sysinline Self operator ++(int)
         {Self tmp = *this; ++(*this); return tmp;}
 
-    inline Self operator --(int)
+    sysinline Self operator --(int)
         {Self tmp = *this; --(*this); return tmp;}
 
     //
@@ -341,13 +341,13 @@ public:
 
 public:
 
-    inline Self& operator +=(Space diff)
+    sysinline Self& operator +=(Space diff)
     {
         base.currentPtr += DbgptrAddrU(diff) * sizeof(Element);
         return *this;
     }
 
-    inline Self& operator -=(Space diff)
+    sysinline Self& operator -=(Space diff)
     {
         base.currentPtr -= DbgptrAddrU(diff) * sizeof(Element);
         return *this;
@@ -359,20 +359,20 @@ public:
 
 public:
 
-    inline const Element& read() const
+    sysinline const Element& read() const
     {
         base.validateSingleByte();
         return * (Element*) base.currentPtr;
     }
 
     template <typename Value>
-    inline void write(const Value& value) const
+    sysinline void write(const Value& value) const
     {
         base.validateSingleByte();
         * (Element*) base.currentPtr = value;
     }
 
-    inline Element& modify() const
+    sysinline Element& modify() const
     {
         base.validateSingleByte();
         return * (Element*) base.currentPtr;
@@ -386,17 +386,17 @@ public:
 
 public:
 
-    inline const DbgptrReference<Self>& operator *() const
+    sysinline const DbgptrReference<Self>& operator *() const
         {return (const DbgptrReference<Self>&) *this;}
 
-    inline DbgptrReference<Self> operator [](Space index) const
+    sysinline DbgptrReference<Self> operator [](Space index) const
     {
         DbgptrReference<Self> result = (const DbgptrReference<Self>&) *this;
         result.asPointer() += index;
         return result;
     }
 
-    inline Element* operator ->() const
+    sysinline Element* operator ->() const
         {return &modify();}
 
     //
@@ -406,13 +406,13 @@ public:
 
 public:
 
-    inline Self operator +(Space index) const
+    sysinline Self operator +(Space index) const
     {
         Self tmp = *this; tmp += index;
         return tmp;
     }
 
-    inline Self operator -(Space index) const
+    sysinline Self operator -(Space index) const
     {
         Self tmp = *this; tmp -= index;
         return tmp;
@@ -424,7 +424,7 @@ public:
 
 public:
 
-    inline Space operator -(const Self& that)
+    sysinline Space operator -(const Self& that)
         {return Space(((Element*) this->base.currentPtr) - ((Element*) that.base.currentPtr));}
 
     //
@@ -434,7 +434,7 @@ public:
 public:
 
     #define TMP_MACRO(OP) \
-        inline bool operator OP(const Self& that) const \
+        sysinline bool operator OP(const Self& that) const \
             {return this->base.currentPtr OP that.base.currentPtr;}
 
     TMP_MACRO(>)
@@ -469,7 +469,7 @@ public:
 
 public:
 
-    inline void validateRange2D(Space testSizeX, Space testSizeY) const
+    sysinline void validateRange2D(Space testSizeX, Space testSizeY) const
     {
         if_not (testSizeX != 0 && testSizeY != 0) return;
 
@@ -494,7 +494,7 @@ COMPILE_ASSERT_EQUAL_LAYOUT(DbgptrReference<DebugMatrixPointer<int>>, DebugMatri
 //================================================================
 
 template <typename Element>
-inline Element* unsafePtr(const DebugMatrixPointer<Element>& ptr, Space sizeX)
+sysinline Element* unsafePtr(const DebugMatrixPointer<Element>& ptr, Space sizeX)
 {
     ptr.validateRange1D(sizeX);
     return ptr.getPtrForInternalUsageOnly();
@@ -503,7 +503,7 @@ inline Element* unsafePtr(const DebugMatrixPointer<Element>& ptr, Space sizeX)
 //----------------------------------------------------------------
 
 template <typename Element>
-inline Element* unsafePtr(const DebugMatrixPointer<Element>& ptr, Space sizeX, Space sizeY)
+sysinline Element* unsafePtr(const DebugMatrixPointer<Element>& ptr, Space sizeX, Space sizeY)
 {
     ptr.validateRange2D(sizeX, sizeY);
     return ptr.getPtrForInternalUsageOnly();
@@ -516,7 +516,7 @@ inline Element* unsafePtr(const DebugMatrixPointer<Element>& ptr, Space sizeX, S
 //================================================================
 
 template <Space alignment, typename Type>
-inline bool isPtrAligned(const DebugMatrixPointer<Type>& ptr)
+sysinline bool isPtrAligned(const DebugMatrixPointer<Type>& ptr)
 {
     return isPtrAligned<alignment>(ptr.getPtrForInternalUsageOnly());
 }

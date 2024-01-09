@@ -187,7 +187,8 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
             ////
 
-            Array<const uint8> binary(modDesc.binDataPtr, modDesc.binDataSize);
+            Array<const uint8> binary;
+            REQUIRE(binary.assignValidated(modDesc.binDataPtr, modDesc.binDataSize));
 
             ////
 

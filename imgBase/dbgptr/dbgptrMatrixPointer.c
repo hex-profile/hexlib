@@ -68,7 +68,7 @@ void DebugMatrixPointerByteEngine::initByMatrix(DbgptrAddrU matrMemPtr, Space ma
 //
 //================================================================
 
-inline void DebugMatrixPointerByteEngine::copyFrom(const DebugMatrixPointerByteEngine& that)
+sysinline void DebugMatrixPointerByteEngine::copyFrom(const DebugMatrixPointerByteEngine& that)
 {
     this->currentPtr = that.currentPtr;
 
@@ -99,7 +99,7 @@ DebugMatrixPointerByteEngine& DebugMatrixPointerByteEngine::operator =(const Deb
 //
 //================================================================
 
-inline bool DebugMatrixPointerByteEngine::rowUpdate() const
+sysinline bool DebugMatrixPointerByteEngine::rowUpdate() const
 {
     bool ok = true;
 
@@ -144,7 +144,7 @@ bool DebugMatrixPointerByteEngine::rowUpdateSlow() const
 //
 //================================================================
 
-inline void DebugMatrixPointerByteEngine::validateSingleByteSlow() const
+sysinline void DebugMatrixPointerByteEngine::validateSingleByteSlow() const
 {
     rowUpdate();
 
@@ -158,7 +158,7 @@ inline void DebugMatrixPointerByteEngine::validateSingleByteSlow() const
 //
 //================================================================
 
-inline void DebugMatrixPointerByteEngine::validateArraySlow(bool ok, DbgptrAddrU testSizeX) const
+sysinline void DebugMatrixPointerByteEngine::validateArraySlow(bool ok, DbgptrAddrU testSizeX) const
 {
     rowUpdate();
 

@@ -47,6 +47,18 @@
 
 //================================================================
 //
+// sysnodiscard
+//
+//================================================================
+
+#if (__cplusplus >= 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L) && (_MSC_VER >= 1913))
+    #define sysnodiscard [[nodiscard]]
+#else
+    #define sysnodiscard
+#endif
+
+//================================================================
+//
 // allv
 //
 // Boolean "and" of all vector components.
@@ -271,7 +283,7 @@ sysinline Dst& recastFittingLayout(Src& src)
 
 //================================================================
 //
-// TYPE_SELECT
+// TypeSelect
 //
 // Conditional selection of a type at compile-time.
 //
@@ -297,18 +309,15 @@ struct TypeSelectHelper_<false>
 //----------------------------------------------------------------
 
 template <bool cond, typename T1, typename T2>
-struct TypeSelect
+struct TypeSelectImpl
 {
     using T = typename TypeSelectHelper_<cond>::template Selector<T1, T2>::T;
 };
 
 //----------------------------------------------------------------
 
-#define TYPE_SELECT(cond, T1, T2) \
-    typename TypeSelect<bool(cond), T1, T2>::T
-
-#define TYPE_SELECT_(cond, T1, T2) \
-    TypeSelect<bool(cond), T1, T2>::T
+template <bool cond, typename T1, typename T2>
+using TypeSelect = typename TypeSelectImpl<cond, T1, T2>::T;
 
 //================================================================
 //

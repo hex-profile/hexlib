@@ -65,7 +65,7 @@ struct BaseConsoleBmp
 
     ////
 
-    virtual stdbool saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
+    virtual stdbool saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
     virtual stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
 
 };
@@ -88,7 +88,7 @@ public:
 
 public:
 
-    stdbool addImage(const Matrix<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    stdbool addImage(const MatrixAP<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
     {
         require(baseConsole.addImage(img, hint, dataProcessing, stdPass));
         require(saver.saveImage(img, hint.desc, hint.id, stdPass));

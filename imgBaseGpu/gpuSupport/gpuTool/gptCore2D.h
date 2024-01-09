@@ -67,7 +67,7 @@
 //
 //================================================================
 
-#define GPT_MAKE_CALLER_2D(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport) \
+#define GPT_MAKE_CALLER_2D(prefix, samplerList, matrixList, matrixPitch, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport) \
     \
     hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
@@ -75,7 +75,7 @@
     ( \
         PREP_IF(superTaskSupport, Space superTaskCount) PREP_IF_COMMA(superTaskSupport) \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
-        GPT_FOREACH(matrixList, GPT_DECLARE_MATRIX_ARG) \
+        GPT_FOREACH(matrixList, PREP_PASTE_UNDER(GPT_DECLARE_MATRIX_ARG, matrixPitch)) \
         GPT_FOREACH(paramList, GPT_DECLARE_PARAM_ARG) \
         stdPars(GpuProcessKit) \
     ) \
@@ -128,12 +128,12 @@
 //
 //================================================================
 
-#define GPT_CALLER_2D_PROTO(prefix, samplerList, matrixList, paramList) \
+#define GPT_CALLER_2D_PROTO(prefix, samplerList, matrixList, matrixPitch, paramList) \
     \
     stdbool prefix \
     ( \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
-        GPT_FOREACH(matrixList, GPT_DECLARE_MATRIX_ARG) \
+        GPT_FOREACH(matrixList, PREP_PASTE_UNDER(GPT_DECLARE_MATRIX_ARG, matrixPitch)) \
         GPT_FOREACH(paramList, GPT_DECLARE_PARAM_ARG) \
         stdPars(GpuProcessKit) \
     ) \
@@ -145,10 +145,10 @@
 //
 //================================================================
 
-#define GPT_MAIN_2D_BEG(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport, keepAllThreads) \
-    GPT_DECLARE_PARAMS(prefix, Point<Space>, samplerList, matrixList, paramList) \
+#define GPT_MAIN_2D_BEG(prefix, samplerList, matrixList, matrixPitch, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport, keepAllThreads) \
+    GPT_DECLARE_PARAMS(prefix, Point<Space>, samplerList, matrixList, matrixPitch, paramList) \
     DEV_ONLY(GPT_DEFINE_SAMPLERS(prefix, samplerList)) \
-    HOST_ONLY(GPT_MAKE_CALLER_2D(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport)) \
+    HOST_ONLY(GPT_MAKE_CALLER_2D(prefix, samplerList, matrixList, matrixPitch, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport)) \
     DEV_ONLY(GPT_MAKE_KERNEL_2D_BEG(prefix, samplerList, matrixList, paramList, tileSizeX, tileSizeY, cellSizeX, cellSizeY, superTaskSupport, keepAllThreads))
 
 #define GPT_MAIN_2D_END \
@@ -161,54 +161,75 @@
 //================================================================
 
 #define GPUTOOL_2D_PROTO(prefix, samplerSeq, matrixSeq, paramSeq) \
-    GPT_CALLER_2D_PROTO(prefix, samplerSeq (o), matrixSeq (o), paramSeq (o))
+    GPT_CALLER_2D_PROTO(prefix, samplerSeq (o), matrixSeq (o), PitchDefault, paramSeq (o))
+
+#define GPUTOOL_2D_PROTO_AP(prefix, samplerSeq, matrixSeq, paramSeq) \
+    GPT_CALLER_2D_PROTO(prefix, samplerSeq (o), matrixSeq (o), PitchMayBeNegative, paramSeq (o))
 
 //================================================================
 //
+// GPUTOOL_2D_BEG_GENERIC
 // GPUTOOL_2D_BEG_EX2
-// GPUTOOL_2D_END_EX2
+// GPUTOOL_2D_END
 //
 //================================================================
 
-#define GPUTOOL_2D_BEG_EX2(prefix, tileSize, cellSize, superTaskSupport, keepAllThreads, samplerSeq, matrixSeq, paramSeq) \
-    GPT_MAIN_2D_BEG(prefix, samplerSeq (o), matrixSeq (o), paramSeq (o), PREP_ARG2_0 tileSize, PREP_ARG2_1 tileSize, \
+#define GPUTOOL_2D_BEG_GENERIC(prefix, tileSize, cellSize, superTaskSupport, keepAllThreads, samplerSeq, matrixSeq, matrixPitch, paramSeq) \
+    GPT_MAIN_2D_BEG(prefix, samplerSeq (o), matrixSeq (o), matrixPitch, paramSeq (o), PREP_ARG2_0 tileSize, PREP_ARG2_1 tileSize, \
         PREP_ARG2_0 cellSize, PREP_ARG2_1 cellSize, superTaskSupport, keepAllThreads) \
 
-#define GPUTOOL_2D_END_EX2 \
+#define GPUTOOL_2D_END \
     GPT_MAIN_2D_END
+
+////
+
+#define GPUTOOL_2D_BEG_EX2(prefix, tileSize, cellSize, superTaskSupport, keepAllThreads, samplerSeq, matrixSeq, paramSeq) \
+    GPUTOOL_2D_BEG_GENERIC(prefix, tileSize, cellSize, superTaskSupport, keepAllThreads, samplerSeq, matrixSeq, PitchDefault, paramSeq)
+
+#define GPUTOOL_2D_BEG_EX2_AP(prefix, tileSize, cellSize, superTaskSupport, keepAllThreads, samplerSeq, matrixSeq, paramSeq) \
+    GPUTOOL_2D_BEG_GENERIC(prefix, tileSize, cellSize, superTaskSupport, keepAllThreads, samplerSeq, matrixSeq, PitchMayBeNegative, paramSeq)
 
 //================================================================
 //
 // GPUTOOL_2D_BEG_EX
-// GPUTOOL_2D_END_EX
 //
 //================================================================
 
 #define GPUTOOL_2D_BEG_EX(prefix, tileSize, keepAllThreads, samplerSeq, matrixSeq, paramSeq) \
     GPUTOOL_2D_BEG_EX2(prefix, tileSize, (1, 1), PREP_FALSE, keepAllThreads, samplerSeq, matrixSeq, paramSeq)
 
-#define GPUTOOL_2D_END_EX \
-    GPUTOOL_2D_END_EX2
+#define GPUTOOL_2D_BEG_EX_AP(prefix, tileSize, keepAllThreads, samplerSeq, matrixSeq, paramSeq) \
+    GPUTOOL_2D_BEG_EX2_AP(prefix, tileSize, (1, 1), PREP_FALSE, keepAllThreads, samplerSeq, matrixSeq, paramSeq)
 
 //================================================================
 //
-// GPUTOOL_2D
-// GPUTOOL_2D_BEG
-// GPUTOOL_2D_END
+// Default GPU block sizes.
 //
 //================================================================
 
 #define GPUTOOL_2D_DEFAULT_THREAD_COUNT (32, 8)
 
-//----------------------------------------------------------------
+//================================================================
+//
+// GPUTOOL_2D
+// GPUTOOL_2D_BEG
+//
+//================================================================
 
 #define GPUTOOL_2D_BEG(prefix, samplerSeq, matrixSeq, paramSeq) \
     GPUTOOL_2D_BEG_EX(prefix, GPUTOOL_2D_DEFAULT_THREAD_COUNT, false, samplerSeq, matrixSeq, paramSeq)
 
-#define GPUTOOL_2D_END \
-    GPUTOOL_2D_END_EX
+#define GPUTOOL_2D_BEG_AP(prefix, samplerSeq, matrixSeq, paramSeq) \
+    GPUTOOL_2D_BEG_EX_AP(prefix, GPUTOOL_2D_DEFAULT_THREAD_COUNT, false, samplerSeq, matrixSeq, paramSeq)
+
+////
 
 #define GPUTOOL_2D(prefix, samplerSeq, matrixSeq, paramSeq, iterationBody) \
-    GPUTOOL_2D_BEG_EX(prefix, GPUTOOL_2D_DEFAULT_THREAD_COUNT, false, samplerSeq, matrixSeq, paramSeq) \
+    GPUTOOL_2D_BEG(prefix, samplerSeq, matrixSeq, paramSeq) \
     DEV_ONLY(iterationBody) \
-    GPUTOOL_2D_END_EX
+    GPUTOOL_2D_END
+
+#define GPUTOOL_2D_AP(prefix, samplerSeq, matrixSeq, paramSeq, iterationBody) \
+    GPUTOOL_2D_BEG_AP(prefix, samplerSeq, matrixSeq, paramSeq) \
+    DEV_ONLY(iterationBody) \
+    GPUTOOL_2D_END

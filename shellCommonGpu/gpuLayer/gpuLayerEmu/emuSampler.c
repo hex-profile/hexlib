@@ -370,7 +370,8 @@ static stdbool setupSamplerImage
 
     ////
 
-    info.matrix.assign((const MemType*) imageBaseAddr, imageBytePitch / Space(sizeof(MemType)), imageSize.X, imageSize.Y);
+    REQUIRE(imageBytePitch >= 0);
+    REQUIRE(info.matrix.assignValidated((const MemType*) imageBaseAddr, imageBytePitch / Space(sizeof(MemType)), imageSize.X, imageSize.Y));
 
     //
     // Normalize to float check
@@ -603,7 +604,7 @@ static stdbool setupSamplerArray
     REQUIRE(arrayByteSize >= 0);
     Space arraySize = SpaceU(arrayByteSize) / sizeof(MemType);
 
-    info.array.assign((const MemType*) arrayAddr, arraySize);
+    REQUIRE(info.array.assignValidated((const MemType*) arrayAddr, arraySize));
 
     //
     // Normalize to float check

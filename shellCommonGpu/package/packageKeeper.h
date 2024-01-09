@@ -39,7 +39,7 @@ Process helper:
 
     * Also gets a pointer to interface providing
         - Target process() function. The target function will get its parameters and EngineProcessKit.
-        - Functions reallocValid() è realloc(), because the minimal shell will use them.
+        - Functions reallocValid() and realloc(), because the minimal shell will use them.
 */
 
 //================================================================

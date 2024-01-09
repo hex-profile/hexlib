@@ -112,7 +112,7 @@
 //================================================================
 
 #define GPT_FLAT_MAIN_BEG(prefix, samplerList, paramList, groupSizeX, groupSizeY) \
-    GPT_DECLARE_PARAMS(prefix, Space, samplerList, (o), paramList) \
+    GPT_DECLARE_PARAMS(prefix, Space, samplerList, (o), PitchMayBeNegative, paramList) \
     DEV_ONLY(GPT_DEFINE_SAMPLERS(prefix, samplerList)) \
     HOST_ONLY(GPT_FLAT_MAKE_CALLER(prefix, samplerList, paramList, groupSizeX, groupSizeY)) \
     DEV_ONLY(GPT_FLAT_MAKE_KERNEL_BEG(prefix, samplerList, paramList, groupSizeX, groupSizeY))

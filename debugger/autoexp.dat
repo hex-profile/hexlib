@@ -57,7 +57,7 @@ ArrayEx<*>|ArrayMemoryEx<*>|Array<*>|ArrayMemory<*>|ArrayObjectMemory<*>|GpuArra
 ;
 ;================================================================
 
-MatrixEx<*>|Matrix<*>|MatrixMemoryEx<*>|MatrixMemory<*> {
+MatrixEx<*,*>|Matrix<*,*>|MatrixMemoryEx<*>|MatrixMemory<*> {
   preview
   ( 
     #

@@ -160,7 +160,7 @@ stdbool MallocTestImpl::process(stdPars(GpuModuleProcessKit))
     {
         printMsgL(kit, STR("Pool re-setup!"), msgWarn);
 
-        REQUIRE(pool.realloc(poolSize));
+        require(pool.realloc(poolSize, stdPass));
         poolAmount = 0;
 
         ARRAY_EXPOSE(pool);

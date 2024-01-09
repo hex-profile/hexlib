@@ -337,6 +337,10 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         target_compile_definitions(${projectName} PRIVATE _SCL_SECURE_NO_WARNINGS=1)
     endif()
 
+    ###
+
+    target_compile_features(${projectName} PRIVATE cxx_std_17)
+
     #----------------------------------------------------------------
     #
     # GPU support.
@@ -363,6 +367,72 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
         endif()
 
     endif()
+
+endfunction()
+
+#================================================================
+#
+# linkOpenCv
+#
+#================================================================
+
+function (linkOpenCv targetName opencvVersion opencvModules)
+
+    set(libs "")
+
+    ###
+
+    math(EXPR bitness "8*${CMAKE_SIZEOF_VOID_P}")
+
+    ###
+
+    if (CMAKE_BUILD_TYPE MATCHES Debug)
+        set(libd "d")
+    elseif (CMAKE_BUILD_TYPE MATCHES Release)
+        set(libd "")
+    elseif (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+        set(libd "")
+    else()
+        message(FATAL_ERROR "Unrecognized CMAKE_BUILD_TYPE.")
+    endif()
+
+    ###
+
+    if (WIN32)
+
+        if (NOT DEFINED ENV{HEXFLOW_OPENCV_DIR})
+           message(WARNING "Could not find HEXFLOW_OPENCV_DIR environment variable")
+        endif()
+
+        set(opencvDir $ENV{HEXFLOW_OPENCV_DIR})
+
+        target_include_directories(${targetName} PRIVATE ${opencvDir}/include)
+
+        set(opencvLib ${opencvDir}/x${bitness}/vc14/lib)
+
+        foreach(lib ${opencvModules})
+            set(libs ${libs} "${opencvLib}/${lib}${opencvVersion}${libd}.lib")
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /DELAYLOAD:${lib}${opencvVersion}${libd}.dll")
+        endforeach()
+
+        add_custom_command(TARGET ${targetName} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${opencvDir}/x${bitness}/vc14/bin"
+                $<TARGET_FILE_DIR:${targetName}>)
+
+        set(libs ${libs} delayimp.lib) # delay-load OpenCV to avoid detecting its memory leaks
+
+    else()
+
+        foreach(lib ${opencvModules})
+            set(libs ${libs} "${lib}${libd}")
+        endforeach()
+
+    endif()
+
+    ###
+
+    target_link_libraries(${targetName} PRIVATE ${libs})
 
 endfunction()
 

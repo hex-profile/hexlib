@@ -633,7 +633,7 @@ inline stdbool genericArrayCopy
         (
             point3D(1, ctx.emuThreadCount(), 1),
             point(1, 1),
-            (EmuKernelFunc*) copyArrayKernelCode,
+            (EmuKernelFunc*) (void*) copyArrayKernelCode,
             &params,
             stdPassThru
         )
@@ -661,10 +661,10 @@ inline stdbool genericArrayCopy
         returnTrue; \
     }
 
-TMP_MACRO(copyArrayCpuCpu, CpuAddrU, CpuAddrU);
-TMP_MACRO(copyArrayCpuGpu, CpuAddrU, GpuAddrU);
-TMP_MACRO(copyArrayGpuCpu, GpuAddrU, CpuAddrU);
-TMP_MACRO(copyArrayGpuGpu, GpuAddrU, GpuAddrU);
+TMP_MACRO(copyArrayCpuCpu, CpuAddrU, CpuAddrU)
+TMP_MACRO(copyArrayCpuGpu, CpuAddrU, GpuAddrU)
+TMP_MACRO(copyArrayGpuCpu, GpuAddrU, CpuAddrU)
+TMP_MACRO(copyArrayGpuGpu, GpuAddrU, GpuAddrU)
 
 #undef TMP_MACRO
 
@@ -736,7 +736,7 @@ inline stdbool genericMatrixCopy
         (
             point3D(1, ctx.emuThreadCount(), 1),
             point(1, 1),
-            (EmuKernelFunc*) copyMatrixKernelCode,
+            (EmuKernelFunc*) (void*) copyMatrixKernelCode,
             &params,
             stdPassThru
         )
@@ -783,10 +783,10 @@ inline stdbool genericMatrixCopy
         returnTrue; \
     }
 
-TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU);
-TMP_MACRO(copyMatrixCpuGpu, CpuAddrU, GpuAddrU);
-TMP_MACRO(copyMatrixGpuCpu, GpuAddrU, CpuAddrU);
-TMP_MACRO(copyMatrixGpuGpu, GpuAddrU, GpuAddrU);
+TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU)
+TMP_MACRO(copyMatrixCpuGpu, CpuAddrU, GpuAddrU)
+TMP_MACRO(copyMatrixGpuCpu, GpuAddrU, CpuAddrU)
+TMP_MACRO(copyMatrixGpuGpu, GpuAddrU, GpuAddrU)
 
 #undef TMP_MACRO
 
@@ -827,11 +827,11 @@ stdbool EmuExecApiThunk::setSamplerArray
 
 //================================================================
 //
-// EmuExecApiThunk::setSamplerImage
+// EmuExecApiThunk::setSamplerImageEx
 //
 //================================================================
 
-stdbool EmuExecApiThunk::setSamplerImage
+stdbool EmuExecApiThunk::setSamplerImageEx
 (
     const GpuSamplerLink& sampler,
     GpuAddrU imageBaseAddr,

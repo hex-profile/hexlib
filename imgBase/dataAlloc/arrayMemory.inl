@@ -49,7 +49,7 @@ stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, Allocat
 
     ////
 
-    BaseArray::assign(newPtr, size, ArrayValidityAssertion{});
+    BaseArray::assignUnsafe(newPtr, size);
 
     returnTrue;
 }

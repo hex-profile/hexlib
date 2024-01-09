@@ -12,8 +12,7 @@
 //================================================================
 
 #define GPU_PROHIBITED_API_CALL \
-    REQUIRE_TRACE0(false, STR("Prohibited GPU API call in memory counting phase")); \
-    returnTrue
+    REQUIRE_TRACE(false, STR("Prohibited GPU API call in memory counting phase"))
 
 //================================================================
 //
@@ -47,7 +46,10 @@ public:
             stdNullPars \
         ) \
         { \
-            GPU_PROHIBITED_API_CALL; \
+            if (prohibitionEnabled) \
+                GPU_PROHIBITED_API_CALL; \
+            \
+            return kit.gpuTransfer.funcName(srcAddr, dstAddr, size, stream, stdNullPassThru); \
         }
 
     TMP_MACRO(copyArrayCpuCpu, CpuAddrU, CpuAddrU)
@@ -72,7 +74,10 @@ public:
             stdNullPars \
         ) \
         { \
-            GPU_PROHIBITED_API_CALL; \
+            if (prohibitionEnabled) \
+                GPU_PROHIBITED_API_CALL; \
+            \
+            return kit.gpuTransfer.funcName(srcAddr, srcBytePitch, dstAddr, dstBytePitch, byteSizeX, sizeY, stream, stdNullPassThru); \
         }
 
     TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU)
@@ -103,10 +108,14 @@ public:
         stdNullPars
     )
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuSamplerSetting.setSamplerArray(sampler, arrayAddr, arrayByteSize, chanType, rank,
+            borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdNullPassThru);
     }
 
-    stdbool setSamplerImage
+    stdbool setSamplerImageEx
     (
         const GpuSamplerLink& sampler,
         GpuAddrU imageBaseAddr,
@@ -122,7 +131,11 @@ public:
         stdNullPars
     )
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuSamplerSetting.setSamplerImageEx(sampler, imageBaseAddr, imageBytePitch, imageSize, chanType,
+            rank, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdNullPassThru);
     }
 
     //----------------------------------------------------------------
@@ -142,7 +155,10 @@ public:
         stdNullPars
     )
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuKernelCalling.callKernel(groupCount, threadCount, dbgElemCount, kernelLink, paramPtr, paramSize, stream, stdNullPassThru);
     }
 
     //----------------------------------------------------------------
@@ -153,7 +169,10 @@ public:
 
     stdbool waitStream(const GpuStream& stream, stdNullPars)
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuStreamWaiting.waitStream(stream, stdNullPassThru);
     }
 
     //----------------------------------------------------------------
@@ -164,22 +183,34 @@ public:
 
     stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuEventRecording.recordEvent(event, stream, stdNullPassThru);
     }
 
     stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuEventRecording.putEventDependency(event, stream, stdNullPassThru);
     }
 
     stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuEventWaiting.waitEvent(event, realWaitHappened, stdNullPassThru);
     }
 
     stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
     {
-        GPU_PROHIBITED_API_CALL;
+        if (prohibitionEnabled)
+            GPU_PROHIBITED_API_CALL;
+
+        return kit.gpuEventWaiting.eventElapsedTime(event1, event2, time, stdNullPassThru);
     }
 
     //----------------------------------------------------------------
@@ -189,20 +220,32 @@ public:
     //----------------------------------------------------------------
 
     void setEnqueueMode(GpuEnqueueMode gpuEnqueueMode)
-        {}
+        {kit.gpuBenchmarkingControl.setEnqueueMode(gpuEnqueueMode);}
 
     GpuEnqueueMode getEnqueueMode()
-        {return GpuEnqueueNormal;}
+        {return kit.gpuBenchmarkingControl.getEnqueueMode();}
 
     void setCoverageMode(GpuCoverageMode gpuCoverageMode)
-        {}
+        {kit.gpuBenchmarkingControl.setCoverageMode(gpuCoverageMode);}
 
     GpuCoverageMode getCoverageMode()
-        {return GpuCoverageNone;}
+        {return kit.gpuBenchmarkingControl.getCoverageMode();}
 
     //----------------------------------------------------------------
     //
+    // Counting phase GPU prohibition control
     //
+    //----------------------------------------------------------------
+
+    void setCountingPhaseGpuProhibition(bool value)
+        {prohibitionEnabled = value;}
+
+    bool getCountingPhaseGpuProhibition()
+        {return prohibitionEnabled;}
+
+    //----------------------------------------------------------------
+    //
+    // Get kit
     //
     //----------------------------------------------------------------
 
@@ -210,13 +253,14 @@ public:
     {
         return kitCombine
         (
-            GpuTransferKit(*this),
-            GpuSamplerSetupKit(*this),
-            GpuKernelCallingKit(*this),
-            GpuStreamWaitingKit(*this),
-            GpuEventRecordingKit(*this),
-            GpuEventWaitingKit(*this),
-            GpuBenchmarkingControlKit(*this)
+            GpuTransferKit{*this},
+            GpuSamplerSetupKit{*this},
+            GpuKernelCallingKit{*this},
+            GpuStreamWaitingKit{*this},
+            GpuEventRecordingKit{*this},
+            GpuEventWaitingKit{*this},
+            GpuBenchmarkingControlKit{*this},
+            GpuCountingPhaseProhibitionControlKit{*this}
         );
     }
 
@@ -226,63 +270,16 @@ public:
     //
     //----------------------------------------------------------------
 
-    inline GpuProhibitedExecApiThunk(const MsgLogExKit& kit)
-        : kit(kit) {}
-
-private:
-
-    MsgLogExKit kit;
-
-};
-
-//================================================================
-//
-// GpuEventAllocatorSupressor
-//
-//================================================================
-
-class GpuEventAllocatorSupressor : public GpuEventAllocator
-{
-
 public:
 
-    stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars)
-    {
-        result.clear();
-        returnTrue;
-    }
+    using Kit = KitCombine<GpuExecKit, MsgLogExKit>;
 
-    GpuEventAllocatorSupressor(const MsgLogExKit& kit)
+    inline GpuProhibitedExecApiThunk(const Kit& kit)
         : kit(kit) {}
 
 private:
 
-    MsgLogExKit kit;
-
-};
-
-//================================================================
-//
-// GpuTextureAllocatorSupressor
-//
-//================================================================
-
-class GpuTextureAllocatorSupressor : public GpuTextureAllocator
-{
-
-public:
-
-    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
-    {
-        result.clear();
-        returnTrue;
-    }
-
-    GpuTextureAllocatorSupressor(const MsgLogExKit& kit)
-        : kit(kit) {}
-
-private:
-
-    MsgLogExKit kit;
+    Kit kit;
+    bool prohibitionEnabled = true;
 
 };

@@ -23,7 +23,7 @@
 // REDUCEMODERN__PREPARE
 //
 // Allocates SRAM arrays for all enumerated parameters.
-// Each setup has a pre and may be used multiple times.
+// Each setup has a prefix and may be used multiple times.
 //
 //================================================================
 
@@ -34,6 +34,7 @@
     \
     COMPILE_ASSERT(pre##ThreadCount % devWarpSize == 0); \
     constexpr Space pre##WarpCount = pre##ThreadCount / devWarpSize; \
+    COMPILE_ASSERT(pre##WarpCount <= devWarpSize); /* The final reduction step can be done by a single warp */ \
     \
     const Space pre##WarpIndex = SpaceU(pre##ThreadIndex) / SpaceU(devWarpSize); \
     const Space pre##LaneIndex = SpaceU(pre##ThreadIndex) % SpaceU(devWarpSize); \
@@ -58,13 +59,12 @@
     \
     { \
         PREP_SEQ_FOREACH_TRIPLET(paramSeq, REDUCEMODERN__ITERATION_VARS, shift) \
-        constexpr bool active = true; \
         {body;} \
     }
 
 #define REDUCEMODERN__ITERATION_VARS(Type, name, neutralValue, shift) \
     auto* name##L = &name; \
-    auto name##_Incoming = devShuffleDown(name, shift); \
+    auto name##_Incoming = devReadLaneAddBorderClamp(name, shift); \
     const auto* name##R = &name##_Incoming;
 
 //================================================================
@@ -126,7 +126,6 @@
             devSyncThreads(); \
             \
             /* Load valid values back to registers. */ \
-            COMPILE_ASSERT(pre##WarpCount <= devWarpSize); \
             REDUCEMODERN__LOAD(pre, paramSeq); \
             \
             /* Final register reduction, 0th thread will contain the result. */ \
@@ -171,23 +170,11 @@
 //
 //================================================================
 
-#if defined(__CUDA_ARCH__)
+#define REDUCTION_MODERN_PREPARE(pre, threadCount, threadIndex, paramSeq) \
+    REDUCEMODERN__PREPARE(pre, threadCount, threadIndex, paramSeq)
 
-    #define REDUCTION_MODERN_PREPARE(pre, threadCount, threadIndex, paramSeq) \
-        REDUCEMODERN__PREPARE(pre, threadCount, threadIndex, paramSeq)
-
-    #define REDUCTION_MODERN_APPLY(pre, paramSeq, body) \
-        REDUCEMODERN__APPLY(pre, paramSeq, body)
-
-#else
-
-    #define REDUCTION_MODERN_PREPARE(pre, threadCount, threadIndex, paramSeq) \
-        REDUCTION_CLASSIC_PREPARE(pre, threadCount, threadIndex, REDUCEMODERN__TRANSLATE(paramSeq))
-
-    #define REDUCTION_MODERN_APPLY(pre, paramSeq, body) \
-        REDUCTION_CLASSIC_APPLY(pre, REDUCEMODERN__TRANSLATE(paramSeq), body)
-
-#endif
+#define REDUCTION_MODERN_APPLY(pre, paramSeq, body) \
+    REDUCEMODERN__APPLY(pre, paramSeq, body)
 
 //----------------------------------------------------------------
 

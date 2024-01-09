@@ -123,7 +123,7 @@
 //================================================================
 
 #define GPT_PLAIN_MAIN_BEG(prefix, samplerList, paramList, chunkSize, keepAllThreads) \
-    GPT_DECLARE_PARAMS(prefix, Space, samplerList, (o), paramList) \
+    GPT_DECLARE_PARAMS(prefix, Space, samplerList, (o), PitchMayBeNegative, paramList) \
     DEV_ONLY(GPT_DEFINE_SAMPLERS(prefix, samplerList)) \
     HOST_ONLY(GPT_PLAIN_MAKE_CALLER(prefix, samplerList, paramList, chunkSize)) \
     DEV_ONLY(GPT_PLAIN_MAKE_KERNEL_BEG(prefix, samplerList, paramList, chunkSize, keepAllThreads))

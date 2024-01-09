@@ -4,6 +4,9 @@
 #include "vectorTypes/vectorOperations.h"
 #include "mathFuncs/rotationMath.h"
 #include "imageRead/positionTools.h"
+#include "data/gpuArray.h"
+#include "gpuDevice/gpuDevice.h"
+#include "data/gpuMatrix.h"
 
 //================================================================
 //
@@ -15,15 +18,9 @@
 
 #if __CUDA_ARCH__
 
-__global__ void testKernel(Space* ptr, Space maxSize)
+__global__ void testKernel(GpuMatrix<Point3D<int32>> mat, Space X, Space Y)
 {
-    auto value = *ptr;
-
-    value = clampRange(value, 0, maxSize);
-
-    *ptr = value;
+    devAbortCheck(mat.element(X, Y) != 0);
 }
-
-////
 
 #endif

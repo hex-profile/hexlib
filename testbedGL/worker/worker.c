@@ -7,9 +7,10 @@
 #include "allocation/mallocKit.h"
 #include "cfgTools/boolSwitch.h"
 #include "cfgTools/numericVar.h"
-#include "compileTools/blockExceptionsSilent.h"
 #include "cfgVars/cfgSerializeImpl/cfgSerializeImpl.h"
+#include "compileTools/blockExceptionsSilent.h"
 #include "dataAlloc/arrayObjectMemory.inl"
+#include "errorLog/convertExceptions.h"
 #include "errorLog/debugBreak.h"
 #include "formattedOutput/formatters/messageFormatterImpl.h"
 #include "formattedOutput/requireMsg.h"
@@ -27,13 +28,13 @@
 #include "stl/stlArray.h"
 #include "storage/rememberCleanup.h"
 #include "tests/testShell/testShell.h"
+#include "threads/threads.h"
 #include "timer/timerKit.h"
 #include "timerImpl/timerImpl.h"
+#include "userOutput/diagnosticKitNull.h"
 #include "userOutput/printMsg.h"
 #include "userOutput/printMsgEx.h"
 #include "worker/gpuBaseConsoleThunk.h"
-#include "userOutput/diagnosticKitNull.h"
-#include "errorLog/convertExceptions.h"
 
 namespace worker {
 
@@ -90,6 +91,9 @@ struct WorkerImpl : public Worker
     {
         bool& glContextBound;
         ShutdownReq& shutdown;
+
+        RunArgsEx(const RunArgs& base, bool& glContextBound, ShutdownReq& shutdown)
+            : RunArgs{base}, glContextBound{glContextBound}, shutdown{shutdown} {}
     };
 
     void processingCycle(const RunArgsEx& args);
@@ -275,7 +279,7 @@ void WorkerImpl::serialize(const CfgSerializeKit& kit)
 
 stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
 {
-    REQUIRE(formatterArray.realloc(65536));
+    require(formatterArray.realloc(65536, stdPass));
 
     //----------------------------------------------------------------
     //
@@ -286,7 +290,7 @@ stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
     glContext = &args.glContext;
 
     require(glContext->bind(stdPass));
-    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(errorBlock(glContext->unbind(stdPass))));
+    REMEMBER_CLEANUP_ERROR_BLOCK(glContext->unbind(stdPass));
 
     //----------------------------------------------------------------
     //
@@ -391,7 +395,7 @@ void WorkerImpl::run(const RunArgs& args)
         returnTrue;
     };
 
-    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(errorBlock(unbindContext())));
+    REMEMBER_CLEANUP_ERROR_BLOCK(unbindContext());
 
     //----------------------------------------------------------------
     //
@@ -406,7 +410,7 @@ void WorkerImpl::run(const RunArgs& args)
         ////
 
         ShutdownReq shutdown;
-        RunArgsEx argsEx = {args, glContextBound, shutdown};
+        RunArgsEx argsEx{args, glContextBound, shutdown};
 
         processingCycle(argsEx);
 
@@ -670,7 +674,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
     //----------------------------------------------------------------
 
     printMsgL(kit, STR("% mode"), processContinuously ? STR("RUN") : STR("STEP"));
-    printMsgL(kit, STR("Worker Cycle %"), cycleCounter++);
+    // printMsgL(kit, STR("Worker Cycle %"), cycleCounter++);
 
     ////
 

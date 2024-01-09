@@ -7,7 +7,7 @@
 #if DEVCODE
 
 template <typename Dst, typename FilterX, typename FilterY>
-devDecl void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Dst, FilterX, FilterY>& o, devPars)
+sysinline void PREP_PASTE(downsampleTwiceKernel_x, RANK)(const DownsampleParams<Dst, FilterX, FilterY>& o, devPars)
 {
 
     typedef VECTOR_REBASE(Dst, float32) FloatType;

@@ -99,7 +99,7 @@ stdbool MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByt
 
     ////
 
-    BaseMatrix::assign(newPtr, alignedSizeX, sizeX, sizeY);
+    BaseMatrix::assignUnsafe(newPtr, alignedSizeX, sizeX, sizeY);
 
     returnTrue;
 }
@@ -139,7 +139,7 @@ bool MatrixMemoryEx<Pointer>::resize(Space sizeX, Space sizeY)
     ensure(SpaceU(sizeY) <= SpaceU(allocSize.Y));
 
     Space alignedSizeX = (sizeX + allocAlignMask) & (~allocAlignMask); // overflow impossible
-    BaseMatrix::assign(allocPtr, alignedSizeX, sizeX, sizeY, MatrixValidityAssertion{});
+    BaseMatrix::assignUnsafe(allocPtr, alignedSizeX, sizeX, sizeY);
 
     return true;
 }

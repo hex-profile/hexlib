@@ -1,6 +1,7 @@
 #pragma once
 
 #include "compileTools/compileTools.h"
+#include "numbers/int/intBase.h"
 
 //================================================================
 //

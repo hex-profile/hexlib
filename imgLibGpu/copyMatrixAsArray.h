@@ -12,15 +12,15 @@
 //
 //================================================================
 
-template <typename Pointer, typename Kit>
-inline stdbool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx<Pointer>& result, stdPars(Kit))
+template <typename MatrixType, typename ArrayType, typename Kit>
+inline stdbool getMatrixMemoryRangeAsArray(const MatrixType& img, ArrayType& result, stdPars(Kit))
 {
     MATRIX_EXPOSE_UNSAFE(img);
 
     result.assignNull();
     REQUIRE(imgMemPitch >= imgSizeX);
 
-    result.assign(imgMemPtr, imgMemPitch * imgSizeY);
+    result.assignUnsafe(imgMemPtr, imgMemPitch * imgSizeY);
 
     returnTrue;
 }
@@ -31,16 +31,22 @@ inline stdbool getMatrixMemoryRangeAsArray(const MatrixEx<Pointer>& img, ArrayEx
 //
 //================================================================
 
-template <typename SrcPtr, typename DstPtr, typename Kit>
-stdbool copyMatrixAsArray(const MatrixEx<SrcPtr>& srcMatrix, const MatrixEx<DstPtr>& dstMatrix, GpuCopyThunk& gpuCopy, stdPars(Kit))
+template <typename SrcPtr, typename SrcPitch, typename DstPtr, typename DstPitch, typename Kit>
+sysinline stdbool copyMatrixAsArray
+(
+    const MatrixEx<SrcPtr, SrcPitch>& srcMatrix,
+    const MatrixEx<DstPtr, DstPitch>& dstMatrix,
+    GpuCopyThunk& gpuCopy,
+    stdPars(Kit)
+)
 {
     if_not (kit.dataProcessing)
         returnTrue;
 
     ////
 
-    MatrixEx<SrcPtr> src = srcMatrix;
-    MatrixEx<DstPtr> dst = dstMatrix;
+    MatrixEx<SrcPtr, PitchMayBeNegative> src = srcMatrix;
+    MatrixEx<DstPtr, PitchMayBeNegative> dst = dstMatrix;
 
     ////
 

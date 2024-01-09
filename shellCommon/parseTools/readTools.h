@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 #include "parseTools/charSet.h"
 #include "compileTools/compileTools.h"
 #include "numbers/int/intType.h"

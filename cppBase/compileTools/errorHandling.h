@@ -4,12 +4,13 @@
 //
 // 0: Using bool error code.
 // 1: Using exceptions.
+// 2: Using bool paramter by reference.
 //
 //================================================================
 
 #ifndef HEXLIB_ERROR_HANDLING
 
-    #define HEXLIB_ERROR_HANDLING 1
+    #define HEXLIB_ERROR_HANDLING 0
 
 #endif
 
@@ -26,6 +27,10 @@
 #elif HEXLIB_ERROR_HANDLING == 1
 
     #include "errorHandlingExceptions.h"
+
+#elif HEXLIB_ERROR_HANDLING == 2
+
+    #include "errorHandlingBoolRef.h"
 
 #else
 

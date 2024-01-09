@@ -7,6 +7,65 @@
 
 //================================================================
 //
+// Pitch*
+//
+//================================================================
+
+struct PitchPositiveOrZero;
+struct PitchMayBeNegative;
+
+////
+
+using PitchDefault = PitchPositiveOrZero;
+
+//================================================================
+//
+// PitchIsEqual
+//
+//================================================================
+
+template <typename T1, typename T2>
+struct PitchIsEqual
+{
+    static constexpr bool value = false;
+};
+
+template <typename T>
+struct PitchIsEqual<T, T>
+{
+    static constexpr bool value = true;
+};
+
+//================================================================
+//
+// PitchCheckConversion
+//
+//================================================================
+
+template <typename Src, typename Dst>
+struct PitchCheckConversion;
+
+template <typename Any>
+struct PitchCheckConversion<Any, PitchMayBeNegative> {};
+
+template <>
+struct PitchCheckConversion<PitchPositiveOrZero, PitchPositiveOrZero> {};
+
+//================================================================
+//
+// matrixBaseIsValid
+//
+// (1) sizeX >= 0 && sizeY >= 0
+// (2) sizeX <= |pitch|
+// (3) (sizeY * pitch * elemSize) fits into Space type.
+//
+//================================================================
+
+template <Space elemSize, typename Pitch>
+bool matrixBaseIsValid(Space sizeX, Space sizeY, Space pitch);
+
+//================================================================
+//
 // MatrixBase
 //
 //----------------------------------------------------------------
@@ -24,29 +83,7 @@
 //
 //================================================================
 
-//================================================================
-//
-// MatrixValidityAssertion
-//
-// Static assertion:
-//
-// (1) sizeX >= 0 && sizeY >= 0
-// (2) sizeX <= |pitch|
-// (3) (sizeX * pitch * sizeof(*memPtr)) fits into Space type
-//
-//================================================================
-
-class MatrixValidityAssertion
-{
-};
-
-//================================================================
-//
-// MatrixBase
-//
-//================================================================
-
-template <typename Type, typename Pointer = Type*>
+template <typename Type, typename Pointer = Type*, typename Pitch = PitchDefault>
 class MatrixBase
 {
 
@@ -56,14 +93,40 @@ public:
     {
     }
 
+public:
+
     template <typename OtherPointer>
-    HEXLIB_INLINE MatrixBase(OtherPointer memPtr, Space memPitch, Space sizeX, Space sizeY)
-        :
-        theMemPtrUnsafe{memPtr},
-        theMemPitch{memPitch},
-        theSizeX{sizeX},
-        theSizeY{sizeY}
+    HEXLIB_NODISCARD
+    HEXLIB_INLINE bool assignValidated(OtherPointer memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
+        HEXLIB_ENSURE((matrixBaseIsValid<sizeof(Type), Pitch>(sizeX, sizeY, memPitch)));
+        assignUnsafe(memPtr, memPitch, sizeX, sizeY);
+        return true;
+    }
+
+    template <typename OtherPointer>
+    HEXLIB_INLINE void assignUnsafe(OtherPointer memPtr, Space memPitch, Space sizeX, Space sizeY)
+    {
+        constexpr Space maxArea = spaceMax / Space(sizeof(Type));
+
+        if // quick check
+        (
+            !
+            (
+                SpaceU(sizeX) <= SpaceU(maxArea) && // mostly to check it's >= 0
+                SpaceU(sizeY) <= SpaceU(maxArea) &&
+                (PitchIsEqual<Pitch, PitchMayBeNegative>::value || memPitch >= 0)
+            )
+        )
+        {
+            sizeX = 0;
+            sizeY = 0;
+        }
+
+        theMemPtrUnsafe = memPtr;
+        theMemPitch = memPitch;
+        theSizeX = sizeX;
+        theSizeY = sizeY;
     }
 
 public:
@@ -95,45 +158,11 @@ protected:
 
 //================================================================
 //
-// Checks preconditions:
+// MatrixBaseAP
 //
-// (1) sizeX >= 0 && sizeY >= 0
-// (2) sizeX <= |pitch|
-// (3) (sizeY * pitch * elemSize) fits into Space type.
+// An alias for MatrixBase with negative pitch support.
 //
 //================================================================
 
-template <Space elemSize>
-HEXLIB_INLINE bool matrixBaseIsValid(Space sizeX, Space sizeY, Space pitch)
-{
-    HEXLIB_ENSURE(sizeX >= 0);
-    HEXLIB_ENSURE(sizeY >= 0);
-
-    ////
-
-    static_assert(elemSize >= 1, "");
-    constexpr Space maxArea = spaceMax / elemSize;
-
-    ////
-
-    Space absPitch = pitch;
-
-    if (absPitch < 0)
-        absPitch = -absPitch;
-
-    HEXLIB_ENSURE(absPitch >= 0);
-
-    ////
-
-    HEXLIB_ENSURE(sizeX <= absPitch);
-
-    ////
-
-    if (sizeY >= 1)
-    {
-        Space maxWidth = maxArea / sizeY;
-        HEXLIB_ENSURE(absPitch <= maxWidth);
-    }
-
-    return true;
-}
+template <typename Type, typename Pointer = Type*>
+using MatrixBaseAP = MatrixBase<Type, Pointer, PitchMayBeNegative>;

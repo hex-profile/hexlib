@@ -22,7 +22,7 @@ namespace halfFloatTest {
 //
 //================================================================
 
-GPUTOOL_2D
+GPUTOOL_1D
 (
     genSequentialPackTestFloats,
     PREP_EMPTY,
@@ -30,7 +30,6 @@ GPUTOOL_2D
     ((uint32, low16bits)),
 
     {
-        uint32 index = devGroupX * devThreadCountX + devThreadX;
         uint32 testValue = (index << 16) | low16bits;
         (uint32&) helpModify(*dst) = testValue;
     }
@@ -42,7 +41,7 @@ GPUTOOL_2D
 //
 //================================================================
 
-GPUTOOL_2D
+GPUTOOL_1D
 (
     packToHalfGpu,
     PREP_EMPTY,
@@ -58,7 +57,7 @@ GPUTOOL_2D
 //
 //================================================================
 
-GPUTOOL_2D
+GPUTOOL_1D
 (
     genSequentialUnpackTestFloats,
     PREP_EMPTY,
@@ -66,8 +65,6 @@ GPUTOOL_2D
     PREP_EMPTY,
 
     {
-        uint32 index = devGroupX * devThreadCountX + devThreadX;
-
         float16 tmp;
         tmp.data = index;
 
@@ -81,7 +78,7 @@ GPUTOOL_2D
 //
 //================================================================
 
-GPUTOOL_2D
+GPUTOOL_1D
 (
     unpackHalfGpu,
     PREP_EMPTY,

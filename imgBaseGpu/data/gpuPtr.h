@@ -18,6 +18,8 @@
     #define GpuPtr(Type) \
         Type*
 
+    #define GpuPtrDistinctType 0
+
 #elif HEXLIB_PLATFORM == 1
 
     #if defined(__CUDA_ARCH__)
@@ -25,10 +27,14 @@
         #define GpuPtr(Type) \
             Type*
 
+        #define GpuPtrDistinctType 0
+
     #else
 
         #define GpuPtr(Type) \
             PointerEmulator<GpuAddrU, Type>
+
+        #define GpuPtrDistinctType 1
 
     #endif
 
@@ -38,7 +44,11 @@
 
 #endif
 
-//----------------------------------------------------------------
+//================================================================
+//
+// CpuPtr
+//
+//================================================================
 
 #define CpuPtr(Type) \
     Type*

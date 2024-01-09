@@ -62,11 +62,11 @@ struct GpuBaseConsoleThunk : public GpuBaseConsole, private ThunkContext
 
     ////
 
-    virtual stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+    virtual stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
     {
         if (hint.target == ImgOutputOverlay)
         {
-            auto provider = gpuImageProviderBgr32 | [&] (const GpuMatrix<uint8_x4>& dest, stdNullPars)
+            auto provider = gpuImageProviderBgr32 | [&] (const GpuMatrixAP<uint8_x4>& dest, stdNullPars)
                 {return gpuMatrixCopy(img, dest, stdPass);};
 
             require(overlaySetImageBgr(img.size(), provider, hint, stdPass));

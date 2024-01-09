@@ -66,7 +66,7 @@ class AtProviderFromCpuImage : public BaseImageProvider
 
 public:
 
-    AtProviderFromCpuImage(const Matrix<ColorPixel>& cpuImage, const ErrorLogKit& kit)
+    AtProviderFromCpuImage(const MatrixAP<ColorPixel>& cpuImage, const ErrorLogKit& kit)
         : cpuImage(cpuImage), kit(kit) {}
 
     Space desiredBaseByteAlignment() const
@@ -75,14 +75,14 @@ public:
     Space desiredPitch() const
         {return cpuImage.memPitch();}
 
-    stdbool saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars);
+    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars);
 
-    stdbool saveBgr24(const Matrix<uint8>& dest, stdNullPars)
+    stdbool saveBgr24(const MatrixAP<uint8>& dest, stdNullPars)
         {REQUIRE(false); returnTrue;}
 
 private:
 
-    Matrix<ColorPixel> cpuImage;
+    MatrixAP<ColorPixel> cpuImage;
     ErrorLogKit kit;
 
 };
@@ -93,10 +93,10 @@ private:
 //
 //================================================================
 
-stdbool AtProviderFromCpuImage::saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars)
+stdbool AtProviderFromCpuImage::saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars)
 {
-    Matrix<const ColorPixel> src = cpuImage;
-    Matrix<ColorPixel> dst = dest;
+    auto src = cpuImage;
+    auto dst = dest;
 
     ////
 
@@ -143,7 +143,7 @@ stdbool AtProviderFromCpuImage::saveBgr32(const Matrix<ColorPixel>& dest, stdNul
 struct QueueImage
 {
     ArrayMemory<ColorPixel> memory;
-    Matrix<ColorPixel> matrix;
+    MatrixAP<ColorPixel> matrix;
 };
 
 //----------------------------------------------------------------
@@ -185,7 +185,8 @@ stdbool saveImageToQueue(const Point<Space>& size, BaseImageProvider& provider, 
 
     ARRAY_EXPOSE_UNSAFE_EX(dst.memory, dstMemory);
 
-    Matrix<ColorPixel> dstMatrix(dstMemoryPtr, memPitch, size.X, size.Y);
+    MatrixAP<ColorPixel> dstMatrix;
+    dstMatrix.assignUnsafe(dstMemoryPtr, memPitch, size.X, size.Y);
 
     if (desiredPitch < 0)
         dstMatrix = flipMatrix(dstMatrix);

@@ -19,7 +19,5 @@
 
 TMP_MACRO(Array<const CharType>)
 TMP_MACRO(Array<CharType>)
-TMP_MACRO(ArrayEx<const CharType*>)
-TMP_MACRO(ArrayEx<CharType*>)
 
 #undef TMP_MACRO

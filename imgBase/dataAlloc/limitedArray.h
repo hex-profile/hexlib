@@ -26,12 +26,17 @@ private:
 
     sysinline void updateBaseArray()
     {
-        BaseArray::assign(&storage[0], currentSize, ArrayValidityAssertion{});
+        BaseArray::assignUnsafe(&storage[0], currentSize);
     }
 
 public:
 
     sysinline LimitedArray() =default;
+
+    sysinline LimitedArray(const SelfType& that)
+    {
+        *this = that;
+    }
 
     sysinline SelfType& operator =(const SelfType& that)
     {

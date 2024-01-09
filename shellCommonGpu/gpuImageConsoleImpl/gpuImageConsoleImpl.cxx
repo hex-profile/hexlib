@@ -70,7 +70,7 @@ struct VisualizeScalar
     LinearTransform<Point<float32>> coordBackTransform;
     LinearTransform<float32> valueTransform;
     Point<float32> srcTexstep;
-    GpuMatrix<Dst> dst;
+    GpuMatrixAP<Dst> dst;
 };
 
 //================================================================
@@ -168,13 +168,13 @@ VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_3, tex2DCubic(visualizeScalarS
 template <typename Type, typename Dst>
 stdbool visualizeScalarMatrix
 (
-    const GpuMatrix<const Type>& src,
+    const GpuMatrixAP<const Type>& src,
     const LinearTransform<Point<float32>>& coordBackTransform,
     int channel,
     const LinearTransform<float32>& valueTransform,
     InterpType upsampleType,
     BorderMode borderMode,
-    const GpuMatrix<Dst>& result,
+    const GpuMatrixAP<Dst>& result,
     stdPars(GpuProcessKit)
 )
 {
@@ -305,7 +305,7 @@ struct UpconvertValue
     LinearTransform<Point<float32>> coordBackTransform;
     LinearTransform<float32> valueTransform;
     Point<float32> srcTexstep;
-    GpuMatrix<Dst> dst;
+    GpuMatrixAP<Dst> dst;
 };
 
 //================================================================
@@ -397,12 +397,12 @@ UPCONVERT_VALUE_KERNEL_ALL(upconvertValueCubic, UPCONVERT_VALUE_READ_CUBIC)
 template <typename Type, typename Dst>
 stdbool upconvertValueMatrix
 (
-    const GpuMatrix<const Type>& src,
+    const GpuMatrixAP<const Type>& src,
     const LinearTransform<Point<float32>>& coordBackTransform,
     const LinearTransform<float32>& valueTransform,
     InterpType upsampleType,
     BorderMode borderMode,
-    const GpuMatrix<Dst>& result,
+    const GpuMatrixAP<Dst>& result,
     stdPars(GpuProcessKit)
 )
 {
@@ -507,12 +507,19 @@ stdbool upconvertValueMatrix
 //
 //================================================================
 
-template <typename Type, typename Kit>
-stdbool getElementAtUserPoint(const GpuMatrix<const Type>& image, const LinearTransform<Point<float32>>& transform, Point<Space>& resultIdx, Type& resultValue, stdPars(Kit))
+template <typename Type, typename Pitch, typename Kit>
+stdbool getElementAtUserPoint
+(
+    const GpuMatrix<const Type, Pitch>& image,
+    const LinearTransform<Point<float32>>& transform,
+    Point<Space>& resultIdx,
+    Type& resultValue,
+    stdPars(Kit)
+)
 {
-    Point<float32> dstPos = kit.userPoint.floatPos;
-    Point<float32> srcPos = transform(dstPos);
-    Point<Space> srcIdx = convertToNearestIndex(srcPos);
+    auto dstPos = kit.userPoint.floatPos;
+    auto srcPos = transform(dstPos);
+    auto srcIdx = convertToNearestIndex(srcPos);
 
     require(allv(image.size() >= 1));
     srcIdx = clampRange(srcIdx, point(0), image.size() - 1);
@@ -532,7 +539,7 @@ stdbool getElementAtUserPoint(const GpuMatrix<const Type>& image, const LinearTr
 template <typename Type>
 struct ScalarVisualizationParams
 {
-    GpuMatrix<const Type> img;
+    GpuMatrixAP<const Type> img;
     int channel;
     LinearTransform<Point<float32>> coordBack;
     LinearTransform<float32> valueTransform;
@@ -567,7 +574,7 @@ public:
     ScalarVisualizationProvider(const ScalarVisualizationParams<Type>& params, const GpuProcessKit& kit)
         : Base(params), kit(kit) {}
 
-    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const;
 
 private:
 
@@ -582,7 +589,7 @@ private:
 //================================================================
 
 template <typename Type>
-stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const
 {
     auto newCoordBack = coordBack;
 
@@ -695,7 +702,7 @@ stdbool standardEntry
 template <typename Type>
 stdbool GpuImageConsoleThunk::addMatrixExImpl
 (
-    const GpuMatrix<const Type>& img,
+    const GpuMatrixAP<const Type>& img,
     int channel,
     float32 minVal, float32 maxVal,
     const Point<float32>& upsampleFactor,
@@ -798,7 +805,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     template \
     stdbool GpuImageConsoleThunk::addMatrixExImpl<Type> \
     ( \
-        const GpuMatrix<const Type>& img, \
+        const GpuMatrixAP<const Type>& img, \
         int channel, \
         float32 minVal, float32 maxVal, \
         const Point<float32>& upsampleFactor, \
@@ -861,7 +868,7 @@ class VectorVisualizationProvider : public GpuImageProviderBgr32, private Vector
 
 public:
 
-    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const;
 
     using Kit = GpuImageConsoleThunk::Kit;
 
@@ -881,7 +888,7 @@ private:
 //================================================================
 
 template <typename Vector>
-stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const
 {
     Point<float32> coordBackAdd = point(0.f);
 
@@ -1047,7 +1054,7 @@ class Yuv420ConvertProvider : public GpuImageProviderBgr32
 
 public:
 
-    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const
     {
         REQUIRE(equalSize(image.luma, dest));
         require(convertYuv420ToBgr<Pixel>(image.luma, image.chroma, nullptr, nullptr, point(0), zeroOf<uint8_x4>(), dest, stdPass)); // 0.22 ms
@@ -1093,8 +1100,12 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
 
     if (hint.target == ImgOutputConsole)
     {
+        using Chroma = typename ChromaPackedType<Type>::T;
+
         GPU_MATRIX_ALLOC(tmp, uint8_x4, image.luma.size());
-        require(convertYuv420ToBgr<Type>(image.luma, image.chroma, nullptr, nullptr, point(0), zeroOf<uint8_x4>(), tmp, stdPass));
+
+        auto convertFunc = convertYuv420ToBgr<Type, Chroma, uint8_x4>;
+        require(convertFunc(image.luma, image.chroma, {}, {}, point(0), zeroOf<uint8_x4>(), tmp(), stdPass));
 
         require(baseConsole.addImageBgr(tmp, hint, stdPass));
     }
@@ -1139,7 +1150,7 @@ public:
     UnpackedColorConvertProvider(const ScalarVisualizationParams<Type>& params, ColorMode colorMode, const GpuProcessKit& kit)
         : Base(params), colorMode(colorMode), kit(kit) {}
 
-    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const;
 
 private:
 
@@ -1156,7 +1167,7 @@ private:
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     convertPackedYuvToRgb,
     PREP_EMPTY,
@@ -1182,7 +1193,7 @@ GPUTOOL_2D_END
 #if HOSTCODE
 
 template <typename Type>
-stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const
 {
     auto newCoordBack = coordBack;
 
@@ -1230,7 +1241,7 @@ stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrix<uint8_x4>&
 template <typename Type>
 stdbool GpuImageConsoleThunk::addColorImageFunc
 (
-    const GpuMatrix<const Type>& img,
+    const GpuMatrixAP<const Type>& img,
     float32 minVal, float32 maxVal,
     const Point<float32>& upsampleFactor,
     InterpType upsampleType,

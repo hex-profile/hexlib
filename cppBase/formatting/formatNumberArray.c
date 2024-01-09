@@ -1,36 +1,10 @@
-#include "formatNumberArray.h"
-
-#include "formatting/formatStream.h"
+#include "formatNumberArray.inl"
 
 //================================================================
 //
-// outputNumberArray
+// FORMAT_NUMBER_ARRAY_INSTANTIATE for builtin types.
 //
 //================================================================
 
-template <typename Type>
-sysinline void outputNumberArray(const Type* arrayPtr, size_t arraySize, const FormatNumberOptions& options, const CharArray& delimiter,  FormatOutputStream& outputStream)
-{
-    for_count (i, arraySize)
-    {
-        outputStream << formatNumber(arrayPtr[i], options);
-        if (i != arraySize-1) outputStream << delimiter;
-    }
-}
-
-//================================================================
-//
-// formatOutput<FormatNumberArray>
-//
-//================================================================
-
-#define TMP_MACRO(Type, o) \
-    \
-    template <> \
-    void formatOutput(const FormatNumberArray<Type>& value, FormatOutputStream& outputStream) \
-        {outputNumberArray(value.arrayPtr, value.arraySize, value.options, value.delimiter, outputStream);}
-
-BUILTIN_INT_FOREACH(TMP_MACRO, o)
-BUILTIN_FLOAT_FOREACH(TMP_MACRO, o)
-
-#undef TMP_MACRO
+BUILTIN_INT_FOREACH(FORMAT_NUMBER_ARRAY_INSTANTIATE, _)
+BUILTIN_FLOAT_FOREACH(FORMAT_NUMBER_ARRAY_INSTANTIATE, _)

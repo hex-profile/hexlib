@@ -53,14 +53,13 @@
 
 //================================================================
 //
-// visualizeVectorImage16
-// visualizeVectorImage32
+// visualizeVectorImage*
 //
 //================================================================
 
 #define TMP_MACRO(interpType, borderMode, VectorType) \
     \
-    GPUTOOL_2D \
+    GPUTOOL_2D_AP \
     ( \
         visualize_##VectorType##_##interpType##_##borderMode, \
         ((const VectorType, src, interpType, borderMode)), \
@@ -111,7 +110,7 @@ FOREACH_VISUALIZATION_TYPE(TMP_MACRO)
     stdbool visualizeVectorImage \
     ( \
         const GpuMatrix<const VectorType>& src, \
-        const GpuMatrix<uint8_x4>& dst, \
+        const GpuMatrixAP<uint8_x4>& dst, \
         const LinearTransform<Point<float32>>& coordBackTransform, \
         float32 vectorFactor, \
         InterpType interpType, \
@@ -134,22 +133,11 @@ TMP_MACRO(float32_x4)
 
 //================================================================
 //
-// renderSigmoid
-//
-//================================================================
-
-sysinline float32 renderSigmoid(float32 x)
-{
-    return sigmoidApprox<4>((1/0.3f) * x);
-}
-
-//================================================================
-//
 // imposeVectorArrow
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     imposeVectorArrow,
     PREP_EMPTY,

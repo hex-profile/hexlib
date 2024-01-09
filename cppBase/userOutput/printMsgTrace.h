@@ -77,7 +77,7 @@ PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
 //
 //================================================================
 
-#define CHECK_TRACE0(condition, format) \
+#define CHECK_TRACE(condition, format) \
     CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, msgErr, stdPass))
 
 #define CHECK_TRACE1(condition, format, v0) \
@@ -92,6 +92,23 @@ PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
 #define CHECK_TRACE4(condition, format, v0, v1, v2, v3) \
     CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, v2, v3, msgErr, stdPass))
 
+//----------------------------------------------------------------
+
+#define CHECK_TRACE0_THRU(condition, format) \
+    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, msgErr, stdPassThru))
+
+#define CHECK_TRACE1_THRU(condition, format, v0) \
+    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, msgErr, stdPassThru))
+
+#define CHECK_TRACE2_THRU(condition, format, v0, v1) \
+    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, msgErr, stdPassThru))
+
+#define CHECK_TRACE3_THRU(condition, format, v0, v1, v2) \
+    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, v2, msgErr, stdPassThru))
+
+#define CHECK_TRACE4_THRU(condition, format, v0, v1, v2, v3) \
+    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, v2, v3, msgErr, stdPassThru))
+
 //================================================================
 //
 // REQUIRE_TRACE*
@@ -102,10 +119,7 @@ PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
 //================================================================
 
 #define REQUIRE_TRACE(condition, format) \
-    require(CHECK_TRACE0(condition, format))
-
-#define REQUIRE_TRACE0(condition, format) \
-    require(CHECK_TRACE0(condition, format))
+    require(CHECK_TRACE(condition, format))
 
 #define REQUIRE_TRACE1(condition, format, v0) \
     require(CHECK_TRACE1(condition, format, v0))
@@ -118,3 +132,23 @@ PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
 
 #define REQUIRE_TRACE4(condition, format, v0, v1, v2, v3) \
     require(CHECK_TRACE4(condition, format, v0, v1, v2, v3))
+
+//----------------------------------------------------------------
+
+#define REQUIRE_TRACE_THRU(condition, format) \
+    require(CHECK_TRACE0_THRU(condition, format))
+
+#define REQUIRE_TRACE0_THRU(condition, format) \
+    require(CHECK_TRACE0_THRU(condition, format))
+
+#define REQUIRE_TRACE1_THRU(condition, format, v0) \
+    require(CHECK_TRACE1_THRU(condition, format, v0))
+
+#define REQUIRE_TRACE2_THRU(condition, format, v0, v1) \
+    require(CHECK_TRACE2_THRU(condition, format, v0, v1))
+
+#define REQUIRE_TRACE3_THRU(condition, format, v0, v1, v2) \
+    require(CHECK_TRACE3_THRU(condition, format, v0, v1, v2))
+
+#define REQUIRE_TRACE4_THRU(condition, format, v0, v1, v2, v3) \
+    require(CHECK_TRACE4_THRU(condition, format, v0, v1, v2, v3))

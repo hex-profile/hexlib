@@ -45,8 +45,6 @@ algorithm module, is displayed on the right. You can change the width of the
 local log by holding Shift, grabbing any part of the window with the mouse,
 and dragging it.
 
-How many times can you say it?
-
 Window Modes
 ============
 

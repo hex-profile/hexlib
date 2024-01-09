@@ -106,10 +106,18 @@ public:
 private:
 
     sysinline Array<Type> getArray()
-        {return {data(), usedSize, ArrayValidityAssertion{}};}
+    {
+        Array<Type> result;
+        result.assignUnsafe(data(), usedSize);
+        return result;
+    }
 
     sysinline Array<const Type> getArray() const
-        {return {data(), usedSize, ArrayValidityAssertion{}};}
+    {
+        Array<const Type> result;
+        result.assignUnsafe(data(), usedSize);
+        return result;
+    }
 
 public:
 

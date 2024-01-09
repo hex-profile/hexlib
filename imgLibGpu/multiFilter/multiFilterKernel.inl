@@ -33,7 +33,7 @@
 
 #if DEVCODE
 
-devDecl void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParams& o, Space taskIdx, devPars)
+sysinline void PREP_PASTE3(SIGNATURE, IntermFlex, DIR(Hor, Ver))(const IntermParams& o, Space taskIdx, devPars)
 {
     typedef VECTOR_REBASE(DST_TYPE, float32) FloatType;
 
@@ -226,7 +226,7 @@ devDefineKernel(PREP_PASTE3(SIGNATURE, Interm, DIR(Hor, Ver)), IntermParams, o)
 
 #if DEVCODE
 
-devDecl inline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const FinalParams& o, Space taskIdx, devPars)
+sysinline void PREP_PASTE3(SIGNATURE, FinalFlex, DIR(Hor, Ver))(const FinalParams& o, Space taskIdx, devPars)
 {
     typedef VECTOR_REBASE(DST_TYPE, float32) FloatType;
 

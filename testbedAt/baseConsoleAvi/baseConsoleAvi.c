@@ -685,7 +685,7 @@ public:
 
     BaseConsoleAviImpl() {CoInitialize(0);} // for VFW
 
-    stdbool saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
     stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
@@ -719,7 +719,7 @@ BaseConsoleAvi::~BaseConsoleAvi()
 
 ////
 
-stdbool BaseConsoleAvi::saveImage(const Matrix<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool BaseConsoleAvi::saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
     {return instance->saveImage(img, desc, id, stdPassThru);}
 
 stdbool BaseConsoleAvi::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
@@ -815,7 +815,8 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
         ARRAY_EXPOSE(bufferArray);
 
-        Matrix<Pixel> bufferImage(bufferArrayPtr, alignedPitch, imageSize.X, imageSize.Y);
+        Matrix<Pixel> bufferImage;
+        bufferImage.assignUnsafe(bufferArrayPtr, alignedPitch, imageSize.X, imageSize.Y);
 
         //----------------------------------------------------------------
         //
@@ -868,7 +869,7 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 //
 //================================================================
 
-stdbool BaseConsoleAviImpl::saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool BaseConsoleAviImpl::saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     ImageProviderMemcpy imageProvider(image, kit);
     return saveImage(image.size(), imageProvider, desc, id, stdPassThru);

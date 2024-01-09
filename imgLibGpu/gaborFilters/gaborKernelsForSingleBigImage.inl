@@ -365,7 +365,7 @@ GPUTOOL_2D_BEG_EX
 
 }
 #endif
-GPUTOOL_2D_END_EX
+GPUTOOL_2D_END
 
 //================================================================
 //
@@ -666,7 +666,7 @@ GPUTOOL_2D_BEG_EX
 
 }
 #endif
-GPUTOOL_2D_END_EX
+GPUTOOL_2D_END
 
 //================================================================
 //
@@ -997,7 +997,7 @@ GPUTOOL_2D_BEG_EX
     storeNorm(dst, filteredValue);
 }
 #endif
-GPUTOOL_2D_END_EX
+GPUTOOL_2D_END
 
 //================================================================
 //
@@ -1135,7 +1135,7 @@ GPUTOOL_2D_BEG_EX
 
 }
 #endif
-GPUTOOL_2D_END_EX
+GPUTOOL_2D_END
 
 //================================================================
 //

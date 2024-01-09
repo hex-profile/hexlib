@@ -8,24 +8,20 @@
 //
 //================================================================
 
-template <typename Ptr>
-inline MatrixEx<Ptr> flipMatrix(const MatrixEx<Ptr>& img)
+template <typename Ptr, typename Pitch>
+sysinline auto flipMatrix(const MatrixEx<Ptr, Pitch>& img)
 {
-    Ptr imgMemPtr = img.memPtrUnsafeInternalUseOnly();
-    Space imgMemPitch = img.memPitch();
-    Space imgSizeX = img.sizeX();
-    Space imgSizeY = img.sizeY();
+    MATRIX_EXPOSE_UNSAFE(img);
 
     ////
 
-    MatrixEx<Ptr> result;
+    MatrixEx<Ptr, PitchMayBeNegative> result;
 
     if (imgSizeX >= 1 && imgSizeY >= 1)
     {
-        Ptr flippedPtr = MATRIX_POINTER(img, 0, imgSizeY - 1);
-
-        Space flippedPitch = -imgMemPitch;
-        result.assign(flippedPtr, flippedPitch, imgSizeX, imgSizeY);
+        auto flippedPtr = MATRIX_POINTER(img, 0, imgSizeY - 1);
+        auto flippedPitch = -imgMemPitch;
+        result.assignUnsafe(flippedPtr, flippedPitch, imgSizeX, imgSizeY);
     }
 
     return result;

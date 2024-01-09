@@ -245,7 +245,7 @@ public:
         stdNullPars
     );
 
-    stdbool setSamplerImage
+    stdbool setSamplerImageEx
     (
         const GpuSamplerLink& sampler,
         GpuAddrU imageBaseAddr,
@@ -308,6 +308,16 @@ public:
         {return gpuCoverageMode;}
 
     //
+    // Counting phase GPU prohibition control
+    //
+
+    void setCountingPhaseGpuProhibition(bool value)
+        {}
+
+    bool getCountingPhaseGpuProhibition()
+        {return true;}
+
+    //
     // Impl thunk part
     //
 
@@ -328,7 +338,8 @@ public:
             GpuStreamWaitingKit(*this),
             GpuEventRecordingKit(*this),
             GpuEventWaitingKit(*this),
-            GpuBenchmarkingControlKit(*this)
+            GpuBenchmarkingControlKit(*this),
+            GpuCountingPhaseProhibitionControlKit(*this)
         );
     }
 

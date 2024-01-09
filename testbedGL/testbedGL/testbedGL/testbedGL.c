@@ -1032,7 +1032,7 @@ bool mainEntry(int argCount, const CharType* argStr[], const TestModuleFactory& 
 
             StlArray<CharType> formatterArray;
 
-            if_not (formatterArray.realloc(65536))
+            if_not (formatterArray.reallocBool(65536))
                 throw std::bad_alloc();
 
             MessageFormatterImpl formatter{formatterArray};

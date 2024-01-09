@@ -336,3 +336,80 @@ public:
     }
 
 };
+
+//================================================================
+//
+// EnumVar
+//
+// A wrapper around NumericVar<int> for enums.
+//
+//================================================================
+
+template <typename Type>
+class EnumVar
+{
+
+public:
+
+    inline EnumVar(const Type& minVal, const Type& maxVal, const Type& defaultVal)
+        {setup(minVal, maxVal, defaultVal);}
+
+    inline void setup(const Type& minVal, const Type& maxVal, const Type& defaultVal)
+        {base.setup(Int(minVal), Int(maxVal), Int(defaultVal));}
+
+    inline void setDefaultValue(const Type& value)
+        {base.setDefaultValue(Int(value));}
+
+public:
+
+    inline EnumVar<Type>& operator =(const Type& value)
+    {
+        base = Int(value);
+        return *this;
+    }
+
+public:
+
+    inline Type minValue() const
+        {return Type(base.minValue());}
+
+    inline Type maxValue() const
+        {return Type(base.maxValue());}
+
+    inline Type defaultValue() const
+        {return Type(base.defaultValue());}
+
+public:
+
+    inline operator Type () const
+        {return Type(base());}
+
+    inline Type operator()() const
+        {return Type(base());}
+
+public:
+
+    #define TMP_MACRO(OP) \
+        inline friend bool operator OP(const EnumVar<Type>& A, const Type& B) \
+            {return A() OP B;}
+
+    TMP_MACRO(==)
+    TMP_MACRO(!=)
+    TMP_MACRO(>)
+    TMP_MACRO(<)
+    TMP_MACRO(>=)
+    TMP_MACRO(<=)
+
+    #undef TMP_MACRO
+
+public:
+
+    inline bool serialize(const CfgSerializeKit& kit, const CharArray& name, const CharArray& comment = STR(""), const CharArray& blockComment = STR(""))
+        {return base.serialize(kit, name, comment, blockComment);}
+
+private:
+
+    using Int = int;
+    NumericVar<Int> base;
+
+};

@@ -225,11 +225,11 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 template <>
 stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 (
-    const GpuMatrix<const uint8_x4>& src,
-    const GpuMatrix<DST_PIXEL>& dstLuma,
-    const GpuMatrix<DST_PIXEL2>& dstChroma,
-    const GpuMatrix<DST_PIXEL>& dstChromaU,
-    const GpuMatrix<DST_PIXEL>& dstChromaV,
+    const GpuMatrixAP<const uint8_x4>& src,
+    const GpuMatrixAP<DST_PIXEL>& dstLuma,
+    const GpuMatrixAP<DST_PIXEL2>& dstChroma,
+    const GpuMatrixAP<DST_PIXEL>& dstChromaU,
+    const GpuMatrixAP<DST_PIXEL>& dstChromaV,
     stdPars(GpuProcessKit)
 )
 {
@@ -261,12 +261,14 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 
     ////
 
+    REQUIRE(srcCorrect.memPitch() >= 0);
+
     require
     (
         kit.gpuSamplerSetting.setSamplerImage
         (
             srcSampler,
-            srcCorrect,
+            restrictToNonNegativePitch(srcCorrect),
             BORDER_MIRROR,
             LinearInterpolation{false},
             ReadNormalizedFloat{true},

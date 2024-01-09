@@ -1,6 +1,5 @@
 #pragma once
 
-#include "gpuSupport/reductionTool/reductionToolClassic.h"
 #include "gpuSupport/reductionTool/reductionToolModern.h"
 
 //================================================================
@@ -19,13 +18,6 @@
 //
 //----------------------------------------------------------------
 //
-// The classic tool also supports N simultaneous parallel reductions:
-//
-// * outerSize is the number of reductions.
-// * outerMember is the current reduction index.
-//
-//----------------------------------------------------------------
-//
 // The usage example:
 //
 // REDUCTION_MODERN_MAKE
@@ -39,13 +31,11 @@
 //     ((float32_x2, sumWeightValueSq)),
 //
 //     {
-//         // Inside the body, each computation checks "active" variable.
-//         // It checks "active" multiple times as it is efficient on GPU using predicated instructions.
 //         // L and R suffixes mean Lvalue and Rvalue.
 //
-//         if (active) *sumWeightL += *sumWeightR;
-//         if (active) *sumWeightValueL += *sumWeightValueR;
-//         if (active) *sumWeightValueSqL += *sumWeightValueSqR;
+//         *sumWeightL += *sumWeightR;
+//         *sumWeightValueL += *sumWeightValueR;
+//         *sumWeightValueSqL += *sumWeightValueSqR;
 //     }
 // )
 //

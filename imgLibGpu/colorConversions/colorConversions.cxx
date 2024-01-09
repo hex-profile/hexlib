@@ -11,7 +11,7 @@
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     convertBgr32ToMono,
     PREP_EMPTY,
@@ -34,7 +34,7 @@ GPUTOOL_2D_END
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     convertMonoToBgr32,
     PREP_EMPTY,
@@ -56,7 +56,7 @@ GPUTOOL_2D_END
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     convertBgr32ToMonoBgr32,
     PREP_EMPTY,
@@ -79,12 +79,12 @@ GPUTOOL_2D_END
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     convertBgr32ToBgr24Func,
     PREP_EMPTY,
     ((const uint8_x4, src)),
-    ((GpuMatrix<uint8>, dst))
+    ((GpuMatrixAP<uint8>, dst))
 )
 #if DEVCODE
 {
@@ -121,7 +121,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool convertBgr32ToBgr24(const GpuMatrix<const uint8_x4>& src, const GpuMatrix<uint8>& dst, stdPars(GpuProcessKit))
+stdbool convertBgr32ToBgr24(const GpuMatrixAP<const uint8_x4>& src, const GpuMatrixAP<uint8>& dst, stdPars(GpuProcessKit))
 {
     REQUIRE(src.sizeX() * 3 == dst.sizeX());
     return convertBgr32ToBgr24Func(src, dst, stdPassThru);
@@ -135,12 +135,12 @@ stdbool convertBgr32ToBgr24(const GpuMatrix<const uint8_x4>& src, const GpuMatri
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     convertBgr24ToBgr32Func,
     PREP_EMPTY,
     ((uint8_x4, dst)),
-    ((GpuMatrix<const uint8>, src))
+    ((GpuMatrixAP<const uint8>, src))
 )
 #if DEVCODE
 {
@@ -166,7 +166,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool convertBgr24ToBgr32(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
+stdbool convertBgr24ToBgr32(const GpuMatrixAP<const uint8>& src, const GpuMatrixAP<uint8_x4>& dst, stdPars(GpuProcessKit))
 {
     REQUIRE(src.sizeX() == dst.sizeX() * 3);
     return convertBgr24ToBgr32Func(dst, src, stdPassThru);
@@ -180,12 +180,12 @@ stdbool convertBgr24ToBgr32(const GpuMatrix<const uint8>& src, const GpuMatrix<u
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     convertBgr24ToMonoFunc,
     PREP_EMPTY,
     ((uint8, dst)),
-    ((GpuMatrix<const uint8>, src))
+    ((GpuMatrixAP<const uint8>, src))
 )
 #if DEVCODE
 {
@@ -215,7 +215,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool convertBgr24ToMono(const GpuMatrix<const uint8>& src, const GpuMatrix<uint8>& dst, stdPars(GpuProcessKit))
+stdbool convertBgr24ToMono(const GpuMatrixAP<const uint8>& src, const GpuMatrixAP<uint8>& dst, stdPars(GpuProcessKit))
 {
     REQUIRE(src.sizeX() == dst.sizeX() * 3);
     return convertBgr24ToMonoFunc(dst, src, stdPassThru);

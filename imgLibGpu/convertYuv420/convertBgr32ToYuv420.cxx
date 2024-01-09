@@ -58,10 +58,10 @@ struct ConvertBgrYuv420Params
 {
     LinearTransform<Point<float32>> srcTransform;
 
-    GpuMatrix<DstPixel> dstLuma;
-    GpuMatrix<DstPixel2> dstChroma;
-    GpuMatrix<DstPixel> dstChromaU;
-    GpuMatrix<DstPixel> dstChromaV;
+    GpuMatrixAP<DstPixel> dstLuma;
+    GpuMatrixAP<DstPixel2> dstChroma;
+    GpuMatrixAP<DstPixel> dstChromaU;
+    GpuMatrixAP<DstPixel> dstChromaV;
 };
 
 //================================================================

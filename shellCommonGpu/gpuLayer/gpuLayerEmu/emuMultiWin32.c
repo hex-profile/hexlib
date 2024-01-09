@@ -244,6 +244,12 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     require(threadCreate(serverFunc, serverMemory, 65536, threadControl, stdPass));
 
     //
+    // Lower the thread priority.
+    //
+
+    REQUIRE(threadControl->setPriority(ThreadPriorityMinus1));
+
+    //
     // Record success
     //
 

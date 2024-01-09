@@ -21,7 +21,7 @@
 struct CopyRectKernel
 {
     Point<float32> ofsPlusHalf;
-    GpuMatrix<uint32> dst;
+    GpuMatrixAP<uint32> dst;
 };
 
 //----------------------------------------------------------------
@@ -67,16 +67,16 @@ devDefineKernel(copyRectKernel, CopyRectKernel, o)
 
 #if HOSTCODE
 
-stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
+stdbool copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrixAP<uint8_x4>& dst, stdPars(GpuProcessKit))
 {
     if_not (kit.dataProcessing)
         returnTrue;
 
     ////
 
-    GpuMatrix<const uint8_x4> tmpSrc = src;
-    GpuMatrix<uint8_x4> tmpDst = dst;
-    Point<Space> tmpOfs = ofs;
+    auto tmpSrc = src;
+    auto tmpDst = dst;
+    auto tmpOfs = ofs;
 
     ////
 

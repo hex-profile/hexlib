@@ -31,7 +31,7 @@ public:
     GpuBaseImageProvider(const GpuProcessKit& kit)
         : kit(kit) {}
 
-    stdbool setImage(const GpuMatrix<const ColorPixel>& image, stdNullPars);
+    stdbool setImage(const GpuMatrixAP<const ColorPixel>& image, stdNullPars);
 
 public:
 
@@ -41,13 +41,13 @@ public:
     Space desiredBaseByteAlignment() const
         {return kit.gpuProperties.samplerAndFastTransferBaseAlignment;}
 
-    stdbool saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars);
+    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars);
 
-    stdbool saveBgr24(const Matrix<MonoPixel>& dest, stdNullPars);
+    stdbool saveBgr24(const MatrixAP<MonoPixel>& dest, stdNullPars);
 
 private:
 
-    GpuMatrix<const ColorPixel> gpuImage;
+    GpuMatrixAP<const ColorPixel> gpuImage;
     GpuArrayMemory<ColorPixel> buffer;
     GpuProcessKit kit;
 
@@ -87,7 +87,7 @@ public:
 
 public:
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
         {return addImageCopyImpl(img, hint, stdPassThru);}
 
 public:
@@ -129,7 +129,7 @@ public:
 public:
 
     template <typename Type>
-    stdbool addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit));
+    stdbool addImageCopyImpl(const GpuMatrixAP<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit));
 
 public:
 

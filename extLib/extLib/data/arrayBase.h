@@ -7,6 +7,22 @@
 
 //================================================================
 //
+// arrayBaseIsValid
+//
+// size >= 0
+// size * sizeof(*ptr) fits into Space type.
+//
+//================================================================
+
+template <Space elemSize>
+HEXLIB_INLINE bool arrayBaseIsValid(Space size)
+{
+    constexpr Space maxSize = spaceMax / elemSize;
+    return SpaceU(size) <= SpaceU(maxSize); // [0..maxSize]
+}
+
+//================================================================
+//
 // ArrayBase<Type>
 //
 //----------------------------------------------------------------
@@ -24,19 +40,6 @@
 
 //================================================================
 //
-// ArrayValidityAssertion
-//
-// size >= 0
-// size * sizeof(*ptr) fits into Space type.
-//
-//================================================================
-
-struct ArrayValidityAssertion
-{
-};
-
-//================================================================
-//
 // ArrayBase
 //
 //================================================================
@@ -51,12 +54,31 @@ public:
     {
     }
 
-    template <typename OtherPointer>
-    HEXLIB_INLINE ArrayBase(OtherPointer ptr, Space size)
-        :
-        thePtr{ptr},
-        theSize{size}
+    template <typename SourcePointer>
+    HEXLIB_NODISCARD
+    HEXLIB_INLINE bool assignValidated(SourcePointer ptr, Space size)
     {
+        HEXLIB_ENSURE(arrayBaseIsValid<sizeof(Type)>(size));
+
+        thePtr = ptr;
+        theSize = size;
+        return true;
+    }
+
+    template <typename SourcePointer>
+    HEXLIB_INLINE void assignUnsafe(SourcePointer ptr, Space size)
+    {
+        if (!arrayBaseIsValid<sizeof(Type)>(size)) // quick check
+            size = 0;
+
+        thePtr = ptr;
+        theSize = size;
+    }
+
+    HEXLIB_INLINE void assignNull()
+    {
+        thePtr = Pointer(0);
+        theSize = 0;
     }
 
 public:
@@ -76,24 +98,3 @@ protected:
     Space theSize = 0;
 
 };
-
-//================================================================
-//
-// arrayBaseIsValid
-//
-//================================================================
-
-template <Space elemSize>
-HEXLIB_INLINE bool arrayBaseIsValid(Space size)
-{
-    HEXLIB_ENSURE(size >= 0);
-
-    ////
-
-    static_assert(elemSize >= 1, "");
-    constexpr Space maxArea = spaceMax / elemSize;
-
-    HEXLIB_ENSURE(size <= maxArea);
-
-    return true;
-}

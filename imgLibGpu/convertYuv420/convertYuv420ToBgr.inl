@@ -257,7 +257,7 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     const GpuMatrix<const SrcPixel>& srcChromaV,
     const Point<Space>& srcOffset,
     const DST_PIXEL& outerColor,
-    const GpuMatrix<DST_PIXEL>& dst,
+    const GpuMatrixAP<DST_PIXEL>& dst,
     stdPars(GpuProcessKit)
 )
 {

@@ -1,12 +1,13 @@
 #pragma once
 
-#include "point/point.h"
 #include "data/array.h"
-#include "data/pointerInterface.h"
-#include "numbers/int/intType.h"
 #include "data/commonFuncs.h"
+#include "data/pointerInterface.h"
+#include "errorLog/debugBreak.h"
 #include "extLib/data/matrixBase.h"
-#include "numbers/safeint32/safeint32.h"
+#include "numbers/int/intBase.h"
+#include "point/point.h"
+#include "storage/addrSpace.h"
 
 //================================================================
 //
@@ -27,79 +28,11 @@
 // The width and height of the matrix. Both are >= 0.
 // If either of them is zero, the matrix is empty.
 //
-// USAGE EXAMPLES:
-//
 //================================================================
-
-#if 0
-
-// Create an empty matrix.
-Matrix<int> intMatrix;
-Matrix<int> anotherEmptyMatrix = 0;
-
-// Convert a matrix to a read-only matrix.
-Matrix<const int> constIntMatrix = intMatrix;
-Matrix<const int> anotherConstMatrix = makeConst(intMatrix);
-
-// Construct matrix from details: ptr, pitch and size.
-Matrix<const uint8> example(srcMemPtrUnsafe, srcMemPitch, srcSizeX, srcSizeY);
-
-// Setup matrix from details: ptr, pitch and size.
-example.assign(srcMemPtrUnsafe, srcMemPitch, srcSizeX, srcSizeY);
-
-// Make the matrix empty.
-example.assignNull();
-
-// Access matrix details (decomposing matrix is better way):
-REQUIRE(example.memPtr() != 0);
-REQUIRE(example.memPitch() != 0);
-REQUIRE(example.sizeX() != 0);
-REQUIRE(example.sizeY() != 0);
-
-// Decompose a matrix to detail variables:
-MATRIX_EXPOSE(example);
-REQUIRE(exampleMemPtr != 0);
-REQUIRE(exampleMemPitch != 0);
-REQUIRE(exampleSizeX != 0);
-REQUIRE(exampleSizeY != 0);
-
-// Access some element in a decomposed matrix.
-// The macro uses multiplication. No X/Y range checking performed!
-int value = MATRIX_ELEMENT(example, 0, 0);
-
-// Example element loop (not optimized):
-uint32 sum = 0;
-
-for_count (Y, exampleSizeY)
-    for_count (X, exampleSizeX)
-        sum += exampleMemPtr[X + Y * exampleMemPitch];
-
-// Save rectangular area [10, 30) as a new matrix using
-// "subs" (submatrix by size) function. Check that no clipping occured.
-Matrix<const uint8> tmp1;
-REQUIRE(example.subs(point(10), point(20), tmp1));
-
-// Save rectangular area [10, 30) as a new matrix using
-// "subr" (submatrix by rect) function. Check that no clipping occured.
-Matrix<const uint8> tmp2;
-REQUIRE(example.subr(point(10), point(30), tmp2));
-
-// Remove const qualifier from element (avoid using it!)
-Matrix<uint8> tmp3 = recastElement<uint8>(tmp2);
-
-// Check that matrices have equal size.
-REQUIRE(equalSize(example, tmp1, tmp2));
-REQUIRE(equalSize(tmp1, tmp2, point(20)));
-
-// Check that a matrix has non-zero size
-REQUIRE(hasData(example));
-REQUIRE(hasData(example.size()));
-
-#endif
 
 //================================================================
 //
-// MATRIX__CHECK_CONVERSION
+// MATRIX__CHECK_POINTER
 //
 //================================================================
 
@@ -113,8 +46,38 @@ inline auto matrixCheckPointerConversion()
 
 //----------------------------------------------------------------
 
-#define MATRIX__CHECK_CONVERSION(SrcPointer, DstPointer) \
-    COMPILE_ASSERT(sizeof(matrixCheckPointerConversion<SrcPointer, DstPointer>()) >= 1)
+#define MATRIX__CHECK_POINTER(SrcPointer, DstPointer) \
+    COMPILE_ASSERT(sizeof(matrixCheckPointerConversion<SrcPointer, DstPointer>()) >= 0)
+
+//================================================================
+//
+// MatrixProps
+//
+//================================================================
+
+template <typename Matrix>
+struct MatrixProps
+{
+
+private:
+
+    template <typename Type, typename Pointer, typename Pitch>
+    static Pitch getPitchType(const MatrixBase<Type, Pointer, Pitch>& matrix);
+
+    ////
+
+    static const Matrix matrixExample;
+
+public:
+
+    using Pitch = decltype(getPitchType(matrixExample));
+
+    ////
+
+    COMPILE_ASSERT(TYPE_EQUAL(Pitch, PitchMayBeNegative) || TYPE_EQUAL(Pitch, PitchPositiveOrZero));
+    static constexpr bool pitchIsNonNeg = TYPE_EQUAL(Pitch, PitchPositiveOrZero);
+
+};
 
 //================================================================
 //
@@ -126,7 +89,9 @@ inline auto matrixCheckPointerConversion()
     auto prefix##MemPtr = (matrix).memPtr(); \
     auto prefix##MemPitch = (matrix).memPitch(); \
     auto prefix##SizeX = (matrix).sizeX(); \
-    auto prefix##SizeY = (matrix).sizeY()
+    auto prefix##SizeY = (matrix).sizeY(); \
+    constexpr bool prefix##PitchIsNonNeg = MatrixProps<decltype(matrix)>::pitchIsNonNeg; \
+    (void) prefix##PitchIsNonNeg
 
 //----------------------------------------------------------------
 
@@ -142,7 +107,9 @@ inline auto matrixCheckPointerConversion()
     auto prefix##MemPtr = (matrix).memPtrUnsafeInternalUseOnly(); \
     auto prefix##MemPitch = (matrix).memPitch(); \
     auto prefix##SizeX = (matrix).sizeX(); \
-    auto prefix##SizeY = (matrix).sizeY()
+    auto prefix##SizeY = (matrix).sizeY(); \
+    constexpr bool prefix##PitchIsNonNeg = MatrixProps<decltype(matrix)>::pitchIsNonNeg; \
+    (void) prefix##PitchIsNonNeg
 
 #define MATRIX_EXPOSE_UNSAFE(matrix) \
     MATRIX_EXPOSE_UNSAFE_EX(matrix, matrix)
@@ -174,18 +141,77 @@ sysinline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& p
 
 //================================================================
 //
+// MatrixPointerComputation
+//
+//================================================================
+
+template <bool pitchIsNonNeg>
+struct MatrixPointerComputation;
+
+////
+
+template <>
+struct MatrixPointerComputation<false>
+{
+    template <typename Pointer>
+    static sysinline Pointer get(Pointer memPtr, Space memPitch, Space X, Space Y)
+    {
+        using Type = typename PtrElemType<Pointer>::T;
+
+        //
+        // In this mode, the pitch can be negative, which generates a multitude
+        // of redundant commands in 64-bit mode, including on the GPU.
+        //
+        // Although (X + Y * pitch) is calculated in a 32-bit type, in subsequent
+        // operations, if you simply add the element index to the pointer,
+        // multiplication by the type size is performed in a 64-bit signed type,
+        // which is not as efficient.
+        //
+        // All that can be done here is at least to calculate the offset in bytes
+        // in a 32-bit signed type, which will then, nevertheless, be signedly
+        // added to a 64-bit pointer.
+        //
+
+        Space offsetInBytes = (X + Y * memPitch) * Space(sizeof(Type));
+
+        return addOffset(memPtr, offsetInBytes);
+    }
+};
+
+////
+
+template <>
+struct MatrixPointerComputation<true>
+{
+    template <typename Pointer>
+    static sysinline Pointer get(Pointer memPtr, Space memPitch, Space X, Space Y)
+    {
+        using Type = typename PtrElemType<Pointer>::T;
+
+        //
+        // In this mode, pitch >= 0, while the coordinates X and Y can only
+        // be negative in the event of a matrix boundary violation.
+        //
+        // Therefore, all calculations up to the addition of the byte offset
+        // to the pointer can be performed in a 32-bit unsigned type,
+        // providing the most efficient code in 64-bit mode, including on the GPU.
+        //
+
+        SpaceU offsetInBytes = (SpaceU(X) + SpaceU(Y) * SpaceU(memPitch)) * SpaceU(sizeof(Type));
+
+        return addOffset(memPtr, offsetInBytes);
+    }
+};
+
+//================================================================
+//
 // MATRIX_POINTER
 // MATRIX_ELEMENT
 //
 //================================================================
 
-#define MATRIX_MUL_COORDS(X, Y) \
-    ((X) * (Y))
-
-//----------------------------------------------------------------
-
 #define MATRIX_POINTER(matrix, X, Y) \
-    (matrix##MemPtr + (X) + MATRIX_MUL_COORDS(Y, matrix##MemPitch))
+    (MatrixPointerComputation<matrix##PitchIsNonNeg>::get(matrix##MemPtr, matrix##MemPitch, X, Y))
 
 #define MATRIX_POINTER_(matrix, pos) \
     MATRIX_POINTER(matrix, (pos).X, (pos).Y)
@@ -207,29 +233,38 @@ sysinline bool matrixValidAccess(const Point<Space>& size, const Point<Space>& p
 //
 // matrixParamsAreValid
 //
-// Checks MatrixValidityAssertion.
+//================================================================
+
+template <Space elemSize, typename Pitch>
+bool matrixParamsAreValid(Space sizeX, Space sizeY, Space pitch);
+
+//================================================================
+//
+// MatrixCreateFromArray
 //
 //================================================================
 
-template <Space elemSize>
-bool matrixParamsAreValid(Space sizeX, Space sizeY, Space pitch);
+struct MatrixCreateFromArray {};
 
 //================================================================
 //
 // MatrixEx<Type>
 //
-// Supports any pointer type.
+// Generic Matrix class, supports any pointer type.
 //
 //================================================================
 
-template <typename Pointer>
+template <typename Pointer, typename Pitch = PitchDefault>
 class MatrixEx
     :
-    public MatrixBase<typename PtrElemType<Pointer>::T, Pointer>
+    public MatrixBase<typename PtrElemType<Pointer>::T, Pointer, Pitch>
 {
 
-    template <typename OtherPointer>
-    friend class MatrixEx;
+    //----------------------------------------------------------------
+    //
+    // Types.
+    //
+    //----------------------------------------------------------------
 
 public:
 
@@ -237,103 +272,170 @@ public:
 
 private:
 
-    using BaseType = MatrixBase<Type, Pointer>;
+    template <typename, typename>
+    friend class MatrixEx;
 
-    using BaseType::theMemPtrUnsafe;
-    using BaseType::theMemPitch;
-    using BaseType::theSizeX;
-    using BaseType::theSizeY;
+    using Base = MatrixBase<Type, Pointer, Pitch>;
+    using Self = MatrixEx<Pointer, Pitch>;
 
-public:
-
-    sysinline friend void exchange(MatrixEx<Pointer>& A, MatrixEx<Pointer>& B)
-    {
-        exchange(A.theMemPtrUnsafe, B.theMemPtrUnsafe);
-        exchange(A.theMemPitch, B.theMemPitch);
-        exchange(A.theSizeX, B.theSizeX);
-        exchange(A.theSizeY, B.theSizeY);
-    }
-
-    //
-    // Create empty.
-    // Create from 0 literal.
-    //
+    using Base::theMemPtrUnsafe;
+    using Base::theMemPitch;
+    using Base::theSizeX;
+    using Base::theSizeY;
 
 public:
+
+    //----------------------------------------------------------------
+    //
+    // Constructors.
+    //
+    //----------------------------------------------------------------
+
+    sysinline MatrixEx()
+        {}
+
+    ////
 
     struct TmpType {};
 
-    sysinline MatrixEx(const TmpType* = 0)
-        {assignNull();}
+    sysinline MatrixEx(const TmpType*)
+        {}
 
-    //
-    // Create by parameters.
-    //
-
-    template <typename Ptr>
-    sysinline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY)
-        {assign(memPtr, memPitch, sizeX, sizeY);} // checked
-
-    template <typename Ptr>
-    sysinline MatrixEx(Ptr memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion& assertion)
-        {assign(memPtr, memPitch, sizeX, sizeY, assertion);} // unchecked, static assertion
-
+    //----------------------------------------------------------------
     //
     // Create by an array.
     //
+    //----------------------------------------------------------------
 
-    template <typename OtherPointer>
-    sysinline MatrixEx(const ArrayEx<OtherPointer>& that)
+    template <typename SrcPointer>
+    sysinline MatrixEx(const ArrayEx<SrcPointer>& that, const MatrixCreateFromArray&)
     {
-        MATRIX__CHECK_CONVERSION(OtherPointer, Pointer);
-        assign(that.thePtr, that.theSize, that.theSize, 1);
+        MATRIX__CHECK_POINTER(SrcPointer, Pointer);
+        assignUnsafe(that.ptr(), that.size(), that.size(), 1);
     }
 
+    //----------------------------------------------------------------
     //
     // Export cast (no code generated, reinterpret pointer).
     //
-
-    template <typename OtherPointer>
-    sysinline operator const MatrixEx<OtherPointer>& () const
-    {
-        MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
-        return recastEqualLayout<const MatrixEx<OtherPointer>>(*this);
-    }
-
+    // Initial design involved template-based type-casting operator. However,
+    // this led to compatibility issues with GCC.
     //
-    // Assign data (checked).
+    // To work around this, explicit type-casting operators are defined for all
+    // specific scenarios. These operators conditionally return a const reference
+    // to either a modified `MatrixEx` type or a placeholder `DummyType`.
     //
+    // Flags like `exportPointerAvail` and `exportPitchAvail` are used to
+    // conditionally enable these type conversions.
+    //
+    //----------------------------------------------------------------
 
-    sysinline bool assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY)
+    using ExportPointer = typename PtrRebaseType<Pointer, const Type>::T;
+    static constexpr bool exportPointerAvail = !TYPE_EQUAL(Pointer, ExportPointer);
+
+    using ExportPitch = PitchMayBeNegative;
+    static constexpr bool exportPitchAvail = !TYPE_EQUAL(Pitch, ExportPitch);
+
+    ////
+
+    struct DummyType1;
+    using ExportType1 = TypeSelect<exportPointerAvail, MatrixEx<ExportPointer, Pitch>, DummyType1>;
+
+    struct DummyType2;
+    using ExportType2 = TypeSelect<exportPitchAvail, MatrixEx<Pointer, ExportPitch>, DummyType2>;
+
+    struct DummyType3;
+    using ExportType3 = TypeSelect<exportPointerAvail && exportPitchAvail, MatrixEx<ExportPointer, ExportPitch>, DummyType3>;
+
+    ////
+
+    sysinline operator const ExportType1& () const
+        {return recastEqualLayout<const ExportType1>(*this);}
+
+    sysinline operator const ExportType2& () const
+        {return recastEqualLayout<const ExportType2>(*this);}
+
+    sysinline operator const ExportType3& () const
+        {return recastEqualLayout<const ExportType3>(*this);}
+
+    //----------------------------------------------------------------
+    //
+    // assignValidated
+    //
+    //----------------------------------------------------------------
+
+    sysnodiscard
+    sysinline bool assignValidated(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
-        bool ok = matrixParamsAreValid<sizeof(Type)>(sizeX, sizeY, memPitch);
+        bool ok = matrixParamsAreValid<sizeof(Type), Pitch>(sizeX, sizeY, memPitch);
+        ensure(DEBUG_BREAK_CHECK(ok));
 
-        if_not (ok)
-            {sizeX = 0; sizeY = 0;}
-
-        theSizeX = sizeX;
-        theSizeY = sizeY;
         theMemPtrUnsafe = memPtr;
         theMemPitch = memPitch;
-
-        return ok;
+        theSizeX = sizeX;
+        theSizeY = sizeY;
+        return true;
     }
 
+    //----------------------------------------------------------------
     //
-    // Assign data (unchecked, static assertion).
+    // assignUnsafe
     //
+    //----------------------------------------------------------------
 
-    sysinline void assign(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion&)
+    sysinline void assignUnsafe(Pointer memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
+        constexpr Space maxArea = spaceMax / Space(sizeof(Type));
+
+        if_not // quick check
+        (
+            SpaceU(sizeX) <= SpaceU(maxArea) &&
+            SpaceU(sizeY) <= SpaceU(maxArea) &&
+            (TYPE_EQUAL(Pitch, PitchMayBeNegative) || memPitch >= 0)
+        )
+        {
+            DEBUG_BREAK_INLINE();
+            sizeX = 0;
+            sizeY = 0;
+        }
+
         theMemPtrUnsafe = memPtr;
         theMemPitch = memPitch;
         theSizeX = sizeX;
         theSizeY = sizeY;
     }
+
+    //----------------------------------------------------------------
+    //
+    // assign*<MatrixPtr>
+    //
+    //----------------------------------------------------------------
 
 #if HEXLIB_GUARDED_MEMORY
 
-    bool assign(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
+    bool assignValidated(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
+    {
+        return assignValidated(unsafePtr(memPtr, sizeX, sizeY), memPitch, sizeX, sizeY);
+    }
+
+    void assignUnsafe(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
+    {
+        if_not (assignValidated(memPtr, memPitch, sizeX, sizeY))
+            {DEBUG_BREAK_INLINE(); assignNull();}
+    }
+
+#endif
+
+    //----------------------------------------------------------------
+    //
+    // assign*<ArrayPtr>
+    //
+    //----------------------------------------------------------------
+
+#if HEXLIB_GUARDED_MEMORY
+
+    sysnodiscard
+    sysinline bool assignValidated(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
         assignNull();
         ensure(memPitch >= 0);
@@ -341,35 +443,26 @@ public:
         ////
 
         Space area = 0;
+        ensure(safeMul(memPitch, sizeY, area));
 
-        if (sizeY >= 1)
-        {
-            Space lastRow = 0;
-            ensure(safeMul(memPitch, sizeY-1, lastRow));
+        ////
 
-            area = lastRow + sizeX;
-        }
+        return assignValidated(unsafePtr(memPtr, area), memPitch, sizeX, sizeY);
+    }
 
-        return assign(unsafePtr(memPtr, area), memPitch, sizeX, sizeY);
+    sysinline void assignUnsafe(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
+    {
+        if_not (assignValidated(memPtr, memPitch, sizeX, sizeY))
+            {DEBUG_BREAK_INLINE(); assignNull();}
     }
 
 #endif
 
-    ////
-
-#if HEXLIB_GUARDED_MEMORY
-
-    bool assign(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
-        {return assign(unsafePtr(memPtr, sizeX, sizeY), memPitch, sizeX, sizeY);}
-
-    bool assign(MatrixPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion&)
-        {return assign(unsafePtr(memPtr, sizeX, sizeY), memPitch, sizeX, sizeY);}
-
-#endif
-
+    //----------------------------------------------------------------
     //
     // Assign empty
     //
+    //----------------------------------------------------------------
 
     sysinline void assignNull()
     {
@@ -379,15 +472,11 @@ public:
         theSizeY = 0;
     }
 
-    sysinline void assignEmptyFast()
-    {
-        theSizeY = 0;
-    }
-
+    //----------------------------------------------------------------
     //
-    // Get size.
-    // Always >= 0.
+    // Get size. Always >= 0.
     //
+    //----------------------------------------------------------------
 
     sysinline Space sizeX() const
         {return theSizeX;}
@@ -398,16 +487,20 @@ public:
     sysinline Point<Space> size() const
         {return {theSizeX, theSizeY};}
 
+    //----------------------------------------------------------------
     //
     // Get pitch.
     //
+    //----------------------------------------------------------------
 
     sysinline Space memPitch() const
         {return theMemPitch;}
 
+    //----------------------------------------------------------------
     //
     // Get base pointer.
     //
+    //----------------------------------------------------------------
 
     sysinline Pointer memPtrUnsafeInternalUseOnly() const
         {return theMemPtrUnsafe;}
@@ -424,17 +517,20 @@ public:
 
 #endif
 
+    //----------------------------------------------------------------
     //
     // subr
     //
     // Cuts a rectangular area from matrix, given by origin and end: point RIGHT AFTER the last element.
     // If the area is larger than the matrix, it is clipped to fit the matrix and false is returned.
     //
+    //----------------------------------------------------------------
 
-    template <typename OtherPointer>
-    sysinline bool subr(Space orgX, Space orgY, Space endX, Space endY, MatrixEx<OtherPointer>& result) const
+    template <typename DestPointer, typename DestPitch>
+    sysinline bool subr(Space orgX, Space orgY, Space endX, Space endY, MatrixEx<DestPointer, DestPitch>& result) const
     {
-        MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
+        MATRIX__CHECK_POINTER(Pointer, DestPointer);
+        PitchCheckConversion<Pitch, DestPitch>{};
 
         MATRIX_EXPOSE_UNSAFE_EX(*this, my);
 
@@ -459,12 +555,13 @@ public:
 
     ////
 
-    template <typename Coord, typename OtherPointer>
-    sysinline bool subr(const Point<Coord>& org, const Point<Coord>& end, MatrixEx<OtherPointer>& result) const
+    template <typename DestPointer, typename DestPitch>
+    sysinline bool subr(const Point<Space>& org, const Point<Space>& end, MatrixEx<DestPointer, DestPitch>& result) const
     {
         return subr(org.X, org.Y, end.X, end.Y, result);
     }
 
+    //----------------------------------------------------------------
     //
     // subs
     //
@@ -473,11 +570,13 @@ public:
     // If the area is larger than the matrix, it is clipped to fit the matrix
     // and false is returned.
     //
+    //----------------------------------------------------------------
 
-    template <typename OtherPointer>
-    sysinline bool subs(Space orgX, Space orgY, Space sizeX, Space sizeY, MatrixEx<OtherPointer>& result) const
+    template <typename DestPointer, typename DestPitch>
+    sysinline bool subs(Space orgX, Space orgY, Space sizeX, Space sizeY, MatrixEx<DestPointer, DestPitch>& result) const
     {
-        MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
+        MATRIX__CHECK_POINTER(Pointer, DestPointer);
+        PitchCheckConversion<Pitch, DestPitch>{};
 
         MATRIX_EXPOSE_UNSAFE_EX(*this, my);
 
@@ -502,23 +601,25 @@ public:
 
     ////
 
-    template <typename Coord, typename OtherPointer>
-    sysinline bool subs(const Point<Coord>& org, const Point<Coord>& size, MatrixEx<OtherPointer>& result) const
+    template <typename DestPointer, typename DestPitch>
+    sysinline bool subs(const Point<Space>& org, const Point<Space>& size, MatrixEx<DestPointer, DestPitch>& result) const
     {
         return subs(org.X, org.Y, size.X, size.Y, result);
     }
 
+    //----------------------------------------------------------------
     //
     // asArray
     //
     // Tries to export the matrix as array.
     // This is possible only for dense row allocation (pitch == size.X)
     //
+    //----------------------------------------------------------------
 
-    template <typename OtherPointer>
-    sysinline bool asArray(ArrayEx<OtherPointer>& result) const
+    template <typename DestPointer>
+    sysinline bool asArray(ArrayEx<DestPointer>& result) const
     {
-        MATRIX__CHECK_CONVERSION(Pointer, OtherPointer);
+        MATRIX__CHECK_POINTER(Pointer, DestPointer);
 
         bool ok = true;
 
@@ -529,14 +630,14 @@ public:
         if_not (ok)
             totalSize = 0;
 
-        result.assign(theMemPtrUnsafe, totalSize, ArrayValidityAssertion{});
+        result.assignUnsafe(theMemPtrUnsafe, totalSize);
 
         return ok;
     }
 
     //----------------------------------------------------------------
     //
-    // validAccess.
+    // validAccess
     //
     //----------------------------------------------------------------
 
@@ -622,6 +723,20 @@ public:
             helpModify(MATRIX_ELEMENT(my, X, Y)) = helpRead(value);
     }
 
+    //----------------------------------------------------------------
+    //
+    // exchange
+    //
+    //----------------------------------------------------------------
+
+    sysinline friend void exchange(Self& A, Self& B)
+    {
+        exchange(A.theMemPtrUnsafe, B.theMemPtrUnsafe);
+        exchange(A.theMemPitch, B.theMemPitch);
+        exchange(A.theSizeX, B.theSizeX);
+        exchange(A.theSizeY, B.theSizeY);
+    }
+
 };
 
 //----------------------------------------------------------------
@@ -630,104 +745,37 @@ COMPILE_ASSERT_EQUAL_LAYOUT(MatrixEx<int*>, MatrixBase<int>);
 
 //================================================================
 //
-// Matrix
-//
-// Matrix for C++ address space: identical to MatrixEx<Type*>.
-//
-//================================================================
-
-template <typename Type>
-class Matrix : public MatrixEx<Type*>
-{
-
-public:
-
-    using Base = MatrixEx<Type*>;
-
-    using TmpType = typename Base::TmpType;
-
-    //
-    // Constructors
-    //
-
-    sysinline Matrix(const TmpType* = 0)
-        {}
-
-    sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY)
-        : Base(memPtr, memPitch, sizeX, sizeY) {}
-
-    sysinline Matrix(Type* memPtr, Space memPitch, Space sizeX, Space sizeY, const MatrixValidityAssertion& assertion)
-        : Base(memPtr, memPitch, sizeX, sizeY, assertion) {}
-
-#if HEXLIB_GUARDED_MEMORY
-
-    sysinline Matrix(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
-        : Base(memPtr, memPitch, sizeX, sizeY) {}
-
-#endif
-
-    sysinline Matrix(const Base& base)
-        : Base(base) {}
-
-    template <typename OtherPointer>
-    sysinline Matrix(const Array<OtherPointer>& that)
-        : Base(that) {}
-
-    //
-    // Export cast (no code generated, reinterpret pointer).
-    //
-
-    template <typename OtherType>
-    sysinline operator const Matrix<OtherType>& () const
-    {
-        MATRIX__CHECK_CONVERSION(Type*, OtherType*);
-        return recastEqualLayout<const Matrix<OtherType>>(*this);
-    }
-
-    template <typename OtherType>
-    sysinline operator const Matrix<OtherType> () const
-    {
-        MATRIX__CHECK_CONVERSION(Type*, OtherType*);
-        return recastEqualLayout<const Matrix<OtherType>>(*this);
-    }
-
-public:
-
-    sysinline friend void exchange(Matrix<Type>& A, Matrix<Type>& B)
-    {
-        Base& baseA = A;
-        Base& baseB = B;
-        exchange(baseA, baseB);
-    }
-
-};
-
-//================================================================
-//
 // makeConst (fast)
 //
 //================================================================
 
-template <typename Type>
-sysinline const MatrixEx<const Type*>& makeConst(const MatrixEx<Type*>& matrix)
+template <typename Type, typename Pitch>
+sysinline auto& makeConst(const MatrixEx<Type*, Pitch>& matrix)
 {
-    return recastEqualLayout<const MatrixEx<const Type*>>(matrix);
+    return recastEqualLayout<const MatrixEx<const Type*, Pitch>>(matrix);
 }
 
 //================================================================
 //
-// recastElement
+// relaxToAnyPitch
+//
+//================================================================
+
+template <typename Pointer, typename Pitch>
+sysinline auto& relaxToAnyPitch(const MatrixEx<Pointer, Pitch>& matrix)
+    {return recastEqualLayout<const MatrixEx<Pointer, PitchMayBeNegative>>(matrix);}
+
+//================================================================
+//
+// restrictToNonNegativePitch
 //
 // Use with caution!
 //
 //================================================================
 
-template <typename Dst, typename Src>
-sysinline const Matrix<Dst>& recastElement(const Matrix<Src>& matrix)
-{
-    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
-    return recastEqualLayout<const Matrix<Dst>>(matrix);
-}
+template <typename Pointer, typename Pitch>
+sysinline auto& restrictToNonNegativePitch(const MatrixEx<Pointer, Pitch>& matrix)
+    {return recastEqualLayout<const MatrixEx<Pointer, PitchPositiveOrZero>>(matrix);}
 
 //================================================================
 //
@@ -738,14 +786,11 @@ sysinline const Matrix<Dst>& recastElement(const Matrix<Src>& matrix)
 template <>
 GET_SIZE_DEFINE(Point<Space>, value)
 
-template <typename Pointer>
-GET_SIZE_DEFINE(MatrixEx<Pointer>, value.size())
+template <typename Pointer, typename Pitch>
+GET_SIZE_DEFINE(MatrixEx<Pointer PREP_COMMA Pitch>, value.size())
 
-template <typename Type>
-GET_SIZE_DEFINE(Matrix<Type>, value.size())
-
-template <typename Pointer>
-sysinline Space getLayers(const MatrixEx<Pointer>& matrix)
+template <typename Pointer, typename Pitch>
+sysinline Space getLayers(const MatrixEx<Pointer, Pitch>& matrix)
     {return 1;}
 
 //================================================================
@@ -754,8 +799,8 @@ sysinline Space getLayers(const MatrixEx<Pointer>& matrix)
 //
 //================================================================
 
-template <typename Type>
-sysinline bool hasData(const MatrixEx<Type>& matrix)
+template <typename Type, typename Pitch>
+sysinline bool hasData(const MatrixEx<Type, Pitch>& matrix)
     {return allv(matrix.size() >= 1);}
 
 sysinline bool hasData(const Point<Space>& size)
@@ -780,3 +825,49 @@ sysinline Space areaOf(const Type& value)
     return size.X * size.Y;
 }
 
+//================================================================
+//
+// matrix
+//
+//================================================================
+
+template <typename Pointer>
+sysinline auto matrix(const ArrayEx<Pointer>& arr)
+{
+    return MatrixEx<Pointer, PitchPositiveOrZero>(arr, MatrixCreateFromArray{});
+}
+
+//================================================================
+//
+// Matrix
+//
+// Matrix for C++ address space: identical to MatrixEx<Type*>.
+//
+//================================================================
+
+template <typename Type, typename Pitch = PitchDefault>
+using Matrix = MatrixEx<Type*, Pitch>;
+
+//================================================================
+//
+// MatrixAP
+//
+//================================================================
+
+template <typename Type>
+using MatrixAP = MatrixEx<Type*, PitchMayBeNegative>;
+
+//================================================================
+//
+// recastElement
+//
+// Use with caution!
+//
+//================================================================
+
+template <typename Dst, typename Src, typename Pitch>
+sysinline auto& recastElement(const MatrixEx<Src*, Pitch>& matrix)
+{
+    COMPILE_ASSERT_EQUAL_LAYOUT(Src, Dst);
+    return recastEqualLayout<const MatrixEx<Dst*, Pitch>>(matrix);
+}

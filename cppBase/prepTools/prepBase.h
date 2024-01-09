@@ -62,23 +62,23 @@
 //
 //================================================================
 
-#define PREP_PASTE_UNDER2_HELPER(X, Y) \
+#define PREP_PASTE_UNDER_HELPER(X, Y) \
     X##_##Y
 
-#define PREP_PASTE_UNDER2(X, Y) \
-    PREP_PASTE_UNDER2_HELPER(X, Y)
+#define PREP_PASTE_UNDER(X, Y) \
+    PREP_PASTE_UNDER_HELPER(X, Y)
 
 #define PREP_PASTE_UNDER3(v0, v1, v2) \
-    PREP_PASTE_UNDER2(v0, PREP_PASTE_UNDER2(v1, v2))
+    PREP_PASTE_UNDER(v0, PREP_PASTE_UNDER(v1, v2))
 
 #define PREP_PASTE_UNDER4(v0, v1, v2, v3) \
-    PREP_PASTE_UNDER2(v0, PREP_PASTE_UNDER3(v1, v2, v3))
+    PREP_PASTE_UNDER(v0, PREP_PASTE_UNDER3(v1, v2, v3))
 
 #define PREP_PASTE_UNDER5(v0, v1, v2, v3, v4) \
-    PREP_PASTE_UNDER2(v0, PREP_PASTE_UNDER4(v1, v2, v3, v4))
+    PREP_PASTE_UNDER(v0, PREP_PASTE_UNDER4(v1, v2, v3, v4))
 
 #define PREP_PASTE_UNDER6(v0, v1, v2, v3, v4, v5) \
-    PREP_PASTE_UNDER2(v0, PREP_PASTE_UNDER5(v1, v2, v3, v4, v5))
+    PREP_PASTE_UNDER(v0, PREP_PASTE_UNDER5(v1, v2, v3, v4, v5))
 
 //================================================================
 //

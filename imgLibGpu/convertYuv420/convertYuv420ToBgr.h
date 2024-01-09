@@ -20,6 +20,6 @@ stdbool convertYuv420ToBgr
     const GpuMatrix<const SrcPixel>& srcChromaV,
     const Point<Space>& srcOffset,
     const DstPixel& outerColor,
-    const GpuMatrix<DstPixel>& dst,
+    const GpuMatrixAP<DstPixel>& dst,
     stdPars(GpuProcessKit)
 );

@@ -22,7 +22,7 @@ stdbool GpuBaseConsoleSplitter::clear(stdPars(Kit))
 stdbool GpuBaseConsoleSplitter::update(stdPars(Kit))
     {SPLITTER(update(stdPass))}
 
-stdbool GpuBaseConsoleSplitter::addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+stdbool GpuBaseConsoleSplitter::addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
     {SPLITTER(addImageBgr(img, hint, stdPass))}
 
 stdbool GpuBaseConsoleSplitter::overlayClear(stdPars(Kit))

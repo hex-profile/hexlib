@@ -144,6 +144,7 @@ private:
     ArrayObjectMemory<class FiberOwner> fibers;
     ArrayMemory<struct FiberTask> fiberTasks;
     ArrayMemory<Byte> sramHolder;
+    ArrayMemory<EmuMaxWarpIntrinsicsType> warpIntrinsicsMemoryHolder;
 
     // current state
     Space fiberCount;

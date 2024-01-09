@@ -10,10 +10,16 @@
 //
 //================================================================
 
-template <typename Type>
-stdbool readGpuElement(const GpuMatrix<const Type>& image, const Point<Space>& pos, Type& result, stdPars(GpuProcessKit))
+template <typename Type, typename Pitch>
+stdbool readGpuElement
+(
+    const GpuMatrix<const Type, Pitch>& image,
+    const Point<Space>& pos,
+    Type& result,
+    stdPars(GpuProcessKit)
+)
 {
-    GpuMatrix<const Type> gpuElement;
+    GpuMatrix<const Type, Pitch> gpuElement;
     require(image.subs(pos, point(1), gpuElement));
 
     MatrixMemory<Type> cpuElement;

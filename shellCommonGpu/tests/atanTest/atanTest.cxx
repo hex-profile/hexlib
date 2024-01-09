@@ -23,7 +23,7 @@ namespace atanTest {
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_1D_BEG
 (
     computePhase,
     PREP_EMPTY,
@@ -37,7 +37,7 @@ GPUTOOL_2D_BEG
     *dst = testApproxPhase ? approxPhase(value) : fastPhase(value);
 }
 #endif
-GPUTOOL_2D_END
+GPUTOOL_1D_END
 
 //================================================================
 //

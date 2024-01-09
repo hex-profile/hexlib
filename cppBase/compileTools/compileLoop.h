@@ -16,8 +16,8 @@
 //
 // To change it into compile-time loop, write a code like this:
 //
-// #define ITERATION(i, extra) \
-//   doSomething(i, extra)
+// #define ITERATION(i, extra)
+//     doSomething(i, extra)
 //
 // COMPILE_LOOP(MAX_COUNT, count, ITERATION, extra)
 //

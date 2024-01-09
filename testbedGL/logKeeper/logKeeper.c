@@ -146,7 +146,7 @@ void LogKeeperImpl::serialize(const CfgSerializeKit& kit)
 
 stdbool LogKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
 {
-    REQUIRE(formatterArray.realloc(8192));
+    require(formatterArray.realloc(8192, stdPass));
 
     //----------------------------------------------------------------
     //

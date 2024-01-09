@@ -41,7 +41,6 @@ sysinline float32 filterTaps(bool alternative)
 sysinline float32 filterShape(const Point<float32>& dist, float32 gaussSigma, bool alternative)
 {
     using Bspline = Bspline<3>;
-    float norm = 1.f / Bspline::zeroValue();
 
     float32 box = (absv(dist.X) <= 0.5f && absv(dist.Y) <= 0.5f) ? 1.f : 0.f;
     float32 tent = (1 - saturatev(absv(dist.X))) * (1 - saturatev(absv(dist.Y)));

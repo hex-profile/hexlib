@@ -17,14 +17,14 @@ namespace packageImpl {
 template <typename Pixel>
 stdbool copyImageFromCpu
 (
-    const Matrix<const Pixel> srcImage,
+    const MatrixAP<const Pixel> srcImage,
     GpuArrayMemory<Pixel>& memory,
-    GpuMatrix<const Pixel>& dst,
+    GpuMatrixAP<const Pixel>& dst,
     GpuCopyThunk& gpuCopier,
     stdPars(GpuProcessKit)
 )
 {
-    auto src = srcImage;
+    auto src = relaxToAnyPitch(srcImage);
 
     ////
 
@@ -37,9 +37,10 @@ stdbool copyImageFromCpu
 
     MATRIX_EXPOSE_UNSAFE(src);
 
-    Array<const Pixel> srcArray;
     REQUIRE(srcMemPitch >= srcSizeX);
-    srcArray.assign(srcMemPtr, srcMemPitch * srcSizeY);
+
+    Array<const Pixel> srcArray;
+    REQUIRE(srcArray.assignValidated(srcMemPtr, srcMemPitch * srcSizeY));
 
     auto& dstArray = memory;
     require(dstArray.realloc(srcArray.size(), stdPass));
@@ -50,7 +51,7 @@ stdbool copyImageFromCpu
 
     ////
 
-    REQUIRE(dst.assign(dstArray.ptr(), srcMemPitch, srcSizeX, srcSizeY));
+    REQUIRE(dst.assignValidated(dstArray.ptr(), srcMemPitch, srcSizeX, srcSizeY));
 
     if (inverted)
         dst = flipMatrix(dst);
@@ -60,7 +61,7 @@ stdbool copyImageFromCpu
     returnTrue;
 }
 
-//----------------------------------------------------------------
+////
 
 INSTANTIATE_FUNC(copyImageFromCpu<uint8>)
 INSTANTIATE_FUNC(copyImageFromCpu<uint8_x4>)

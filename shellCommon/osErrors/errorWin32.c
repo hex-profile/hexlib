@@ -20,7 +20,7 @@ template <>
 void formatOutput(const ErrorWin32& value, FormatOutputStream& outputStream)
 {
     LPTSTR formatStr = 0;
-    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(LocalFree(formatStr) == 0));
+    REMEMBER_CLEANUP_DBGBRK_CHECK(LocalFree(formatStr) == 0);
 
     DWORD formatResult = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL, value.get(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR) &formatStr, 0, NULL);

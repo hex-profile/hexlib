@@ -67,7 +67,7 @@ struct GpuImageConsole : public GpuBaseConsole
         \
         virtual stdbool addMatrixFunc \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
             InterpType upsampleType, \
@@ -84,10 +84,10 @@ struct GpuImageConsole : public GpuBaseConsole
 
     ////
 
-    template <typename Type>
-    inline stdbool addMatrixEx
+    template <typename Type, typename Pitch>
+    sysinline stdbool addMatrixEx
     (
-        const GpuMatrix<Type>& img,
+        const GpuMatrix<Type, Pitch>& img,
         float32 minVal, float32 maxVal,
         const Point<float32>& upsampleFactor,
         InterpType upsampleType,
@@ -110,7 +110,7 @@ struct GpuImageConsole : public GpuBaseConsole
         \
         virtual stdbool addMatrixChanFunc \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             int channel, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
@@ -128,10 +128,10 @@ struct GpuImageConsole : public GpuBaseConsole
 
     ////
 
-    template <typename Type>
-    inline stdbool addMatrixChan
+    template <typename Type, typename Pitch>
+    sysinline stdbool addMatrixChan
     (
-        const GpuMatrix<Type>& img,
+        const GpuMatrix<Type, Pitch>& img,
         int channel,
         float32 minVal, float32 maxVal,
         const Point<float32>& upsampleFactor,
@@ -147,10 +147,10 @@ struct GpuImageConsole : public GpuBaseConsole
 
     ////
 
-    template <typename Type>
-    inline stdbool addMatrixChan
+    template <typename Type, typename Pitch>
+    sysinline stdbool addMatrixChan
     (
-        const GpuMatrix<Type>& img,
+        const GpuMatrix<Type, Pitch>& img,
         int channel,
         float32 minVal, float32 maxVal,
         const ImgOutputHint& hint,
@@ -195,10 +195,10 @@ struct GpuImageConsole : public GpuBaseConsole
 
     ////
 
-    template <typename VectorType>
-    inline stdbool addVectorImage
+    template <typename VectorType, typename Pitch>
+    sysinline stdbool addVectorImage
     (
-        const GpuMatrix<VectorType>& image,
+        const GpuMatrix<VectorType, Pitch>& image,
         float32 maxVector,
         const Point<float32>& upsampleFactor,
         InterpType upsampleType,
@@ -211,8 +211,14 @@ struct GpuImageConsole : public GpuBaseConsole
         return addVectorImageFunc(makeConst(image), maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdNullPassThru);
     }
 
-    template <typename VectorType>
-    inline stdbool addVectorImageSimple(const GpuMatrix<VectorType>& image, float32 maxVector, const ImgOutputHint& hint, stdNullPars)
+    template <typename VectorType, typename Pitch>
+    sysinline stdbool addVectorImageSimple
+    (
+        const GpuMatrix<VectorType, Pitch>& image,
+        float32 maxVector,
+        const ImgOutputHint& hint,
+        stdNullPars
+    )
     {
         return addVectorImageFunc(makeConst(image), maxVector, point(1.f), INTERP_NONE, point(0), BORDER_ZERO, hint, stdNullPassThru);
     }
@@ -255,7 +261,7 @@ struct GpuImageConsole : public GpuBaseConsole
         \
         virtual stdbool funcName \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
             InterpType upsampleType, \
@@ -299,7 +305,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
     // Basic output interaces.
     //
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) {returnTrue;}
+    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) {returnTrue;}
 
 
     //
@@ -328,7 +334,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
         \
         stdbool addMatrixFunc \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
             InterpType upsampleType, \
@@ -355,7 +361,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
         \
         stdbool addMatrixChanFunc \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             int channel, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
@@ -425,7 +431,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
         \
         stdbool funcName \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
             InterpType upsampleType, \

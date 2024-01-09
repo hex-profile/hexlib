@@ -15,10 +15,10 @@
 //
 //================================================================
 
-struct AtVideoFrame : public Matrix<const uint8_x4>
+struct AtVideoFrame : public MatrixAP<const uint8_x4>
 {
-    inline AtVideoFrame(const Matrix<const uint8_x4>& that)
-        : Matrix<const uint8_x4>(that) {}
+    inline AtVideoFrame(const MatrixAP<const uint8_x4>& that)
+        : MatrixAP<const uint8_x4>(that) {}
 };
 
 //================================================================
