@@ -324,7 +324,9 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     ////
 
     if (chromaIsPacked)
+    {
         require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerPacked, srcChromaPacked, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
+    }
     else
     {
         require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerU, srcChromaU, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));

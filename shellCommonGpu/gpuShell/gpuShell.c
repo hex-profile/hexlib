@@ -86,9 +86,9 @@ class GpuAllocatorJoinContextThunk : public AllocatorInterface<AddrU>
 
 public:
 
-    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
     {
-        return base->alloc(context, size, alignment, owner, result, stdNullPassThru);
+        return base->alloc(context, size, alignment, owner, result, stdPassNullThru);
     }
 
     void setup(GpuMemoryAllocator<AddrU>& base, const GpuContext& context)
@@ -142,7 +142,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
     GpuThreadContextSave contextSave;
 
     require(kit.gpuInitApi.threadContextSet(kit.gpuCurrentContext, contextSave, stdPass));
-    REMEMBER_CLEANUP_ERROR_BLOCK(kit.gpuInitApi.threadContextRestore(contextSave, stdPass));
+    REMEMBER_CLEANUP_ERROR_BLOCK(kit.gpuInitApi.threadContextRestore(contextSave, stdPassNc));
 
     //----------------------------------------------------------------
     //

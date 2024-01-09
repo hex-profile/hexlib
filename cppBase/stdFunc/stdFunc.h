@@ -58,7 +58,8 @@
 #define stdPassEx(kit, location) \
     (PROFILER_FRAME_TEMPORARY(kit, location), kit), \
     ERROR_HANDLING_PASS \
-    TRACE_PASS(trace, location)
+    TRACE_PASS(trace, location) \
+    ERROR_HANDLING_CHECK
 
 //----------------------------------------------------------------
 
@@ -76,16 +77,60 @@
 #define stdPassNoProfiling \
     kit, \
     ERROR_HANDLING_PASS \
-    TRACE_PASS(trace, TRACE_AUTO_LOCATION)
+    TRACE_PASS(trace, TRACE_AUTO_LOCATION) \
+    ERROR_HANDLING_CHECK
 
 //----------------------------------------------------------------
 
 #define stdPassThru \
     kit, \
     ERROR_HANDLING_PASS \
-    TRACE_PASSTHRU(trace)
+    TRACE_PASSTHRU(trace) \
+    ERROR_HANDLING_CHECK
 
 #define stdPassThruKit(kit) \
+    kit, \
+    ERROR_HANDLING_PASS \
+    TRACE_PASSTHRU(trace) \
+    ERROR_HANDLING_CHECK
+
+//================================================================
+//
+// stdPassNc*
+//
+//================================================================
+
+#define stdPassExNc(kit, location) \
+    (PROFILER_FRAME_TEMPORARY(kit, location), kit), \
+    ERROR_HANDLING_PASS \
+    TRACE_PASS(trace, location)
+
+//----------------------------------------------------------------
+
+#define stdPassNc \
+    stdPassExNc(kit, TRACE_AUTO_LOCATION)
+
+#define stdPassKitNc(kit) \
+    stdPassExNc(kit, TRACE_AUTO_LOCATION)
+
+#define stdPassLocationMsgNc(msg) \
+    stdPassExNc(kit, TRACE_AUTO_LOCATION_MSG(msg))
+
+//----------------------------------------------------------------
+
+#define stdPassNoProfilingNc \
+    kit, \
+    ERROR_HANDLING_PASS \
+    TRACE_PASS(trace, TRACE_AUTO_LOCATION)
+
+//----------------------------------------------------------------
+
+#define stdPassThruNc \
+    kit, \
+    ERROR_HANDLING_PASS \
+    TRACE_PASSTHRU(trace)
+
+#define stdPassThruKitNc(kit) \
     kit, \
     ERROR_HANDLING_PASS \
     TRACE_PASSTHRU(trace)
@@ -147,26 +192,34 @@ extern const NullKit nullKit;
 
 //================================================================
 //
-// stdNullPass
-// stdNullPassThru
+// stdParsNull
+// stdPassNull
+// stdPassNullThru
 //
 // Standard trace support, no kit.
 //
 //================================================================
 
-#define stdNullPars \
+#define stdParsNull \
     const NullKit&, \
     ERROR_HANDLING_PARAMS \
     TRACE_PARAMS(trace)
 
-#define stdNullPass \
+////
+
+#define stdPassNull \
     stdPassKit(nullKit)
 
-#define stdNullPassThru \
+#define stdPassNullThru \
     stdPassThruKit(nullKit)
 
-#define stdNullBegin
+////
 
+#define stdPassNullNc \
+    stdPassKitNc(nullKit)
+
+#define stdPassNullThruNc \
+    stdPassThruKitNc(nullKit)
 
 //================================================================
 //

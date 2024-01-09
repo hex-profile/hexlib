@@ -51,8 +51,8 @@ public:
 
         bool ok = !!stream;
 
-        if_not (ok)
-            CHECK_TRACE1(stream.eof(), STR("Cannot read file %0"), openedFilename);
+        if_not (ok || stream.eof())
+            errorBlock(printMsgTrace(STR("Cannot read file %0"), openedFilename, msgErr, stdPassNc));
 
         ////
 
@@ -73,12 +73,7 @@ public:
         result = strStream.str();
 
         bool ok = !!stream;
-
-        if_not (ok)
-        {
-            CHECK_TRACE1(stream.eof(), STR("Cannot read file %0"), openedFilename);
-            returnFalse;
-        }
+        REQUIRE_TRACE1(ok || stream.eof(), STR("Cannot read file %0"), openedFilename);
 
         returnTrue;
     }
@@ -89,95 +84,6 @@ private:
     std::basic_ifstream<Type> stream;
 
 };
-
-//================================================================
-//
-// InputTextFileUnicodeToAscii
-//
-// Reads 16-bit unicode file and translates to ASCII characters 0..7F.
-//
-//================================================================
-
-#if 0
-
-class InputTextFileUnicodeToAscii
-{
-
-public:
-
-    stdbool open(StlString filename, stdPars(TextFileKit))
-    {
-        using namespace std;
-
-        stream.close();
-        stream.clear();
-
-        ////
-
-        stream.open(filename.c_str());
-        REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
-
-        openedFilename = filename;
-
-        returnTrue;
-    }
-
-    stdbool getLine(StlString& result, stdPars(TextFileKit))
-    {
-        std::basic_string<char> wstr;
-
-        getline(stream, wstr);
-
-        bool ok = !!stream;
-
-        if_not (ok)
-            CHECK_TRACE1(stream.eof(), STR("Cannot read file %0"), openedFilename);
-
-        ////
-
-        COMPILE_ASSERT(sizeof(wchar_t) == 2);
-        const wchar_t* inputPtr = (wchar_t*) wstr.c_str();
-        size_t inputSize = wstr.size() / 2; // round down
-
-        if (inputSize >= 1 && inputPtr[inputSize-1] == '\r')
-            --inputSize;
-
-        ////
-
-        size_t validCount = 0;
-
-        for_count (k, inputSize)
-            if (uint32(inputPtr[k]) < 0x80)
-                ++validCount;
-
-        ////
-
-        result.resize(validCount);
-        StlString::iterator outputPtr = result.begin();
-
-        for_count (k, inputSize)
-        {
-            uint32 value = inputPtr[k];
-
-            if (value < 0x80)
-                *outputPtr++ = CharType(value);
-        }
-
-        ////
-
-        return ok;
-    }
-
-    bool eof() const {return stream.eof();}
-
-private:
-
-    StlString openedFilename;
-    std::basic_ifstream<char> stream;
-
-};
-
-#endif
 
 //================================================================
 //

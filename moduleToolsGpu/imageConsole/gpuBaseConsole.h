@@ -50,15 +50,15 @@ struct GpuBaseConsoleImages
 
 struct GpuImageProviderBgr32
 {
-    virtual stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const =0;
+    virtual stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const =0;
 };
 
 LAMBDA_THUNK
 (
     gpuImageProviderBgr32,
     GpuImageProviderBgr32,
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const,
-    lambda(dest, stdNullPass)
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const,
+    lambda(dest, stdPassNull)
 )
 
 //================================================================

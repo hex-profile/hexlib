@@ -35,7 +35,7 @@ void glfwErrorCallback(int errorCode, const char* errorDesc)
 
 //----------------------------------------------------------------
 
-inline bool glfwNoError()
+sysinline bool glfwNoError()
 {
     return glfwError.valid() && glfwError.size() == 0;
 }
@@ -47,10 +47,10 @@ inline bool glfwNoError()
 //================================================================
 
 template <typename Kit>
-inline bool checkGLFWHelper(const CharType* statement, stdPars(Kit))
+sysinline stdbool checkGLFWHelper(const CharType* statement, stdPars(Kit))
 {
     if (glfwError.valid() && glfwError.size() == 0)
-        return true;
+        returnTrue;
 
     ////
 
@@ -59,19 +59,22 @@ inline bool checkGLFWHelper(const CharType* statement, stdPars(Kit))
     if (glfwError.valid())
         msg = glfwError.cstr();
 
-    printMsgTrace(kit.msgLogEx, STR("GLFW library: %0 returned error \"%1\"."), statement, msg, msgErr, stdPassThru);
+    require(printMsgTrace(STR("GLFW library: %0 returned error \"%1\"."), statement, msg, msgErr, stdPassThru));
 
     ////
 
     glfwError.clear();
 
-    return false;
+    returnFalse;
 }
 
 //----------------------------------------------------------------
 
 #define REQUIRE_GLFW(statement) \
-    require(((statement), checkGLFWHelper(PREP_STRINGIZE(statement), stdPass)))
+    do { \
+        {statement;} \
+        require(checkGLFWHelper(PREP_STRINGIZE(statement), stdPass)); \
+    } while (0)
 
 //================================================================
 //
@@ -79,12 +82,12 @@ inline bool checkGLFWHelper(const CharType* statement, stdPars(Kit))
 //
 //================================================================
 
-using RefreshHandler = Callable<void ()>;
-using KeyHandler = Callable<void (const KeyEvent& event)>;
-using MouseMoveHandler = Callable<void (const MouseMoveEvent& event)>;
-using MouseButtonHandler = Callable<void (const MouseButtonEvent& event)>;
-using ScrollHandler = Callable<void (const ScrollEvent& event)>;
-using ResizeHandler = Callable<void (const ResizeEvent& event)>;
+using RefreshHandler = Callable<stdbool ()>;
+using KeyHandler = Callable<stdbool (const KeyEvent& event)>;
+using MouseMoveHandler = Callable<stdbool (const MouseMoveEvent& event)>;
+using MouseButtonHandler = Callable<stdbool (const MouseButtonEvent& event)>;
+using ScrollHandler = Callable<stdbool (const ScrollEvent& event)>;
+using ResizeHandler = Callable<stdbool (const ResizeEvent& event)>;
 
 //================================================================
 //
@@ -226,7 +229,7 @@ void glfwRefreshCallback(GLFWwindow* window)
     auto& the = * (WindowGLFW*) userPtr;
 
     if (DEBUG_BREAK_CHECK(the.refreshHandler))
-        the.refreshHandler->call();
+        errorBlock(the.refreshHandler->call());
 }
 
 //================================================================
@@ -235,7 +238,7 @@ void glfwRefreshCallback(GLFWwindow* window)
 //
 //================================================================
 
-inline KeyModifiers getKeyModifiers(int mods)
+sysinline KeyModifiers getKeyModifiers(int mods)
 {
     KeyModifiers result = 0;
 
@@ -449,7 +452,7 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
     ////
 
     if (DEBUG_BREAK_CHECK(the.keyHandler))
-        the.keyHandler->call(r);
+        errorBlock(the.keyHandler->call(r));
 }
 
 //================================================================
@@ -474,7 +477,7 @@ void glfwCursorPosCallback(GLFWwindow* window, double xpos, double ypos)
     );
 
     if (DEBUG_BREAK_CHECK(the.mouseMoveHandler))
-        the.mouseMoveHandler->call(pos);
+        errorBlock(the.mouseMoveHandler->call(pos));
 }
 
 //================================================================
@@ -505,7 +508,7 @@ void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mod
     ////
 
     if (DEBUG_BREAK_CHECK(!!the.mouseButtonHandler))
-        (*the.mouseButtonHandler)({pos, button, action == GLFW_PRESS, getKeyModifiers(mods)});
+        errorBlock((*the.mouseButtonHandler)({pos, button, action == GLFW_PRESS, getKeyModifiers(mods)}));
 }
 
 //================================================================
@@ -526,7 +529,7 @@ void glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     auto ofs = point(float32(xoffset), float32(yoffset));
 
     if (DEBUG_BREAK_CHECK(the.scrollHandler))
-        the.scrollHandler->call(ofs);
+        errorBlock(the.scrollHandler->call(ofs));
 }
 
 //================================================================
@@ -545,7 +548,7 @@ void glfwFramebufferSizeCallback(GLFWwindow* window, int width, int height)
     ////
 
     if (the.resizeHandler) // no warnings -- can be called from setWindowLocation
-        the.resizeHandler->call(point(width, height));
+        errorBlock(the.resizeHandler->call(point(width, height)));
 }
 
 //================================================================
@@ -719,7 +722,7 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
 
     auto refreshHandlerImpl = RefreshHandler::O | [&] ()
     {
-        receivers.refreshReceiver(stdPassThru);
+        return receivers.refreshReceiver(stdPassThru);
     };
 
     ////
@@ -735,7 +738,7 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
 
     auto keyHandlerImpl = KeyHandler::O | [&] (auto& event)
     {
-        receivers.keyReceiver(event, stdPassThru);
+        return receivers.keyReceiver(event, stdPassThru);
     };
 
     ////
@@ -751,7 +754,7 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
 
     auto mouseMoveHandlerImpl = MouseMoveHandler::O | [&] (auto& event)
     {
-        receivers.mouseMoveReceiver(event, stdPassThru);
+        return receivers.mouseMoveReceiver(event, stdPassThru);
     };
 
     ////
@@ -767,7 +770,7 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
 
     auto mouseButtonHandlerImpl = MouseButtonHandler::O | [&] (auto& event)
     {
-        receivers.mouseButtonReceiver(event, stdPassThru);
+        return receivers.mouseButtonReceiver(event, stdPassThru);
     };
 
     ////
@@ -783,7 +786,7 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
 
     auto scrollHandlerImpl = ScrollHandler::O | [&] (auto& event)
     {
-        receivers.scrollReceiver(event, stdPassThru);
+        return receivers.scrollReceiver(event, stdPassThru);
     };
 
     ////
@@ -799,7 +802,7 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
 
     auto resizeHandlerImpl = ResizeHandler::O | [&] (auto& event)
     {
-        receivers.resizeReceiver(event, stdPassThru);
+        return receivers.resizeReceiver(event, stdPassThru);
     };
 
     ////
@@ -985,7 +988,11 @@ stdbool WindowManagerGLFW::init(stdPars(Kit))
     if_not (initialized)
     {
         glfwSetErrorCallback(glfwErrorCallback);
-        REQUIRE_GLFW(glfwInit() == GL_TRUE);
+
+        bool initOk{};
+        REQUIRE_GLFW(initOk = glfwInit());
+        REQUIRE(initOk == GL_TRUE);
+
         initialized = true;
     }
 

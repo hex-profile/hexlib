@@ -12,6 +12,8 @@
 
 stdbool point3dUsage()
 {
+    stdTraceRoot;
+
     // Type traits: signed/unsigned.
     COMPILE_ASSERT(TYPE_IS_SIGNED(const Point3D<int>));
     COMPILE_ASSERT(TYPE_EQUAL(TYPE_MAKE_UNSIGNED_(Point3D<int>), Point3D<unsigned>));

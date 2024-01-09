@@ -719,7 +719,7 @@ void GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, stdP
     if (configInputUpdate->hasUpdates())
     {
         using namespace cfgSerializeImpl;
-        errorBlock(loadVarsFromTree({args.guiSerialization, *configInputUpdate, configTemp, false, true}, stdPass));
+        errorBlock(loadVarsFromTree({args.guiSerialization, *configInputUpdate, configTemp, false, true}, stdPassNc));
 
         CHECK(args.workerService.addConfigUpdate(*configInputUpdate)); // Send to WORKER
     }
@@ -765,7 +765,7 @@ stdbool GuiClassImpl::updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(P
 
     auto drawArgs = DrawArgs{*overlayBuffer, *globalLogBuffer, *localLogBuffer, args.dstImage};
 
-    if_not (errorBlock(drawNormal(drawArgs, stdPass)))
+    if_not (errorBlock(drawNormal(drawArgs, stdPassNc)))
         require(drawErrorPattern(drawArgs, stdPass));
 
     ////
@@ -876,7 +876,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
         ////
 
         if (configOutputBuffer->hasUpdates())
-            CHECK(args.configService.addConfigUpdate(*configOutputBuffer));
+            REQUIRE(args.configService.addConfigUpdate(*configOutputBuffer));
 
         returnTrue;
     };
@@ -889,69 +889,80 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     //
     //----------------------------------------------------------------
 
-    auto keyReceiver = KeyReceiver::O | [&] (const KeyEvent& event, stdNullPars)
+    auto keyReceiver = KeyReceiver::O | [&] (const KeyEvent& event, stdParsNull)
     {
-        errorBlock(keyBuffer->receiveKey(event, stdPass));
+        require(keyBuffer->receiveKey(event, stdPass));
+
+        returnTrue;
+
     };
 
     ////
 
-    auto refreshReceiver = RefreshReceiver::O | [&] (stdNullPars)
+    auto refreshReceiver = RefreshReceiver::O | [&] (stdParsNull)
     {
-        auto drawer = Drawer::O | [&] (auto& dstImage, stdNullPars)
+        auto drawer = Drawer::O | [&] (auto& dstImage, stdParsNull)
         {
             return updateAndRedraw({args.guiService, args.workerService, args.logService,
                 args.intrinsicBuffer, args.guiSerialization, dstImage}, stdPass);
         };
 
-        args.drawReceiver(drawer, stdNullPass);
+        args.drawReceiver(drawer, stdPassNull);
+
+        returnTrue;
     };
 
     ////
 
-    auto mouseMoveReceiver = MouseMoveReceiver::O | [&] (auto& pos, stdNullPars)
+    auto mouseMoveReceiver = MouseMoveReceiver::O | [&] (auto& pos, stdParsNull)
     {
         RedrawRequest redraw;
 
         guiModule->mouseMoveReceiver(pos, redraw, stdPass);
 
         if (redraw.on)
-            refreshReceiver(stdPass);
+            require(refreshReceiver(stdPass));
 
         auto offset = guiModule->getOverlayOffset();
 
         if (offset)
             mousePointer.position = *offset + pos;
+
+        returnTrue;
     };
 
     ////
 
-    auto mouseButtonReceiver = MouseButtonReceiver::O | [&] (const MouseButtonEvent& event, stdNullPars)
+    auto mouseButtonReceiver = MouseButtonReceiver::O | [&] (const MouseButtonEvent& event, stdParsNull)
     {
         RedrawRequest redraw;
 
         guiModule->mouseButtonReceiver(event, redraw, stdPass);
 
         if (redraw.on)
-            refreshReceiver(stdPass);
+            require(refreshReceiver(stdPass));
 
         if (event.button == 0)
             mousePointer.button0 = event.press;
 
         if (event.button == 1)
             mousePointer.button1 = event.press;
+
+        returnTrue;
     };
 
     ////
 
-    auto scrollReceiver = ScrollReceiver::O | [&] (auto& event, stdNullPars)
+    auto scrollReceiver = ScrollReceiver::O | [&] (auto& event, stdParsNull)
     {
+        returnTrue;
     };
 
     ////
 
-    auto resizeReceiver = ResizeReceiver::O | [&] (auto& event, stdNullPars)
+    auto resizeReceiver = ResizeReceiver::O | [&] (auto& event, stdParsNull)
     {
+        returnTrue;
     };
 
     ////
@@ -1131,7 +1142,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
 
     if (editConfig)
     {
-        errorBlock(makeEditRequest(stdPass)) &&
+        errorBlock(makeEditRequest(stdPassNc)) &&
         args.configService.addEditRequest(*editRequest);
     }
 
@@ -1139,7 +1150,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
 
     if (editLog)
     {
-        errorBlock(makeEditRequest(stdPass)) &&
+        errorBlock(makeEditRequest(stdPassNc)) &&
         args.logService.addEditRequest(*editRequest);
     }
 
@@ -1159,7 +1170,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
         {
             require(printHelp(args, printAlgoKeysSignal != 0, stdPass));
 
-            refreshReceiver(stdPass);
+            require(refreshReceiver(stdPass));
 
             require(makeEditRequest(stdPass));
             REQUIRE(args.logService.addEditRequest(*editRequest));
@@ -1177,7 +1188,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     //----------------------------------------------------------------
 
     if (needRedraw)
-        refreshReceiver(stdPass);
+        require(refreshReceiver(stdPass));
 
     ////
 

@@ -28,7 +28,7 @@ class CudaCpuAllocThunk : public GpuMemoryAllocator<CpuAddrU>
 
 public:
 
-    stdbool alloc(const GpuContext& context, CpuAddrU size, CpuAddrU alignment, GpuMemoryOwner& owner, CpuAddrU& result, stdNullPars);
+    stdbool alloc(const GpuContext& context, CpuAddrU size, CpuAddrU alignment, GpuMemoryOwner& owner, CpuAddrU& result, stdParsNull);
     static void dealloc(MemoryDeallocContext& deallocContext);
 
     CudaCpuAllocThunk(const CudaInitApiThunkKit& kit) : kit(kit) {}
@@ -50,7 +50,7 @@ class CudaGpuAllocThunk : public GpuMemoryAllocator<GpuAddrU>
 
 public:
 
-    stdbool alloc(const GpuContext& context, GpuAddrU size, GpuAddrU alignment, GpuMemoryOwner& owner, GpuAddrU& result, stdNullPars);
+    stdbool alloc(const GpuContext& context, GpuAddrU size, GpuAddrU alignment, GpuMemoryOwner& owner, GpuAddrU& result, stdParsNull);
     static void dealloc(MemoryDeallocContext& deallocContext);
 
     CudaGpuAllocThunk(const CudaInitApiThunkKit& kit) : kit(kit) {}
@@ -76,39 +76,39 @@ public:
     // Init
     //
 
-    stdbool initialize(stdNullPars);
-    stdbool getDeviceCount(int32& deviceCount, stdNullPars);
-    stdbool getProperties(int32 deviceIndex, GpuProperties& properties, stdNullPars);
+    stdbool initialize(stdParsNull);
+    stdbool getDeviceCount(int32& deviceCount, stdParsNull);
+    stdbool getProperties(int32 deviceIndex, GpuProperties& properties, stdParsNull);
 
     //
     // Context
     //
 
-    stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars);
+    stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdParsNull);
     static void destroyContext(GpuContextDeallocContext& deallocContext);
 
     using GpuInitApi::threadContextSet;
-    stdbool threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdNullPars);
-    stdbool threadContextRestore(const GpuThreadContextSave& save, stdNullPars);
+    stdbool threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdParsNull);
+    stdbool threadContextRestore(const GpuThreadContextSave& save, stdParsNull);
 
     //
     // Module
     //
 
-    stdbool createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdNullPars);
+    stdbool createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdParsNull);
     static void destroyModule(GpuModuleDeallocContext& deallocContext);
 
     //
     // Kernel
     //
 
-    stdbool createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdNullPars);
+    stdbool createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdParsNull);
 
     //
     // Sampler
     //
 
-    stdbool getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdNullPars);
+    stdbool getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdParsNull);
 
     //
     // Memory allocation
@@ -123,21 +123,21 @@ public:
 
     int32 textureAllocCount = 0;
 
-    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars);
+    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull);
     static void destroyTexture(GpuTextureDeallocContext& deallocContext);
 
     //
     // Stream
     //
 
-    stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars);
+    stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdParsNull);
     static void destroyStream(GpuStreamDeallocContext& deallocContext);
 
     //
     // Total profiling coverage.
     //
 
-    stdbool coverageInit(const GpuStream& stream, Space coverageQueueCapacity, stdNullPars);
+    stdbool coverageInit(const GpuStream& stream, Space coverageQueueCapacity, stdParsNull);
     void coverageDeinit(const GpuStream& stream);
 
     bool coverageGetSyncFlag(const GpuStream& stream);
@@ -147,7 +147,7 @@ public:
     // Event
     //
 
-    stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdNullPars);
+    stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdParsNull);
     static void destroyEvent(GpuEventDeallocContext& deallocContext);
 
     //
@@ -223,7 +223,7 @@ public:
             DstAddr dstAddr, \
             Space size, \
             const GpuStream& stream, \
-            stdNullPars \
+            stdParsNull \
         );
 
     TMP_MACRO(copyArrayCpuCpu, CpuAddrU, CpuAddrU)
@@ -245,7 +245,7 @@ public:
             DstAddr dstAddr, Space dstBytePitch, \
             Space byteSizeX, Space sizeY, \
             const GpuStream& stream, \
-            stdNullPars \
+            stdParsNull \
         );
 
     TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU)
@@ -271,7 +271,7 @@ public:
         ReadNormalizedFloat readNormalizedFloat,
         NormalizedCoords normalizedCoords,
         const GpuContext& context,
-        stdNullPars
+        stdParsNull
     );
 
     stdbool setSamplerImageEx
@@ -287,7 +287,7 @@ public:
         ReadNormalizedFloat readNormalizedFloat,
         NormalizedCoords normalizedCoords,
         const GpuContext& context,
-        stdNullPars
+        stdParsNull
     );
 
     //
@@ -302,23 +302,23 @@ public:
         const GpuKernelLink& kernelLink,
         const void* paramPtr, size_t paramSize,
         const GpuStream& stream,
-        stdNullPars
+        stdParsNull
     );
 
     //
     // Sync
     //
 
-    stdbool waitStream(const GpuStream& stream, stdNullPars);
+    stdbool waitStream(const GpuStream& stream, stdParsNull);
 
     //
     // Events
     //
 
-    stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars);
-    stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars);
-    stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars);
-    stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars);
+    stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull);
+    stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull);
+    stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull);
+    stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull);
 
     //
     // Benchmarking control

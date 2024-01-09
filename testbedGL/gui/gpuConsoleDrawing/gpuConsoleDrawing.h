@@ -34,7 +34,7 @@ using ColorTextReceiver = Callable<void (const CharArray& text, uint32 color)>;
 //
 //================================================================
 
-using ColorTextProvider = Callable<stdbool (Space maxCount, ColorTextReceiver& receiver, stdNullPars)>;
+using ColorTextProvider = Callable<stdbool (Space maxCount, ColorTextReceiver& receiver, stdParsNull)>;
 
 //================================================================
 //

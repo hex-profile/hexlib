@@ -285,7 +285,7 @@ void LogKeeperImpl::processingCycle(const RunArgs& args, ShutdownReq& shutdown)
 
     stdTraceRoot;
 
-    errorBlock(processDiag(args, shutdown, stdPass));
+    errorBlock(processDiag(args, shutdown, stdPassNc));
 
 }
 
@@ -425,7 +425,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
         shutdown.request = true;
 
         if (logMemory->hasUpdates())
-            errorBlock(updateLogFile(stdPass));
+            errorBlock(updateLogFile(stdPassNc));
 
         returnTrue;
     }
@@ -447,7 +447,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
 
         if (timeToSave)
         {
-            errorBlock(updateLogFile(stdPass));
+            errorBlock(updateLogFile(stdPassNc));
 
             ////
 
@@ -509,10 +509,11 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
             cmdLine << editor << CT(" \"") << logFilename << CT("\"");
             REQUIRE(def(cmdLine));
 
-            return runAndWaitProcess(cmdLine.cstr(), stdPass);
+            require(runAndWaitProcess(cmdLine.cstr(), stdPass));
+            returnTrue;
         };
 
-        if_not (errorBlock(launchEditor(editRequest.getEditor(), stdPass)))
+        if_not (errorBlock(launchEditor(editRequest.getEditor(), stdPassNc)))
         {
             printMsg(kit.msgLog, editRequest.getHelpMessage(), msgWarn);
             returnFalse;

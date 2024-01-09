@@ -567,9 +567,9 @@ stdbool saveUnsyncedVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 
 stdbool saveVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 {
-    return args.saveOnlyUnsyncedVars ?
-        saveUnsyncedVarsToTree(args, stdPass) :
-        saveAllVarsToTree(args, stdPass);
+    auto func = args.saveOnlyUnsyncedVars ? saveUnsyncedVarsToTree : saveAllVarsToTree;
+
+    return func(args, stdPass);
 }
 
 //================================================================
@@ -606,7 +606,7 @@ stdbool loadVarsFromTree(const LoadVarsFromTreeArgs& args, stdPars(Kit))
         the.savedNode = spaceNode;
 
         if (spaceNode)
-            spaceNode = spaceNode->findChild(NameRef{name});;
+            spaceNode = spaceNode->findChild(NameRef{name});
     };
 
     auto leave = [&] (auto& context)

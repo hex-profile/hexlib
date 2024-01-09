@@ -122,7 +122,7 @@ inline void ProfilerImpl::enter(ProfilerScopeEx& scope, TraceLocation location, 
         {
             const ProfilerDeviceKit& kit = *deviceControl;
             stdTraceRoot;
-            errorBlock(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
+            errorBlock(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPassNc));
         }
     }
 
@@ -211,7 +211,7 @@ inline void ProfilerImpl::leave(ProfilerScopeEx& scope)
             {
                 const ProfilerDeviceKit& kit = *deviceControl;
                 stdTraceRoot;
-                errorBlock(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPass));
+                errorBlock(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPassNc));
             }
         }
     }

@@ -290,7 +290,7 @@ stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
     glContext = &args.glContext;
 
     require(glContext->bind(stdPass));
-    REMEMBER_CLEANUP_ERROR_BLOCK(glContext->unbind(stdPass));
+    REMEMBER_CLEANUP_ERROR_BLOCK(glContext->unbind(stdPassNc));
 
     //----------------------------------------------------------------
     //
@@ -388,14 +388,12 @@ void WorkerImpl::run(const RunArgs& args)
 
         if (glContextBound)
         {
-            REQUIRE(glContext);
-            require(glContext->unbind(stdPass));
+            if (glContext)
+                errorBlock(glContext->unbind(stdPassNc));
         }
-
-        returnTrue;
     };
 
-    REMEMBER_CLEANUP_ERROR_BLOCK(unbindContext());
+    REMEMBER_CLEANUP(unbindContext());
 
     //----------------------------------------------------------------
     //
@@ -567,7 +565,7 @@ void WorkerImpl::processingCycle(const RunArgsEx& args)
 
     stdTraceRoot;
 
-    if_not (errorBlock(processDiag(args, stdPass)))
+    if_not (errorBlock(processDiag(args, stdPassNc)))
         return;
 
     //----------------------------------------------------------------
@@ -613,7 +611,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
     if (inputUpdates.configUpdate.hasUpdates())
     {
         using namespace cfgSerializeImpl;
-        errorBlock(loadVarsFromTree({serialization, inputUpdates.configUpdate, configTemp, false, true}, stdPass));
+        errorBlock(loadVarsFromTree({serialization, inputUpdates.configUpdate, configTemp, false, true}, stdPassNc));
         inputUpdates.configUpdate.clearMemory(); // A rare operation, deallocate.
     }
 
@@ -720,7 +718,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
     //
     //----------------------------------------------------------------
 
-    auto overlayUpdater = gpuBaseConsoleThunk::OverlayUpdater::O | [&] (stdNullPars)
+    auto overlayUpdater = gpuBaseConsoleThunk::OverlayUpdater::O | [&] (stdParsNull)
     {
         REQUIRE(args.guiService.addOverlayUpdate(outputBuffers.overlayUpdate));
         returnTrue;
@@ -790,7 +788,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
 
         ////
 
-        auto processApi = testShell::Process::O | [&] (stdNullPars)
+        auto processApi = testShell::Process::O | [&] (stdParsNull)
         {
             return testModule->process(stdPass);
         };

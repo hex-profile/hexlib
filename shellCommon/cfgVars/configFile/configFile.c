@@ -161,7 +161,7 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(Kit))
 
     if (fileTools::isFile(filename.cstr()))
     {
-        if_not (errorBlock(operations->loadFromFile(*memory, filename.cstr(), false, stdPass)))
+        if_not (errorBlock(operations->loadFromFile(*memory, filename.cstr(), false, stdPassNc)))
         {
             printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
             returnFalse;
@@ -250,7 +250,7 @@ stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(Kit))
     // update file
     //
 
-    if (errorBlock(operations->saveToFile(*memory, filename.cstr(), stdPass)))
+    if (errorBlock(operations->saveToFile(*memory, filename.cstr(), stdPassNc)))
     {
         memoryNotEqualToTheFile = false;
     }
@@ -297,14 +297,14 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(Kit))
 
     ////
 
-    if_not (errorBlock(launchEditor(configEditor, filename, stdPass)))
+    if_not (errorBlock(launchEditor(configEditor, filename, stdPassNc)))
     {
         require(launchEditor(SimpleString{CT("notepad")}, filename, stdPass));
     }
 
     ////
 
-    if_not (errorBlock(operations->loadFromFile(*memory, filename.cstr(), false, stdPass)))
+    if_not (errorBlock(operations->loadFromFile(*memory, filename.cstr(), false, stdPassNc)))
     {
         printMsg(kit.msgLog, STR("Config file %0 was not read successfully"), filename.cstr(), msgWarn);
         returnFalse;

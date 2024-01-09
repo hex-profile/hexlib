@@ -34,12 +34,10 @@ private:
 
 public:
 
-    inline stdbool realloc(AddrU size, AddrU alignment, AllocatorInterface<AddrU>& allocator, stdNullPars)
+    inline stdbool realloc(AddrU size, AddrU alignment, AllocatorInterface<AddrU>& allocator, stdParsNull)
     {
-        stdNullBegin;
-
         AddrU newPtr = 0;
-        require(allocator.alloc(size, alignment, memoryOwner, newPtr, stdNullPassThru));
+        require(allocator.alloc(size, alignment, memoryOwner, newPtr, stdPassNullThru));
 
         allocPtr = newPtr;
         allocSize = size;

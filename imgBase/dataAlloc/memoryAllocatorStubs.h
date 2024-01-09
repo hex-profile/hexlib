@@ -12,7 +12,7 @@
 template <typename AddrU>
 struct AllocatorNull : public AllocatorInterface<AddrU>
 {
-    virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
     {
         owner.clear();
         result = 0;
@@ -35,7 +35,7 @@ public:
     AllocatorForbidden(const ErrorLogKit& kit)
         : kit{kit} {}
 
-    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
     {
         REQUIRE(false);
         returnTrue;

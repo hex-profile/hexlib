@@ -314,7 +314,7 @@ stdbool PixelBuffer::unlock(void* stream, stdPars(ReportKit))
         handleFailure,
 
         {
-            CHECK_CUDA(cuCtxSynchronize());
+            DEBUG_BREAK_CHECK_CUDA(cuCtxSynchronize());
             CHECK_GL(glFinish());
         }
     );

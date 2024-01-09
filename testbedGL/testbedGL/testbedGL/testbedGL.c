@@ -658,7 +658,7 @@ stdbool Testbed::run(stdPars(RunKit))
         returnTrue;
     };
 
-    REMEMBER_CLEANUP(errorBlock(workerDeinit(stdPass)));
+    REMEMBER_CLEANUP(errorBlock(workerDeinit(stdPassNc)));
 
     ////
 
@@ -693,7 +693,7 @@ stdbool Testbed::run(stdPars(RunKit))
 
     ////
 
-    REMEMBER_CLEANUP(errorBlock(kit.gpuStreamWaiting.waitStream(workerStream, stdPass)));
+    REMEMBER_CLEANUP(errorBlock(kit.gpuStreamWaiting.waitStream(workerStream, stdPassNc)));
 
     //----------------------------------------------------------------
     //
@@ -821,7 +821,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
     //
     //----------------------------------------------------------------
 
-    auto drawReceiverFunc = [&] (auto& drawer, stdNullPars)
+    auto drawReceiverFunc = [&] (auto& drawer, stdParsNull)
     {
 
         Point<Space> imageSize{};
@@ -846,7 +846,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
             auto baseStream = getNativeHandle(kit.gpuCurrentStream);
 
             require(pixelBuffer.lock(baseStream, stdPass));
-            REMEMBER_CLEANUP_EX(lockCleanup, errorBlock(pixelBuffer.unlock(baseStream, stdPass)));
+            REMEMBER_CLEANUP_EX(lockCleanup, errorBlock(pixelBuffer.unlock(baseStream, stdPassNc)));
 
             ////
 
@@ -878,9 +878,9 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
 
     ////
 
-    auto drawReceiver = gui::DrawReceiver::O | [&] (auto& drawer, stdNullPars)
+    auto drawReceiver = gui::DrawReceiver::O | [&] (auto& drawer, stdParsNull)
     {
-        errorBlock(drawReceiverFunc(drawer, stdNullPass));
+        errorBlock(drawReceiverFunc(drawer, stdPassNullNc));
     };
 
     //----------------------------------------------------------------
@@ -905,7 +905,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
         //
         //----------------------------------------------------------------
 
-        auto eventSource = gui::EventSource::O | [&] (bool waitEvents, auto& waitTimeoutMs, auto& receivers, stdNullPars)
+        auto eventSource = gui::EventSource::O | [&] (bool waitEvents, auto& waitTimeoutMs, auto& receivers, stdParsNull)
         {
             return mainWindow.getEvents(waitEvents, waitTimeoutMs, receivers, stdPassThru);
         };
@@ -928,7 +928,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
             kit.guiSerialization
         };
 
-        errorBlock(kit.guiClass.processEvents(guiArgs, stdPass));
+        errorBlock(kit.guiClass.processEvents(guiArgs, stdPassNc));
 
         //----------------------------------------------------------------
         //
@@ -936,7 +936,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
         //
         //----------------------------------------------------------------
 
-        if_not (errorBlock(mainWindow.shouldContinue(stdPass)))
+        if_not (errorBlock(mainWindow.shouldContinue(stdPassNc)))
             break;
 
         if (shutdownRequest.on)
@@ -1091,7 +1091,7 @@ bool mainEntry(int argCount, const CharType* argStr[], const TestModuleFactory& 
 
             Testbed testshell;
 
-            ok = errorBlock(testshell.run(stdPass));
+            ok = errorBlock(testshell.run(stdPassNc));
 
             //----------------------------------------------------------------
             //

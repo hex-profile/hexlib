@@ -14,22 +14,22 @@
 
 struct BaseImageConsole
 {
-    virtual stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars) =0;
-    virtual stdbool clear(stdNullPars) =0;
-    virtual stdbool update(stdNullPars) =0;
+    virtual stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull) =0;
+    virtual stdbool clear(stdParsNull) =0;
+    virtual stdbool update(stdParsNull) =0;
 };
 
 //----------------------------------------------------------------
 
 struct BaseImageConsoleNull : public BaseImageConsole
 {
-    virtual stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    virtual stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
         {returnTrue;}
 
-    virtual stdbool clear(stdNullPars)
+    virtual stdbool clear(stdParsNull)
         {returnTrue;}
 
-    virtual stdbool update(stdNullPars)
+    virtual stdbool update(stdParsNull)
         {returnTrue;}
 };
 
@@ -48,11 +48,11 @@ struct BaseImageProvider
     virtual Space desiredBaseByteAlignment() const =0;
 
     // Saves to BGR32.
-    virtual stdbool saveBgr32(const MatrixAP<uint8_x4>& dest, stdNullPars) =0;
+    virtual stdbool saveBgr32(const MatrixAP<uint8_x4>& dest, stdParsNull) =0;
 
     // Saves to BGR24. The destination is an uint8 image
     // with width 3 times more than the color image width.
-    virtual stdbool saveBgr24(const MatrixAP<uint8>& dest, stdNullPars) =0;
+    virtual stdbool saveBgr24(const MatrixAP<uint8>& dest, stdParsNull) =0;
 };
 
 //================================================================
@@ -63,7 +63,7 @@ struct BaseImageProvider
 
 struct BaseVideoOverlay
 {
-    virtual stdbool overlayClear(stdNullPars) =0;
+    virtual stdbool overlayClear(stdParsNull) =0;
 
     virtual stdbool overlaySet
     (
@@ -73,13 +73,13 @@ struct BaseVideoOverlay
         const FormatOutputAtom& desc,
         uint32 id,
         bool textEnabled,
-        stdNullPars
+        stdParsNull
     )
     =0;
 
-    virtual stdbool overlaySetFake(stdNullPars) =0;
+    virtual stdbool overlaySetFake(stdParsNull) =0;
 
-    virtual stdbool overlayUpdate(stdNullPars) =0;
+    virtual stdbool overlayUpdate(stdParsNull) =0;
 };
 
 //================================================================
@@ -90,15 +90,15 @@ struct BaseVideoOverlay
 
 class BaseVideoOverlayNull : public BaseVideoOverlay
 {
-    virtual stdbool overlayClear(stdNullPars)
+    virtual stdbool overlayClear(stdParsNull)
         {returnTrue;}
 
-    virtual stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    virtual stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
         {returnTrue;}
 
-    virtual stdbool overlaySetFake(stdNullPars)
+    virtual stdbool overlaySetFake(stdParsNull)
         {returnTrue;}
 
-    virtual stdbool overlayUpdate(stdNullPars)
+    virtual stdbool overlayUpdate(stdParsNull)
         {returnTrue;}
 };

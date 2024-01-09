@@ -32,10 +32,10 @@ public:
 
 public:
 
-    stdbool overlayClear(stdNullPars);
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars);
-    stdbool overlaySetFake(stdNullPars);
-    stdbool overlayUpdate(stdNullPars);
+    stdbool overlayClear(stdParsNull);
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull);
+    stdbool overlaySetFake(stdParsNull);
+    stdbool overlayUpdate(stdParsNull);
 
 private:
 

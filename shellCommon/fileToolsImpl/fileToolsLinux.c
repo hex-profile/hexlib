@@ -49,9 +49,9 @@ bool isDir(const CharType* filename)
 bool getFileSize(const CharType* filename, FileSize& result)
 {
     struct stat tmp;
-    require(stat(filename, &tmp) == 0);
+    ensure(stat(filename, &tmp) == 0);
 
-    require(tmp.st_size >= 0);
+    ensure(tmp.st_size >= 0);
     result = tmp.st_size;
 
     return true;
@@ -66,7 +66,7 @@ bool getFileSize(const CharType* filename, FileSize& result)
 bool getChangeTime(const CharType* filename, FileTime& result)
 {
     struct stat tmp;
-    require(stat(filename, &tmp) == 0);
+    ensure(stat(filename, &tmp) == 0);
 
     result = tmp.st_mtime;
     return true;

@@ -197,7 +197,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
     auto bridgeActionSetup = kit.debugBridge.actionSetup();
     REQUIRE(bridgeActionSetup);
 
-    BaseActionSetupToBridge actionSetup{*bridgeActionSetup, stdPass};
+    BaseActionSetupToBridge actionSetup{*bridgeActionSetup, stdPassNc};
 
     ////
 
@@ -262,8 +262,8 @@ stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebu
 
     if (configFileActive)
     {
-        errorBlock(configFile.saveVars(serialization, true, stdPass)) &&
-        errorBlock(configFile.updateFile(false, stdPass));
+        errorBlock(configFile.saveVars(serialization, true, stdPassNc)) &&
+        errorBlock(configFile.updateFile(false, stdPassNc));
     }
 
     //----------------------------------------------------------------
@@ -273,7 +273,7 @@ stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebu
     //----------------------------------------------------------------
 
     if (shell->profilingActive())
-        errorBlock(shell->profilingReport(nullptr, stdPass));
+        errorBlock(shell->profilingReport(nullptr, stdPassNc));
 
     returnTrue;
 }
@@ -344,7 +344,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
     auto bridgeReceiving = kit.debugBridge.actionReceiving();
     REQUIRE(bridgeReceiving);
-    BaseActionReceivingByBridge actionReceiving{*bridgeReceiving, stdPass};
+    BaseActionReceivingByBridge actionReceiving{*bridgeReceiving, stdPassNc};
 
     ////
 
@@ -368,7 +368,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
         auto bridgeActionSetup = kit.debugBridge.actionSetup();
         REQUIRE(bridgeActionSetup);
 
-        BaseActionSetupToBridge actionSetup{*bridgeActionSetup, stdPass};
+        BaseActionSetupToBridge actionSetup{*bridgeActionSetup, stdPassNc};
 
         ////
 
@@ -450,7 +450,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         if (overview.saveConfig)
         {
-            auto configSaver = cfgVarsImpl::StringReceiver::O | [&] (const CharArray& str, stdNullPars)
+            auto configSaver = cfgVarsImpl::StringReceiver::O | [&] (const CharArray& str, stdParsNull)
             {
                 stdExceptBegin;
                 configSupport->saveConfig({str.ptr, str.size});
@@ -479,7 +479,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         if (overview.editConfig)
         {
-            auto configEditor = cfgVarsImpl::StringReceiver::O | [&] (const CharArray& str, stdNullPars)
+            auto configEditor = cfgVarsImpl::StringReceiver::O | [&] (const CharArray& str, stdParsNull)
             {
                 stdExceptBegin;
                 configSupport->editConfig({str.ptr, str.size}, configLoader);

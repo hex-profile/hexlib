@@ -302,7 +302,7 @@ void ConfigKeeperImpl::processingCycle(const RunArgs& args, ShutdownReq& shutdow
 
     stdTraceRoot;
 
-    errorBlock(processDiag(args, shutdown, stdPass));
+    errorBlock(processDiag(args, shutdown, stdPassNc));
 
 }
 
@@ -415,7 +415,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
         shutdown.request = true;
 
         if (firstUnsavedUpdate)
-            errorBlock(saveConfig(stdPass));
+            errorBlock(saveConfig(stdPassNc));
 
         returnTrue;
     }
@@ -476,7 +476,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
 
         if (timeToSave)
         {
-            errorBlock(saveConfig(stdPass));
+            errorBlock(saveConfig(stdPassNc));
 
             ////
 
@@ -538,10 +538,11 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
             cmdLine << editor << CT(" \"") << configFilename << CT("\"");
             REQUIRE(def(cmdLine));
 
-            return runAndWaitProcess(cmdLine.cstr(), stdPass);
+            require(runAndWaitProcess(cmdLine.cstr(), stdPass));
+            returnTrue;
         };
 
-        if_not (errorBlock(launchEditor(editRequest.getEditor(), stdPass)))
+        if_not (errorBlock(launchEditor(editRequest.getEditor(), stdPassNc)))
         {
             printMsg(kit.msgLog, editRequest.getHelpMessage(), msgWarn);
             returnFalse;

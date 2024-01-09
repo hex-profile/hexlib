@@ -6,12 +6,12 @@
 
 //================================================================
 //
-// CHECK_GL / REQUIRE_GL
+// REQUIRE_GL
 //
 //================================================================
 
 template <typename Kit>
-inline bool checkGL(const CharArray& errDesc, stdPars(Kit))
+sysinline stdbool checkGL(const CharArray& errDesc, stdPars(Kit))
 {
     bool ok = true;
 
@@ -24,22 +24,28 @@ inline bool checkGL(const CharArray& errDesc, stdPars(Kit))
 
         ok = false;
 
-        printMsgTrace(kit.msgLogEx, STR("OpenGL error: %0: %1."), errDesc, (const char*) gluErrorString(err), msgErr, stdPassThru);
+        require(printMsgTrace(STR("OpenGL error: %0: %1."), errDesc, (const char*) gluErrorString(err), msgErr, stdPassThru));
     }
 
-    return ok;
+    require(ok);
+    returnTrue;
 }
 
 ////
 
-#define CHECK_GL(statement) \
-    ((statement), (checkGL(STR(PREP_STRINGIZE(statement)), stdPass)))
-
 #define REQUIRE_GL(statement) \
-    require(CHECK_GL(statement))
+    do { \
+        {statement;} \
+        require(checkGL(STR(PREP_STRINGIZE(statement)), stdPass)); \
+    } while (0)
+
+////
 
 #define DEBUG_BREAK_CHECK_GL(statement) \
     ((statement), (DEBUG_BREAK_CHECK(glGetError() == GL_NO_ERROR)))
+
+#define REMEMBER_CLEANUP_GL(statement) \
+    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK_GL(statement))
 
 //================================================================
 //
@@ -48,15 +54,15 @@ inline bool checkGL(const CharArray& errDesc, stdPars(Kit))
 //================================================================
 
 template <typename Kit>
-inline bool checkGLFuncMsg(const CharArray& funcName, stdPars(Kit))
+sysinline stdbool checkGLFuncMsg(const CharArray& funcName, stdPars(Kit))
 {
-    return printMsgTrace(kit.msgLogEx, STR("OpenGL extension %0 is not available."), funcName, msgErr, stdPassThru);
+    return printMsgTrace(STR("OpenGL extension %0 is not available."), funcName, msgErr, stdPassThru);
 }
 
 ////
 
 #define REQUIRE_GL_FUNC(funcName) \
-    if (funcName) ; else {checkGLFuncMsg(STR(PREP_STRINGIZE(funcName)), stdPass); returnFalse;}
+    if (funcName) ; else {require(checkGLFuncMsg(STR(PREP_STRINGIZE(funcName)), stdPass)); returnFalse;}
 
 ////
 

@@ -36,22 +36,22 @@ void printExternalExceptions(stdPars(MsgLogExKit)) noexcept
 
         catch (const CharType* msg)
         {
-            printMsgTrace(kit.msgLogEx, STR("%0."), msg, msgErr, stdPassThru);
+            errorBlock(printMsgTrace(STR("%0."), msg, msgErr, stdPassThruNc));
         }
 
         catch (const std::bad_alloc& e)
         {
-            printMsgTrace(kit.msgLogEx, STR("Standard C++ library error: Memory allocation failed."), e.what(), msgErr, stdPassThru);
+            errorBlock(printMsgTrace(STR("Standard C++ library error: Memory allocation failed."), e.what(), msgErr, stdPassThruNc));
         }
 
         catch (const std::exception& e)
         {
-            printMsgTrace(kit.msgLogEx, STR("Standard C++ library error: %."), e.what(), msgErr, stdPassThru);
+            errorBlock(printMsgTrace(STR("Standard C++ library error: %."), e.what(), msgErr, stdPassThruNc));
         }
 
         catch (...)
         {
-            printMsgTrace(kit.msgLogEx, STR("Unrecognized external exception."), msgErr, stdPassThru);
+            errorBlock(printMsgTrace(STR("Unrecognized external exception."), msgErr, stdPassThruNc));
         }
 
     }

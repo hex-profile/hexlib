@@ -1,12 +1,11 @@
 #pragma once
 
-#include "msgLogExKit.h"
-
 #include "errorLog/errorLog.h"
 #include "formatting/paramMsgOutput.h"
 #include "prepTools/prepEnum.h"
 #include "stdFunc/stdFunc.h"
 #include "userOutput/msgLog.h"
+#include "userOutput/msgLogExKit.h"
 
 //================================================================
 //
@@ -18,7 +17,7 @@
 
 struct MsgLogEx
 {
-    virtual bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars) =0;
+    virtual stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull) =0;
 };
 
 //================================================================
@@ -29,8 +28,8 @@ struct MsgLogEx
 
 class MsgLogExNull : public MsgLogEx
 {
-    virtual bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
-        {return true;}
+    virtual stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull)
+        {returnTrue;}
 };
 
 //================================================================
@@ -51,9 +50,8 @@ class MsgLogExNull : public MsgLogEx
 #define PRINTTRACE__FUNC(n, _) \
     \
     template <PREP_ENUMERATE_INDEXED(n, typename T) typename Kit> \
-    inline bool printMsgTrace \
+    sysinline stdbool printMsgTrace \
     ( \
-        MsgLogEx& msgLogEx, \
         const CharArray& format, \
         PREP_ENUMERATE_INDEXED_PAIR(n, const T, &v) \
         MsgKind msgKind, \
@@ -63,92 +61,60 @@ class MsgLogExNull : public MsgLogEx
         const FormatOutputAtom params[COMPILE_CLAMP_MIN(n, 1)] = {PREP_FOR(n, PRINTTRACE__STORE_PARAM, _)}; \
         \
         ParamMsg paramMsg{defaultSpecialChar, format, params, n}; \
-        return msgLogEx.addMsgTrace(paramMsg, msgKind, stdPassThru); \
+        require(kit.msgLogEx.addMsgTrace(paramMsg, msgKind, stdPassThru)); \
+        returnTrue; \
     }
 
 PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
 
 //================================================================
 //
-// CHECK_TRACE*
-//
-// If the condition is not true, outputs a formatted message.
-// The macro returns allv(condition) value.
-//
-//================================================================
-
-#define CHECK_TRACE(condition, format) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, msgErr, stdPass))
-
-#define CHECK_TRACE1(condition, format, v0) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, msgErr, stdPass))
-
-#define CHECK_TRACE2(condition, format, v0, v1) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, msgErr, stdPass))
-
-#define CHECK_TRACE3(condition, format, v0, v1, v2) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, v2, msgErr, stdPass))
-
-#define CHECK_TRACE4(condition, format, v0, v1, v2, v3) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, v2, v3, msgErr, stdPass))
-
-//----------------------------------------------------------------
-
-#define CHECK_TRACE0_THRU(condition, format) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, msgErr, stdPassThru))
-
-#define CHECK_TRACE1_THRU(condition, format, v0) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, msgErr, stdPassThru))
-
-#define CHECK_TRACE2_THRU(condition, format, v0, v1) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, msgErr, stdPassThru))
-
-#define CHECK_TRACE3_THRU(condition, format, v0, v1, v2) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, v2, msgErr, stdPassThru))
-
-#define CHECK_TRACE4_THRU(condition, format, v0, v1, v2, v3) \
-    CHECK_EX(condition, printMsgTrace(kit.msgLogEx, format, v0, v1, v2, v3, msgErr, stdPassThru))
-
-//================================================================
-//
 // REQUIRE_TRACE*
 //
 // Checks a condition; if the condition is not true,
-// outputs a formatted message and returns false.
+// outputs a formatted message and returns error.
 //
 //================================================================
 
+#define REQUIRE_TRACE_HELPER(condition, printBody) \
+    do { \
+        if (!allv(condition)) \
+        { \
+            require(printBody); \
+            returnFalse; \
+        } \
+    } while (0)
+
+//----------------------------------------------------------------
+
 #define REQUIRE_TRACE(condition, format) \
-    require(CHECK_TRACE(condition, format))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, msgErr, stdPass))
 
 #define REQUIRE_TRACE1(condition, format, v0) \
-    require(CHECK_TRACE1(condition, format, v0))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, msgErr, stdPass))
 
 #define REQUIRE_TRACE2(condition, format, v0, v1) \
-    require(CHECK_TRACE2(condition, format, v0, v1))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, v1, msgErr, stdPass))
 
 #define REQUIRE_TRACE3(condition, format, v0, v1, v2) \
-    require(CHECK_TRACE3(condition, format, v0, v1, v2))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, v1, v2, msgErr, stdPass))
 
 #define REQUIRE_TRACE4(condition, format, v0, v1, v2, v3) \
-    require(CHECK_TRACE4(condition, format, v0, v1, v2, v3))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, v1, v2, v3, msgErr, stdPass))
 
 //----------------------------------------------------------------
 
 #define REQUIRE_TRACE_THRU(condition, format) \
-    require(CHECK_TRACE0_THRU(condition, format))
-
-#define REQUIRE_TRACE0_THRU(condition, format) \
-    require(CHECK_TRACE0_THRU(condition, format))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, msgErr, stdPassThru))
 
 #define REQUIRE_TRACE1_THRU(condition, format, v0) \
-    require(CHECK_TRACE1_THRU(condition, format, v0))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, msgErr, stdPassThru))
 
 #define REQUIRE_TRACE2_THRU(condition, format, v0, v1) \
-    require(CHECK_TRACE2_THRU(condition, format, v0, v1))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, v1, msgErr, stdPassThru))
 
 #define REQUIRE_TRACE3_THRU(condition, format, v0, v1, v2) \
-    require(CHECK_TRACE3_THRU(condition, format, v0, v1, v2))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, v1, v2, msgErr, stdPassThru))
 
 #define REQUIRE_TRACE4_THRU(condition, format, v0, v1, v2, v3) \
-    require(CHECK_TRACE4_THRU(condition, format, v0, v1, v2, v3))
+    REQUIRE_TRACE_HELPER(condition, printMsgTrace(format, v0, v1, v2, v3, msgErr, stdPassThru))

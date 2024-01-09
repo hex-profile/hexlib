@@ -1673,7 +1673,7 @@ int main(int argCount, const CharType* argStr[])
     //
     //----------------------------------------------------------------
 
-    bool ok = errorBlock(mainFunc(argCount, argStr, stdPass));
+    bool ok = errorBlock(mainFunc(argCount, argStr, stdPassNc));
 
     ////
 

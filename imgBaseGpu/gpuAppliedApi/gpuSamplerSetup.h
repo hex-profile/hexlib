@@ -163,7 +163,7 @@ struct GpuSamplerSetup
         ReadNormalizedFloat readNormalizedFloat,
         NormalizedCoords normalizedCoords,
         const GpuContext& context,
-        stdNullPars
+        stdParsNull
     )
     =0;
 
@@ -212,7 +212,7 @@ struct GpuSamplerSetup
         ReadNormalizedFloat readNormalizedFloat,
         NormalizedCoords normalizedCoords,
         const GpuContext& context,
-        stdNullPars
+        stdParsNull
     )
     =0;
 

@@ -147,7 +147,7 @@ GPUTOOL_2D_BEG
 {
 
     constexpr Space filterSize = PREP_PASTE(GABOR_BANK, DIR(SizeX, SizeY));
-    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);;
+    COMPILE_ASSERT(COMPRESS_FACTOR % 2 == filterSize % 2);
 
     //----------------------------------------------------------------
     //

@@ -81,14 +81,12 @@ class MsgLogExBreakShell : public MsgLogEx
 
 public:
 
-    bool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+    stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull)
     {
-        bool ok = base.addMsgTrace(v, msgKind, stdNullPassThru);
-
         if (msgKind == msgErr && debugBreakOnErrors)
             DEBUG_BREAK_INLINE();
 
-        return ok;
+        return base.addMsgTrace(v, msgKind, stdPassNullThru);
     }
 
 private:

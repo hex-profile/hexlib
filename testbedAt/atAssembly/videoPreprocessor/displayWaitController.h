@@ -12,7 +12,7 @@
 
 struct DisplayDelayer
 {
-    virtual stdbool waitForDisplayTime(stdNullPars) =0;
+    virtual stdbool waitForDisplayTime(stdParsNull) =0;
 };
 
 //----------------------------------------------------------------
@@ -61,7 +61,7 @@ class DisplayDelayerThunk : public DisplayDelayer
 
 public:
 
-    stdbool waitForDisplayTime(stdNullPars)
+    stdbool waitForDisplayTime(stdParsNull)
         {return impl.waitForDisplayTime(stdPassThru);}
 
     using Kit = DisplayWaitController::Kit;

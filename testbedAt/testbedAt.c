@@ -272,7 +272,7 @@ class AtImgConsoleImplThunk : public BaseImageConsole
 
 public:
 
-    stdbool addImage(const MatrixAP<const uint8>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    stdbool addImage(const MatrixAP<const uint8>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
     {
         if_not (dataProcessing)
             return;
@@ -302,7 +302,7 @@ public:
         returnTrue;
     }
 
-    stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
     {
         if_not (dataProcessing)
             returnTrue;
@@ -335,13 +335,13 @@ public:
         returnTrue;
     }
 
-    stdbool clear(stdNullPars)
+    stdbool clear(stdParsNull)
     {
         require(api->outimg_clear(api) != 0);
         returnTrue;
     }
 
-    stdbool update(stdNullPars)
+    stdbool update(stdParsNull)
     {
         require(api->outimg_update(api) != 0);
         returnTrue;
@@ -471,7 +471,7 @@ class AtImageProviderThunk
 
 public:
 
-    AtImageProviderThunk(BaseImageProvider& imageProvider, stdNullPars)
+    AtImageProviderThunk(BaseImageProvider& imageProvider, stdParsNull)
         : imageProvider(imageProvider), stdParsCapture {}
 
     at_bool AT_CALL callback
@@ -487,7 +487,7 @@ public:
         MatrixAP<uint8_x4> image;
         ensure(image.assignValidated((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y));
 
-        return errorBlock(imageProvider.saveBgr32(image, stdPass));
+        return errorBlock(imageProvider.saveBgr32(image, stdPassNc));
     }
 
     static at_bool AT_CALL callbackFunc
@@ -543,13 +543,13 @@ public:
 
 public:
 
-    stdbool overlayClear(stdNullPars)
+    stdbool overlayClear(stdParsNull)
     {
         require(api->video_image_set(api, 0, 0, nullptr, atImageProviderNull) != 0);
         returnTrue;
     }
 
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
+    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
     {
         AtImageProviderThunk atProvider(imageProvider, stdPass);
 
@@ -571,12 +571,12 @@ public:
         returnTrue;
     }
 
-    stdbool overlaySetFake(stdNullPars)
+    stdbool overlaySetFake(stdParsNull)
     {
         returnTrue;
     }
 
-    stdbool overlayUpdate(stdNullPars)
+    stdbool overlayUpdate(stdParsNull)
     {
         at_bool result = api->video_image_update(api);
         require(DEBUG_BREAK_CHECK(result != 0));
@@ -606,10 +606,10 @@ class AtAsyncOverlayImpl : public AtAsyncOverlay
 
 public:
 
-    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdNullPars)
+    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdParsNull)
     {
         MUTEX_GUARD(lock);
-        AtImageProviderThunk atProvider(imageProvider, stdNullPass);
+        AtImageProviderThunk atProvider(imageProvider, stdPassNull);
 
         require(base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         returnTrue;
@@ -786,7 +786,7 @@ struct Client
 //
 //================================================================
 
-stdbool atClientCreateCore(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory)
+stdbool atClientCreateCore(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory, stdParsNull)
 {
     *instance = 0;
 
@@ -803,7 +803,6 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const Test
 
     ////
 
-    stdTraceRoot;
     COMMON_KIT_IMPL(at_api_create, kit);
 
     ////
@@ -832,7 +831,9 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const Test
 
 void atClientCreate(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory)
 {
-    errorBlock(atClientCreateCore(instance, api, engineFactory));
+    stdTraceRoot;
+
+    errorBlock(atClientCreateCore(instance, api, engineFactory, stdPassNullNc));
 }
 
 //================================================================
@@ -855,7 +856,7 @@ void atClientDestroy(void* instance, const at_api_destroy* api)
 
     ////
 
-    client->assembly.finalize(stdPass);
+    errorBlock(client->assembly.finalize(stdPassNc));
     delete client;
 
     ////
@@ -886,10 +887,10 @@ public:
     inline MallocMonitorThunk(AllocatorInterface<AddrU>& base)
         : base(base) {}
 
-    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdNullPars)
+    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
     {
         ++counter;
-        return base.alloc(size, alignment, owner, result, stdNullPassThru);
+        return base.alloc(size, alignment, owner, result, stdPassNullThru);
     }
 
 public:
@@ -908,14 +909,12 @@ private:
 //
 //================================================================
 
-stdbool atClientProcessCore(void* instance, const at_api_process* api)
+stdbool atClientProcessCore(void* instance, const at_api_process* api, stdParsNull)
 {
     Client* client = static_cast<Client*>(instance);
     REQUIRE_AT_EX(client != 0, false, returnFalse);
 
     ////
-
-    stdTraceRoot;
 
     COMMON_KIT_IMPL(at_api_process, baseKit);
 
@@ -969,7 +968,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
     //
     //----------------------------------------------------------------
 
-    if_not (errorBlock(getVideoName(*api, client->videofileName, mallocAllocator, stdPass)))
+    if_not (errorBlock(getVideoName(*api, client->videofileName, mallocAllocator, stdPassNc)))
         client->videofileName.resizeNull();
 
     ////
@@ -1042,5 +1041,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
 
 void atClientProcess(void* instance, const at_api_process* api)
 {
-    errorBlock(atClientProcessCore(instance, api));
+    stdTraceRoot;
+
+    errorBlock(atClientProcessCore(instance, api, stdPassNullNc));
 }

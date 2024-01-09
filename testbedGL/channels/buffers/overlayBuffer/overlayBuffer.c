@@ -168,7 +168,7 @@ stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
         returnTrue;
     };
 
-    REMEMBER_CLEANUP_EX(errorExit, errorBlock(recordCompletion(stdPass)));
+    REMEMBER_CLEANUP_EX(errorExit, errorBlock(recordCompletion(stdPassNc)));
 
     //----------------------------------------------------------------
     //
@@ -285,7 +285,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
         returnTrue;
     };
 
-    REMEMBER_CLEANUP_EX(errorExit, errorBlock(recordCompletion(stdPass)));
+    REMEMBER_CLEANUP_EX(errorExit, errorBlock(recordCompletion(stdPassNc)));
 
     //----------------------------------------------------------------
     //

@@ -34,7 +34,7 @@ static const Space EMU_TEX_ROW_ALIGNMENT = 32;
 //
 //================================================================
 
-stdbool EmuInitApiThunk::initialize(stdNullPars)
+stdbool EmuInitApiThunk::initialize(stdParsNull)
 {
     returnTrue;
 }
@@ -45,7 +45,7 @@ stdbool EmuInitApiThunk::initialize(stdNullPars)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
+stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdParsNull)
 {
     deviceCount = 1;
     returnTrue;
@@ -57,7 +57,7 @@ stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdNullPars)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdNullPars)
+stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdParsNull)
 {
     using namespace emuMultiProc;
 
@@ -146,7 +146,8 @@ public:
     )
     {
         MUTEX_GUARD(emuLock);
-        return emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru);
+        require(emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru));
+        returnTrue;
     }
 
 public:
@@ -183,7 +184,7 @@ inline ContextEx& uncast(const GpuContext& context)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars)
+stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdParsNull)
 {
     result.clear();
     baseContext = 0;
@@ -377,7 +378,7 @@ struct EmuTextureContext
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdNullPars)
+stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
 {
     ++textureAllocCount;
 
@@ -490,7 +491,7 @@ void* getNativeHandle(const GpuStream& stream)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars)
+stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdParsNull)
 {
     result.clear();
 
@@ -653,7 +654,7 @@ inline stdbool genericArrayCopy
 
 #define TMP_MACRO(funcName, SrcAddr, DstAddr) \
     \
-    stdbool EmuExecApiThunk::funcName(SrcAddr srcAddr, DstAddr dstAddr, Space size, const GpuStream& stream, stdNullPars) \
+    stdbool EmuExecApiThunk::funcName(SrcAddr srcAddr, DstAddr dstAddr, Space size, const GpuStream& stream, stdParsNull) \
     { \
         if (gpuEnqueueMode == GpuEnqueueNormal) \
             require(genericArrayCopy(srcAddr, dstAddr, size, uncast(uncast(stream).getContext()), stdPassThru)); \
@@ -762,7 +763,7 @@ inline stdbool genericMatrixCopy
         DstAddr dstAddr, Space dstBytePitch, \
         Space byteSizeX, Space sizeY, \
         const GpuStream& stream, \
-        stdNullPars \
+        stdParsNull \
     ) \
     { \
         if (gpuEnqueueMode == GpuEnqueueNormal) \
@@ -818,7 +819,7 @@ stdbool EmuExecApiThunk::setSamplerArray
     ReadNormalizedFloat readNormalizedFloat,
     NormalizedCoords normalizedCoords,
     const GpuContext& context,
-    stdNullPars
+    stdParsNull
 )
 {
     return emuSetSamplerArray(sampler, arrayAddr, arrayByteSize,
@@ -844,7 +845,7 @@ stdbool EmuExecApiThunk::setSamplerImageEx
     ReadNormalizedFloat readNormalizedFloat,
     NormalizedCoords normalizedCoords,
     const GpuContext& context,
-    stdNullPars
+    stdParsNull
 )
 {
     return emuSetSamplerImage(sampler, imageBaseAddr, imageBytePitch, imageSize, chanType, rank,
@@ -875,7 +876,7 @@ stdbool EmuExecApiThunk::callKernel
     const GpuKernelLink& kernelLink,
     const void* paramPtr, size_t paramSize,
     const GpuStream& stream,
-    stdNullPars
+    stdParsNull
 )
 {
     ContextEx& ctx = uncast(uncast(stream).getContext());
@@ -914,7 +915,7 @@ stdbool EmuExecApiThunk::callKernel
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
+stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
 {
     returnTrue;
 }
@@ -929,23 +930,23 @@ stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdNullPars)
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool EmuExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+stdbool EmuExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull)
 {
     returnTrue;
 }
 
-stdbool EmuExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdNullPars)
+stdbool EmuExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull)
 {
     returnTrue;
 }
 
-stdbool EmuExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdNullPars)
+stdbool EmuExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull)
 {
     realWaitHappened = false;
     returnTrue;
 }
 
-stdbool EmuExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdNullPars)
+stdbool EmuExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull)
 {
     time = 0;
     returnTrue;

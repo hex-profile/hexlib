@@ -19,9 +19,9 @@
 
 struct GpuInitialization
 {
-    virtual stdbool initialize(stdNullPars) =0;
-    virtual stdbool getDeviceCount(int32& deviceCount, stdNullPars) =0;
-    virtual stdbool getProperties(int32 deviceIndex, GpuProperties& properties, stdNullPars) =0;
+    virtual stdbool initialize(stdParsNull) =0;
+    virtual stdbool getDeviceCount(int32& deviceCount, stdParsNull) =0;
+    virtual stdbool getProperties(int32 deviceIndex, GpuProperties& properties, stdParsNull) =0;
 };
 
 //================================================================
@@ -44,7 +44,7 @@ struct GpuContextOwner : public GpuContext
 
 struct GpuContextCreation
 {
-    virtual stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdNullPars) =0;
+    virtual stdbool createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdParsNull) =0;
 };
 
 //================================================================
@@ -59,13 +59,13 @@ using GpuThreadContextSave = OpaqueStruct<8, 0xFD45FC43u>;
 
 struct GpuContextSetting
 {
-    virtual stdbool threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdNullPars) =0;
-    virtual stdbool threadContextRestore(const GpuThreadContextSave& save, stdNullPars) =0;
+    virtual stdbool threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdParsNull) =0;
+    virtual stdbool threadContextRestore(const GpuThreadContextSave& save, stdParsNull) =0;
 
-    inline stdbool threadContextSet(const GpuContext& context, stdNullPars)
+    inline stdbool threadContextSet(const GpuContext& context, stdParsNull)
     {
         GpuThreadContextSave tmp;
-        return threadContextSet(context, tmp, stdNullPass);
+        return threadContextSet(context, tmp, stdPassNull);
     }
 };
 
@@ -97,7 +97,7 @@ struct GpuModuleOwner : public GpuModule
 
 struct GpuModuleCreation
 {
-    virtual stdbool createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdNullPars) =0;
+    virtual stdbool createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdParsNull) =0;
 };
 
 //================================================================
@@ -128,7 +128,7 @@ struct GpuKernelOwner : public GpuKernel
 
 struct GpuKernelLoading
 {
-    virtual stdbool createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdNullPars) =0;
+    virtual stdbool createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdParsNull) =0;
 };
 
 //================================================================
@@ -159,7 +159,7 @@ struct GpuSamplerOwner : public GpuSampler
 
 struct GpuSamplerLoading
 {
-    virtual stdbool getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdNullPars) =0;
+    virtual stdbool getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdParsNull) =0;
 };
 
 //================================================================
@@ -179,7 +179,7 @@ using GpuMemoryOwner = MemoryOwner;
 template <typename AddrU>
 struct GpuMemoryAllocator
 {
-    virtual stdbool alloc(const GpuContext& context, AddrU size, AddrU alignment, GpuMemoryOwner& owner, AddrU& result, stdNullPars) =0;
+    virtual stdbool alloc(const GpuContext& context, AddrU size, AddrU alignment, GpuMemoryOwner& owner, AddrU& result, stdParsNull) =0;
 };
 
 //----------------------------------------------------------------
@@ -210,7 +210,7 @@ struct GpuStreamOwner : public GpuStream
 
 struct GpuStreamCreation
 {
-    virtual stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdNullPars) =0;
+    virtual stdbool createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdParsNull) =0;
 };
 
 //================================================================

@@ -121,7 +121,7 @@ public:
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             return addMatrixExImpl(img, 0, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
@@ -151,7 +151,7 @@ public:
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             return addMatrixExImpl(img, channel, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
@@ -180,7 +180,7 @@ private:
         const Point<Space>& upsampleSize,
         BorderMode borderMode,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     );
 
     //----------------------------------------------------------------
@@ -201,7 +201,7 @@ public:
         const Point<Space>& upsampleSize,
         BorderMode borderMode,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     );
 
     #define TMP_MACRO(Vector, o) \
@@ -215,7 +215,7 @@ public:
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             return addVectorImageGeneric<Vector>(image, maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
@@ -238,7 +238,7 @@ public:
     (
         const GpuPackedYuv<const Type>& image,
         const ImgOutputHint& hint,
-        stdNullPars
+        stdParsNull
     );
 
     ////
@@ -249,10 +249,10 @@ public:
         ( \
             const GpuPackedYuv<const Type>& image, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
-            return addYuvImage420Func(image, hint, stdNullPassThru); \
+            return addYuvImage420Func(image, hint, stdPassNullThru); \
         }
 
     IMAGE_CONSOLE_FOREACH_YUV420_TYPE(TMP_MACRO, _)
@@ -278,7 +278,7 @@ public:
         BorderMode borderMode,
         const ImgOutputHint& hint,
         ColorMode colorMode,
-        stdNullPars
+        stdParsNull
     );
 
     ////
@@ -297,7 +297,7 @@ public:
             const Point<Space>& upsampleSize, \
             BorderMode borderMode, \
             const ImgOutputHint& hint, \
-            stdNullPars \
+            stdParsNull \
         ) \
         { \
             return addColorImageFunc(img, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, colorSpace, stdPassThru); \

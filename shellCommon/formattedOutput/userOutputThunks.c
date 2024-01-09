@@ -71,7 +71,7 @@ void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace
 //
 //================================================================
 
-bool MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdNullPars)
+stdbool MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull)
 {
     const TraceScope* p = &trace;
 
@@ -79,8 +79,8 @@ bool MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, s
     {
         MessageBlockGuard guard(*msgLog);
 
-        ensure(printMsg(*msgLog, STR("%0"), v, msgKind));
-        ensure(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
+        require(printMsg(*msgLog, STR("%0"), v, msgKind));
+        require(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
 
         int32 depth = 0;
 
@@ -88,15 +88,15 @@ bool MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, s
         {
             if (depth < maxTraceDepth)
             {
-                ensure(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
+                require(printMsg(*msgLog, STR("    %0:"), charArrayFromPtr(p->location), msgKind));
             }
             else
             {
-                ensure(printMsg(*msgLog, STR("    ... and so on"), msgKind));
+                require(printMsg(*msgLog, STR("    ... and so on"), msgKind));
                 break;
             }
         }
     }
 
-    return true;
+    returnTrue;
 }
