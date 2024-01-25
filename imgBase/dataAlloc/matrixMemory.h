@@ -68,10 +68,10 @@ public:
 
 public:
 
-    inline MatrixMemoryEx()
+    sysinline MatrixMemoryEx()
         {initZero();}
 
-    inline ~MatrixMemoryEx()
+    sysinline ~MatrixMemoryEx()
         {dealloc();}
 
 private:
@@ -89,27 +89,27 @@ public:
 
     ////
 
-    inline bool allocated() const {return allocPtr != Pointer(0);}
+    sysinline bool allocated() const {return allocPtr != Pointer(0);}
 
     ////
 
-    inline Space maxSizeX() const {return allocSize.X;}
-    inline Space maxSizeY() const {return allocSize.Y;}
-    inline Point<Space> maxSize() const {return allocSize;}
+    sysinline Space maxSizeX() const {return allocSize.X;}
+    sysinline Space maxSizeY() const {return allocSize.Y;}
+    sysinline Point<Space> maxSize() const {return allocSize;}
 
     ////
 
-    inline void resizeNull()
+    sysinline void resizeNull()
         {BaseMatrix::assignNull();}
 
     bool resize(Space sizeX, Space sizeY); // rearrange without reallocation
 
-    inline bool resize(const Point<Space>& size)
+    sysinline bool resize(const Point<Space>& size)
         {return resize(size.X, size.Y);}
 
 private:
 
-    inline void initZero()
+    sysinline void initZero()
     {
         allocPtr = Pointer(0);
         allocSize = point(0);
@@ -181,15 +181,19 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    inline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, stdPars(Kit))
+    sysinline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, stdPars(Kit))
         {return Base::realloc(size, baseByteAlignment, rowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
-    template <typename Kit>
-    inline stdbool reallocForGpuExch(const Point<Space>& size, stdPars(Kit))
-        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.cpuFastAlloc, stdPassThru);}
+    ////
 
     template <typename Kit>
-    inline stdbool reallocForCpuOnly(const Point<Space>& size, stdPars(Kit))
+    sysinline stdbool reallocForGpuExch(const Point<Space>& size, stdPars(Kit))
+        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.cpuFastAlloc, stdPassThru);}
+
+    ////
+
+    template <typename Kit>
+    sysinline stdbool reallocForCpuOnly(const Point<Space>& size, stdPars(Kit))
         {return Base::realloc(size, cpuBaseByteAlignment, cpuRowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
 };
@@ -202,8 +206,8 @@ public:
 
 #define MATRIX_ALLOC_FOR_GPU_EXCH(name, Type, size) \
     MatrixMemory<Type> name; \
-    require(name.reallocForGpuExch(size, stdPass))
+    require(name.reallocForGpuExch(size, stdPass));
 
 #define MATRIX_ALLOC_FOR_CPU_ONLY(name, Type, size) \
     MatrixMemory<Type> name; \
-    require(name.reallocForCpuOnly(size, stdPass))
+    require(name.reallocForCpuOnly(size, stdPass));

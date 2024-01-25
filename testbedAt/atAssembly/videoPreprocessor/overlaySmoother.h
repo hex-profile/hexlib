@@ -78,10 +78,10 @@ public:
 public:
 
     stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
-        {overlayIsSet = true; return base.setImage(size, imageProvider, desc, id, textEnabled, stdPassThru);}
+        {overlayIsSet = true; require(base.setImage(size, imageProvider, desc, id, textEnabled, stdPassThru)); returnTrue;}
 
     stdbool setImageFake(stdParsNull)
-        {overlayIsSet = true; return base.setImageFake(stdPassThru);}
+        {overlayIsSet = true; require(base.setImageFake(stdPassThru)); returnTrue;}
 
     stdbool updateImage(stdParsNull)
         {return base.updateImage(stdPassThru);}

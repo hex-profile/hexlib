@@ -715,7 +715,8 @@ stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 template <typename Perk>
 stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    require((testUnaryPlusMinus<Perk, UnaryMinus<Perk>>)(rndgen, stdPass));    require((testUnaryPlusMinus<Perk, UnaryPlus<Perk>>)(rndgen, stdPass));
+    require((testUnaryPlusMinus<Perk, UnaryMinus<Perk>>)(rndgen, stdPass));
+    require((testUnaryPlusMinus<Perk, UnaryPlus<Perk>>)(rndgen, stdPass));
     require(testMultiplication<Perk>(rndgen, stdPass));
 
     require(testDivision<Perk>(rndgen, stdPass));
@@ -724,7 +725,8 @@ stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
     require(testAddition<Perk>(rndgen, stdPass));
     require(testSubtraction<Perk>(rndgen, stdPass));
 
-    require((testShift<Perk, ShiftLeft<Perk>>)(rndgen, stdPass));    require((testShift<Perk, ShiftRight<Perk>>)(rndgen, stdPass));
+    require((testShift<Perk, ShiftLeft<Perk>>)(rndgen, stdPass));
+    require((testShift<Perk, ShiftRight<Perk>>)(rndgen, stdPass));
     returnTrue;
 }
 

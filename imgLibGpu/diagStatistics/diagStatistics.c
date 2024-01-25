@@ -28,7 +28,7 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
 
         for_count (X, errorSizeX)
         {
-            float32 value = MATRIX_ELEMENT(error, X, Y);
+            float32 value = MATRIX_READ(error, X, Y);
             locSumErr2 += square(value);
         }
 

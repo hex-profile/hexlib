@@ -45,8 +45,6 @@
             int nCmdShow \
         ) \
         { \
-            SetProcessDPIAware(); \
-            \
             CharType** argv = __argv; \
             \
             return testbedGL::mainEntry(__argc, (const CharType**) argv, factory) ? EXIT_SUCCESS : EXIT_FAILURE; \

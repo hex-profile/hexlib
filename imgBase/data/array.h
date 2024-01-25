@@ -184,7 +184,7 @@ public:
 
 #if HEXLIB_GUARDED_MEMORY
 
-    sysinline typename ArrayPtr(Type) ptr() const
+    sysinline ArrayPtr(Type) ptr() const
         {return ArrayPtrCreate(Type, thePtr, theSize, DbgptrArrayPreconditions());}
 
 #else

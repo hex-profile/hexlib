@@ -17,7 +17,7 @@ inline bool memoryUsageReport
     const MemoryUsage& tempUsage,
     const ReallocActivity& stateActivity,
     const ReallocActivity& tempActivity,
-    stdPars(Kit)
+    const Kit& kit
 )
 {
     bool sysAlloc = (stateActivity.sysAllocCount || tempActivity.sysAllocCount);

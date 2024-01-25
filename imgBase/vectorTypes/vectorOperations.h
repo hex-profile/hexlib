@@ -441,27 +441,6 @@ sysinline float32_x2 complexFma(const float32_x2& a, const float32_x2& b, const 
 
 //================================================================
 //
-// scalarProd
-//
-//================================================================
-
-sysinline float32 scalarProd(const float32_x2& a, const float32_x2& b)
-    {return a.x * b.x + a.y * b.y;}
-
-//================================================================
-//
-// componentSum
-//
-//================================================================
-
-sysinline float32 componentSum(const float32_x2& vec)
-    {return vec.x + vec.y;}
-
-sysinline float32 componentSum(const float32_x4& vec)
-    {return vec.x + vec.y + vec.z + vec.w;}
-
-//================================================================
-//
 // pi
 //
 // (cannot use template constants because of MSVC bugs)
@@ -493,17 +472,15 @@ sysinline auto circleCcw(Float v)
 
 //================================================================
 //
-// vectorLengthSq
+// scalarProd
 //
 //================================================================
 
-template <>
-sysinline float32 vectorLengthSq(const float32_x2& vec)
-    {return square(vec.x) + square(vec.y);}
+sysinline float32 scalarProd(const float32_x2& a, const float32_x2& b)
+    {return a.x * b.x + a.y * b.y;}
 
-template <>
-sysinline float32 vectorLengthSq(const float32_x4& vec)
-    {return square(vec.x) + square(vec.y) + square(vec.z) + square(vec.w);}
+sysinline float32 scalarProd(const float32_x4& a, const float32_x4& b)
+    {return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;}
 
 //================================================================
 //
@@ -548,3 +525,17 @@ sysinline void vectorDecompose(const float32_x4& vec, float32& vectorLengthSq, f
         vectorDir.w = 0;
     }
 }
+
+//================================================================
+//
+// vectorSum
+//
+//================================================================
+
+template <>
+sysinline float32 vectorSum(const float32_x2& vec)
+    {return vec.x + vec.y;}
+
+template <>
+sysinline float32 vectorSum(const float32_x4& vec)
+    {return vec.x + vec.y + vec.z + vec.w;}

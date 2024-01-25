@@ -2,21 +2,25 @@
 #include "gpuConsoleDrawing.h"
 #endif
 
+#include "gpuDevice/loadstore/loadNorm.h"
 #include "gpuDevice/loadstore/storeNorm.h"
 #include "gpuSupport/gpuTexTools.h"
 #include "gpuSupport/gpuTool.h"
-#include "imageRead/positionTools.h"
 #include "gui/gpuConsoleDrawing/fontMono.h"
 #include "gui/gpuConsoleDrawing/gpuConsoleDrawingTypes.h"
+#include "imageRead/positionTools.h"
+#include "numbers/mathIntrinsics.h"
+#include "vectorTypes/vectorOperations.h"
 
 #if HOSTCODE
-#include "gpuAppliedApi/gpuAppliedApi.h"
-#include "dataAlloc/arrayMemory.inl"
-#include "dataAlloc/matrixMemory.inl"
-#include "dataAlloc/gpuMatrixMemory.inl"
 #include "copyMatrixAsArray.h"
-#include "userOutput/printMsgEx.h"
+#include "dataAlloc/arrayMemory.inl"
+#include "dataAlloc/gpuMatrixMemory.inl"
+#include "dataAlloc/matrixMemory.inl"
+#include "gpuAppliedApi/gpuAppliedApi.h"
+#include "gpuMatrixSet/gpuMatrixSet.h"
 #include "storage/rememberCleanup.h"
+#include "userOutput/printMsgEx.h"
 #endif
 
 namespace gpuConsoleDrawing {
@@ -34,8 +38,8 @@ GPUTOOL_2D_BEG
     ((uint32, destination)),
     ((GpuMatrix<const ConsoleElement>, textBuffer))
     ((GpuFontMono, font))
-    ((Point<Space>, org))
     ((Point<float32>, divCharSize))
+    ((Space, fontUpscalingFactor))
 )
 #if DEVCODE
 {
@@ -56,7 +60,15 @@ GPUTOOL_2D_BEG
 
     ////
 
-    auto charOfs = dstIdx - (textIdx * font.charSize);
+    auto charOfs = dstIdx - (textIdx * font.charSize * fontUpscalingFactor);
+
+    if (fontUpscalingFactor != 1)
+    {
+        if (fontUpscalingFactor == 2)
+            charOfs >>= 1;
+        else
+            charOfs /= fontUpscalingFactor;
+    }
 
     ////
 
@@ -130,6 +142,29 @@ GPUTOOL_2D_BEG
 #endif
 GPUTOOL_2D_END
 
+//================================================================
+//
+// overlayPad
+//
+//================================================================
+
+GPUTOOL_2D_BEG
+(
+    overlayPad,
+    PREP_EMPTY,
+    ((uint8_x4, dst)),
+    ((float32_x4, padColor))
+    ((float32, padOpacity))
+)
+#if DEVCODE
+{
+    auto srcValue = loadNorm(dst);
+    auto dstValue = linearIf(padOpacity, padColor, srcValue);
+    storeNorm(dst, dstValue);
+}
+#endif
+GPUTOOL_2D_END
+
 //----------------------------------------------------------------
 
 #if HOSTCODE
@@ -189,7 +224,6 @@ stdbool GpuFontMonoMemory::realloc(const CpuFontMono& font, stdPars(GpuModuleRea
 
 void GpuConsoleDrawer::serialize(const CfgSerializeKit& kit)
 {
-    displayWaitWarning.serialize(kit, STR("Display Wait Warning"));
 }
 
 //================================================================
@@ -338,22 +372,46 @@ private:
 //
 //================================================================
 
-stdbool GpuConsoleDrawer::drawText
-(
-    ColorTextProvider& buffer,
-    const GpuMatrix<uint8_x4>& destination,
-    const Point<Space>& renderOrg,
-    const Point<Space>& renderEnd,
-    const GpuFontMono& font,
-    OptionalObject<RectRange>* actualRange,
-    stdPars(ProcessKit)
-)
+stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
 {
+    stdScopedBegin;
+
     REQUIRE(allocated);
 
     ////
 
-    REQUIRE(point(0) <= renderOrg && renderOrg <= renderEnd && renderEnd <= destination.size());
+    auto& destination = args.destination;
+
+    REQUIRE(args.font);
+    auto& font = *args.font;
+
+    REQUIRE(args.buffer);
+    auto& buffer = *args.buffer;
+
+    auto& border = args.border;
+
+    ////
+
+    REQUIRE(args.fontUpscalingFactor >= 1);
+    auto fontCharSize = font.charSize * args.fontUpscalingFactor;
+
+    ////
+
+    REQUIRE(point(0) <= args.renderOrg && args.renderOrg <= args.renderEnd && args.renderEnd <= destination.size());
+
+    //----------------------------------------------------------------
+    //
+    // Apply border.
+    //
+    //----------------------------------------------------------------
+
+    REQUIRE(border >= 0);
+
+    auto renderOrg = args.renderOrg + border;
+    auto renderEnd = args.renderEnd - border;
+
+    if_not (renderOrg < renderEnd)
+        returnTrue;
 
     //----------------------------------------------------------------
     //
@@ -383,7 +441,7 @@ stdbool GpuConsoleDrawer::drawText
     if (kit.dataProcessing)
         require(kit.gpuEventWaiting.waitEvent(s.copyFinishEvent, realWait, stdPass));
 
-    if (realWait && displayWaitWarning)
+    if (realWait && 1)
         printMsgL(kit, STR("GPU text drawer: Real wait happened!"), msgWarn);
 
     //----------------------------------------------------------------
@@ -392,12 +450,12 @@ stdbool GpuConsoleDrawer::drawText
     //
     //----------------------------------------------------------------
 
-    REQUIRE(font.charSize >= 1);
+    REQUIRE(fontCharSize >= 1);
 
     auto renderSize = renderEnd - renderOrg;
     REQUIRE(renderSize >= 0);
 
-    auto usedBufferSize = renderSize / font.charSize;
+    auto usedBufferSize = renderSize / fontCharSize;
 
     usedBufferSize = clampMax(usedBufferSize, allocTextBufferSize);
 
@@ -452,47 +510,84 @@ stdbool GpuConsoleDrawer::drawText
 
     textCopier.cancelSync(); // Don't flush pipeline on exit!
 
+    ////
+
+    auto consoleStaticSize = usedBufferSize * fontCharSize; // Known at counting stage
+
+    ////
+
+    auto consoleDynamicSize = clampMax(gpuActualBuffer.size() * fontCharSize, renderSize);
+
+    //----------------------------------------------------------------
+    //
+    // Render pad if any.
+    //
+    //----------------------------------------------------------------
+
+    if (args.padMode != PadMode::None && allv(consoleDynamicSize > 0))
+    {
+        auto padOrg = args.renderOrg;
+        auto padEnd = args.renderEnd;
+
+        if (args.padMode == PadMode::UsedSpace)
+        {
+            padEnd.Y = renderOrg.Y + consoleDynamicSize.Y;
+
+            padOrg = clampRange(padOrg - border, args.renderOrg, args.renderEnd);
+            padEnd = clampRange(padEnd + border, args.renderOrg, args.renderEnd);
+        }
+
+        auto color = convertNearest<float32_x4>(args.padColor);
+
+        GpuMatrix<uint8_x4> padArea;
+        REQUIRE(destination.subr(padOrg, padEnd, padArea));
+
+        if (args.padOpacity == 1)
+        {
+            require(gpuMatrixSet(padArea, convertNormClamp<uint8_x4>(color), stdPass));
+        }
+        else
+        {
+            require(overlayPad(padArea, color, args.padOpacity, stdPass));
+        }
+    }
+
     //----------------------------------------------------------------
     //
     // Render text
     //
     //----------------------------------------------------------------
 
-    auto consoleStaticSize = usedBufferSize * font.charSize; // Known at counting stage
-
-    ////
-
-    auto consoleDynamicSize = clampMax(gpuActualBuffer.size() * font.charSize, renderSize);
-
-    ////
-
     GPU_MATRIX_ALLOC(tmpMatrix, uint8_x4, consoleStaticSize);
     REQUIRE(tmpMatrix.resize(consoleDynamicSize));
 
     ////
 
-    require(renderText(recastElement<uint32>(tmpMatrix), gpuActualBuffer, font, renderOrg, 1 / convertFloat32(font.charSize), stdPass));
+    require(renderText(recastElement<uint32>(tmpMatrix), gpuActualBuffer, font,
+        1 / convertFloat32(fontCharSize), args.fontUpscalingFactor, stdPass));
 
     ////
 
     auto consoleOrg = renderOrg;
     auto consoleEnd = renderOrg + consoleDynamicSize;
 
-    if (actualRange && kit.dataProcessing)
-        *actualRange = RectRange{consoleOrg, consoleEnd};
-
     auto targetOrg = clampRange(consoleOrg - 1, 0, destination.size());
     auto targetEnd = clampRange(consoleEnd + 1, 0, destination.size());
 
     GpuMatrix<uint8_x4> dstMatrix;
+
     REQUIRE(destination.subr(targetOrg, targetEnd, dstMatrix));
 
     if (hasData(tmpMatrix))
-        require(textDilateBorder(tmpMatrix, dstMatrix, convertFloat32(targetOrg - consoleOrg), zeroOf<uint8_x4>(), stdPass));
+    {
+        auto outlineColor = convertNearest<float32_x4>(args.outlineColor);
+
+        require(textDilateBorder(tmpMatrix, dstMatrix, convertFloat32(targetOrg - consoleOrg), convertNormClamp<uint8_x4>(outlineColor), stdPass));
+    }
 
     ////
 
-    returnTrue;
+    stdScopedEnd;
 }
 
 //----------------------------------------------------------------

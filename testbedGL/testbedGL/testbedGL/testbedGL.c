@@ -9,7 +9,6 @@
 #include "channels/workerService/workerService.h"
 #include "checkHeap.h"
 #include "configKeeper/configKeeper.h"
-#include "logKeeper/logKeeper.h"
 #include "debugBeep/debugBeep.h"
 #include "errorLog/convertExceptions.h"
 #include "errorLog/debugBreak.h"
@@ -19,7 +18,9 @@
 #include "gpuLayer/gpuLayerImpl.h"
 #include "gpuShell/gpuShell.h"
 #include "gui/guiClass.h"
+#include "interruptConsole/interruptConsole.h"
 #include "lib/logToBuffer/logToBuffer.h"
+#include "logKeeper/logKeeper.h"
 #include "msgBoxImpl/msgBoxImpl.h"
 #include "setThreadName/setThreadName.h"
 #include "simpleString/simpleString.h"
@@ -28,6 +29,7 @@
 #include "storage/smartPtr.h"
 #include "testbedGL/pixelBuffer/pixelBuffer.h"
 #include "testbedGL/pixelBufferDrawing/pixelBufferDrawing.h"
+#include "testbedGL/testbedGL/setDpiAwareness.h"
 #include "testbedGL/windowManager/windowManagerGLFW.h"
 #include "threads/threads.h"
 #include "timer/timerKit.h"
@@ -35,7 +37,6 @@
 #include "userOutput/printMsg.h"
 #include "userOutput/printMsgEx.h"
 #include "worker/worker.h"
-#include "interruptConsole/interruptConsole.h"
 
 namespace testbedGL {
 
@@ -299,6 +300,14 @@ void Testbed::serialize(const CfgSerializeKit& kit)
 stdbool Testbed::run(stdPars(RunKit))
 {
     stdExceptBegin;
+
+    //----------------------------------------------------------------
+    //
+    // Disabling any OS-side scaling of the window content.
+    //
+    //----------------------------------------------------------------
+
+    require(setDpiAwareness(stdPass));
 
     //----------------------------------------------------------------
     //
@@ -701,7 +710,7 @@ stdbool Testbed::run(stdPars(RunKit))
     //
     //----------------------------------------------------------------
 
-    for (;;)
+    for (; ;)
     {
         WindowReinitRequest windowReinitRequest;
 
@@ -878,10 +887,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
 
     ////
 
-    auto drawReceiver = gui::DrawReceiver::O | [&] (auto& drawer, stdParsNull)
-    {
-        errorBlock(drawReceiverFunc(drawer, stdPassNullNc));
-    };
+    auto drawReceiver = gui::DrawReceiver::O | drawReceiverFunc;
 
     //----------------------------------------------------------------
     //
@@ -895,7 +901,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         bool verticalSyncSave = display.verticalSync;
 

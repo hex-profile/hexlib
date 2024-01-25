@@ -779,14 +779,28 @@ TMP_MACRO(ceilv, double, ceil)
 
 //================================================================
 //
-// vectorLengthSq
+// scalarProd
 //
 //================================================================
 
 template <>
-sysinline float32 vectorLengthSq(const float32& vec)
-    {return square(vec);}
+sysinline float32 scalarProd(const float32& A, const float32& B)
+    {return A * B;}
 
 template <>
-sysinline float64 vectorLengthSq(const float64& vec)
-    {return square(vec);}
+sysinline float64 scalarProd(const float64& A, const float64& B)
+    {return A * B;}
+
+//================================================================
+//
+// vectorSum
+//
+//================================================================
+
+template <>
+sysinline float32 vectorSum(const float32& vec)
+    {return vec;}
+
+template <>
+sysinline float64 vectorSum(const float64& vec)
+    {return vec;}

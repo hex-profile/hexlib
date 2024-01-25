@@ -540,7 +540,8 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     if (test == Test::InterpolationUnserBspline)
     {
         GPU_MATRIX_ALLOC(srcImagePrefiltered, FloatPixel, srcSize);
-        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));        require(upsampleTexCubicBsplineFast(srcImagePrefiltered, dstImageTest, 1.f/resampleFactor, stdPass));
+        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));
+        require(upsampleTexCubicBsplineFast(srcImagePrefiltered, dstImageTest, 1.f/resampleFactor, stdPass));
     }
 
     ////

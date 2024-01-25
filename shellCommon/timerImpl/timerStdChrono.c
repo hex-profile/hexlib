@@ -108,7 +108,7 @@ DstMoment convertClock(SrcMoment srcMoment, SrcDuration tolerance = std::chrono:
 
     int iterCount = 0;
 
-    for (;;) // at least one attempt so that srcNow and dstNow are initialized for sure (!)
+    for (; ;) // at least one attempt so that srcNow and dstNow are initialized for sure (!)
     {
         auto srcBefore = SrcClock::now();
         auto dstBetween = DstClock::now();

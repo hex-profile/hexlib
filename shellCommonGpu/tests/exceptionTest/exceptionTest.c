@@ -40,7 +40,7 @@ private:
 //
 //================================================================
 
-#define CLEANUP_COUNT 101
+#define CLEANUP_COUNT 1
 
 //================================================================
 //
@@ -108,7 +108,7 @@ sysnoinline bool returnCodeTest(int value)
 //
 //================================================================
 
-sysnoinline void exceptionCodeInnerFunc(int value)
+void exceptionCodeInnerFunc(int value)
 {
     #define TMP_MACRO(i, _) \
         EXCEPTION_TEST(i);
@@ -120,17 +120,6 @@ sysnoinline void exceptionCodeInnerFunc(int value)
     ////
 
     EXCEPTION_TEST(1013);
-}
-
-//================================================================
-//
-// exceptionCodeTest
-//
-//================================================================
-
-sysnoinline void exceptionCodeTest(int value)
-{
-    exceptionCodeInnerFunc(value);
 }
 
 //================================================================
@@ -157,6 +146,7 @@ private:
     int32 retcodeFailChunkSize = 1;
     int32 exceptionSuccessChunkSize = 1;
     int32 exceptionFailChunkSize = 1;
+    int32 exceptionCatchChunkSize = 1;
 
 };
 
@@ -224,7 +214,7 @@ stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
 
         int32 chunkCount = 0;
 
-        for (;;)
+        for (; ;)
         {
             for_count (c, chunkSize)
                 iteration();
@@ -274,7 +264,7 @@ stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
     //
     //----------------------------------------------------------------
 
-    auto exceptionIterationSuccess = [&] ()
+    auto exceptionIterationSuccess = [&] (...)
     {
         exceptionCodeTest(valueSuccess);
     };
@@ -285,8 +275,15 @@ stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
         catch (...) {}
     };
 
-    require(genericTest(STR("Except Success"), exceptionIterationSuccess, exceptionSuccessChunkSize, stdPass));
+    auto exceptionIterationCatch = [&] (...)
+    {
+        try {exceptionCodeTest(valueSuccess);}
+        catch (...) {}
+    };
+
     require(genericTest(STR("Except Fail"), exceptionIterationFail, exceptionFailChunkSize, stdPass));
+    require(genericTest(STR("Except Success"), exceptionIterationSuccess, exceptionSuccessChunkSize, stdPass));
+    require(genericTest(STR("Except Catch"), exceptionIterationCatch, exceptionCatchChunkSize, stdPass));
 
     ////
 

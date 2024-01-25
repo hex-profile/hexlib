@@ -51,7 +51,7 @@ stdbool copyImageFromCpu
 
     ////
 
-    REQUIRE(dst.assignValidated(dstArray.ptr(), srcMemPitch, srcSizeX, srcSizeY));
+    REQUIRE(dst.assignValidated(dstArray.ptrUnsafeForInternalUseOnly(), srcMemPitch, srcSizeX, srcSizeY));
 
     if (inverted)
         dst = flipMatrix(dst);

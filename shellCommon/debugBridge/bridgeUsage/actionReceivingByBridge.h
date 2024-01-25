@@ -69,7 +69,11 @@ public:
     using Kit = MsgLogExKit;
 
     BaseActionReceivingByBridge(db::ActionReceiving& base, stdPars(Kit))
-        : base(base), stdParsCapture {}
+        :
+        base(base),
+        stdParsCapture
+    {
+    }
 
     virtual void getActions(BaseActionReceiver& receiver)
     {

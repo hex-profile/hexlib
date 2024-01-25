@@ -104,7 +104,7 @@ bool parseKey(const CharArray& buffer, KeyRec& result)
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         if (skipText<false>(ptr, count, CT("Shift+")))
             {keyModifiers |= KeyModifier::Shift; continue;}

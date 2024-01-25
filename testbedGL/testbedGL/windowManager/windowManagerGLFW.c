@@ -223,10 +223,16 @@ public:
 
 void glfwRefreshCallback(GLFWwindow* window)
 {
+    stdTraceRoot;
+
+    ////
+
     void* userPtr = glfwGetWindowUserPointer(window);
     ensurev(DEBUG_BREAK_CHECK(userPtr));
 
     auto& the = * (WindowGLFW*) userPtr;
+
+    ////
 
     if (DEBUG_BREAK_CHECK(the.refreshHandler))
         errorBlock(the.refreshHandler->call());
@@ -265,6 +271,10 @@ sysinline KeyModifiers getKeyModifiers(int mods)
 
 void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    stdTraceRoot;
+
+    ////
+
     void* userPtr = glfwGetWindowUserPointer(window);
     ensurev(DEBUG_BREAK_CHECK(userPtr));
 
@@ -463,6 +473,10 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 
 void glfwCursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 {
+    stdTraceRoot;
+
+    ////
+
     void* userPtr = glfwGetWindowUserPointer(window);
     ensurev(DEBUG_BREAK_CHECK(userPtr));
 
@@ -488,6 +502,10 @@ void glfwCursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 
 void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
+    stdTraceRoot;
+
+    ////
+
     void* userPtr = glfwGetWindowUserPointer(window);
     ensurev(DEBUG_BREAK_CHECK(userPtr));
 
@@ -519,6 +537,10 @@ void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mod
 
 void glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
+    stdTraceRoot;
+
+    ////
+
     void* userPtr = glfwGetWindowUserPointer(window);
     ensurev(DEBUG_BREAK_CHECK(userPtr));
 
@@ -540,6 +562,10 @@ void glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 void glfwFramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
+    stdTraceRoot;
+
+    ////
+
     void* userPtr = glfwGetWindowUserPointer(window);
     ensurev(DEBUG_BREAK_CHECK(userPtr));
 
@@ -990,7 +1016,7 @@ stdbool WindowManagerGLFW::init(stdPars(Kit))
         glfwSetErrorCallback(glfwErrorCallback);
 
         bool initOk{};
-        REQUIRE_GLFW(initOk = glfwInit());
+        REQUIRE_GLFW(initOk = glfwInit() != 0);
         REQUIRE(initOk == GL_TRUE);
 
         initialized = true;

@@ -1,6 +1,6 @@
 //================================================================
 //
-// HEXLIB_ERROR_HANDLING
+// HEXLIB_ERROR_MODE
 //
 // 0: Using bool error code.
 // 1: Using exceptions.
@@ -8,9 +8,9 @@
 //
 //================================================================
 
-#ifndef HEXLIB_ERROR_HANDLING
+#ifndef HEXLIB_ERROR_MODE
 
-    #define HEXLIB_ERROR_HANDLING 0
+    #error HEXLIB_ERROR_MODE must be defined
 
 #endif
 
@@ -20,15 +20,15 @@
 //
 //================================================================
 
-#if HEXLIB_ERROR_HANDLING == 0
+#if HEXLIB_ERROR_MODE == 0
 
     #include "errorHandlingBool.h"
 
-#elif HEXLIB_ERROR_HANDLING == 1
+#elif HEXLIB_ERROR_MODE == 1
 
     #include "errorHandlingExceptions.h"
 
-#elif HEXLIB_ERROR_HANDLING == 2
+#elif HEXLIB_ERROR_MODE == 2
 
     #include "errorHandlingBoolRef.h"
 

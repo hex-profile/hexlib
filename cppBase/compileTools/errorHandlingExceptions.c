@@ -1,6 +1,6 @@
 #include "errorHandling.h"
 
-#if HEXLIB_ERROR_HANDLING == 1
+#if HEXLIB_ERROR_MODE == 1
 
 //================================================================
 //

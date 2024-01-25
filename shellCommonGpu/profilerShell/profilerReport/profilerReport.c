@@ -369,7 +369,7 @@ stdbool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& resu
         const CharType* p = strEnd;
         if (firstRow == lastRow) p = finishPtr+1;
 
-        for (;;)
+        for (; ;)
         {
             while (p != strPtr && p[-1] != '(' && p[-1] != ')')
                 --p;
@@ -678,7 +678,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 //
 //================================================================
 
-void getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
+stdbool getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
     if_not (errorBlock(getCodeBlockCore(location, o, sourceCache, result, stdPassThruNc)))
     {
@@ -686,6 +686,8 @@ void getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCac
         result.userMsg = location;
         result.code.push_back(CT("(failed to get file contents)"));
     }
+
+    returnTrue;
 }
 
 //================================================================
@@ -1088,7 +1090,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         {
             CodeLocation code;
-            getCodeBlock(node->location, o.codeBlockParams, o.sourceCache, code, stdPass);
+            errorBlock(getCodeBlock(node->location, o.codeBlockParams, o.sourceCache, code, stdPassNc));
             info.locations.push_back(code);
 
             ////
@@ -1106,7 +1108,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
         if (makeThunkUnfolding)
         {
-            for (;;)
+            for (; ;)
             {
                 float32 maxChildTime = 0;
                 ProfilerNode* maxChild = 0;
@@ -1139,7 +1141,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
                 {
                     CodeLocation code;
-                    getCodeBlock(maxChild->location, o.codeBlockParams, o.sourceCache, code, stdPass);
+                    errorBlock(getCodeBlock(maxChild->location, o.codeBlockParams, o.sourceCache, code, stdPassNc));
                     info.locations.push_back(code);
 
                     updateHash(info.hash, code); // cumulative hash
@@ -1637,7 +1639,7 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         StlString s;
         getline(stream, s);

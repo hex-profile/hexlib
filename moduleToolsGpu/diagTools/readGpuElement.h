@@ -20,7 +20,7 @@ stdbool readGpuElement
 )
 {
     GpuMatrix<const Type, Pitch> gpuElement;
-    require(image.subs(pos, point(1), gpuElement));
+    REQUIRE(image.subs(pos, point(1), gpuElement));
 
     MatrixMemory<Type> cpuElement;
     require(cpuElement.reallocForGpuExch(point(1), stdPass));

@@ -92,7 +92,7 @@ void MemController::serialize(const CfgSerializeKit& kit)
 //================================================================
 
 template <typename AddrU, typename Kit>
-inline bool memFailReport(const CharArray& name, AddrU memSize, AddrU memAlignment, stdPars(Kit))
+inline bool memFailReport(const CharArray& name, AddrU memSize, AddrU memAlignment, const Kit& kit)
 {
     return printMsg
     (
@@ -345,8 +345,8 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     //
     //----------------------------------------------------------------
 
-    if_not (cpuAllocOk) memFailReport(STR("CPU state"), cpuMemSize, cpuAlignment, stdPass);
-    if_not (gpuAllocOk) memFailReport(STR("GPU state"), gpuMemSize, gpuAlignment, stdPass);
+    if_not (cpuAllocOk) memFailReport(STR("CPU state"), cpuMemSize, cpuAlignment, kit);
+    if_not (gpuAllocOk) memFailReport(STR("GPU state"), gpuMemSize, gpuAlignment, kit);
 
     if (cpuFastResize && gpuFastResize)
         stateActivity.fastAllocCount++;
@@ -571,8 +571,8 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
     //
     //----------------------------------------------------------------
 
-    if_not (cpuAllocOk) memFailReport(STR("CPU temp"), cpuMemSize, cpuAlignment, stdPass);
-    if_not (gpuAllocOk) memFailReport(STR("GPU temp"), gpuMemSize, gpuAlignment, stdPass);
+    if_not (cpuAllocOk) memFailReport(STR("CPU temp"), cpuMemSize, cpuAlignment, kit);
+    if_not (gpuAllocOk) memFailReport(STR("GPU temp"), gpuMemSize, gpuAlignment, kit);
 
     ////
 

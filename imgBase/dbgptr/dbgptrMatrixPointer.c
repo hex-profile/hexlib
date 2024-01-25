@@ -144,7 +144,7 @@ bool DebugMatrixPointerByteEngine::rowUpdateSlow() const
 //
 //================================================================
 
-sysinline void DebugMatrixPointerByteEngine::validateSingleByteSlow() const
+void DebugMatrixPointerByteEngine::validateSingleByteSlow() const
 {
     rowUpdate();
 
@@ -158,7 +158,7 @@ sysinline void DebugMatrixPointerByteEngine::validateSingleByteSlow() const
 //
 //================================================================
 
-sysinline void DebugMatrixPointerByteEngine::validateArraySlow(bool ok, DbgptrAddrU testSizeX) const
+void DebugMatrixPointerByteEngine::validateArraySlow(bool ok, DbgptrAddrU testSizeX) const
 {
     rowUpdate();
 

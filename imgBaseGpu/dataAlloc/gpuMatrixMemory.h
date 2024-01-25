@@ -136,4 +136,4 @@ private:
 
 #define GPU_MATRIX_ALLOC(name, Type, size) \
     GpuMatrixMemory<Type> name; \
-    require(name.realloc(size, stdPass))
+    require(name.realloc(size, stdPass));

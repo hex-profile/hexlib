@@ -55,7 +55,7 @@ void FIBER_CONVENTION fiberFunc(void* parameter)
     // server loop
     //
 
-    for (;;)
+    for (; ;)
     {
         FiberTask& task = * (FiberTask*) parameter;
         EmuParams& emuParams = task.emuParams;

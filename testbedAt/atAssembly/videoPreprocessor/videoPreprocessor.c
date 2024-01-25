@@ -865,11 +865,8 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
         }
         else
         {
-            require
-            (
-                (simuMotionActive() ? rotateImageCubicMirror : rotateImageCubicZero)
-                (srcFrame, processedFrameMemory, transMul, transAdd, stdPass)
-            );
+            auto func = simuMotionActive() ? rotateImageCubicMirror : rotateImageCubicZero;
+            require(func(srcFrame, processedFrameMemory, transMul, transAdd, stdPass));
         }
 
         ////

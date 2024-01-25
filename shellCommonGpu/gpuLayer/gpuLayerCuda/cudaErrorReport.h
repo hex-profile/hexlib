@@ -26,7 +26,7 @@ sysinline stdbool checkCudaHelper(CUresult cudaErr, const CharType* statement, s
 //----------------------------------------------------------------
 
 #define REQUIRE_CUDA(statement) \
-    require(checkCudaHelper(statement, PREP_STRINGIZE(statement), stdPass))
+    require(checkCudaHelper(statement, PREP_STRINGIZE(statement), stdPass));
 
 #define DEBUG_BREAK_CHECK_CUDA(statement) \
     DEBUG_BREAK_CHECK((statement) == CUDA_SUCCESS)

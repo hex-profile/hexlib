@@ -15,7 +15,7 @@ sysinline stdbool checkGL(const CharArray& errDesc, stdPars(Kit))
 {
     bool ok = true;
 
-    for (;;)
+    for (; ;)
     {
         GLenum err = glGetError();
 

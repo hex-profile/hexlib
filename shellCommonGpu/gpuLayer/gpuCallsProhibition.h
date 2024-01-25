@@ -111,8 +111,20 @@ public:
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuSamplerSetting.setSamplerArray(sampler, arrayAddr, arrayByteSize, chanType, rank,
-            borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdPassNullThru);
+        return kit.gpuSamplerSetting.setSamplerArray
+        (
+            sampler,
+            arrayAddr,
+            arrayByteSize,
+            chanType,
+            rank,
+            borderMode,
+            linearInterpolation,
+            readNormalizedFloat,
+            normalizedCoords,
+            context,
+            stdPassNullThru
+        );
     }
 
     stdbool setSamplerImageEx
@@ -134,8 +146,21 @@ public:
         if (prohibitionEnabled)
             GPU_PROHIBITED_API_CALL;
 
-        return kit.gpuSamplerSetting.setSamplerImageEx(sampler, imageBaseAddr, imageBytePitch, imageSize, chanType,
-            rank, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, context, stdPassNullThru);
+        return kit.gpuSamplerSetting.setSamplerImageEx
+        (
+            sampler,
+            imageBaseAddr,
+            imageBytePitch,
+            imageSize,
+            chanType,
+            rank,
+            borderMode,
+            linearInterpolation,
+            readNormalizedFloat,
+            normalizedCoords,
+            context,
+            stdPassNullThru
+        );
     }
 
     //----------------------------------------------------------------

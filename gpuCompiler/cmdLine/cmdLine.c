@@ -14,7 +14,7 @@ const CharType* readArgument(const CharType* ptr, const CharType* end, StlString
 {
     bool inString = false;
 
-    for (;;)
+    for (; ;)
     {
 
         //
@@ -94,7 +94,7 @@ void parseCmdLine(const CharType* cmdLineBegin, const CharType* cmdLineEnd, vect
     // Space/Argument interleave
     //
 
-    for (;;)
+    for (; ;)
     {
         // Skip space (may not advance)
         skipSpaceTab(ptr, end);
@@ -128,7 +128,7 @@ void convertToArg(const CharType* argBegin, const CharType* argEnd, StlString& r
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         const CharType* normBegin = ptr;
 

@@ -62,12 +62,12 @@
         <!--<DisplayString>{theSizeX} x {theSizeY}, ptr = {size_t(theMemPtrUnsafe),Xb}, pitch = {theMemPitch}</DisplayString>-->
         <DisplayString> {theSizeX} x {theSizeY}, ptr = {theMemPtrUnsafe}, pitch = {theMemPitch}</DisplayString>
 
-        <!--<Expand>
+        <Expand>
             <IndexListItems>
                 <Size>theSizeY</Size>
                 <ValueNode>theMemPtrUnsafe == 0 ? nullptr : theMemPtrUnsafe + theMemPitch * $i, [theSizeX]na</ValueNode>
             </IndexListItems>
-        </Expand>-->
+        </Expand>
     </Type>
 
     <Type Name="OptionalObject&lt;*&gt;">

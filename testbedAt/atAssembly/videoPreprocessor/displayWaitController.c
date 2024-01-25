@@ -49,7 +49,7 @@ stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
 
     float32 workTime = kit.timer.diff(lastOutput, kit.timer.moment());
 
-    for (;;)
+    for (; ;)
     {
         float32 elapsedTime = kit.timer.diff(lastOutput, kit.timer.moment());
         float32 additionalDelay = clampMin(targetDelay - elapsedTime, 0.f);

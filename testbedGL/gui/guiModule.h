@@ -79,8 +79,8 @@ struct GuiModule
     //
     //----------------------------------------------------------------
 
-    virtual void mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
-    virtual void mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
+    virtual stdbool mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
+    virtual stdbool mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
 
     //----------------------------------------------------------------
     //

@@ -575,7 +575,7 @@ void saveVar
         auto ptr = comment.ptr;
         auto end = comment.ptr + comment.size;
 
-        for (;;)
+        for (; ;)
         {
             auto start = ptr;
 
@@ -767,7 +767,7 @@ void saveTree(const SaveTreeArgs& args, size_t level, CfgTree& root)
             !last
         );
 
-        prevState = big ? State::Big : State::Line;
+        prevState = /*big ? State::Big : */ State::Line;
     };
 
     //----------------------------------------------------------------

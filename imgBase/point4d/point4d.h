@@ -386,13 +386,15 @@ POINT4D_DEFINE_FUNC1(ceilv)
 
 //================================================================
 //
-// vectorLengthSq
+// scalarProd
 //
 //================================================================
 
 template <typename Float>
-sysinline Float vectorLengthSq(const Point4D<Float>& vec)
-    {return square(vec.X) + square(vec.Y) + square(vec.Z) + square(vec.W);}
+sysinline Float scalarProd(const Point4D<Float>& A, const Point4D<Float>& B)
+{
+    return A.X * B.X + A.Y * B.Y + A.Z * B.Z + A.W * B.W;
+}
 
 //================================================================
 //
@@ -421,10 +423,12 @@ sysinline void vectorDecompose(const Point4D<Float>& vec, Float& vectorLengthSq,
 
 //================================================================
 //
-// scalarProd
+// vectorSum
 //
 //================================================================
 
 template <typename Float>
-sysinline Float scalarProd(const Point4D<Float>& A, const Point4D<Float>& B)
-    {return A.X * B.X + A.Y * B.Y + A.Z * B.Z + A.W * B.W;}
+sysinline Float vectorSum(const Point4D<Float>& vec)
+{
+    return vec.X + vec.Y + vec.Z + vec.W;
+}

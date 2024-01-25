@@ -81,7 +81,7 @@ struct GuiClassImpl : public GuiClass
         CfgSerialization& guiSerialization;
     };
 
-    void processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit));
+    stdbool processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit));
 
     //----------------------------------------------------------------
     //
@@ -127,7 +127,7 @@ struct GuiClassImpl : public GuiClass
     //
     //----------------------------------------------------------------
 
-    stdbool printHelp(const ProcessArgs& args, bool onlyAlgoKeys, stdPars(ProcessKit));
+    stdbool printHelp(const ProcessArgs& args, bool printAlgoKeys, stdPars(ProcessKit));
 
     //----------------------------------------------------------------
     //
@@ -315,12 +315,16 @@ void GuiClassImpl::serialize(const CfgSerializeKit& kit)
         CFG_NAMESPACE("GUI");
 
         {
-            CFG_NAMESPACE("Global Log");
+            CFG_NAMESPACE("Text Logs");
 
-            if_not (gLogHistoryLimit.serialize(kit, STR("History Limit")))
-                globalLogBuffer->setHistoryLimit(gLogHistoryLimit);
+            {
+                CFG_NAMESPACE("Global Log");
 
-            gLogDebuggerOutputLevel.serialize(kit, STR("Debugger Output Level"), STR("0 info, 1 warnings, 2 errors, 3 nothing"));
+                if_not (gLogHistoryLimit.serialize(kit, STR("History Limit")))
+                    globalLogBuffer->setHistoryLimit(gLogHistoryLimit);
+
+                gLogDebuggerOutputLevel.serialize(kit, STR("Debugger Output Level"), STR("0 info, 1 warnings, 2 errors, 3 nothing"));
+            }
         }
 
         guiModule->serialize(kit);
@@ -572,7 +576,7 @@ private:
 //
 //================================================================
 
-void GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit))
+stdbool GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit))
 {
 
     //----------------------------------------------------------------
@@ -724,6 +728,7 @@ void GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, stdP
         CHECK(args.workerService.addConfigUpdate(*configInputUpdate)); // Send to WORKER
     }
 
+    returnTrue;
 }
 
 //================================================================
@@ -755,7 +760,7 @@ stdbool GuiClassImpl::updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(P
     //
     //----------------------------------------------------------------
 
-    processInputUpdates({args.guiService, args.workerService, args.logService, args.intrinsicBuffer, args.guiSerialization}, stdPass);
+    errorBlock(processInputUpdates({args.guiService, args.workerService, args.logService, args.intrinsicBuffer, args.guiSerialization}, stdPassNc));
 
     //----------------------------------------------------------------
     //
@@ -779,7 +784,7 @@ stdbool GuiClassImpl::updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(P
 //
 //================================================================
 
-stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool onlyAlgoKeys, stdPars(ProcessKit))
+stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool printAlgoKeys, stdPars(ProcessKit))
 {
     stdExceptBegin;
 
@@ -787,9 +792,9 @@ stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool onlyAlgoKeys, stdP
     // Header.
     //
 
-    printMsg(kit.msgLog, STR(""));
+    REMEMBER_CLEANUP(printMsg(kit.msgLog, STR("")));
 
-    if_not (onlyAlgoKeys)
+    if_not (printAlgoKeys)
     {
         printMsg(kit.msgLog, STR("Graphical shell documentation can be found at the root: /testbedGL/README.md."));
         printMsg(kit.msgLog, STR("You can read it directly on the GitLab website."));
@@ -810,7 +815,7 @@ stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool onlyAlgoKeys, stdP
     // Shell keys.
     //
 
-    if_not (onlyAlgoKeys)
+    if_not (printAlgoKeys)
     {
         printMsg(kit.msgLog, STR("Graphical shell keys:"));
         printMsg(kit.msgLog, STR(""));
@@ -828,13 +833,12 @@ stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool onlyAlgoKeys, stdP
     // Algorithm keys.
     //
 
-    if (onlyAlgoKeys)
+    if (printAlgoKeys)
     {
         printMsg(kit.msgLog, STR("Algorithm module keys:"));
         printMsg(kit.msgLog, STR(""));
 
         actionSet->dataGet(receiver);
-        printMsg(kit.msgLog, STR(""));
     }
 
     ////
@@ -894,7 +898,6 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
         require(keyBuffer->receiveKey(event, stdPass));
 
         returnTrue;
-
     };
 
     ////
@@ -903,11 +906,14 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     {
         auto drawer = Drawer::O | [&] (auto& dstImage, stdParsNull)
         {
-            return updateAndRedraw({args.guiService, args.workerService, args.logService,
-                args.intrinsicBuffer, args.guiSerialization, dstImage}, stdPass);
+            return updateAndRedraw
+            (
+                {args.guiService, args.workerService, args.logService, args.intrinsicBuffer, args.guiSerialization, dstImage},
+                stdPass
+            );
         };
 
-        args.drawReceiver(drawer, stdPassNull);
+        errorBlock(args.drawReceiver(drawer, stdPassNullNc));
 
         returnTrue;
     };
@@ -918,7 +924,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     {
         RedrawRequest redraw;
 
-        guiModule->mouseMoveReceiver(pos, redraw, stdPass);
+        errorBlock(guiModule->mouseMoveReceiver(pos, redraw, stdPassNc));
 
         if (redraw.on)
             require(refreshReceiver(stdPass));
@@ -937,7 +943,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     {
         RedrawRequest redraw;
 
-        guiModule->mouseButtonReceiver(event, redraw, stdPass);
+        errorBlock(guiModule->mouseButtonReceiver(event, redraw, stdPassNc));
 
         if (redraw.on)
             require(refreshReceiver(stdPass));

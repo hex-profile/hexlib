@@ -25,7 +25,7 @@ void printExternalExceptions(stdPars(MsgLogExKit)) noexcept
             std::rethrow_exception(exceptionPtr);
         }
 
-    #if HEXLIB_ERROR_HANDLING == 1
+    #if HEXLIB_ERROR_MODE == 1
 
         catch (const ExceptFailure&)
         {

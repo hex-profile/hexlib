@@ -283,4 +283,4 @@ GET_SIZE_DEFINE(PREP_PASS2(ArrayObjectMemoryStatic<Type, maxSize>), value.size()
 #define ARRAY_OBJECT_STATIC_ALLOC(name, Type, maxSize, size) \
     \
     ArrayObjectMemoryStatic<Type, maxSize> name; \
-    require(name.realloc(size, stdPass))
+    require(name.realloc(size, stdPass));

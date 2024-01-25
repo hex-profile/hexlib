@@ -32,6 +32,21 @@ void throwFailure()
     throw Failure{};
 }
 
+//================================================================
+//
+// exceptionCodeTest
+//
+//================================================================
+
+void exceptionCodeInnerFunc(int value);
+
+////
+
+void exceptionCodeTest(int value)
+{
+    exceptionCodeInnerFunc(value);
+}
+
 //----------------------------------------------------------------
 
 }

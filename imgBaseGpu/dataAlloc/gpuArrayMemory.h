@@ -74,7 +74,7 @@ public:
 
 #define GPU_ARRAY_ALLOC(name, Type, size) \
     GpuArrayMemory<Type> name; \
-    require(name.realloc(size, stdPass))
+    require(name.realloc(size, stdPass));
 
 //================================================================
 //

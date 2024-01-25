@@ -189,7 +189,7 @@ struct GpuImageConsole : public GpuBaseConsole
             const ImgOutputHint& hint, \
             stdParsNull \
         ) \
-        =0; \
+        =0;
 
     IMAGE_CONSOLE_FOREACH_VECTOR_IMAGE_TYPE(TMP_MACRO, o)
 
@@ -245,7 +245,7 @@ struct GpuImageConsole : public GpuBaseConsole
             const ImgOutputHint& hint, \
             stdParsNull \
         ) \
-        =0; \
+        =0;
 
     IMAGE_CONSOLE_FOREACH_YUV420_TYPE(TMP_MACRO, _)
 

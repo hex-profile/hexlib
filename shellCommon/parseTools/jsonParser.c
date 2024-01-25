@@ -131,7 +131,7 @@ bool parseElement(Iterator& paramPtr, const Kit<Iterator>& kit)
     {
         if_not (skipTextThenAnySpace(s, end, STR("}")))
         {
-            for (;;)
+            for (; ;)
             {
                 ensure(parseMember(s, kit));
 

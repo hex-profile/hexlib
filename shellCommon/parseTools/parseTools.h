@@ -296,7 +296,7 @@ sysinline bool decodeJsonStr(Iterator& ptr, Iterator end, Writer& writer)
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         auto scanStart = s;
 
@@ -384,7 +384,7 @@ sysinline void encodeJsonStr(Iterator ptr, Iterator end, Writer& writer)
 {
     auto s = ptr;
 
-    for (;;)
+    for (; ;)
     {
         //
         // The only characters that MUST be escaped are \, ", and anything less than U+0020.
