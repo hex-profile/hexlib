@@ -27,7 +27,11 @@ class BridgeImageProviderThunk : public debugBridge::ImageProvider
 public:
 
     BridgeImageProviderThunk(BaseImageProvider& imageProvider, stdPars(Kit))
-        : imageProvider(imageProvider), stdParsCapture {}
+        :
+        imageProvider(imageProvider),
+        stdParsCapture
+    {
+    }
 
     virtual void saveBgr32(ImageRef<PixelRgb32> dst)
     {

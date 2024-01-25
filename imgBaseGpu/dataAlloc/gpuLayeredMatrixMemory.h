@@ -177,4 +177,4 @@ private:
 
 #define GPU_LAYERED_MATRIX_ALLOC(name, Type, layers, size) \
     GpuLayeredMatrixMemory<Type> name; \
-    require(name.realloc(layers, size, stdPass))
+    require(name.realloc(layers, size, stdPass));

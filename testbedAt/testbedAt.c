@@ -472,7 +472,11 @@ class AtImageProviderThunk
 public:
 
     AtImageProviderThunk(BaseImageProvider& imageProvider, stdParsNull)
-        : imageProvider(imageProvider), stdParsCapture {}
+        :
+        imageProvider(imageProvider),
+        stdParsCapture
+    {
+    }
 
     at_bool AT_CALL callback
     (

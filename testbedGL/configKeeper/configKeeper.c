@@ -214,7 +214,7 @@ void ConfigKeeperImpl::run(const RunArgs& args)
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         blockExceptBegin;
 

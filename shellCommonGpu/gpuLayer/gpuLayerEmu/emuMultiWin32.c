@@ -123,7 +123,7 @@ static void serverFunc(void* params)
 {
     EmuWin32ThreadConverter threadConverter;
 
-    for (;;)
+    for (; ;)
     {
         ServerMemory& mem = * (ServerMemory*) params;
 

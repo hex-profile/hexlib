@@ -62,10 +62,10 @@ public:
 
 public:
 
-    inline ArrayMemoryEx()
+    sysinline ArrayMemoryEx()
         {initEmpty();}
 
-    inline ~ArrayMemoryEx()
+    sysinline ~ArrayMemoryEx()
         {dealloc();}
 
 private:
@@ -88,7 +88,7 @@ public:
 
 public:
 
-    inline const ArrayEx<Pointer>& operator()() const
+    sysinline const ArrayEx<Pointer>& operator()() const
         {return *this;}
 
     //
@@ -113,12 +113,12 @@ public:
 
     ////
 
-    inline bool allocated() const {return theAllocPtr != Pointer(0);}
+    sysinline bool allocated() const {return theAllocPtr != Pointer(0);}
 
     ////
 
-    inline Space maxSize() const {return theAllocSize;}
-    inline Pointer allocPtr() const {return theAllocPtr;}
+    sysinline Space maxSize() const {return theAllocSize;}
+    sysinline Pointer allocPtr() const {return theAllocPtr;}
 
     //
     // Resize: rearrange without reallocation
@@ -126,12 +126,12 @@ public:
 
 public:
 
-    inline void resizeNull()
+    sysinline void resizeNull()
     {
         BaseArray::assignNull();
     }
 
-    inline bool resize(Space size)
+    sysinline bool resize(Space size)
     {
         ensure(SpaceU(size) <= SpaceU(theAllocSize));
         BaseArray::assignUnsafe(theAllocPtr, size);
@@ -141,7 +141,7 @@ public:
 
 private:
 
-    inline void initEmpty()
+    sysinline void initEmpty()
     {
         theAllocPtr = Pointer(0);
         theAllocSize = 0;
@@ -193,28 +193,38 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    inline stdbool realloc(Space size, Space byteAlignment, stdPars(Kit))
+    sysinline stdbool realloc(Space size, Space byteAlignment, stdPars(Kit))
         {return Base::realloc(size, byteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
-    template <typename Kit>
-    inline stdbool reallocForCpu(Space size, stdPars(Kit))
-        {return Base::realloc(size, cpuBaseByteAlignment, kit.cpuFastAlloc, stdPassThru);}
+    ////
 
     template <typename Kit>
-    inline stdbool reallocForGpuExch(Space size, stdPars(Kit))
+    sysinline stdbool reallocForCpu(Space size, stdPars(Kit))
+        {return Base::realloc(size, cpuBaseByteAlignment, kit.cpuFastAlloc, stdPassThru);}
+
+    ////
+
+    template <typename Kit>
+    sysinline stdbool reallocForGpuExch(Space size, stdPars(Kit))
         {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.cpuFastAlloc, stdPassThru);}
+
+    ////
+
+    template <typename Kit>
+    sysinline stdbool reallocInHeap(Space size, stdPars(Kit))
+        {return Base::realloc(size, maxNaturalAlignment, kit.malloc, stdPassThru);}
 
     //
     // Cast to Array
     //
 
-    inline operator const Array<Type>& () const
+    sysinline operator const Array<Type>& () const
     {
         const ArrayEx<Type*>* arr = this;
         return recastEqualLayout<const Array<Type>>(*arr);
     }
 
-    inline operator const Array<const Type>& () const
+    sysinline operator const Array<const Type>& () const
     {
         const ArrayEx<Type*>* arr = this;
         return recastEqualLayout<const Array<const Type>>(*arr);
@@ -244,8 +254,8 @@ public:
 
 #define ARRAY_ALLOC(name, Type, size) \
     ArrayMemory<Type> name; \
-    require(name.reallocForCpu(size, stdPass))
+    require(name.reallocForCpu(size, stdPass));
 
 #define ARRAY_ALLOC_FOR_GPU_EXCH(name, Type, size) \
     ArrayMemory<Type> name; \
-    require(name.reallocForGpuExch(size, stdPass))
+    require(name.reallocForGpuExch(size, stdPass));

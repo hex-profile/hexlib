@@ -34,6 +34,7 @@ cmake ^
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=%resultDir% ^
     -G"%generatorName%" "%sourceDir%" ^
     -DHEXLIB_PLATFORM=0 ^
+    -DHEXLIB_ERROR_MODE=0 ^
     -DHEXLIB_GUARDED_MEMORY=0 ^
     || %REQUIRE%
 

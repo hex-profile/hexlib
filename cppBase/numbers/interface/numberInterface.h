@@ -1063,12 +1063,24 @@ sysinline Type fastSqrt(const Type& value);
 
 //================================================================
 //
+// scalarProd
+//
+//================================================================
+
+template <typename Vector>
+sysinline VECTOR_BASE(Vector) scalarProd(const Vector& A, const Vector& B);
+
+//================================================================
+//
 // vectorLengthSq
 //
 //================================================================
 
 template <typename Vector>
-sysinline VECTOR_BASE(Vector) vectorLengthSq(const Vector& vec);
+sysinline auto vectorLengthSq(const Vector& vec)
+{
+    return scalarProd(vec, vec);
+}
 
 //================================================================
 //
@@ -1110,3 +1122,12 @@ sysinline Vector vectorNormalize(const Vector& vec)
     VECTOR_DECOMPOSE(vec);
     return vecDir;
 }
+
+//================================================================
+//
+// vectorSum
+//
+//================================================================
+
+template <typename Vector>
+sysinline VECTOR_BASE(Vector) vectorSum(const Vector& vec);

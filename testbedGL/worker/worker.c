@@ -244,7 +244,7 @@ void WorkerImpl::serialize(const CfgSerializeKit& kit)
         {
             CFG_NAMESPACE("Debug");
 
-            debugErrorSignal.serialize(kit, STR("Generate Test Error"), STR("Ctrl+E"));
+            debugErrorSignal.serialize(kit, STR("Generate Test Error"));
             workerCycleDelayMs.serialize(kit, STR("Cycle Delay In Milliseconds"));
         }
     }
@@ -401,7 +401,7 @@ void WorkerImpl::run(const RunArgs& args)
     //
     //----------------------------------------------------------------
 
-    for (;;)
+    for (; ;)
     {
         blockExceptBegin;
 

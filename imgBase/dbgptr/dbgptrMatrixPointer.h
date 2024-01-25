@@ -354,6 +354,15 @@ public:
     }
 
     //
+    // addByteOffset
+    //
+
+    sysinline void addByteOffset(DbgptrAddrS ofs)
+    {
+        base.currentPtr += ofs;
+    }
+
+    //
     // Basic access
     //
 
@@ -532,3 +541,17 @@ struct PtrElemType<DebugMatrixPointer<Type>>
 {
     using T = Type;
 };
+
+//================================================================
+//
+// addOffset
+//
+//================================================================
+
+template <typename Type>
+sysinline DebugMatrixPointer<Type> addOffset(const DebugMatrixPointer<Type>& ptr, DbgptrAddrS ofs)
+{
+    auto result = ptr;
+    result.addByteOffset(ofs);
+    return result;
+}

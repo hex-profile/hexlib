@@ -85,13 +85,13 @@ stdbool warpImage
     #define TMP_MACRO(borderMode) \
         { \
             if (interpType == INTERP_LINEAR) \
-                require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_LINEAR, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
+                {require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_LINEAR, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass));} \
             else if (interpType == INTERP_CUBIC) \
-                require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
+                {require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass));} \
             else if (interpType == INTERP_CUBIC_BSPLINE) \
-                require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC_BSPLINE, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass)); \
+                {require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC_BSPLINE, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass));} \
             else \
-                REQUIRE(false); \
+                {REQUIRE(false);} \
         }
 
     if (borderMode == BORDER_ZERO)

@@ -321,6 +321,7 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
     #----------------------------------------------------------------
 
     target_compile_definitions(${projectName} PRIVATE HEXLIB_PLATFORM=${HEXLIB_PLATFORM})
+    target_compile_definitions(${projectName} PRIVATE HEXLIB_ERROR_MODE=${HEXLIB_ERROR_MODE})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GUARDED_MEMORY=${HEXLIB_GUARDED_MEMORY})
     target_compile_definitions(${projectName} PRIVATE HEXLIB_GPU_BITNESS=${HEXLIB_GPU_BITNESS})
 

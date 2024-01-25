@@ -37,7 +37,7 @@ void exceptThrowFailure();
 //
 //================================================================
 
-class sysnodiscard stdbool
+class stdbool
 {
 };
 

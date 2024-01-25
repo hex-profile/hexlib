@@ -374,13 +374,15 @@ POINT_DEFINE_FUNC1(ceilv)
 
 //================================================================
 //
-// vectorLengthSq
+// scalarProd
 //
 //================================================================
 
 template <typename Float>
-sysinline Float vectorLengthSq(const Point<Float>& vec)
-    {return square(vec.X) + square(vec.Y);}
+sysinline Float scalarProd(const Point<Float>& A, const Point<Float>& B)
+{
+    return A.X * B.X + A.Y * B.Y;
+}
 
 //================================================================
 //
@@ -403,4 +405,16 @@ sysinline void vectorDecompose(const Point<Float>& vec, Float& vectorLengthSq, F
         vectorDir.X = 1;
         vectorDir.Y = 0;
     }
+}
+
+//================================================================
+//
+// vectorSum
+//
+//================================================================
+
+template <typename Float>
+sysinline Float vectorSum(const Point<Float>& vec)
+{
+    return vec.X + vec.Y;
 }

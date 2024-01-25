@@ -188,7 +188,11 @@ struct GpuEventWaiting
     virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull) =0;
 
     inline stdbool waitEvent(const GpuEvent& event, stdParsNull)
-        {bool tmp = false; return waitEvent(event, tmp, stdPassNullThru);}
+    {
+        bool tmp = false;
+        require(waitEvent(event, tmp, stdPassNullThru));
+        returnTrue;
+    }
 
     //
     // Compute time elapsed between two events.
@@ -231,7 +235,7 @@ struct GpuTransfer
             const GpuStream& stream, \
             stdParsNull \
         ) \
-        =0; \
+        =0;
 
     TMP_COPY_ARRAY_PROTO(copyArrayCpuCpu, CpuAddrU, CpuAddrU)
     TMP_COPY_ARRAY_PROTO(copyArrayCpuGpu, CpuAddrU, GpuAddrU)
@@ -254,8 +258,7 @@ struct GpuTransfer
             const GpuStream& stream, \
             stdParsNull \
         ) \
-        =0; \
-        \
+        =0;
 
     TMP_COPY_MATRIX_PROTO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU)
     TMP_COPY_MATRIX_PROTO(copyMatrixCpuGpu, CpuAddrU, GpuAddrU)

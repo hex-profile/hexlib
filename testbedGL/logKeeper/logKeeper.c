@@ -197,7 +197,7 @@ void LogKeeperImpl::run(const RunArgs& args)
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         blockExceptBegin;
 

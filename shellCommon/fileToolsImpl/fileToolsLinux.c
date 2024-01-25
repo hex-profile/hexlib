@@ -164,7 +164,7 @@ bool expandPath(const CharType* filename, GetString& result)
 
         ////
 
-        for (;;)
+        for (; ;)
         {
             auto p = find_end(strBegin, strCurrentEnd, slashBegin, slashEnd);
 

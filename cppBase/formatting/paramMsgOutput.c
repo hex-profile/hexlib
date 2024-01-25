@@ -30,7 +30,7 @@ void ParamMsg::outputFunc(const void* value, FormatOutputStream& outputStream)
 
     ////
 
-    for (;;)
+    for (; ;)
     {
 
         const CharType* searchStart = formatPtr;

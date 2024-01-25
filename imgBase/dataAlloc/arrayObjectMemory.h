@@ -97,4 +97,4 @@ private:
 #define ARRAY_OBJECT_HEAP_ALLOC(name, Type, size) \
     \
     ArrayObjectMemory<Type> name; \
-    require(name.reallocInHeap(size, stdPass))
+    require(name.reallocInHeap(size, stdPass));

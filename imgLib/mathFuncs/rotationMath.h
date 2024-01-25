@@ -78,16 +78,6 @@ sysinline Point<Float> complexConjugate(const Point<Float>& P)
 
 //================================================================
 //
-// scalarProd
-//
-//================================================================
-
-template <typename Float>
-sysinline Float scalarProd(const Point<Float>& A, const Point<Float>& B)
-    {return A.X * B.X + A.Y * B.Y;}
-
-//================================================================
-//
 // exactPhase
 //
 // Returns value in range [-1/2, +1/2].

@@ -53,7 +53,7 @@ using Drawer = Callable<stdbool (const GpuMatrix<uint8_x4>& dstImage, stdParsNul
 //
 //================================================================
 
-using DrawReceiver = Callable<void (Drawer& drawer, stdParsNull)>;
+using DrawReceiver = Callable<stdbool (Drawer& drawer, stdParsNull)>;
 
 //================================================================
 //

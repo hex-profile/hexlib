@@ -82,6 +82,37 @@ struct CopyQueueSnapshot
 
 //================================================================
 //
+// PadMode
+//
+//================================================================
+
+enum class PadMode {None, UsedSpace, EntireSpace, COUNT};
+
+//================================================================
+//
+// DrawText
+//
+//================================================================
+
+struct DrawText
+{
+    ColorTextProvider* buffer{};
+    GpuMatrix<uint8_x4> destination;
+    Point<Space> renderOrg{};
+    Point<Space> renderEnd{};
+    Point<Space> border = point(0);
+    const GpuFontMono* font{};
+    Space fontUpscalingFactor = 1;
+
+    PadMode padMode = PadMode::None;
+    Point3D<float32> padColor{};
+    float32 padOpacity = 1;
+
+    Point3D<float32> outlineColor = point3D(0.f);
+};
+
+//================================================================
+//
 // GpuConsoleDrawer
 //
 //================================================================
@@ -105,16 +136,7 @@ public:
 
     using ProcessKit = KitCombine<GpuProcessKit, LocalLogKit>;
 
-    stdbool drawText
-    (
-        ColorTextProvider& buffer,
-        const GpuMatrix<uint8_x4>& destination,
-        const Point<Space>& renderOrg,
-        const Point<Space>& renderEnd,
-        const GpuFontMono& font,
-        OptionalObject<RectRange>* actualRange, // may be NULL
-        stdPars(ProcessKit)
-    );
+    stdbool drawText(const DrawText& args, stdPars(ProcessKit));
 
 private:
 

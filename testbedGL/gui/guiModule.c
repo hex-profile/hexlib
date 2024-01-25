@@ -1,19 +1,25 @@
 #include "guiModule.h"
 
-#include "gui/drawTestImage/drawTestImage.h"
-#include "gui/drawErrorPattern/drawErrorPattern.h"
 #include "cfgTools/boolSwitch.h"
+#include "cfgTools/multiSwitch.h"
 #include "errorLog/errorLog.h"
-#include "gui/gpuConsoleDrawing/gpuConsoleDrawing.h"
-#include "gui/gpuConsoleDrawing/fontMono9x16.h"
-#include "numbers/divRound.h"
+#include "gpuDevice/loadstore/storeNorm.h"
 #include "gpuMatrixCopy/gpuMatrixCopy.h"
+#include "gpuMatrixSet/gpuMatrixSet.h"
+#include "gui/drawBackgroundPattern/drawBackgroundPattern.h"
+#include "gui/drawErrorPattern/drawErrorPattern.h"
 #include "gui/drawFilledRect/drawFilledRect.h"
-#include "storage/rememberCleanup.h"
+#include "gui/gpuConsoleDrawing/fontMono9x16.h"
+#include "gui/gpuConsoleDrawing/gpuConsoleDrawing.h"
+#include "numbers/divRound.h"
 #include "numbers/mathIntrinsics.h"
 #include "point/pointFunctions.h"
+#include "storage/rememberCleanup.h"
 
 namespace gui {
+
+using gpuConsoleDrawing::PadMode;
+using gpuConsoleDrawing::DrawText;
 
 //================================================================
 //
@@ -54,7 +60,9 @@ class GuiModuleImpl : public GuiModule
     //----------------------------------------------------------------
 
     virtual bool reallocValid() const
-        {return allocIsValid;}
+    {
+        return allocIsValid;
+    }
 
     virtual stdbool realloc(stdPars(ReallocKit));
 
@@ -78,16 +86,21 @@ class GuiModuleImpl : public GuiModule
 
     //----------------------------------------------------------------
     //
-    // Redraw testing.
+    // Desktop settings.
     //
     //----------------------------------------------------------------
 
-    struct RedrawTest
+    enum class DesktopMode {RandomPattern, SolidColor, COUNT};
+
+    struct Desktop
     {
-        BoolSwitch scrollOnRedraw{true};
+        MultiSwitch<DesktopMode, DesktopMode::COUNT, DesktopMode::RandomPattern> mode;
+        NumericVar<Point3D<float32>> solidColor{point3D(0.f), point3D(1.f), point3D(1.f)};
+
+        BoolSwitch scrollOnRedraw{false};
         int32 scrollOffset = 0;
     }
-    redrawTest;
+    desktop;
 
     //----------------------------------------------------------------
     //
@@ -118,7 +131,7 @@ class GuiModuleImpl : public GuiModule
     //
     //----------------------------------------------------------------
 
-    virtual void mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
+    virtual stdbool mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
     {
         if (event.button == 0 && event.press)
         {
@@ -140,9 +153,11 @@ class GuiModuleImpl : public GuiModule
 
             mainImage.dragLastPos = {};
         }
+
+        returnTrue;
     }
 
-    virtual void mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
+    virtual stdbool mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
     {
         if (localConsole.dragLastPos)
         {
@@ -169,6 +184,8 @@ class GuiModuleImpl : public GuiModule
             drag = event;
             redraw.on = true;
         }
+
+        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -190,14 +207,33 @@ class GuiModuleImpl : public GuiModule
 
     //----------------------------------------------------------------
     //
+    // Text logs config.
+    //
+    //----------------------------------------------------------------
+
+    struct TextLogs
+    {
+        NumericVar<Space> fontUpscalingFactor{1, 16, 1};
+
+        NumericVar<Point<Space>> border{point(0), point(typeMax<Space>()), point(6, 3)};
+
+        NumericVar<Point3D<float32>> textColorInfo{point3D(0.f), point3D(1.f), point3D(1.f)};
+        NumericVar<Point3D<float32>> textColorWarn{point3D(0.f), point3D(1.f), point3D(0.f, 1.f, 1.f)};
+        NumericVar<Point3D<float32>> textColorErr{point3D(0.f), point3D(1.f), point3D(0.25f, 0.25f, 1.f)};
+
+        NumericVar<Point3D<float32>> outlineColor{point3D(0.f), point3D(1.f), point3D(0.f)};
+    }
+    textLogs;
+
+    //----------------------------------------------------------------
+    //
     // Global log.
     //
     //----------------------------------------------------------------
 
     struct GlobalConsole
     {
-        NumericVar<float32> maxAge{0.f, typeMax<float32>(), 5.f};
-        NumericVar<Point<Space>> border{point(0), point(typeMax<Space>()), point(4, 4)};
+        NumericVar<float32> maxAge{0.f, typeMax<float32>(), 10.f};
         GpuConsoleDrawer drawer;
     }
     globalConsole;
@@ -210,8 +246,12 @@ class GuiModuleImpl : public GuiModule
 
     struct LocalConsole
     {
-        NumericVar<float32> widthInChars{0, 8192, 60};
-        NumericVar<Point<Space>> border{point(0), point(typeMax<Space>()), point(4, 4)};
+        NumericVar<float32> widthInPixels{0, 8192, 540};
+
+        MultiSwitch<PadMode, PadMode::COUNT, PadMode::None> padMode;
+        NumericVar<Point3D<float32>> padColor{point3D(0.f), point3D(1.f), point3D(0.f)};
+        NumericVar<float32> padOpacity{0, 1, 0.5f};
+
         GpuConsoleDrawer drawer;
         OptionalObject<Point<float32>> dragLastPos;
     }
@@ -220,10 +260,10 @@ class GuiModuleImpl : public GuiModule
     ////
 
     float32 localConsoleGetWidth() const
-        {return localConsole.widthInChars * gpuFont.charSize.X;}
+        {return localConsole.widthInPixels;}
 
     void localConsoleSetWidth(float32 width)
-        {localConsole.widthInChars = width / gpuFont.charSize.X;}
+        {localConsole.widthInPixels = width;}
 
     //----------------------------------------------------------------
     //
@@ -250,20 +290,18 @@ class GuiModuleImpl : public GuiModule
     //
     //----------------------------------------------------------------
 
-    struct Lines
+    struct Common
     {
-        NumericVar<Point3D<float32>> bodyColorCfg{point3D(0.f), point3D(1.f), point3D(1.f)};
-        NumericVar<Point3D<float32>> shadowColorCfg{point3D(0.f), point3D(1.f), point3D(0.f)};
+        NumericVar<Point3D<float32>> bodyColor{point3D(0.f), point3D(1.f), point3D(1.f)};
+        NumericVar<Point3D<float32>> shadowColor{point3D(0.f), point3D(1.f), point3D(0.f)};
 
-        auto bodyColor() const {return convertNearest<uint8_x4>(0xFF * bodyColorCfg());}
-        auto shadowColor() const {return convertNearest<uint8_x4>(0xFF * shadowColorCfg());}
-
-        NumericVar<Space> shadowRadius{0, 1024, 1};
         NumericVar<Space> lineWidth{0, 1024, 2};
         NumericVar<Space> scrollbarWidth{0, 1024, 2};
+
+        NumericVar<Space> shadowRadius{0, 1024, 1};
     };
 
-    Lines lines;
+    Common common;
 
 };
 
@@ -283,44 +321,64 @@ UniquePtr<GuiModule> GuiModule::create()
 void GuiModuleImpl::serialize(const CfgSerializeKit& kit)
 {
     {
-        CFG_NAMESPACE("GUI Debug");
+        CFG_NAMESPACE("Desktop");
 
-        {
-            CFG_NAMESPACE("Redraw Testing");
-
-            redrawTest.scrollOnRedraw.serialize(kit, STR("Scroll On Redraw"));
-        }
+        desktop.mode.serialize(kit, STR("Mode"), STR("Random Pattern"), STR("Solid Color"));
+        desktop.solidColor.serialize(kit, STR("Solid Color"));
+        desktop.scrollOnRedraw.serialize(kit, STR("Scroll On Redraw (For Debugging)"));
     }
 
     {
-        CFG_NAMESPACE("Global Log");
-        globalConsole.maxAge.serialize(kit, STR("Message Display Time In Seconds"));
-        globalConsole.border.serialize(kit, STR("Border In Pixels"));
-        globalConsole.drawer.serialize(kit);
-    }
+        CFG_NAMESPACE("Scrollbars And Dragging Lines");
 
-    {
-        CFG_NAMESPACE("Local Log");
+        common.bodyColor.serialize(kit, STR("Body Color"));
+        common.shadowColor.serialize(kit, STR("Shadow Color"));
 
-        localConsole.widthInChars.serialize(kit, STR("Width In Chars"));
-        localConsole.border.serialize(kit, STR("Border In Pixels"));
-        localConsole.drawer.serialize(kit);
+        common.lineWidth.serialize(kit, STR("Line Width"));
+        common.scrollbarWidth.serialize(kit, STR("Scrollbar Width"));
+
+        common.shadowRadius.serialize(kit, STR("Shadow Radius"));
     }
 
     {
         CFG_NAMESPACE("Main Image");
 
-        mainImage.normOffset.serialize(kit, STR("Normalized Offset"),
+        mainImage.normOffset.serialize(kit, STR("Normalized Offset"), STR(""),
             STR("The image is drawn shifted by the specified fraction of its size"));
     }
 
     {
-        CFG_NAMESPACE("Lines");
-        lines.bodyColorCfg.serialize(kit, STR("Body Color"));
-        lines.shadowColorCfg.serialize(kit, STR("Shadow Color"));
-        lines.shadowRadius.serialize(kit, STR("Shadow Radius In Pixels"));
-        lines.lineWidth.serialize(kit, STR("Line Width In Pixels"));
-        lines.scrollbarWidth.serialize(kit, STR("Scrollbar Width In Pixels"));
+        CFG_NAMESPACE("Text Logs");
+
+        bool fontSizeSteady = textLogs.fontUpscalingFactor.serialize(kit, STR("Font Upscaling Factor"),
+            STR(""), STR("Use value `2` as a temporary solution for 4k monitors"));
+
+        if_not (fontSizeSteady)
+            allocIsValid = false;
+
+        textLogs.border.serialize(kit, STR("Border In Pixels"));
+
+        textLogs.textColorInfo.serialize(kit, STR("Text Color: Info"));
+        textLogs.textColorWarn.serialize(kit, STR("Text Color: Warning"));
+        textLogs.textColorErr.serialize(kit, STR("Text Color: Error"));
+
+        textLogs.outlineColor.serialize(kit, STR("Outline Color"));
+
+        {
+            CFG_NAMESPACE("Global Log");
+            globalConsole.maxAge.serialize(kit, STR("Message Display Time In Seconds"));
+            globalConsole.drawer.serialize(kit);
+        }
+
+        {
+            CFG_NAMESPACE("Local Log");
+
+            localConsole.widthInPixels.serialize(kit, STR("Width In Pixels"));
+            localConsole.padMode.serialize(kit, STR("Pad Mode"), STR("None"), STR("Used Space"), STR("Entire Space"));
+            localConsole.padColor.serialize(kit, STR("Pad Color"));
+            localConsole.padOpacity.serialize(kit, STR("Pad Opacity"));
+            localConsole.drawer.serialize(kit);
+        }
     }
 }
 
@@ -346,7 +404,7 @@ stdbool GuiModuleImpl::realloc(stdPars(ReallocKit))
     REQUIRE(font.charSize >= 1);
     REQUIRE(configMaxImageSize >= 0);
 
-    auto textBufferSize = divUpNonneg(configMaxImageSize, font.charSize);
+    auto textBufferSize = divUpNonneg(configMaxImageSize, font.charSize * textLogs.fontUpscalingFactor);
     textBufferSize = clampMin(textBufferSize, 1);
 
     ////
@@ -413,25 +471,96 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
 
     //----------------------------------------------------------------
     //
-    // Test image.
+    // convertColor
     //
     //----------------------------------------------------------------
 
-    if (redrawTest.scrollOnRedraw)
+    auto convertColor = [] (const Point3D<float32>& color)
+    {
+        auto vec = convertNearest<float32_x4>(color);
+        return convertNormClamp<uint8_x4>(vec);
+    };
+
+    ////
+
+    auto bodyColor = convertColor(common.bodyColor);
+    auto shadowColor = convertColor(common.shadowColor);
+
+    //----------------------------------------------------------------
+    //
+    // Desktop.
+    //
+    //----------------------------------------------------------------
+
+    if (desktop.scrollOnRedraw)
     {
         if (kit.dataProcessing)
-            redrawTest.scrollOffset += 1;
+            desktop.scrollOffset += 1;
     }
 
-    require(drawTestImage(point(redrawTest.scrollOffset, 0), 8, 16, outputImage, stdPass));
+    auto drawDesktop = [&] (stdPars(auto))
+    {
+        if (desktop.mode == DesktopMode::RandomPattern)
+        {
+            require(drawBackgroundPattern(point(desktop.scrollOffset, 0), outputImage, stdPass));
+        }
+        else if (desktop.mode == DesktopMode::SolidColor)
+        {
+            auto color = convertColor(desktop.solidColor);
+            require(gpuMatrixSet(outputImage, color, stdPass));
+        }
+        else
+        {
+            REQUIRE(false);
+        }
+
+        returnTrue;
+    };
+
+    errorBlock(drawDesktop(stdPassNc));
 
     //----------------------------------------------------------------
     //
-    // Draw main image.
+    // Main image scrollbars: Draw at the end.
     //
     //----------------------------------------------------------------
 
-    if (args.overlay.hasUpdates())
+    auto sbarFlags = point(false);
+
+    auto sbarHorOrg = point(0);
+    auto sbarHorEnd = point(0);
+
+    auto sbarVerOrg = point(0);
+    auto sbarVerEnd = point(0);
+
+    ////
+
+    auto drawScrollbars = [&] (stdPars(auto))
+    {
+        if (sbarFlags.X)
+            require(drawSingleRect({sbarHorOrg - common.shadowRadius(), sbarHorEnd + common.shadowRadius(), shadowColor}, outputImage, stdPass));
+
+        if (sbarFlags.Y)
+            require(drawSingleRect({sbarVerOrg - common.shadowRadius(), sbarVerEnd + common.shadowRadius(), shadowColor}, outputImage, stdPass));
+
+        if (sbarFlags.X)
+            require(drawSingleRect({sbarHorOrg, sbarHorEnd, bodyColor}, outputImage, stdPass));
+
+        if (sbarFlags.Y)
+            require(drawSingleRect({sbarVerOrg, sbarVerEnd, bodyColor}, outputImage, stdPass));
+
+        returnTrue;
+    };
+
+    REMEMBER_CLEANUP(errorBlock(drawScrollbars(stdPassNc)));
+
+    //----------------------------------------------------------------
+    //
+    // Main image.
+    //
+    //----------------------------------------------------------------
+
+    auto drawMainImage = [&] (stdPars(auto))
     {
         auto imageUser = overlayBuffer::ImageUser::O | [&] (bool valid, auto& image, stdParsNull)
         {
@@ -474,7 +603,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             ////
 
             auto visibleFraction = usedSize * divImageSize;
-            auto scroll = image.size() > usedSize;
+            sbarFlags = image.size() > usedSize;
 
             ////
 
@@ -485,38 +614,30 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
 
             auto ofsAlpha = saturatev(convertFloat32(shifti) * divShiftSize);
             auto barOfs = clampRange(convertNearest<Space>(barSpace * ofsAlpha), 0, barSpace);
-            auto barThickess = lines.scrollbarWidth;
+            auto barThickess = common.scrollbarWidth;
 
             ////
 
-            auto horOrg = point(barOfs.X, outputSize.Y - barThickess);
-            auto horEnd = point(barOfs.X + barSize.X, outputSize.Y);
+            sbarHorOrg = point(barOfs.X, outputSize.Y - barThickess);
+            sbarHorEnd = point(barOfs.X + barSize.X, outputSize.Y);
 
-            auto verOrg = point(outputSize.X - barThickess, barOfs.Y);
-            auto verEnd = point(outputSize.X, barOfs.Y + barSize.Y);
-
-            auto bodyColor = lines.bodyColor();
-            auto shadowColor = lines.shadowColor();
-
-            if (scroll.X)
-                require(drawSingleRect({horOrg - lines.shadowRadius(), horEnd + lines.shadowRadius(), shadowColor}, outputImage, stdPass));
-
-            if (scroll.Y)
-                require(drawSingleRect({verOrg - lines.shadowRadius(), verEnd + lines.shadowRadius(), shadowColor}, outputImage, stdPass));
-
-            if (scroll.X)
-                require(drawSingleRect({horOrg, horEnd, bodyColor}, outputImage, stdPass));
-
-            if (scroll.Y)
-                require(drawSingleRect({verOrg, verEnd, bodyColor}, outputImage, stdPass));
+            sbarVerOrg = point(outputSize.X - barThickess, barOfs.Y);
+            sbarVerEnd = point(outputSize.X, barOfs.Y + barSize.Y);
 
             ////
 
             returnTrue;
         };
 
-        errorBlock(args.overlay.useImage(imageUser, stdPassNc));
-    }
+        if (args.overlay.hasUpdates())
+            require(args.overlay.useImage(imageUser, stdPass));
+
+        returnTrue;
+    };
+
+    ////
+
+    errorBlock(drawMainImage(stdPassNc));
 
     //----------------------------------------------------------------
     //
@@ -524,11 +645,25 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
     //
     //----------------------------------------------------------------
 
-    auto addTextRow = [] (auto& text, auto& kind, auto& moment, auto& destination)
+    auto getConsoleColor = [&] (const Point3D<float32>& color) -> uint32
     {
-        uint32 color = 0x00FFFFFF;
-        if (kind == msgWarn) color = 0x00FFFF00;
-        if (kind == msgErr) color = 0x00FF8040;
+        auto color8u = convertColor(color);
+        return recastEqualLayout<uint32>(color8u);
+    };
+
+    ////
+
+    auto conColorInfo = getConsoleColor(textLogs.textColorInfo);
+    auto conColorWarn = getConsoleColor(textLogs.textColorWarn);
+    auto conColorErr = getConsoleColor(textLogs.textColorErr);
+
+    ////
+
+    auto addTextRow = [&] (auto& text, auto& kind, auto& moment, auto& destination)
+    {
+        uint32 color = conColorInfo;
+        if (kind == msgWarn) color = conColorWarn;
+        if (kind == msgErr) color = conColorErr;
 
         destination(text, color);
     };
@@ -539,30 +674,26 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
     //
     //----------------------------------------------------------------
 
-    auto localConsoleSpace = clampRange(convertNearest<Space>(localConsoleGetWidth()), 0, outputSize.X);
-
-    ////
-
     auto clampByOutput = [&] (const auto& value)
         {return clampRange(value, point(0), outputSize);};
 
     ////
 
-    auto globalConsoleOrg = point(0);
-    auto globalConsoleEnd = outputSize;
-    globalConsoleEnd.X -= localConsoleSpace;
-
-    globalConsoleOrg = clampByOutput(globalConsoleOrg + globalConsole.border());
-    globalConsoleEnd = clampByOutput(globalConsoleEnd - globalConsole.border());
+    auto localConsoleSpace = clampRange(convertNearest<Space>(localConsoleGetWidth()), 0, outputSize.X);
 
     ////
 
-    OptionalObject<TimeMoment> oldestMessage;
-
-    ////
-
-    if (allv(globalConsoleOrg < globalConsoleEnd))
+    auto drawGlobalConsole = [&] (stdPars(auto))
     {
+        auto globalConsoleOrg = point(0);
+        auto globalConsoleEnd = clampByOutput(outputSize - point(localConsoleSpace, 0));
+
+        ////
+
+        OptionalObject<TimeMoment> oldestMessage;
+
+        ////
+
         auto currentMoment = kit.timer.moment();
 
         auto textProvider = gpuConsoleDrawing::ColorTextProvider::O | [&] (auto maxCount, auto& colorTextReceiver, stdParsNull)
@@ -585,7 +716,19 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             returnTrue;
         };
 
-        require(globalConsole.drawer.drawText(textProvider, outputImage, globalConsoleOrg, globalConsoleEnd, gpuFont, nullptr, stdPass));
+        ////
+
+        DrawText args;
+        args.buffer = &textProvider;
+        args.destination = outputImage;
+        args.renderOrg = globalConsoleOrg;
+        args.renderEnd = globalConsoleEnd;
+        args.border = textLogs.border;
+        args.font = &gpuFont;
+        args.fontUpscalingFactor = textLogs.fontUpscalingFactor;
+        args.outlineColor = textLogs.outlineColor;
+
+        require(globalConsole.drawer.drawText(args, stdPass));
 
         //
         // Animation.
@@ -598,7 +741,13 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             else
                 wakeMoment = kit.timer.add(*oldestMessage, globalConsole.maxAge());
         }
-    }
+
+        returnTrue;
+    };
+
+    ////
+
+    errorBlock(drawGlobalConsole(stdPassNc));
 
     //----------------------------------------------------------------
     //
@@ -606,13 +755,12 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
     //
     //----------------------------------------------------------------
 
-    auto localConsoleSpaceOrg = clampByOutput(point(outputSize.X - localConsoleSpace, 0));
-    auto localConsoleSpaceEnd = outputSize;
+    auto localConsoleOrg = clampByOutput(point(outputSize.X - localConsoleSpace, 0));
+    auto localConsoleEnd = outputSize;
 
-    auto localConsoleOrg = clampByOutput(localConsoleSpaceOrg + localConsole.border());
-    auto localConsoleEnd = clampByOutput(localConsoleSpaceEnd - localConsole.border());
+    ////
 
-    if (allv(localConsoleOrg < localConsoleEnd))
+    auto drawLocalConsole = [&] (stdPars(auto))
     {
         auto textProvider = gpuConsoleDrawing::ColorTextProvider::O | [&] (auto maxCount, auto& colorTextReceiver, stdParsNull)
         {
@@ -628,32 +776,72 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             returnTrue;
         };
 
-        require(localConsole.drawer.drawText(textProvider, outputImage, localConsoleOrg, localConsoleEnd, gpuFont, nullptr, stdPass));
-    }
+        //----------------------------------------------------------------
+        //
+        // Draw text.
+        //
+        //----------------------------------------------------------------
+
+        DrawText args;
+        args.buffer = &textProvider;
+        args.destination = outputImage;
+        args.renderOrg = localConsoleOrg;
+        args.renderEnd = localConsoleEnd;
+        args.border = textLogs.border;
+        args.font = &gpuFont;
+        args.fontUpscalingFactor = textLogs.fontUpscalingFactor;
+        args.padMode = localConsole.padMode;
+        args.padColor = localConsole.padColor;
+        args.padOpacity = localConsole.padOpacity;
+        args.outlineColor = textLogs.outlineColor;
+
+        require(localConsole.drawer.drawText(args, stdPass));
+
+        returnTrue;
+    };
 
     ////
 
-    if (localConsole.dragLastPos)
+    errorBlock(drawLocalConsole(stdPassNc));
+
+    //----------------------------------------------------------------
+    //
+    // Local console dragging.
+    //
+    //----------------------------------------------------------------
+
+    auto drawLocalConsoleDragging = [&] (stdPars(auto))
     {
-        auto org = localConsoleSpaceOrg;
+        if_not (localConsole.dragLastPos)
+            returnTrue;
+
+        ////
+
+        auto org = localConsoleOrg;
         auto end = point(org.X, outputSize.Y);
 
-        auto lineWidth = lines.lineWidth();
+        auto lineWidth = common.lineWidth();
         auto lineWidthHalf = lineWidth / 2;
 
         org.X -= lineWidthHalf;
         end.X += (lineWidth - lineWidthHalf);
 
-        auto shadowRadius = lines.shadowRadius();
+        auto shadowRadius = common.shadowRadius();
 
         DrawFilledRectArgs args
         {
-            {org, end, lines.bodyColor()},
-            {org - shadowRadius, end + shadowRadius, lines.shadowColor()}
+            {org, end, bodyColor},
+            {org - shadowRadius, end + shadowRadius, shadowColor}
         };
 
-        errorBlock(drawFilledRect(args, outputImage, stdPassNc));
-    }
+        require(drawFilledRect(args, outputImage, stdPass));
+
+        returnTrue;
+    };
+
+    ////
+
+    errorBlock(drawLocalConsoleDragging(stdPassNc));
 
     ////
 
@@ -663,3 +851,4 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
 //----------------------------------------------------------------
 
 }
+

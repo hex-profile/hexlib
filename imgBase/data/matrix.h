@@ -3,6 +3,7 @@
 #include "data/array.h"
 #include "data/commonFuncs.h"
 #include "data/pointerInterface.h"
+#include "data/spacex.h"
 #include "errorLog/debugBreak.h"
 #include "extLib/data/matrixBase.h"
 #include "numbers/int/intBase.h"
@@ -453,7 +454,10 @@ public:
     sysinline void assignUnsafe(ArrayPtr(Type) memPtr, Space memPitch, Space sizeX, Space sizeY)
     {
         if_not (assignValidated(memPtr, memPitch, sizeX, sizeY))
-            {DEBUG_BREAK_INLINE(); assignNull();}
+        {
+            DEBUG_BREAK_INLINE();
+            assignNull();
+        }
     }
 
 #endif
@@ -507,7 +511,7 @@ public:
 
 #if HEXLIB_GUARDED_MEMORY
 
-    sysinline typename MatrixPtr(Type) memPtr() const
+    sysinline MatrixPtr(Type) memPtr() const
         {return MatrixPtrCreate(Type, theMemPtrUnsafe, theMemPitch, theSizeX, theSizeY, DbgptrMatrixPreconditions());}
 
 #else

@@ -75,21 +75,14 @@ int32 randRange(RndgenState& rndgen, int32 lo, int32 hi)
 template <>
 float32 randRange(RndgenState& rndgen, float32 lo, float32 hi)
 {
-    float32 result = 0;
+    float32 divMax32 = 0.23283064370807973754314699618685e-9f; // 1 / (2^32 - 1);
 
-    if (def(lo, hi) && lo <= hi)
+    float32 result = lo + float32(rndgen32(rndgen)) * divMax32 * (hi - lo);
+
+    if (def(result))
     {
-        float32 divMax32 = 0.23283064370807973754314699618685e-9f; // 1 / (2^32 - 1);
-
-        float32 R = lo + float32(rndgen32(rndgen)) * divMax32 * (hi - lo);
-
-        if (def(R))
-        {
-            if (R < lo) R = lo;
-            if (R > hi) R = hi;
-        }
-
-        result = R;
+        if (result < lo) result = lo;
+        if (result > hi) result = hi;
     }
 
     return result;
@@ -104,33 +97,25 @@ float32 randRange(RndgenState& rndgen, float32 lo, float32 hi)
 template <>
 float64 randRange(RndgenState& rndgen, float64 lo, float64 hi)
 {
-    float64 result = float64Nan();
+    //
+    // Get a number in range [0, 1], if (r1, r2) is in range [0, 2^32 - 1]
+    //
+    // (r1*2^(-32) + r2*2^(-64)) / (1 - 2^(-64));
+    //
 
-    if (def(lo, hi) && lo <= hi)
+    float64 r1 = float64(rndgen32(rndgen));
+    float64 r2 = float64(rndgen32(rndgen));
+
+    float64 result =
+        0.23283064365386962891887177448354e-9 * r1 +
+        0.54210108624275221703311375920553e-19 * r2;
+
+    float64 tmp = lo + result * (hi - lo);
+
+    if (def(tmp))
     {
-
-        //
-        // Get a number in range [0, 1], if (r1, r2) is in range [0, 2^32 - 1]
-        //
-        // (r1*2^(-32) + r2*2^(-64)) / (1 - 2^(-64));
-        //
-
-        float64 r1 = float64(rndgen32(rndgen));
-        float64 r2 = float64(rndgen32(rndgen));
-
-        float64 R =
-            0.23283064365386962891887177448354e-9 * r1 +
-            0.54210108624275221703311375920553e-19 * r2;
-
-        float64 tmp = lo + R * (hi - lo);
-
-        if (def(tmp))
-        {
-            if (tmp < lo) tmp = lo;
-            if (tmp > hi) tmp = hi;
-        }
-
-        result = tmp;
+        if (tmp < lo) tmp = lo;
+        if (tmp > hi) tmp = hi;
     }
 
     return result;

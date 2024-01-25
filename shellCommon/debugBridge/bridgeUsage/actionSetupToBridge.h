@@ -18,7 +18,11 @@ public:
     using Kit = MsgLogExKit;
 
     BaseActionSetupToBridge(debugBridge::ActionSetup& base, stdPars(Kit))
-        : base(base), stdParsCapture {}
+        :
+        base(base),
+        stdParsCapture
+    {
+    }
 
     virtual bool actsetClear()
     {

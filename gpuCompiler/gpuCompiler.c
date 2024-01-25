@@ -116,7 +116,7 @@ StlString filenameToCString(const CharType* strBegin, const CharType* strEnd)
     const CharType* ptr = strBegin;
     const CharType* end = strEnd;
 
-    for (;;)
+    for (; ;)
     {
         const CharType* normBegin = ptr;
 
@@ -285,7 +285,9 @@ stdbool parseCompilerArgs
             else if (prevOption == 'D')
                 defines.push_back(s);
             else if (prevOption == 'O')
+            {
                 require(handleOutputOption(s, stdPass));
+            }
             else
             {
                 if (stringEndsWith(s, CT(".cxx")))
@@ -330,7 +332,7 @@ stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString&
 
     StlString tmpStr;
 
-    while (inputStream.getLine(tmpStr, stdPass))
+    while (inputStream.getLine(tmpStr, stdPassNc))
     {
         file.write(tmpStr.data(), tmpStr.size());
         file.write("\n", 1);
@@ -425,7 +427,7 @@ bool sourcesAreIdentical(const CharType* oldPtr, size_t oldSize, const CharType*
     //
     //
 
-    for (;;)
+    for (; ;)
     {
 
         const CharType* oldLineBeg = 0;
@@ -480,7 +482,7 @@ void extractKernelNames(const CharType* ptr, const CharType* end, vector<StlStri
 {
     skipSpaceTab(ptr, end);
 
-    for (;;)
+    for (; ;)
     {
         //
         // try to find __declspec starting from the current place (advance or exit!)
@@ -562,7 +564,7 @@ void extractKernelNames(const CharType* ptr, const CharType* end, vector<StlStri
 
                 int32 scopeLevel = OS_CHOICE(2, 3);
 
-                for (;;)
+                for (; ;)
                 {
                     while (ptr != end && *ptr != '(' && *ptr != ')')
                         ++ptr;
@@ -602,7 +604,7 @@ void extractKernelNames(const CharType* ptr, const CharType* end, vector<StlStri
 
 inline bool findNextWordOnLetter(const CharType*& ptr, const CharType* end, CharType letter)
 {
-    for (;;)
+    for (; ;)
     {
         skipSpaceTab(ptr, end);
         ensure(ptr != end);
@@ -672,7 +674,7 @@ inline bool tryParseTextureDef(const CharType*& ptr, const CharType* end, vector
 
 inline void extractSamplerNames(const CharType* ptr, const CharType* end, vector<StlString>& samplerNames)
 {
-    for (;;)
+    for (; ;)
     {
 
         //
@@ -701,7 +703,7 @@ void extractKernelAndSamplerNames(const CharType* filePtr, size_t fileSize, vect
 {
     const CharType* fileEnd = filePtr + fileSize;
 
-    for (;;)
+    for (; ;)
     {
         const CharType* strBeg = 0;
         const CharType* strEnd = 0;
@@ -726,7 +728,7 @@ stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch
 
     auto p = platformArch.begin();
 
-    for (;;)
+    for (; ;)
     {
         auto startPtr = p;
 
@@ -1099,7 +1101,7 @@ stdbool makeCppBinAssembly
 
     ////
 
-    for (;;)
+    for (; ;)
     {
         CharType* rowStart = &row[0];
         CharType* rowPtr = rowStart;
@@ -1324,7 +1326,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 
             basic_stringstream<CharType> strStream(content);
 
-            for (;;)
+            for (; ;)
             {
                 StlString s;
                 getline(strStream, s);
@@ -1621,9 +1623,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         }
     }
 
-    //
-    //
-    //
+    ////
 
     returnTrue;
 }

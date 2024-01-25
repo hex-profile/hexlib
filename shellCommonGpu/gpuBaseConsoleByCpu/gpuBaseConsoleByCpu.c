@@ -212,7 +212,9 @@ stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrixAP<const Type>
             GpuCopyThunk gpuCopy;
 
             if (gpuMatrix.memPitch() >= 0)
+            {
                 require(copyMatrixAsArray(gpuMatrix, cpuMatrixMemory, gpuCopy, stdPass));
+            }
             else
             {
                 require(copyMatrixAsArray(flipMatrix(gpuMatrix), cpuMatrixMemory, gpuCopy, stdPass));

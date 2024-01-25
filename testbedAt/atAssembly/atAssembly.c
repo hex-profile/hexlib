@@ -1005,7 +1005,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     REQUIRE(toolStateActivity.sysAllocCount <= 1);
 
     if (displayMemoryUsage || uncommonActivity(toolStateActivity, toolTempActivity))
-        memoryUsageReport(STR("Tool"), toolStateUsage, toolTempUsage, toolStateActivity, toolTempActivity, stdPass);
+        memoryUsageReport(STR("Tool"), toolStateUsage, toolTempUsage, toolStateActivity, toolTempActivity, kit);
 
     //----------------------------------------------------------------
     //
@@ -1021,7 +1021,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     REQUIRE(engineStateActivity.sysAllocCount <= 1);
 
     if (displayMemoryUsage || uncommonActivity(engineStateActivity, engineTempActivity))
-        memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, stdPass);
+        memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, kit);
 
     //----------------------------------------------------------------
     //

@@ -11,7 +11,7 @@
 //================================================================
 
 template <typename AddrU, typename CoreAlloc, typename Owner, typename Kit, typename DeallocFunc>
-static inline stdbool sysAllocAlignShell(AddrU size, AddrU alignment, Owner& owner, AddrU& result, CoreAlloc& coreAlloc, DeallocFunc* deallocFunc, stdPars(Kit))
+sysinline stdbool sysAllocAlignShell(AddrU size, AddrU alignment, Owner& owner, AddrU& result, CoreAlloc& coreAlloc, DeallocFunc* deallocFunc, stdPars(Kit))
 {
     REQUIRE(isPower2(alignment));
     REQUIRE(alignment >= 1);

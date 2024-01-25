@@ -537,7 +537,7 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
     ////
 
     if (displayMemoryUsage || uncommonActivity(engineStateActivity, engineTempActivity))
-        memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, stdPass);
+        memoryUsageReport(STR("Engine"), engineStateUsage, engineTempUsage, engineStateActivity, engineTempActivity, kit);
 
     //----------------------------------------------------------------
     //

@@ -129,7 +129,7 @@ void TimeoutHelperImpl::threadFunction()
 {
     setThreadName(STR("~TimeoutHelper"));
 
-    for (;;)
+    for (; ;)
     {
 
         Callback* execPtr = nullptr;

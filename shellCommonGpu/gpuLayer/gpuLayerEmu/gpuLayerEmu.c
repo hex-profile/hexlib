@@ -822,8 +822,19 @@ stdbool EmuExecApiThunk::setSamplerArray
     stdParsNull
 )
 {
-    return emuSetSamplerArray(sampler, arrayAddr, arrayByteSize,
-        chanType, rank, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPassThru);
+    return emuSetSamplerArray
+    (
+        sampler,
+        arrayAddr,
+        arrayByteSize,
+        chanType,
+        rank,
+        borderMode,
+        linearInterpolation,
+        readNormalizedFloat,
+        normalizedCoords,
+        stdPassThru
+    );
 }
 
 //================================================================
@@ -848,8 +859,20 @@ stdbool EmuExecApiThunk::setSamplerImageEx
     stdParsNull
 )
 {
-    return emuSetSamplerImage(sampler, imageBaseAddr, imageBytePitch, imageSize, chanType, rank,
-        borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPassThru);
+    return emuSetSamplerImage
+    (
+        sampler,
+        imageBaseAddr,
+        imageBytePitch,
+        imageSize,
+        chanType,
+        rank,
+        borderMode,
+        linearInterpolation,
+        readNormalizedFloat,
+        normalizedCoords,
+        stdPassThru
+    );
 }
 
 //================================================================

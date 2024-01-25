@@ -356,8 +356,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
                 packTestPass = 0;
             }
         }
-  }
-
+    }
 
     ////
 

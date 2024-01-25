@@ -98,6 +98,14 @@
 //
 // stdPassNc*
 //
+// A family of macros similar to `stdPass*`, but with the Nc suffix,
+// which means "no check". These are used for compilation in an error
+// handling mode "boolean flag by reference", where the usual stdPass*
+// macros perform an error flag check and execute return. Such behavior
+// is not always suitable, at the least it does not fit for catching
+// errors in the errorBlock() construct.
+// Therefore, the `stdPass*Nc` family exists.
+//
 //================================================================
 
 #define stdPassExNc(kit, location) \
@@ -113,9 +121,6 @@
 #define stdPassKitNc(kit) \
     stdPassExNc(kit, TRACE_AUTO_LOCATION)
 
-#define stdPassLocationMsgNc(msg) \
-    stdPassExNc(kit, TRACE_AUTO_LOCATION_MSG(msg))
-
 //----------------------------------------------------------------
 
 #define stdPassNoProfilingNc \
@@ -126,11 +131,6 @@
 //----------------------------------------------------------------
 
 #define stdPassThruNc \
-    kit, \
-    ERROR_HANDLING_PASS \
-    TRACE_PASSTHRU(trace)
-
-#define stdPassThruKitNc(kit) \
     kit, \
     ERROR_HANDLING_PASS \
     TRACE_PASSTHRU(trace)

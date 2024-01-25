@@ -99,4 +99,4 @@ GET_SIZE_DEFINE(PREP_PASS2(ArrayMemoryStatic<Type, maxSize>), value.size())
 #define ARRAY_STATIC_ALLOC(name, Type, maxSize, size) \
     \
     ArrayMemoryStatic<Type, maxSize> name; \
-    require(name.realloc(size, stdPass))
+    require(name.realloc(size, stdPass));

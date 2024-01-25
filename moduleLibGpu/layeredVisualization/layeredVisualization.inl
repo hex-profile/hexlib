@@ -153,10 +153,10 @@ stdbool convertIndependentPresenceToAdditive
                 square(fastRecipZero(vectorProximity)), \
                 stdPass \
             ) \
-        ) \
+        ); \
 
     #define TMP_MACRO2(n, _) \
-        if (layers == n) TMP_MACRO(n); else
+        if (layers == n) {TMP_MACRO(n)} else
 
     PREP_FOR1_FROM1_TO_COUNT(VISUALIZATION_MAX_LAYERS, TMP_MACRO2, _)
     REQUIRE(false);

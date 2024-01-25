@@ -1,18 +1,19 @@
 #include "testShell.h"
 
-#include "storage/classThunks.h"
 #include "cfg/cfgInterface.h"
 #include "compileTools/classContext.h"
+#include "storage/classThunks.h"
+#include "tests/atanTest/atanTest.h"
+#include "tests/exceptionTest/exceptionTest.h"
+#include "tests/fontTest/fontTest.h"
+#include "tests/formatTest/formatTest.h"
+#include "tests/fourierFilterBank/fourierFilterBank.h"
+#include "tests/gaussPresentationTest/gaussPresentationTest.h"
+#include "tests/mallocTest/mallocTest.h"
+#include "tests/popCountTest/popCountTest.h"
+#include "tests/quatGenTest/quatGenTest.h"
 #include "tests/resamplingTest/resamplingTest.h"
 #include "tests/rotation3dTest/rotation3dTest.h"
-#include "tests/gaussPresentationTest/gaussPresentationTest.h"
-#include "tests/fourierFilterBank/fourierFilterBank.h"
-#include "tests/mallocTest/mallocTest.h"
-#include "tests/exceptionTest/exceptionTest.h"
-#include "tests/formatTest/formatTest.h"
-#include "tests/atanTest/atanTest.h"
-#include "tests/quatGenTest/quatGenTest.h"
-#include "tests/popCountTest/popCountTest.h"
 
 namespace testShell {
 
@@ -42,6 +43,7 @@ private:
     UniqueInstance<QuatGenTest> quatGenTest;
     UniqueInstance<PopCountTest> popCountTest;
     UniqueInstance<ExceptionTest> exceptionTest;
+    UniqueInstance<FontTest> fontTest;
 
 };
 
@@ -106,6 +108,11 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
         {
             CFG_NAMESPACE("Exception Test");
             exceptionTest->serialize(kit);
+        }
+
+        {
+            CFG_NAMESPACE("Font Test");
+            fontTest->serialize(kit);
         }
     }
 }
@@ -182,6 +189,12 @@ stdbool TestShellImpl::process(Process& baseProcess, stdPars(ProcessKit))
     if (exceptionTest->active())
     {
         require(exceptionTest->process(stdPass));
+        returnTrue;
+    }
+
+    if (fontTest->active())
+    {
+        require(fontTest->process(stdPass));
         returnTrue;
     }
 

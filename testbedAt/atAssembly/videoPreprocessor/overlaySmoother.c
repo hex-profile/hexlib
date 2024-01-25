@@ -492,7 +492,7 @@ stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
 
     ////
 
-    for (;;)
+    for (; ;)
     {
 
         {
@@ -829,7 +829,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     //
     //----------------------------------------------------------------
 
-    for (;;)
+    for (; ;)
     {
         {
             MUTEX_GUARD(shared.queueLock);
@@ -1087,7 +1087,7 @@ stdbool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
     //
     //----------------------------------------------------------------
 
-    for (;;)
+    for (; ;)
     {
         {
             MUTEX_GUARD(shared.queueLock);

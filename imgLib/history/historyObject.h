@@ -231,13 +231,13 @@ public:
 
     sysinline Type* operator [](Space index) // [0, size)
     {
-        ARRAY_EXPOSE(buffer);
+        ARRAY_EXPOSE_UNSAFE(buffer);
         return access(bufferPtr, bufferSize, index);
     }
 
     sysinline const Type* operator [](Space index) const // [0, size)
     {
-        ARRAY_EXPOSE(buffer);
+        ARRAY_EXPOSE_UNSAFE(buffer);
         return access(bufferPtr, bufferSize, index);
     }
 
