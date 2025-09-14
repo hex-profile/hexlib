@@ -29,7 +29,7 @@
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const ColorPixel>& image, stdNullPars)
+stdbool GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& image, stdNullPars)
 {
     Space absPitch = absv(image.memPitch());
     REQUIRE(image.sizeX() <= absPitch);
@@ -66,10 +66,10 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrix<const ColorPixel>& image,
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::saveBgr32(const Matrix<ColorPixel>& dest, stdNullPars)
+stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdNullPars)
 {
-    GpuMatrix<const ColorPixel> src = gpuImage;
-    Matrix<ColorPixel> dst = dest;
+    auto src = gpuImage;
+    auto dst = dest;
 
     ////
 
@@ -95,7 +95,8 @@ stdbool GpuBaseImageProvider::saveBgr32(const Matrix<ColorPixel>& dest, stdNullP
         REQUIRE(dest.sizeX() <= absPitch);
         REQUIRE(absPitch * dest.sizeY() <= bufferSize);
 
-        GpuMatrix<ColorPixel> srcProper(bufferPtr, absPitch, dest.sizeX(), dest.sizeY());
+        GpuMatrixAP<ColorPixel> srcProper;
+        REQUIRE(srcProper.assignValidated(bufferPtr, absPitch, dest.sizeX(), dest.sizeY()));
 
         ////
 
@@ -123,7 +124,7 @@ stdbool GpuBaseImageProvider::saveBgr32(const Matrix<ColorPixel>& dest, stdNullP
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::saveBgr24(const Matrix<MonoPixel>& dest, stdNullPars)
+stdbool GpuBaseImageProvider::saveBgr24(const MatrixAP<MonoPixel>& dest, stdNullPars)
 {
     auto src = gpuImage;
     auto dst = dest;
@@ -154,7 +155,8 @@ stdbool GpuBaseImageProvider::saveBgr24(const Matrix<MonoPixel>& dest, stdNullPa
 
     REQUIRE(absPitch * dest.sizeY() <= bufferSize);
 
-    GpuMatrix<MonoPixel> srcProper(bufferPtr, absPitch, dest.sizeX(), dest.sizeY());
+    GpuMatrixAP<MonoPixel> srcProper;
+    REQUIRE(srcProper.assignValidated(bufferPtr, absPitch, dest.sizeX(), dest.sizeY()));
 
     ////
 
@@ -184,7 +186,7 @@ stdbool GpuBaseImageProvider::saveBgr24(const Matrix<MonoPixel>& dest, stdNullPa
 //================================================================
 
 template <typename Type>
-stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit))
+stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrixAP<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit))
 {
     if (hint.target == ImgOutputOverlay)
     {
@@ -200,7 +202,7 @@ stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& 
         //
 
         MATRIX_ALLOC_FOR_GPU_EXCH(cpuMatrixMemory, Type, gpuMatrix.size());
-        Matrix<Type> cpuMatrix = cpuMatrixMemory;
+        auto cpuMatrix = relaxToAnyPitch(cpuMatrixMemory);
 
         //
         // Copy the matrix to CPU
@@ -214,7 +216,7 @@ stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrix<const Type>& 
             else
             {
                 require(copyMatrixAsArray(flipMatrix(gpuMatrix), cpuMatrixMemory, gpuCopy, stdPass));
-                cpuMatrix = flipMatrix(cpuMatrixMemory);
+                cpuMatrix = flipMatrix(cpuMatrixMemory());
             }
         }
 
@@ -244,7 +246,7 @@ INSTANTIATE_FUNC(GpuBaseConsoleByCpuThunk::addImageCopyImpl<uint8_x4>)
 stdbool GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
 {
     GPU_MATRIX_ALLOC(gpuImageMemory, uint8_x4, size);
-    GpuMatrix<uint8_x4> gpuImage = flipMatrix(gpuImageMemory);
+    auto gpuImage = flipMatrix(gpuImageMemory);
     require(img.saveImage(gpuImage, stdPass));
 
     ////

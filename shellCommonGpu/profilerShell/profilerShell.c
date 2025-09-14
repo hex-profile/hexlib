@@ -1,14 +1,16 @@
 #include "profilerShell.h"
 
+#include "dataAlloc/arrayObjectMemory.inl"
+#include "errorLog/errorLog.h"
 #include "profilerShell/profilerReport/profilerReport.h"
 #include "profilerShell/profilerReport/quickReport.h"
+#include "simpleString/simpleString.h"
+#include "storage/rememberCleanup.h"
 #include "userOutput/msgLogKit.h"
-#include "errorLog/errorLog.h"
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
 #include "userOutput/printMsgEx.h"
-#include "simpleString/simpleString.h"
-#include "storage/rememberCleanup.h"
+#include "numbers/mathIntrinsics.h"
 
 //================================================================
 //
@@ -22,7 +24,9 @@ void ProfilerShell::serialize(const CfgSerializeKit& kit, bool hotkeys)
 
     {
         CFG_NAMESPACE("Profiling");
-        displayFrameTime.serialize(kit, STR("Display Frame Time"), HOTSTR("Ctrl+T"));
+
+        ftmDisplayed.serialize(kit, STR("Frame Time Info"), HOTSTR("Ctrl+T"));
+        ftmHalfLife.serialize(kit, STR("Frame Time Smoothing Period"), STR("In seconds"));
 
         profilerActiveSteady = profilerActive.serialize(kit, STR("Profiler Active"), HOTSTR("Alt+P"));
 
@@ -53,7 +57,6 @@ stdbool ProfilerShell::init(stdPars(InitKit))
     deinit(); // deinit and reset to zero
 
     require(profilerImpl.realloc(profilerCapacity, stdPass));
-    require(frameTimeHist.realloc(frameTimeHistCapacity, stdPass));
 
     returnTrue;
 }
@@ -158,6 +161,36 @@ void ProfilerShell::leaveExternalScope()
 
 //================================================================
 //
+// ProfilerShell::ftmUpdate
+//
+//================================================================
+
+stdbool ProfilerShell::ftmUpdate(float32 frameTime, stdPars(ErrorLogKit))
+{
+    REQUIRE(frameTime >= 0);
+
+    ////
+
+    ftmLastTime = frameTime;
+
+    ////
+
+    auto periods = clampMin(convertUp<Space>(frameTime * ftmDivResolutionPeriod), 1);
+    auto actualPeriod = frameTime * fastRecip(float32(periods));
+    auto weight = clampMax(actualPeriod * ftmDivResolutionPeriod, 1.f);
+
+    ////
+
+    auto temporalFactor = tpf::TemporalFactor(ftmHalfLife * ftmDivResolutionPeriod, ftmStages);
+
+    for_count (i, periods)
+        ftmFilter.add(weight, frameTime, temporalFactor);
+
+    returnTrue;
+}
+
+//================================================================
+//
 // ProfilerShell::process
 //
 //================================================================
@@ -170,38 +203,22 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     //
     //----------------------------------------------------------------
 
-    breakBlock_
+    auto frameTimeReport = [&] ()
     {
-        breakRequire(displayFrameTime);
+        if_not (ftmDisplayed)
+            returnTrue;
 
-        Space frameTimeCount = frameTimeHist.size();
+        float32 avgTime = ftmFilter();
 
-        float32 totalTime = 0;
-        Space totalCount = 0;
+        printMsg(kit.localLog, STR("% fps, cycle % ms, last % ms"),
+            fltf(1.f / avgTime, 1), fltf(avgTime * 1e3, 1), fltf(ftmLastTime * 1e3, 1));
 
-        for_count (k, frameTimeCount)
-        {
-            float32* t = frameTimeHist[k];
-            if (t == 0) break;
+        returnTrue;
+    };
 
-            totalTime += *t;
-            totalCount += 1;
+    ////
 
-            if (totalTime >= 1.f) break;
-        }
-
-        float32 lastTime = float32Nan();
-
-        if (frameTimeCount >= 1)
-        {
-            float32* t = frameTimeHist[0];
-            if (t) lastTime = *t;
-        }
-
-        float32 avgTime = totalTime / float32(totalCount);
-
-        printMsg(kit.localLog, STR("Frame time %0 ms / %1 fps"), fltf(lastTime * 1e3, 2), fltf(1.f / avgTime, 1));
-    }
+    errorBlock(frameTimeReport());
 
     //----------------------------------------------------------------
     //
@@ -234,8 +251,8 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     }
     else
     {
-        TimeMoment processBeg = kit.timer.moment();
-        REMEMBER_CLEANUP(*frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment()));
+        TimeMoment processStart = kit.timer.moment();
+        REMEMBER_CLEANUP(errorBlock(ftmUpdate(kit.timer.diff(processStart, kit.timer.moment()), stdPass)));
 
         require(target(stdPassKit(ProfilerKit(nullptr))));
         returnTrue;
@@ -260,9 +277,10 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     {
         ProfilerThunk profilerThunk(profilerImpl);
 
-        TimeMoment processBeg = kit.timer.moment();
+        TimeMoment processStart = kit.timer.moment();
+        REMEMBER_CLEANUP(errorBlock(ftmUpdate(kit.timer.diff(processStart, kit.timer.moment()), stdPass)));
+
         processOk = errorBlock(target(stdPassKit(ProfilerKit(&profilerThunk))));
-        *frameTimeHist.add() = kit.timer.diff(processBeg, kit.timer.moment());
 
         CHECK(profilerImpl.checkResetScope());
         ++cycleCount;
@@ -277,14 +295,9 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     {
         CHECK(profilerImpl.checkResetScope());
 
-        TimeMoment reportBegin = kit.timer.moment();
-
         auto kitEx = kitReplace(kit, MsgLogKit(kit.localLog));
 
         errorBlock(profilerQuickReport::namedNodesReport(profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(), cycleCount, processingThroughput, stdPassKit(kitEx)));
-
-        float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
-        // printMsg(kit.localLog, STR("Profiler Quick Report %0 ms"), fltf(reportTime * 1e3f, 2), msgWarn);
     }
 
     //----------------------------------------------------------------

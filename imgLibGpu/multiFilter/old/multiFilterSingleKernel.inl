@@ -30,7 +30,7 @@
 #if DEVCODE
 
 template <typename Dst>
-devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermParams<Dst>& o, devPars)
+sysinline void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermParams<Dst>& o, devPars)
 {
     typedef VECTOR_REBASE(Dst, float32) FloatType;
 
@@ -190,7 +190,7 @@ devDecl void PREP_PASTE4(FUNCNAME, Interm, DIR(Hor, Ver), RANK)(const IntermPara
 #if DEVCODE
 
 template <typename Dst>
-devDecl void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams<Dst>& o, devPars)
+sysinline void PREP_PASTE4(FUNCNAME, Final, DIR(Hor, Ver), RANK)(const FinalParams<Dst>& o, devPars)
 {
     typedef VECTOR_REBASE(Dst, float32) FloatType;
 

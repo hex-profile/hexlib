@@ -120,7 +120,7 @@ public:
         REQUIRE(sizeof(Element) == currentElemSize);
 
         using GpuElementPtr = GpuPtr(Element);
-        REQUIRE(result.assign(GpuElementPtr(computeAddress), currentPitch, currentSize.X, currentSize.Y));
+        REQUIRE(result.assignValidated(GpuElementPtr(computeAddress), currentPitch, currentSize.X, currentSize.Y));
 
         returnTrue;
     }

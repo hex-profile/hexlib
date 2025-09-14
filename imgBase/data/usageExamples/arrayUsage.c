@@ -22,10 +22,8 @@ stdbool arrayUsage(stdPars(ErrorLogKit))
     Array<const int> anotherConstArray = makeConst(intArray);
 
     // Construct array from details: ptr and size.
-    Array<const uint8> example(srcPtr, srcSize);
-
-    // Setup array from details: ptr and size.
-    example.assign(srcPtr, srcSize);
+    Array<const uint8> example;
+    REQUIRE(example.assignValidated(srcPtr, srcSize));
 
     // Make the array empty:
     example.assignNull();

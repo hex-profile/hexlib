@@ -183,7 +183,7 @@ struct Kit_ValueReader
         struct Kit_ReaderSelector \
         { \
             static constexpr bool isKit = Kit_IsConvertible<Type, Kit_FieldTag<name##_Tag>>::value; \
-            using T = TYPE_SELECT(isKit, Kit_FieldReader<Type>, Kit_ValueReader<Type>); \
+            using T = TypeSelect<isKit, Kit_FieldReader<Type>, Kit_ValueReader<Type>>; \
         }; \
         \
         template <typename Type> \

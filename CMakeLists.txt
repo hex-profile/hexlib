@@ -36,7 +36,3 @@ if (WIN32)
 endif()
 
 add_subdirectory(testbedGL)
-
-if ($ENV{HEXLIB_ARCHIVE_PROJECTS})
-    add_subdirectory(archive)
-endif()

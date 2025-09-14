@@ -204,7 +204,7 @@ public:
 //
 //================================================================
 
-GPUTOOL_2D
+GPUTOOL_2D_AP
 (
     convertToFloatPixel,
     PREP_EMPTY,

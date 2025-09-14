@@ -1,197 +1,146 @@
 #pragma once
 
-#include "vectorTypes/vectorType.h"
-#include "data/gpuPtr.h"
-#include "imageRead/loadMode.h"
 #include "gpuDevice/loadViaSamplerCache.h"
+#include "imageRead/loadMode.h"
+#include "vectorTypes/vectorType.h"
+#include "dbgptr/dbgptrProtos.h"
 
 //================================================================
 //
-// loadNormCore<float32>
+// ImportNormalizedValue
 //
 //================================================================
 
-template <typename LoadElement>
-sysinline float32 loadNormCore(const float32* src)
-    {return LoadElement::func(src);}
+template <typename Src>
+struct ImportNormalizedValue;
 
-template <typename LoadElement>
-sysinline float32_x2 loadNormCore(const float32_x2* src)
-    {return LoadElement::func(src);}
+////
 
-template <typename LoadElement>
-sysinline float32_x4 loadNormCore(const float32_x4* src)
-    {return LoadElement::func(src);}
+template <typename Src>
+sysinline auto importNormalizedValue(const Src& src)
+    {return ImportNormalizedValue<Src>::func(src);}
 
 //================================================================
 //
-// loadNormCore<float16>
+// ImportNormalizedValue<FLOAT>
 //
 //================================================================
 
-template <typename LoadElement>
-sysinline float32 loadNormCore(const float16* src)
-    {return convertFloat32(LoadElement::func(src));}
+template <>
+struct ImportNormalizedValue<float16>
+{
+    static sysinline float32 func(const float16& value)
+        {return convertFloat32(value);}
+};
 
-template <typename LoadElement>
-sysinline float32_x2 loadNormCore(const float16_x2* src)
-    {return convertFloat32(LoadElement::func(src));}
-
-template <typename LoadElement>
-sysinline float32_x4 loadNormCore(const float16_x4* src)
-    {return convertFloat32(LoadElement::func(src));}
+template <>
+struct ImportNormalizedValue<float32>
+{
+    static sysinline float32 func(const float32& value)
+        {return value;}
+};
 
 //================================================================
 //
-// loadNormCore<uint8>
+// ImportNormalizedValue<INT>
 //
 //================================================================
 
-template <typename LoadElement>
-sysinline float32 loadNormCore(const uint8* src)
+template <>
+struct ImportNormalizedValue<int8>
 {
-    return (LoadElement::func(src)) * (1.f / 0xFF);
-}
+    static sysinline float32 func(const int8& value)
+        {return value * (1.f / 0x7F);}
+};
 
-template <typename LoadElement>
-sysinline float32_x2 loadNormCore(const uint8_x2* src)
+template <>
+struct ImportNormalizedValue<int16>
 {
-    uint8_x2 value = LoadElement::func(src);
+    static sysinline float32 func(const int16& value)
+        {return value * (1.f / 0x7FFF);}
+};
 
-    return make_float32_x2
-    (
-        value.x * (1.f / 0xFF),
-        value.y * (1.f / 0xFF)
-    );
-}
+//----------------------------------------------------------------
 
-template <typename LoadElement>
-sysinline float32_x4 loadNormCore(const uint8_x4* src)
+template <>
+struct ImportNormalizedValue<uint8>
 {
-    uint8_x4 value = LoadElement::func(src);
+    static sysinline float32 func(const uint8& value)
+        {return value * (1.f / 0xFF);}
+};
 
-    return make_float32_x4
-    (
-        value.x * (1.f / 0xFF),
-        value.y * (1.f / 0xFF),
-        value.z * (1.f / 0xFF),
-        value.w * (1.f / 0xFF)
-    );
-}
+template <>
+struct ImportNormalizedValue<uint16>
+{
+    static sysinline float32 func(const uint16& value)
+        {return value * (1.f / 0xFFFF);}
+};
 
 //================================================================
 //
-// loadNormCore<int8>
+// ImportNormalizedValue<VEC2>
 //
 //================================================================
 
-template <typename LoadElement>
-sysinline float32 loadNormCore(const int8* src)
-{
-    return (LoadElement::func(src)) * (1.f / 0x7F);
-}
+#define TMP_MACRO(Type) \
+    \
+    template <> \
+    struct ImportNormalizedValue<Type> \
+    { \
+        static sysinline auto func(const Type& value) \
+        { \
+            return makeVec2 \
+            ( \
+                ImportNormalizedValue<decltype(value.x)>::func(value.x), \
+                ImportNormalizedValue<decltype(value.y)>::func(value.y) \
+            ); \
+        } \
+    };
 
-template <typename LoadElement>
-sysinline float32_x2 loadNormCore(const int8_x2* src)
-{
-    int8_x2 value = LoadElement::func(src);
+TMP_MACRO(int8_x2)
+TMP_MACRO(int16_x2)
 
-    return make_float32_x2
-    (
-        value.x * (1.f / 0x7F),
-        value.y * (1.f / 0x7F)
-    );
-}
+TMP_MACRO(uint8_x2)
+TMP_MACRO(uint16_x2)
 
-template <typename LoadElement>
-sysinline float32_x4 loadNormCore(const int8_x4* src)
-{
-    int8_x4 value = LoadElement::func(src);
+TMP_MACRO(float16_x2)
+TMP_MACRO(float32_x2)
 
-    return make_float32_x4
-    (
-        value.x * (1.f / 0x7F),
-        value.y * (1.f / 0x7F),
-        value.z * (1.f / 0x7F),
-        value.w * (1.f / 0x7F)
-    );
-}
+#undef TMP_MACRO
 
 //================================================================
 //
-// loadNormCore<int16>
+// ImportNormalizedValue<VEC4>
 //
 //================================================================
 
-template <typename LoadElement>
-sysinline float32 loadNormCore(const uint16* src)
-{
-    return (LoadElement::func(src)) * (1.f / 0xFFFF);
-}
+#define TMP_MACRO(Type) \
+    \
+    template <> \
+    struct ImportNormalizedValue<Type> \
+    { \
+        static sysinline auto func(const Type& value) \
+        { \
+            return makeVec4 \
+            ( \
+                ImportNormalizedValue<decltype(value.x)>::func(value.x), \
+                ImportNormalizedValue<decltype(value.y)>::func(value.y), \
+                ImportNormalizedValue<decltype(value.z)>::func(value.z), \
+                ImportNormalizedValue<decltype(value.w)>::func(value.w) \
+            ); \
+        } \
+    };
 
-template <typename LoadElement>
-sysinline float32_x2 loadNormCore(const uint16_x2* src)
-{
-    uint16_x2 value = LoadElement::func(src);
+TMP_MACRO(int8_x4)
+TMP_MACRO(int16_x4)
 
-    return make_float32_x2
-    (
-        value.x * (1.f / 0xFFFF),
-        value.y * (1.f / 0xFFFF)
-    );
-}
+TMP_MACRO(uint8_x4)
+TMP_MACRO(uint16_x4)
 
-template <typename LoadElement>
-sysinline float32_x4 loadNormCore(const uint16_x4* src)
-{
-    uint16_x4 value = LoadElement::func(src);
+TMP_MACRO(float16_x4)
+TMP_MACRO(float32_x4)
 
-    return make_float32_x4
-    (
-        value.x * (1.f / 0xFFFF),
-        value.y * (1.f / 0xFFFF),
-        value.z * (1.f / 0xFFFF),
-        value.w * (1.f / 0xFFFF)
-    );
-}
-
-//================================================================
-//
-// loadNormCore<int16>
-//
-//================================================================
-
-template <typename LoadElement>
-sysinline float32 loadNormCore(const int16* src)
-{
-    return (LoadElement::func(src)) * (1.f / 0x7FFF);
-}
-
-template <typename LoadElement>
-sysinline float32_x2 loadNormCore(const int16_x2* src)
-{
-    int16_x2 value = LoadElement::func(src);
-
-    return make_float32_x2
-    (
-        value.x * (1.f / 0x7FFF),
-        value.y * (1.f / 0x7FFF)
-    );
-}
-
-template <typename LoadElement>
-sysinline float32_x4 loadNormCore(const int16_x4* src)
-{
-    int16_x4 value = LoadElement::func(src);
-
-    return make_float32_x4
-    (
-        value.x * (1.f / 0x7FFF),
-        value.y * (1.f / 0x7FFF),
-        value.z * (1.f / 0x7FFF),
-        value.w * (1.f / 0x7FFF)
-    );
-}
+#undef TMP_MACRO
 
 //================================================================
 //
@@ -202,11 +151,11 @@ sysinline float32_x4 loadNormCore(const int16_x4* src)
 template <typename Pointer>
 sysinline auto loadNorm(Pointer srcPtr)
 {
-    return loadNormCore<LoadNormal>(unsafePtr(srcPtr, 1));
+    return importNormalizedValue(helpRead(*srcPtr));
 }
 
 template <typename Pointer>
 sysinline auto loadNormViaSamplerCache(Pointer srcPtr)
 {
-    return loadNormCore<LoadViaSamplerCache>(unsafePtr(srcPtr, 1));
+    return importNormalizedValue(loadViaSamplerCache(&helpRead(*srcPtr)));
 }

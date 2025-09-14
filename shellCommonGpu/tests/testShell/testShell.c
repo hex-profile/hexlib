@@ -8,8 +8,11 @@
 #include "tests/gaussPresentationTest/gaussPresentationTest.h"
 #include "tests/fourierFilterBank/fourierFilterBank.h"
 #include "tests/mallocTest/mallocTest.h"
+#include "tests/exceptionTest/exceptionTest.h"
 #include "tests/formatTest/formatTest.h"
 #include "tests/atanTest/atanTest.h"
+#include "tests/quatGenTest/quatGenTest.h"
+#include "tests/popCountTest/popCountTest.h"
 
 namespace testShell {
 
@@ -36,6 +39,9 @@ private:
     UniqueInstance<MallocTest> mallocTest;
     UniqueInstance<AtanTest> atanTest;
     UniqueInstance<FormatTest> formatTest;
+    UniqueInstance<QuatGenTest> quatGenTest;
+    UniqueInstance<PopCountTest> popCountTest;
+    UniqueInstance<ExceptionTest> exceptionTest;
 
 };
 
@@ -85,6 +91,21 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
         {
             CFG_NAMESPACE("Format Test");
             formatTest->serialize(kit);
+        }
+
+        {
+            CFG_NAMESPACE("QuatGen Test");
+            quatGenTest->serialize(kit);
+        }
+
+        {
+            CFG_NAMESPACE("Pop Count Test");
+            popCountTest->serialize(kit);
+        }
+
+        {
+            CFG_NAMESPACE("Exception Test");
+            exceptionTest->serialize(kit);
         }
     }
 }
@@ -143,6 +164,24 @@ stdbool TestShellImpl::process(Process& baseProcess, stdPars(ProcessKit))
     if (formatTest->active())
     {
         require(formatTest->process(stdPass));
+        returnTrue;
+    }
+
+    if (quatGenTest->active())
+    {
+        require(quatGenTest->process(stdPass));
+        returnTrue;
+    }
+
+    if (popCountTest->active())
+    {
+        require(popCountTest->process(stdPass));
+        returnTrue;
+    }
+
+    if (exceptionTest->active())
+    {
+        require(exceptionTest->process(stdPass));
         returnTrue;
     }
 

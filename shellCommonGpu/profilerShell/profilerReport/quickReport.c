@@ -166,7 +166,7 @@ public:
             userName.size ? userName : charArrayFromPtr(scope.location),
             paramMsg('$', deviceMode ? STR("Device $%") : (pureTime ? STR("Body") : STR("Time")), fltf(deviceFraction * 1e2f, 0)),
             paramMsg(!perCycleCountImportant ? STR("% ms") : STR("% ms x % fraction"), fltf(avgTimeMs, 3), fltf(avgPerCycleCount, 1)),
-            paramMsg(avgElemTime == 0 ? STR("") : STR(" (% us/elem)"), prettyNumber(fltg(avgElemTime * 1e6f, 3)), fltf(sqrtf(avgElemCount), 0)),
+            paramMsg(avgElemTime == 0 ? STR("") : STR(" (% us/elem)"), prettyNumber(avgElemTime * 1e6f), fltf(sqrtf(avgElemCount), 0)),
             fltf(timePercentage, 1)
         );
 

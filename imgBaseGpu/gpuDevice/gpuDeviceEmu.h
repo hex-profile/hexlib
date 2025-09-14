@@ -1,14 +1,14 @@
 #pragma once
 
 #include "charType/charType.h"
+#include "data/array.h"
 #include "errorLog/errorLog.h"
 #include "kit/kit.h"
-#include "data/space.h"
-#include "storage/addrSpace.h"
-#include "point/point.h"
-#include "storage/typeAlignment.h"
-#include "point3d/point3dBase.h"
 #include "numbers/divRoundCompile.h"
+#include "point/point.h"
+#include "point3d/point3dBase.h"
+#include "storage/addrSpace.h"
+#include "storage/typeAlignment.h"
 
 //================================================================
 //
@@ -48,6 +48,14 @@ struct EmuKernelTools
 
 //================================================================
 //
+// EmuMaxWarpIntrinsicsType
+//
+//================================================================
+
+using EmuMaxWarpIntrinsicsType = uint64;
+
+//================================================================
+//
 // EmuSharedParams
 //
 // Shared emu thread parameters, to save space.
@@ -59,6 +67,7 @@ struct EmuSharedParams
     Point<Space> threadCount;
     Point3D<Space> groupIdx;
     Point3D<Space> groupCount;
+    Array<EmuMaxWarpIntrinsicsType> warpIntrinsicsMemory;
     EmuKernelTools& kernelTools;
 };
 
@@ -192,7 +201,7 @@ struct GpuKernelLink
 
 #define devDefineKernel(func, Params, params) \
     static void PREP_PASTE(func, Code)(const Params& params, EmuParams& emuParams); \
-    namespace {const GpuKernelLink func = {(EmuKernelFunc*) PREP_PASTE(func, Code)};} \
+    namespace {const GpuKernelLink func = {(EmuKernelFunc*) (void*) PREP_PASTE(func, Code)};} \
     void PREP_PASTE(func, Code)(const Params& params, EmuParams& emuParams)
 
 //----------------------------------------------------------------
@@ -202,10 +211,6 @@ struct GpuKernelLink
 
 //================================================================
 //
-// devDecl
-//
-// Function modifier that makes the function device-only.
-//
 // devPars
 // devPass
 //
@@ -213,8 +218,6 @@ struct GpuKernelLink
 // for top-level (kernel-level) device functions.
 //
 //================================================================
-
-#define devDecl
 
 #define devPars \
     EmuParams& emuParams
@@ -348,6 +351,8 @@ struct GpuKernelLink
 //================================================================
 
 #define devWarpSize 32
+#define devWarpMask 0xFFFFFFFF
+
 #define devSramBankPeriod (32*4)
 
 //================================================================
@@ -388,9 +393,10 @@ struct GpuKernelLink
 #define devSramMatrixEx(name, Type, sizeX, sizeY, memPitch) \
     \
     COMPILE_ASSERT((sizeX) >= 0 && (sizeY) >= 0); \
-    COMPILE_ASSERT((sizeX) <= (memPitch)); \
+    COMPILE_ASSERT((memPitch) >= (sizeX)); \
     \
-    enum {name##MemPitch = (memPitch)}; \
+    static constexpr Space name##MemPitch = (memPitch); \
+    static constexpr bool name##PitchIsNonNeg = true; \
     CpuAddrU name##Addr = emuParams.sramAllocator.alloc(name##MemPitch * (sizeY) * sizeof(Type)); \
     devDebugCheck(name##Addr != 0); \
     auto name##MemPtr = MatrixPtrCreate(Type, (Type*) name##Addr, name##MemPitch, sizeX, sizeY, DbgptrMatrixPreconditions())
@@ -447,10 +453,78 @@ struct GpuSramPitchFor2dAccess
 
 //================================================================
 //
-// devWarpAll
-//
-// Warp vote functions, to avoid branch divergence.
+// devPopCount
 //
 //================================================================
 
-#define devWarpAll(cond) (cond)
+template <typename Type>
+sysinline int devPopCount(const Type& value)
+    MISSING_FUNCTION_BODY
+
+//----------------------------------------------------------------
+
+template <>
+sysinline int devPopCount(const uint32& value)
+{
+    auto n = value;
+
+    // Split the 32-bit number into groups of 2 bits and add them up
+    n = (n & 0x55555555) + ((n >> 1) & 0x55555555);
+
+    // Split the 32-bit number into groups of 4 bits and add them up
+    n = (n & 0x33333333) + ((n >> 2) & 0x33333333);
+
+    // Split the 32-bit number into groups of 8 bits and add them up
+    n = (n & 0x0F0F0F0F) + ((n >> 4) & 0x0F0F0F0F);
+
+    // Split the 32-bit number into groups of 16 bits and add them up
+    n = (n & 0x00FF00FF) + ((n >> 8) & 0x00FF00FF);
+
+    // Sum the results of the two 16-bit groups
+    n = (n & 0x0000FFFF) + (n >> 16);
+
+    return n;
+}
+
+//================================================================
+//
+// Warp intrinsics.
+//
+//================================================================
+
+uint32 warpPredicateImpl(bool pred, devPars);
+
+#define devWarpPredicate(pred) \
+    warpPredicateImpl(pred, devPass)
+
+//----------------------------------------------------------------
+
+template <typename Type>
+Type readLaneBorderWrapImpl(const Type& value, int lane, devPars);
+
+#define devReadLaneBorderWrap(value, lane) \
+    readLaneBorderWrapImpl(value, lane, devPass)
+
+//----------------------------------------------------------------
+
+template <typename Type>
+Type readLaneAddBorderClampImpl(const Type& value, int delta, devPars);
+
+#define devReadLaneAddBorderClamp(value, delta) \
+    readLaneAddBorderClampImpl(value, delta, devPass)
+
+//----------------------------------------------------------------
+
+template <typename Type>
+Type readLaneSubBorderClampImpl(const Type& value, int delta, devPars);
+
+#define devReadLaneSubBorderClamp(value, delta) \
+    readLaneSubBorderClampImpl(value, delta, devPass)
+
+//----------------------------------------------------------------
+
+template <typename Type>
+Type readLaneXorImpl(const Type& value, int32 mask, devPars);
+
+#define devReadLaneXor(value, mask) \
+    readLaneXorImpl(value, mask, devPass)

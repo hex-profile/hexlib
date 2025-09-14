@@ -115,7 +115,7 @@ void GpuShellImpl::serialize(const CfgSerializeKit& kit, bool hotkeys)
     {
         CFG_NAMESPACE("GPU Shell");
 
-        gpuEnqueueModeCycle.serialize(kit, STR("GPU Skip Mode"), hotkeys ? STR("Alt+.") : STR(""));
+        gpuEnqueueModeCycle.serialize(kit, STR("GPU Skip Mode"), hotkeys ? STR("Ctrl+Alt+Shift+.") : STR(""));
         gpuEnqueueModeVar = (gpuEnqueueModeVar + gpuEnqueueModeCycle) % 3;
 
         gpuCoverageModeVar.serialize(kit, STR("GPU Coverage Mode"), hotkeys ? STR("Ctrl+.") : STR(""));
@@ -142,7 +142,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
     GpuThreadContextSave contextSave;
 
     require(kit.gpuInitApi.threadContextSet(kit.gpuCurrentContext, contextSave, stdPass));
-    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(errorBlock(kit.gpuInitApi.threadContextRestore(contextSave, stdPass))));
+    REMEMBER_CLEANUP_ERROR_BLOCK(kit.gpuInitApi.threadContextRestore(contextSave, stdPass));
 
     //----------------------------------------------------------------
     //

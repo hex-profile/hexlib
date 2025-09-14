@@ -314,8 +314,8 @@ TMP_COPY_ARRAY_INLINE(copyArrayGpuGpu, GpuAddrU, GpuAddrU, GpuPtr, GpuPtr, true)
 
 #define TMP_COPY_MATRIX_INLINE(funcName, SrcAddr, DstAddr, SrcPtr, DstPtr, pureGpuValue) \
     \
-    template <typename Src, typename Dst, typename Kit> \
-    inline stdbool enqueueCopy(const MatrixEx<SrcPtr(Src)>& src, const MatrixEx<DstPtr(Dst)>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
+    template <typename Src, typename SrcPitch, typename Dst, typename DstPitch, typename Kit> \
+    inline stdbool enqueueCopy(const MatrixEx<SrcPtr(Src), SrcPitch>& src, const MatrixEx<DstPtr(Dst), DstPitch>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
     { \
         COMPILE_ASSERT(TYPE_EQUAL(Src, Dst) || TYPE_EQUAL(Src, const Dst)); \
         \

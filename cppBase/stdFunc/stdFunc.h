@@ -22,7 +22,8 @@
 //================================================================
 
 #define stdTraceRoot \
-    TRACE_ROOT(trace, TRACE_AUTO_LOCATION)
+    TRACE_ROOT(trace, TRACE_AUTO_LOCATION); \
+    ERROR_HANDLING_ROOT
 
 //================================================================
 //
@@ -34,6 +35,7 @@
 
 #define stdPars(Kit) \
     const Kit& kit, \
+    ERROR_HANDLING_PARAMS \
     TRACE_PARAMS(trace)
 
 //================================================================
@@ -55,6 +57,7 @@
 
 #define stdPassEx(kit, location) \
     (PROFILER_FRAME_TEMPORARY(kit, location), kit), \
+    ERROR_HANDLING_PASS \
     TRACE_PASS(trace, location)
 
 //----------------------------------------------------------------
@@ -72,16 +75,19 @@
 
 #define stdPassNoProfiling \
     kit, \
+    ERROR_HANDLING_PASS \
     TRACE_PASS(trace, TRACE_AUTO_LOCATION)
 
 //----------------------------------------------------------------
 
 #define stdPassThru \
     kit, \
+    ERROR_HANDLING_PASS \
     TRACE_PASSTHRU(trace)
 
 #define stdPassThruKit(kit) \
     kit, \
+    ERROR_HANDLING_PASS \
     TRACE_PASSTHRU(trace)
 
 //================================================================
@@ -150,6 +156,7 @@ extern const NullKit nullKit;
 
 #define stdNullPars \
     const NullKit&, \
+    ERROR_HANDLING_PARAMS \
     TRACE_PARAMS(trace)
 
 #define stdNullPass \
@@ -160,3 +167,20 @@ extern const NullKit nullKit;
 
 #define stdNullBegin
 
+
+//================================================================
+//
+// stdParsMember
+// stdParsCapture
+//
+//================================================================
+
+#define stdParsMember(Kit) \
+    const Kit& kit; \
+    ERROR_HANDLING_MEMBER \
+    TRACE_PARAMS(trace)
+
+#define stdParsCapture \
+    kit{kit}, \
+    ERROR_HANDLING_CAPTURE \
+    trace{trace}

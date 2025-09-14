@@ -56,7 +56,7 @@ inline FontMono<Pointer> fontMono
 template <typename Pointer>
 inline FontMono<Pointer> fontMonoNull()
 {
-    return fontMono(ArrayEx<Pointer>(Pointer(0), 0), point(1), 0, 0, 0);
+    return fontMono<Pointer>({}, point(1), 0, 0, 0);
 }
 
 //================================================================

@@ -1,6 +1,4 @@
-#if HOSTCODE
-    #include "yuvLayoutConvert.h"
-#endif
+#include "yuvLayoutConvert.h"
 
 #include "gpuSupport/gpuTool.h"
 #include "gpuDevice/loadstore/loadNorm.h"

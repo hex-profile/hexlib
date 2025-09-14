@@ -14,7 +14,7 @@
 //
 //================================================================
 
-template <Space elemSize>
+template <Space elemSize, typename Pitch>
 bool matrixParamsAreValid(Space sizeX, Space sizeY, Space pitch)
 {
     COMPILE_ASSERT(elemSize >= 1);
@@ -34,8 +34,16 @@ bool matrixParamsAreValid(Space sizeX, Space sizeY, Space pitch)
     Space pitchByHeightBytes = 0;
     check_flag(safeMul(pitchByHeight, elemSize, pitchByHeightBytes), ok);
 
-    Space absPitch = 0;
-    check_flag(safeAbs(pitch, absPitch), ok);
+    ////
+
+    Space absPitch = pitch;
+
+    if (TYPE_EQUAL(Pitch, PitchPositiveOrZero))
+        check_flag(pitch >= 0, ok);
+    else
+        check_flag(safeAbs(pitch, absPitch), ok);
+
+    ////
 
     check_flag(sizeX <= absPitch, ok);
 

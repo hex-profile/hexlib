@@ -13,7 +13,7 @@
 
 #define TMP_MACRO(funcName, interpMode, borderMode, sampleTerm) \
     \
-    GPUTOOL_2D \
+    GPUTOOL_2D_AP \
     ( \
         funcName, \
         ((const uint8_x4, src, interpMode, borderMode)), \

@@ -66,7 +66,7 @@ static const Space maxFrameHistoryCapacity = 16;
 struct FrameSnapshot
 {
     GpuMatrixMemory<uint8_x4> frameMemory;
-    GpuMatrix<uint8_x4> frame;
+    GpuMatrixAP<uint8_x4> frame;
 };
 
 //================================================================
@@ -221,7 +221,7 @@ public:
     stdbool processSingleFrame
     (
         VideoPrepTarget& target,
-        const GpuMatrix<const uint8_x4>& inputFrame,
+        const GpuMatrixAP<const uint8_x4>& inputFrame,
         uint32 frameIndex,
         stdPars(ProcessKit)
     );
@@ -229,7 +229,7 @@ public:
     stdbool processPrepFrontend
     (
         VideoPrepTarget& target,
-        const GpuMatrix<const uint8_x4>& inputFrame,
+        const GpuMatrixAP<const uint8_x4>& inputFrame,
         uint32 frameIndex,
         stdPars(ProcessKit)
     );
@@ -237,7 +237,7 @@ public:
     stdbool processCropFrontend
     (
         VideoPrepTarget& target,
-        const GpuMatrix<const uint8_x4>& inputFrame,
+        const GpuMatrixAP<const uint8_x4>& inputFrame,
         uint32 frameIndex,
         stdPars(ProcessKit)
     );
@@ -245,7 +245,7 @@ public:
     stdbool processTarget
     (
         VideoPrepTarget& target,
-        const GpuMatrix<const uint8_x4>& inputFrame,
+        const GpuMatrixAP<const uint8_x4>& inputFrame,
         uint32 frameIndex,
         stdPars(ProcessKit)
     );
@@ -519,7 +519,7 @@ Point<Space> VideoPreprocessorImpl::outputFrameSize() const
 stdbool VideoPreprocessorImpl::processTarget
 (
     VideoPrepTarget& target,
-    const GpuMatrix<const uint8_x4>& inputFrame,
+    const GpuMatrixAP<const uint8_x4>& inputFrame,
     uint32 frameIndex,
     stdPars(ProcessKit)
 )
@@ -667,7 +667,7 @@ stdbool VideoPreprocessorImpl::processTarget
 stdbool VideoPreprocessorImpl::processSingleFrame
 (
     VideoPrepTarget& target,
-    const GpuMatrix<const uint8_x4>& inputFrame,
+    const GpuMatrixAP<const uint8_x4>& inputFrame,
     uint32 frameIndex,
     stdPars(ProcessKit)
 )
@@ -758,7 +758,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 stdbool VideoPreprocessorImpl::processPrepFrontend
 (
     VideoPrepTarget& target,
-    const GpuMatrix<const uint8_x4>& inputFrame,
+    const GpuMatrixAP<const uint8_x4>& inputFrame,
     uint32 frameIndex,
     stdPars(ProcessKit)
 )
@@ -808,23 +808,28 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     ////
 
     GPU_MATRIX_ALLOC(processedFrameMemory, uint8_x4, frameSize);
-    GpuMatrix<uint8_x4> processedFrame = processedFrameMemory;
+    auto processedFrame = relaxToAnyPitch(processedFrameMemory);
 
     {
-        GpuMatrix<const uint8_x4> srcFrame = inputFrame;
-        GpuMatrix<uint8_x4> dstFrame = processedFrameMemory;
-        Point<float32> usedRotation = forwardRotation;
+        auto srcFrameAP = inputFrame;
+        auto dstFrame = processedFrameMemory();
+        auto usedRotation = forwardRotation;
 
         ////
 
-        bool srcInvert = srcFrame.memPitch() < 0;
+        bool srcInvert = srcFrameAP.memPitch() < 0;
 
         if (srcInvert)
         {
-            srcFrame = flipMatrix(srcFrame);
+            srcFrameAP = flipMatrix(srcFrameAP);
             processedFrame = flipMatrix(processedFrameMemory);
             usedRotation = complexConjugate(usedRotation);
         }
+
+        ////
+
+        REQUIRE(srcFrameAP.memPitch() >= 0);
+        auto srcFrame = restrictToNonNegativePitch(srcFrameAP);
 
         ////
 
@@ -914,7 +919,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 stdbool VideoPreprocessorImpl::processCropFrontend
 (
     VideoPrepTarget& target,
-    const GpuMatrix<const uint8_x4>& inputFrame,
+    const GpuMatrixAP<const uint8_x4>& inputFrame,
     uint32 frameIndex,
     stdPars(ProcessKit)
 )
@@ -934,7 +939,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     // Input frame
     //
 
-    GpuMatrix<const uint8_x4> croppedFrame = inputFrame;
+    auto croppedFrame = inputFrame;
 
     GpuMatrixMemory<uint8_x4> croppedFrameMemory;
 
@@ -942,7 +947,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     {
         require(croppedFrameMemory.realloc(cropSize, stdPass));
 
-        GpuMatrix<uint8_x4> dstFrame = flipMatrix(croppedFrameMemory);
+        auto dstFrame = flipMatrix(relaxToAnyPitch(croppedFrameMemory));
         croppedFrame = dstFrame;
         require(copyImageRect(inputFrame, cropOfs, dstFrame, stdPass));
     }
@@ -1010,7 +1015,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
     //
     //----------------------------------------------------------------
 
-    Matrix<const uint8_x4> cpuFrame = kit.atVideoFrame;
+    auto cpuFrame = kit.atVideoFrame;
 
     ////
 

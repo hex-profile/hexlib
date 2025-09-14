@@ -46,3 +46,16 @@ void debugBreak();
 
 #define DEBUG_BREAK_IF(condition) \
     (!allv(condition) || (DEBUG_BREAK_INLINE(), false))
+
+//================================================================
+//
+// REMEMBER_CLEANUP_DBGBRK_CHECK
+// REMEMBER_CLEANUP_ERROR_BLOCK
+//
+//================================================================
+
+#define REMEMBER_CLEANUP_DBGBRK_CHECK(statement) \
+    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(statement))
+
+#define REMEMBER_CLEANUP_ERROR_BLOCK(statement) \
+    REMEMBER_CLEANUP_DBGBRK_CHECK(errorBlock(statement))

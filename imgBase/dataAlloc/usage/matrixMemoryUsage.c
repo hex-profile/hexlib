@@ -40,7 +40,7 @@ stdbool matrixMemoryUsage(stdPars(TestKit))
     // Convert to Matrix<> implicitly and explicitly (for template arguments).
     Matrix<int> tmp0 = m0;
     Matrix<const int> tmp1 = m0;
-    Matrix<const int> tmp2 = m0();
+    Matrix<int> tmp2 = m0();
 
     returnTrue;
 }

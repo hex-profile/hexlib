@@ -206,16 +206,13 @@ public:
     //
     //----------------------------------------------------------------
 
-public:
+private:
 
-    sysinline Type* operator []
-    (
-        Space index // [0, size)
-    )
+    template <typename Element>
+    sysinline Element* access(Element* bufferPtr, Space bufferSize, Space index) const
     {
-        Type* result = 0;
+        Element* result = 0;
 
-        ARRAY_EXPOSE(buffer);
         ensure(bufferSize != 0);
 
         Space I = -index-1;
@@ -228,6 +225,20 @@ public:
         result = &bufferPtr[relativeIndex];
 
         return result;
+    }
+
+public:
+
+    sysinline Type* operator [](Space index) // [0, size)
+    {
+        ARRAY_EXPOSE(buffer);
+        return access(bufferPtr, bufferSize, index);
+    }
+
+    sysinline const Type* operator [](Space index) const // [0, size)
+    {
+        ARRAY_EXPOSE(buffer);
+        return access(bufferPtr, bufferSize, index);
     }
 
     //----------------------------------------------------------------

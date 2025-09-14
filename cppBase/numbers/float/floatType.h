@@ -512,7 +512,7 @@ struct ConvertImpl<BuiltinFloat, BuiltinInt, ConvertUnchecked, rounding, hint>
     struct Convert
     {
         COMPILE_ASSERT(sizeof(Int) <= sizeof(int32));
-        using PromoInt = TYPE_SELECT(TYPE_IS_SIGNED(Int), int32, uint32);
+        using PromoInt = TypeSelect<TYPE_IS_SIGNED(Int), int32, uint32>;
 
         static sysinline Int func(const Float& src)
         {
@@ -740,12 +740,17 @@ BUILTIN_FLOAT_FOREACH(EXCHANGE_DEFINE_SIMPLE, _)
 //================================================================
 //
 // convertFloat32
+// convertFloat64
 //
 //================================================================
 
 template <typename Src>
-sysinline typename ConvertResult<Src, float32>::T convertFloat32(const Src& src)
+sysinline auto convertFloat32(const Src& src)
     {return convertNearest<float32>(src);}
+
+template <typename Src>
+sysinline auto convertFloat64(const Src& src)
+    {return convertNearest<float64>(src);}
 
 //================================================================
 //

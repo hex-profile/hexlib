@@ -184,7 +184,7 @@ class LayeredVectorProvider<VectorType, PresenceType> : public GpuImageProviderB
 
 public:
 
-    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const;
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const;
 
 public:
 
@@ -224,7 +224,7 @@ private:
 //
 //================================================================
 
-stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const
+stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const
 {
     REQUIRE(upsampleFactor >= 1);
     Point<float32> divUpsampleFactor = 1.f / upsampleFactor;

@@ -22,10 +22,11 @@ stdbool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
     Matrix<const int> anotherConstMatrix = makeConst(intMatrix);
 
     // Construct matrix from details: ptr, pitch and size.
-    Matrix<const uint8> example(srcMemPtrUnsafe, srcMemPitch, srcSizeX, srcSizeY);
+    Matrix<const uint8> example;
+    REQUIRE(example.assignValidated(srcMemPtrUnsafe, srcMemPitch, srcSizeX, srcSizeY));
 
     // Setup matrix from details: ptr, pitch and size.
-    example.assign(srcMemPtrUnsafe, srcMemPitch, srcSizeX, srcSizeY);
+    REQUIRE(example.assignValidated(srcMemPtrUnsafe, srcMemPitch, srcSizeX, srcSizeY));
 
     // Make the matrix empty.
     example.assignNull();

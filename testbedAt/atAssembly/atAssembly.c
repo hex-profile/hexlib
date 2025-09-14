@@ -467,7 +467,8 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
     require(metadataConfig->loadVars(serialization, true, stdPass));
     require(metadataConfig->saveVars(serialization, true, stdPass));
-    require(metadataConfig->updateFile(true, stdPass)); // Correct the config file.
+
+    errorBlock(metadataConfig->updateFile(true, stdPass)); // Correct the config file.
 
     // Update the file properties after correction.
     require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));

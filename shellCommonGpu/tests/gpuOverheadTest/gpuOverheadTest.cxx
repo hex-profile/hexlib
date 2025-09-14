@@ -138,11 +138,11 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
     CUevent cuStartEvent = 0;
     REQUIRE(cuEventCreate(&cuStartEvent, CU_EVENT_DEFAULT) == CUDA_SUCCESS);
-    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(cuEventDestroy(cuStartEvent) == CUDA_SUCCESS));
+    REMEMBER_CLEANUP_DBGBRK_CHECK(cuEventDestroy(cuStartEvent) == CUDA_SUCCESS);
 
     CUevent cuStopEvent = 0;
     REQUIRE(cuEventCreate(&cuStopEvent, CU_EVENT_DEFAULT) == CUDA_SUCCESS);
-    REMEMBER_CLEANUP(DEBUG_BREAK_CHECK(cuEventDestroy(cuStopEvent) == CUDA_SUCCESS));
+    REMEMBER_CLEANUP_DBGBRK_CHECK(cuEventDestroy(cuStopEvent) == CUDA_SUCCESS);
 
     //----------------------------------------------------------------
     //

@@ -6,7 +6,7 @@
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     PREP_PASTE_UNDER4(renderVectorSet, LAYERS, VectorType, PresenceType),
     GPUTOOL_INDEXED_SAMPLER(LAYERS, const VectorType, srcVector, INTERP_NONE, BORDER_CLAMP)
@@ -87,7 +87,7 @@ GPUTOOL_2D_END
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     PREP_PASTE_UNDER4(upsampleVectorVisualizationFunc, LAYERS, VectorType, PresenceType),
     GPUTOOL_INDEXED_SAMPLER(LAYERS, const VectorType, srcVector, INTERP_NEAREST, BORDER_MIRROR)
@@ -231,7 +231,7 @@ GPUTOOL_2D_END
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_2D_BEG_AP
 (
     PREP_PASTE3(convertIndependentPresenceToAdditive, LAYERS, PresenceType),
     PREP_EMPTY,

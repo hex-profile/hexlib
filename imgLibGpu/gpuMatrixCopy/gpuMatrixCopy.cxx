@@ -5,23 +5,23 @@
 
 //================================================================
 //
-// GPU_MATRIX_COPY_FOREACH
+// COPY_FOREACH
 //
 //================================================================
 
-#define GPU_MATRIX_COPY_FOREACH(action, extra) \
+#define COPY_FOREACH(action, extra) \
     VECTOR_INT_FOREACH(action, extra) \
     VECTOR_FLOAT_FOREACH(action, extra) \
 
 //================================================================
 //
-// Functions
+// gpuMatrixCopyFunc_*
 //
 //================================================================
 
 #define TMP_MACRO(Type, o) \
     \
-    GPUTOOL_2D \
+    GPUTOOL_2D_AP \
     ( \
         gpuMatrixCopyFunc_##Type, \
         PREP_EMPTY, \
@@ -31,21 +31,58 @@
         *dst = *src; \
     )
 
-GPU_MATRIX_COPY_FOREACH(TMP_MACRO, o)
+COPY_FOREACH(TMP_MACRO, o)
 
 #undef TMP_MACRO
 
 //================================================================
 //
-// gpuMatrixCopyFunc_*
+// gpuMatrixCopy
 //
 //================================================================
 
 #define TMP_MACRO(Type, o) \
     template <> \
-    stdbool gpuMatrixCopy(const GpuMatrix<const Type>& src, const GpuMatrix<Type>& dst, stdPars(GpuProcessKit)) \
+    stdbool gpuMatrixCopyImpl(const GpuMatrixAP<const Type>& src, const GpuMatrixAP<Type>& dst, stdPars(GpuProcessKit)) \
         {return gpuMatrixCopyFunc_##Type(src, dst, stdPassThru);}
 
-HOST_ONLY(GPU_MATRIX_COPY_FOREACH(TMP_MACRO, o))
+HOST_ONLY(COPY_FOREACH(TMP_MACRO, o))
+
+#undef TMP_MACRO
+
+//================================================================
+//
+// gpuArrayCopyFunc_*
+//
+//================================================================
+
+#define TMP_MACRO(Type, o) \
+    \
+    GPUTOOL_1D \
+    ( \
+        gpuArrayCopyFunc_##Type, \
+        PREP_EMPTY, \
+        ((const Type, src)) \
+        ((Type, dst)), \
+        PREP_EMPTY, \
+        *dst = *src; \
+    )
+
+COPY_FOREACH(TMP_MACRO, o)
+
+#undef TMP_MACRO
+
+//================================================================
+//
+// gpuArrayCopy
+//
+//================================================================
+
+#define TMP_MACRO(Type, o) \
+    template <> \
+    stdbool gpuArrayCopy(const GpuArray<const Type>& src, const GpuArray<Type>& dst, stdPars(GpuProcessKit)) \
+        {return gpuArrayCopyFunc_##Type(src, dst, stdPassThru);}
+
+HOST_ONLY(COPY_FOREACH(TMP_MACRO, o))
 
 #undef TMP_MACRO

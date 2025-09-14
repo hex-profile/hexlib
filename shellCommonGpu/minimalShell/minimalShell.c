@@ -20,6 +20,7 @@
 #include "userOutput/paramMsg.h"
 #include "userOutput/printMsg.h"
 #include "userOutput/printMsgEx.h"
+#include "timer/changesMonitor.h"
 
 namespace minimalShell {
 
@@ -192,6 +193,7 @@ private:
 
     bool displayParamsHotkeys = true;
     DisplayParamsImpl displayParams;
+    ChangesMonitor altVersionMonitor;
 
     bool bmpConsoleHotkeys = true;
     UniqueInstance<BaseConsoleBmp> bmpConsole;
@@ -227,7 +229,7 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 
     ////
 
-    displayMemoryUsage.serialize(kit, STR("Display Memory Usage"));
+    displayMemoryUsage.serialize(kit, STR("Display Memory Usage"), STR("Ctrl+Shift+U"));
     debugBreakOnErrors.serialize(kit, STR("Debug Break On Errors"));
 
     ////
@@ -235,8 +237,9 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
     {
         CFG_NAMESPACE("Display Params");
 
-        bool unused = false;
-        displayParams.serialize(kit, displayParamsHotkeys, unused);
+        bool altVersionSteady = true;
+        displayParams.serialize(kit, displayParamsHotkeys, altVersionSteady);
+        altVersionMonitor.touch(!altVersionSteady);
     }
 
     ////
@@ -589,6 +592,19 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
 stdbool MinimalShellImpl::processWithAllocators(const ProcessArgs& args, stdPars(ProcessWithAllocatorsKit))
 {
     stdScopedBegin;
+
+    //----------------------------------------------------------------
+    //
+    // Headers.
+    //
+    //----------------------------------------------------------------
+
+    bool alternative = displayParams.alternative();
+
+    ////
+
+    if (altVersionMonitor.active(5.f, kit))
+        printMsgL(kit, STR("Alternative Version: %"), alternative, alternative ? msgWarn : msgInfo);
 
     //----------------------------------------------------------------
     //

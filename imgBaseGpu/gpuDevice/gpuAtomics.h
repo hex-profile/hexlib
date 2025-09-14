@@ -5,6 +5,8 @@
 #endif
 
 #include "compileTools/compileTools.h"
+#include "numbers/float/floatBase.h"
+#include "numbers/int/intBase.h"
 
 //================================================================
 //
@@ -17,7 +19,7 @@
 #if !defined(__CUDA_ARCH__)
 
 template <typename Type, typename Action>
-sysinline void atomicAction(Type* dst, Type value, const Action& action)
+sysinline Type atomicAction(Type* dst, Type value, const Action& action)
 {
     using namespace std;
 
@@ -29,6 +31,8 @@ sysinline void atomicAction(Type* dst, Type value, const Action& action)
 
     while (!target.compare_exchange_weak(oldValue, action(oldValue, value), memory_order_relaxed, memory_order_relaxed))
         ;
+
+    return oldValue;
 }
 
 #endif
@@ -45,7 +49,7 @@ sysinline void atomicAction(Type* dst, Type value, const Action& action)
 #if !defined(__CUDA_ARCH__)
 
 template <typename Type>
-sysinline void atomicAdd(Type* dst, Type value)
+sysinline Type atomicAdd(Type* dst, Type value)
 {
     return atomicAction(dst, value, [] (auto a, auto b) {return a + b;});
 }
@@ -66,13 +70,13 @@ sysinline void atomicAdd(Type* dst, Type value)
 //----------------------------------------------------------------
 
 template <typename Type>
-sysinline void atomicMin(Type* dst, Type value)
+sysinline Type atomicMin(Type* dst, Type value)
 {
     return atomicAction(dst, value, [] (auto a, auto b) {return minv(a, b);});
 }
 
 template <typename Type>
-sysinline void atomicMax(Type* dst, Type value)
+sysinline Type atomicMax(Type* dst, Type value)
 {
     return atomicAction(dst, value, [] (auto a, auto b) {return maxv(a, b);});
 }
@@ -91,17 +95,24 @@ sysinline void atomicMax(Type* dst, Type value)
 
 #if !defined(__CUDA_ARCH__)
 
-    sysinline void atomicMaxNonneg(float32* dst, float32 value)
-    {
-        return atomicMax(dst, value);
-    }
+    sysinline float32 atomicMinNonneg(float32* dst, float32 value)
+        {return atomicMin(dst, value);}
+
+    sysinline float32 atomicMaxNonneg(float32* dst, float32 value)
+        {return atomicMax(dst, value);}
 
 #else
 
-    sysinline void atomicMaxNonneg(float32* dst, float32 value)
+    sysinline float32 atomicMinNonneg(float32* dst, float32 value)
     {
         int32* dstInt = &recastEqualLayout<int32>(*dst);
-        atomicMax(dstInt, __float_as_int(value));
+        return atomicMin(dstInt, __float_as_int(value));
+    }
+
+    sysinline float32 atomicMaxNonneg(float32* dst, float32 value)
+    {
+        int32* dstInt = &recastEqualLayout<int32>(*dst);
+        return atomicMax(dstInt, __float_as_int(value));
     }
 
 #endif

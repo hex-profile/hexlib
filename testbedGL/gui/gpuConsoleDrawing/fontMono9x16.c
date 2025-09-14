@@ -2197,5 +2197,7 @@ COMPILE_ASSERT(COMPILE_ARRAY_SIZE(font9x16Data) == 9*16*128 + 1);
 
 CpuFontMono fontMono9x16()
 {
-    return fontMono(Array<const FontElement>(font9x16Data, 9*16*128), point(9, 16), '0', 0, 128);
+    Array<const FontElement> data;
+    data.assignUnsafe(font9x16Data, 9*16*128);
+    return fontMono(data, point(9, 16), '0', 0, 128);
 }

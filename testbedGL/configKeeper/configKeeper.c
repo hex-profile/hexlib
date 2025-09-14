@@ -148,7 +148,7 @@ void ConfigKeeperImpl::serialize(const CfgSerializeKit& kit)
 
 stdbool ConfigKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
 {
-    REQUIRE(formatterArray.realloc(4096));
+    require(formatterArray.realloc(4096, stdPass));
 
     //----------------------------------------------------------------
     //

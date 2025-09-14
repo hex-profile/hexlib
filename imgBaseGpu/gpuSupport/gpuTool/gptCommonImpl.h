@@ -68,15 +68,19 @@
 
 #define GPT_DECLARE_MATRIX(Type, name) \
     GpuMatrixPtr(Type) name##MemPtr; \
-    Space name##MemPitch;
+    Space name##MemPitch; \
+    static constexpr bool name##PitchIsNonNeg = pitchIsNonNeg;
 
 #define GPT_DECLARE_PARAM(Type, name) \
     Type name;
 
-#define GPT_DECLARE_PARAMS(prefix, GlobSizeType, samplerList, matrixList, paramList) \
+#define GPT_DECLARE_PARAMS(prefix, GlobSizeType, samplerList, matrixList, matrixPitch, paramList) \
     \
     struct prefix##Params \
     { \
+        COMPILE_ASSERT(TYPE_EQUAL(matrixPitch, PitchMayBeNegative) || TYPE_EQUAL(matrixPitch, PitchPositiveOrZero)); \
+        static constexpr bool pitchIsNonNeg = TYPE_EQUAL(matrixPitch, PitchPositiveOrZero); \
+        \
         GlobSizeType globSize; \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_PARAM, o) \
         GPT_FOREACH(matrixList, GPT_DECLARE_MATRIX) \
@@ -126,7 +130,7 @@
     auto name = MATRIX_POINTER(o.name, X, Y); MAKE_VARIABLE_USED(name);
 
 #define GPT_EXPOSE_PARAM(Type, name) \
-    ParamType<Type>::T name = o.name; MAKE_VARIABLE_USED(name);
+    auto name = o.name; MAKE_VARIABLE_USED(name);
 
 //================================================================
 //
@@ -137,11 +141,21 @@
 #define GPT_DECLARE_SAMPLER_ARG(Type, name, interp, border, o) \
     const GpuMatrix<Type>& name##Matrix,
 
-#define GPT_DECLARE_MATRIX_ARG(Type, name) \
-    const GpuMatrix<Type>& name##Matrix,
+////
+
+#define GPT_DECLARE_MATRIX_ARG_PitchPositiveOrZero(Type, name) \
+    const GpuMatrix<Type, PitchPositiveOrZero>& name##Matrix,
+
+#define GPT_DECLARE_MATRIX_ARG_PitchMayBeNegative(Type, name) \
+    const GpuMatrix<Type, PitchMayBeNegative>& name##Matrix,
+
+#define GPT_DECLARE_MATRIX_ARG_PitchDefault(Type, name) \
+    const GpuMatrix<Type, PitchDefault>& name##Matrix,
+
+////
 
 #define GPT_DECLARE_PARAM_ARG(Type, name) \
-    ParamType<Type>::T name,
+    const Type& name,
 
 //----------------------------------------------------------------
 
@@ -152,7 +166,7 @@
     REQUIRE(globSize == name##Matrix.size());
 
 #define GPT_BIND_SAMPLER(Type, name, interp, border, prefix) \
-    require(kit.gpuSamplerSetting.setSamplerImage<Type>(PREP_PASTE3(prefix, name, Sampler), name##Matrix, border, \
+    require(kit.gpuSamplerSetting.setSamplerImage(PREP_PASTE3(prefix, name, Sampler), name##Matrix, border, \
         LinearInterpolation{interp == INTERP_LINEAR}, ReadNormalizedFloat{true}, NormalizedCoords{true}, \
         stdPassLocationMsg(PREP_STRINGIZE(PREP_PASTE2(name, Sampler)))));
 

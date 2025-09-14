@@ -30,22 +30,22 @@ public:
 
 public:
 
-    inline const Pointer& asPointer() const
+    sysinline const Pointer& asPointer() const
         {return pointer;}
 
-    inline Pointer& asPointer()
+    sysinline Pointer& asPointer()
         {return pointer;}
 
 public:
 
-    inline const Element& read() const
+    sysinline const Element& read() const
         {return pointer.read();}
 
     template <typename Type>
-    inline void write(const Type& value) const
+    sysinline void write(const Type& value) const
         {return pointer.write(value);}
 
-    inline Element& modify() const
+    sysinline Element& modify() const
         {return pointer.modify();}
 
     //
@@ -54,15 +54,15 @@ public:
 
 public:
 
-    inline const Self& operator =(const Self& that) const
+    sysinline const Self& operator =(const Self& that) const
         {this->write(that.read()); return *this;}
 
     template <typename AnyPointer>
-    inline const Self& operator =(const DbgptrReference<AnyPointer>& that) const
+    sysinline const Self& operator =(const DbgptrReference<AnyPointer>& that) const
         {this->write(that.read()); return *this;}
 
     template <typename Type>
-    inline const Self& operator =(const Type& value) const
+    sysinline const Self& operator =(const Type& value) const
         {write(value); return *this;}
 
     //
@@ -72,16 +72,16 @@ public:
 
 public:
 
-    inline Pointer operator &() const
+    sysinline Pointer operator &() const
         {return pointer;}
 
-    inline operator const Element& () const
+    sysinline operator const Element& () const
         {return read();}
 
-    inline operator Element& ()
+    sysinline operator Element& ()
         {return modify();}
 
-    inline Element* operator -> ()
+    sysinline Element* operator -> ()
         {return &modify();}
 
 private:
@@ -97,13 +97,13 @@ private:
 //================================================================
 
 template <typename Pointer>
-inline auto operator +(const DbgptrReference<Pointer>& ref)
+sysinline auto operator +(const DbgptrReference<Pointer>& ref)
 {
     return +ref.read();
 }
 
 template <typename Pointer>
-inline auto operator -(const DbgptrReference<Pointer>& ref)
+sysinline auto operator -(const DbgptrReference<Pointer>& ref)
 {
     return -ref.read();
 }
@@ -117,7 +117,7 @@ inline auto operator -(const DbgptrReference<Pointer>& ref)
 #define TMP_MACRO(OP) \
     \
     template <typename Pointer1, typename Pointer2> \
-    inline auto operator OP \
+    sysinline auto operator OP \
     ( \
         const DbgptrReference<Pointer1>& v1, \
         const DbgptrReference<Pointer2>& v2 \
@@ -130,7 +130,7 @@ inline auto operator -(const DbgptrReference<Pointer>& ref)
     } \
     \
     template <typename Pointer, typename Value> \
-    inline auto operator OP \
+    sysinline auto operator OP \
     ( \
         const DbgptrReference<Pointer>& v1, \
         const Value& v2 \
@@ -143,7 +143,7 @@ inline auto operator -(const DbgptrReference<Pointer>& ref)
     } \
     \
     template <typename Pointer, typename Value> \
-    inline auto operator OP \
+    sysinline auto operator OP \
     ( \
         const Value& v1, \
         const DbgptrReference<Pointer>& v2 \
@@ -179,19 +179,19 @@ TMP_MACRO(/)
 #define TMP_MACRO(ASGOP) \
     \
     template <typename Value, typename Pointer> \
-    inline auto operator ASGOP(Value& L, const DbgptrReference<Pointer>& R) \
+    sysinline auto operator ASGOP(Value& L, const DbgptrReference<Pointer>& R) \
     { \
         return L ASGOP R.read(); \
     } \
     \
     template <typename Value, typename Pointer> \
-    inline auto operator ASGOP(const DbgptrReference<Pointer>& L, const Value& R) \
+    sysinline auto operator ASGOP(const DbgptrReference<Pointer>& L, const Value& R) \
     { \
         return L.modify() ASGOP R; \
     } \
     \
     template <typename Pointer1, typename Pointer2> \
-    inline auto operator ASGOP(const DbgptrReference<Pointer1>& L, const DbgptrReference<Pointer2>& R) \
+    sysinline auto operator ASGOP(const DbgptrReference<Pointer1>& L, const DbgptrReference<Pointer2>& R) \
     { \
         return L.modify() ASGOP R.read(); \
     }
@@ -218,7 +218,7 @@ TMP_MACRO(/=)
 #define TMP_MACRO(OP) \
     \
     template <typename PointerA, typename PointerB> \
-    inline auto operator OP \
+    sysinline auto operator OP \
     ( \
         const DbgptrReference<PointerA>& A, \
         const DbgptrReference<PointerB>& B \
@@ -228,7 +228,7 @@ TMP_MACRO(/=)
     } \
     \
     template <typename Value, typename Pointer> \
-    inline auto operator OP \
+    sysinline auto operator OP \
     ( \
         const DbgptrReference<Pointer>& A, \
         const Value& B \
@@ -238,7 +238,7 @@ TMP_MACRO(/=)
     } \
     \
     template <typename Value, typename Pointer> \
-    inline auto operator OP \
+    sysinline auto operator OP \
     ( \
         const Value& A, \
         const DbgptrReference<Pointer>& B \
@@ -265,13 +265,13 @@ TMP_MACRO(!=)
 #define TMP_MACRO(OP) \
     \
     template <typename Pointer> \
-    inline auto operator OP(const DbgptrReference<Pointer>& ref) \
+    sysinline auto operator OP(const DbgptrReference<Pointer>& ref) \
     { \
         return OP ref.modify(); \
     } \
     \
     template <typename Pointer> \
-    inline auto operator OP(const DbgptrReference<Pointer>& ref, int) \
+    sysinline auto operator OP(const DbgptrReference<Pointer>& ref, int) \
     { \
         return ref.modify() OP; \
     }
@@ -289,13 +289,13 @@ TMP_MACRO(--)
 //================================================================
 
 template <typename Pointer>
-inline const typename Pointer::Element& helpRead(const DbgptrReference<Pointer>& ref)
+sysinline const typename Pointer::Element& helpRead(const DbgptrReference<Pointer>& ref)
     {return ref.read();}
 
 ////
 
 template <typename Pointer>
-inline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref)
+sysinline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref)
     {return ref.modify();}
 
 //================================================================
@@ -307,7 +307,7 @@ inline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref
 #define DBGPTR_DEFINE_FUNC1(func) \
     \
     template <typename Pointer> \
-    inline auto func(const DbgptrReference<Pointer>& ref) \
+    sysinline auto func(const DbgptrReference<Pointer>& ref) \
     { \
         return func(ref.read()); \
     }
@@ -321,7 +321,7 @@ inline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref
 #define DBGPTR_DEFINE_FUNC2(func) \
     \
     template <typename Pointer> \
-    inline auto func \
+    sysinline auto func \
     ( \
         const DbgptrReference<Pointer>& A, \
         const DbgptrReference<Pointer>& B \
@@ -331,7 +331,7 @@ inline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref
     } \
     \
     template <typename Pointer> \
-    inline auto func \
+    sysinline auto func \
     ( \
         const DbgptrReference<Pointer>& A, \
         const typename Pointer::Element& B \
@@ -341,7 +341,7 @@ inline typename Pointer::Element& helpModify(const DbgptrReference<Pointer>& ref
     } \
     \
     template <typename Pointer> \
-    inline auto func \
+    sysinline auto func \
     ( \
         const typename Pointer::Element& A, \
         const DbgptrReference<Pointer>& B \

@@ -57,12 +57,14 @@ Matrix<const int> tmp2 = m0();
 //================================================================
 
 template <typename Pointer>
-class MatrixMemoryEx : public MatrixEx<Pointer>
+class MatrixMemoryEx : public MatrixEx<Pointer, PitchPositiveOrZero>
 {
 
     using AddrU = typename PtrAddrType<Pointer>::AddrU;
 
-    using BaseMatrix = MatrixEx<Pointer>;
+public:
+
+    using BaseMatrix = MatrixEx<Pointer, PitchPositiveOrZero>;
 
 public:
 
@@ -142,34 +144,39 @@ class MatrixMemory : public MatrixMemoryEx<Type*>
 {
 
     using Base = MatrixMemoryEx<Type*>;
+    using BaseMatrix = typename Base::BaseMatrix;
 
 public:
 
+    //----------------------------------------------------------------
     //
     // Export cast (no code generated, reinterpret 'this')
     //
+    //----------------------------------------------------------------
 
     sysinline operator const Matrix<Type>& () const
     {
-        const MatrixEx<Type*>* baseMatrix = this;
+        const BaseMatrix* baseMatrix = this;
         return recastEqualLayout<const Matrix<Type>>(*baseMatrix);
     }
 
     sysinline operator const Matrix<const Type>& () const
     {
-        const MatrixEx<Type*>* baseMatrix = this;
+        const BaseMatrix* baseMatrix = this;
         return recastEqualLayout<const Matrix<const Type>>(*baseMatrix);
     }
 
     sysinline const Matrix<Type>& operator()() const
     {
-        const MatrixEx<Type*>* baseMatrix = this;
+        const BaseMatrix* baseMatrix = this;
         return recastEqualLayout<const Matrix<Type>>(*baseMatrix);
     }
 
+    //----------------------------------------------------------------
     //
     // Default realloc: assumes kit.cpuFastAlloc
     //
+    //----------------------------------------------------------------
 
     using Base::realloc;
 

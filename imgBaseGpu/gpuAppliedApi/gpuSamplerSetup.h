@@ -199,7 +199,7 @@ struct GpuSamplerSetup
     // setSamplerImage
     //
 
-    virtual stdbool setSamplerImage
+    virtual stdbool setSamplerImageEx
     (
         const GpuSamplerLink& sampler,
         GpuAddrU imageBaseAddr,
@@ -216,11 +216,11 @@ struct GpuSamplerSetup
     )
     =0;
 
-    template <typename Type, typename Kit>
+    template <typename Type, typename Pitch, typename Kit>
     inline stdbool setSamplerImage
     (
         const GpuSamplerLink& sampler,
-        const GpuMatrix<const Type>& image,
+        const GpuMatrix<Type, Pitch>& image,
         BorderMode borderMode,
         LinearInterpolation linearInterpolation,
         ReadNormalizedFloat readNormalizedFloat,
@@ -228,7 +228,7 @@ struct GpuSamplerSetup
         stdPars(Kit)
     )
     {
-        return setSamplerImage
+        return setSamplerImageEx
         (
             sampler,
             GpuAddrU(image.memPtrUnsafeInternalUseOnly()),

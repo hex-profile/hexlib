@@ -254,8 +254,8 @@ sysinline void writeInt(Int value, const Writer& writer, const IntOptions& optio
 {
     COMPILE_ASSERT(TYPE_IS_BUILTIN_INT(Int));
 
-    using WriteAnyInt = TYPE_SELECT(TYPE_IS_SIGNED(Int), WriteSignedIntImpl, WriteUnsignedIntImpl);
-    using Impl = TYPE_SELECT(TYPE_EQUAL(Int, bool), WriteBoolImpl, WriteAnyInt);
+    using WriteAnyInt = TypeSelect<TYPE_IS_SIGNED(Int), WriteSignedIntImpl, WriteUnsignedIntImpl>;
+    using Impl = TypeSelect<TYPE_EQUAL(Int, bool), WriteBoolImpl, WriteAnyInt>;
 
     Impl::template func<Char>(value, writer, options);
 }

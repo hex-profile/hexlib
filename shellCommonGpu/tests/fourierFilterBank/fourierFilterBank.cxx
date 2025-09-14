@@ -184,7 +184,7 @@ GPUTOOL_2D_END
 //
 //================================================================
 
-GPUTOOL_2D_BEG
+GPUTOOL_1D_BEG
 (
     makeSeparableGaborFreq,
     PREP_EMPTY,
@@ -194,9 +194,9 @@ GPUTOOL_2D_BEG
 )
 #if DEVCODE
 {
-    float32 dstSizef = convertFloat32(vGlobSize.X);
+    float32 dstSizef = convertFloat32(vGlobSize);
     float32 dstCenter = 0.5f * dstSizef;
-    float32 pos = Xs - dstCenter;
+    float32 pos = (index + 0.5f) - dstCenter;
     float32 freq = pos / dstSizef; // (-1/2, +1/2)
 
     float32 response = unitGauss((freq - freqCenter) / freqSigma);
@@ -204,7 +204,7 @@ GPUTOOL_2D_BEG
     *dst = make_float32_x2(response, 0);
 }
 #endif
-GPUTOOL_2D_END
+GPUTOOL_1D_END
 
 //================================================================
 //
@@ -330,7 +330,7 @@ GPUTOOL_2D_END
 
 //----------------------------------------------------------------
 
-GPUTOOL_2D_BEG
+GPUTOOL_1D_BEG
 (
     compensatePyramidFilterSeparable,
     PREP_EMPTY,
@@ -342,17 +342,17 @@ GPUTOOL_2D_BEG
 {
     auto response = helpRead(*src);
 
-    if (vGlobSize.X == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqOdd))
-        response = response / conservativeFilterFreqOdd[X];
-    else if (vGlobSize.X == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqEven))
-        response = response / conservativeFilterFreqEven[X];
+    if (vGlobSize == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqOdd))
+        response = response / conservativeFilterFreqOdd[index];
+    else if (vGlobSize == COMPILE_ARRAY_SIZE_S(conservativeFilterFreqEven))
+        response = response / conservativeFilterFreqEven[index];
     else
         response = zeroOf<float32_x2>();
 
     *dst = response;
 }
 #endif
-GPUTOOL_2D_END
+GPUTOOL_1D_END
 
 //================================================================
 //
@@ -803,11 +803,11 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
                 GpuCopyThunk gpuCopy;
 
                 GPU_ARRAY_ALLOC(tmpX, float32_x2, fourierSize.X);
-                require(blurFourierMatrix(filterFreqX, tmpX, filterSize.X * fourierBlurSigma, true, stdPass));
+                require(blurFourierMatrix(matrix(filterFreqX), matrix(tmpX), filterSize.X * fourierBlurSigma, true, stdPass));
                 require(gpuCopy(tmpX, filterFreqX, stdPass));
 
                 GPU_ARRAY_ALLOC(tmpY, float32_x2, fourierSize.Y);
-                require(blurFourierMatrix(filterFreqY, tmpY, filterSize.Y * fourierBlurSigma, true, stdPass));
+                require(blurFourierMatrix(matrix(filterFreqY), matrix(tmpY), filterSize.Y * fourierBlurSigma, true, stdPass));
                 require(gpuCopy(tmpY, filterFreqY, stdPass));
             }
 
@@ -820,7 +820,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
             ////
 
             GPU_MATRIX_ALLOC(filterFreq, float32_x2, fourierSize);
-            require(combineSeparableResponses(filterFreqX, filterFreqY, filterFreq, stdPass));
+            require(combineSeparableResponses(matrix(filterFreqX), matrix(filterFreqY), filterFreq, stdPass));
 
             require(kit.gpuImageConsole.addVectorImage(filterFreq, freqFactor, point(1.f), INTERP_NEAREST, point(0), BORDER_ZERO,
                 ImgOutputHint(STR("Separable(Freq)")).setTargetConsole(), stdPass));
@@ -832,13 +832,13 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
             GPU_ARRAY_ALLOC(filterSpaceFullX, float32_x2, fourierSize.X);
             GPU_ARRAY_ALLOC(filterSpaceFullY, float32_x2, fourierSize.Y);
 
-            require(invFourierSeparable(filterFreqX, filterSpaceFullX, point(2.f), circleTable(), true, stdPass));
-            require(invFourierSeparable(filterFreqY, filterSpaceFullY, point(2.f), circleTable(), true, stdPass));
+            require(invFourierSeparable(matrix(filterFreqX), matrix(filterSpaceFullX), point(2.f), circleTable(), true, stdPass));
+            require(invFourierSeparable(matrix(filterFreqY), matrix(filterSpaceFullY), point(2.f), circleTable(), true, stdPass));
 
             ////
 
             GPU_MATRIX_ALLOC(filterSpaceFull, float32_x2, fourierSize);
-            require(combineSeparableResponses(filterSpaceFullX, filterSpaceFullY, filterSpaceFull, stdPass));
+            require(combineSeparableResponses(matrix(filterSpaceFullX), matrix(filterSpaceFullY), filterSpaceFull, stdPass));
 
             ////
 
@@ -862,7 +862,7 @@ stdbool FourierFilterBankImpl::process(const Process& o, stdPars(GpuModuleProces
             {
                 GPU_MATRIX_ALLOC(filterSpace, float32_x2, filterSize);
 
-                require(combineSeparableResponses(filterSpaceX, filterSpaceY, filterSpace, stdPass));
+                require(combineSeparableResponses(matrix(filterSpaceX), matrix(filterSpaceY), filterSpace, stdPass));
 
                 require(kit.gpuImageConsole.addVectorImage(filterSpace, spaceFactor, point(displayUpsampleFactor()), INTERP_NEAREST, point(0),
                     BORDER_ZERO, ImgOutputHint(STR("Filter(Space)")).setTargetConsole(), stdPass));

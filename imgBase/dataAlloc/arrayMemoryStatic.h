@@ -1,10 +1,10 @@
 #pragma once
 
-#include "storage/uninitializedArray.h"
 #include "data/array.h"
-#include "storage/constructDestruct.h"
 #include "errorLog/errorLog.h"
 #include "stdFunc/stdFunc.h"
+#include "storage/constructDestruct.h"
+#include "storage/uninitializedArray.h"
 
 //================================================================
 //
@@ -37,27 +37,30 @@ private:
 
 public:
 
-    inline ArrayMemoryStatic() {}
-    inline ~ArrayMemoryStatic() {dealloc();}
+    sysinline ArrayMemoryStatic() {}
+    sysinline ~ArrayMemoryStatic() {dealloc();}
 
 public:
 
-    inline const Array<Type>& operator()() const
-        {return *this;}
+    sysinline operator const Array<const Type>& () const
+    {
+        const BaseArray* base = this;
+        return recastEqualLayout<const Array<const Type>>(*base);
+    }
 
 public:
 
-    inline bool reallocStatic(Space newSize)
+    sysinline bool reallocStatic(Space newSize)
     {
         ensure(SpaceU(newSize) <= SpaceU(maxSize));
 
         currentSize = newSize;
-        BaseArray::assign(data, newSize, ArrayValidityAssertion{});
+        BaseArray::assignUnsafe(data(), newSize);
 
         return true;
     }
 
-    inline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
+    sysinline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
     {
         REQUIRE(reallocStatic(newSize));
         returnTrue;

@@ -54,24 +54,20 @@
         <DisplayString>[{theSize}]</DisplayString>
     </Type>
 
-    <Type Name="Matrix&lt;*&gt;">
+    <Type Name="MatrixEx&lt;*,*&gt;">
+        <AlternativeType Name="MatrixBase&lt;*,*,*&gt;"/>
         <AlternativeType Name="MatrixMemory&lt;*&gt;"/>
         <AlternativeType Name="MatrixMemoryEx&lt;*&gt;"/>
 
-        <DisplayString>{theSizeX} x {theSizeY}, ptr = {size_t(theMemPtrUnsafe),Xb}, pitch = {theMemPitch}</DisplayString>
-        
-        <Expand>
+        <!--<DisplayString>{theSizeX} x {theSizeY}, ptr = {size_t(theMemPtrUnsafe),Xb}, pitch = {theMemPitch}</DisplayString>-->
+        <DisplayString> {theSizeX} x {theSizeY}, ptr = {theMemPtrUnsafe}, pitch = {theMemPitch}</DisplayString>
+
+        <!--<Expand>
             <IndexListItems>
                 <Size>theSizeY</Size>
                 <ValueNode>theMemPtrUnsafe == 0 ? nullptr : theMemPtrUnsafe + theMemPitch * $i, [theSizeX]na</ValueNode>
             </IndexListItems>
-        </Expand>
-    </Type>
-
-    <Type Name="GpuMatrix&lt;*&gt;">
-        <AlternativeType Name="GpuMatrixMemory&lt;*&gt;"/>
-
-        <DisplayString> {theSizeX} x {theSizeY}, ptr = {theMemPtrUnsafe}, pitch = {theMemPitch}</DisplayString>
+        </Expand>-->
     </Type>
 
     <Type Name="OptionalObject&lt;*&gt;">

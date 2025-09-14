@@ -160,6 +160,11 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     require(sramHolder.realloc(EMU_MAX_SRAM_SIZE, maxNaturalAlignment, kit.malloc, stdPass));
     REMEMBER_CLEANUP_EX(sramCleanup, sramHolder.dealloc());
 
+    ////
+
+    require(warpIntrinsicsMemoryHolder.realloc(EMU_MAX_THREAD_COUNT, sizeof(EmuMaxWarpIntrinsicsType), kit.malloc, stdPass));
+    REMEMBER_CLEANUP_EX(warpIntrinsicsMemoryCleanup, warpIntrinsicsMemoryHolder.dealloc());
+
     //
     // Record success.
     //
@@ -167,6 +172,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     fiberTasksCleanup.cancel();
     fibersCleanup.cancel();
     sramCleanup.cancel();
+    warpIntrinsicsMemoryCleanup.cancel();
 
     created = true;
 
@@ -186,6 +192,8 @@ void EmuWin32::destroy()
     created = false;
 
     sramHolder.dealloc();
+    warpIntrinsicsMemoryHolder.dealloc();
+
     fiberTasks.dealloc();
     fibers.dealloc();
 
@@ -246,6 +254,10 @@ EmuError EmuWin32::launchKernel
     ARRAY_EXPOSE_UNSAFE(sramHolder);
     CHECK_RETURN_DBG(sramHolderSize == EMU_MAX_SRAM_SIZE);
 
+    ////
+
+    CHECK_RETURN_DBG(warpIntrinsicsMemoryHolder.size() == EMU_MAX_THREAD_COUNT);
+
     //
     // Setup fiber parameters
     //
@@ -255,6 +267,7 @@ EmuError EmuWin32::launchKernel
         threadCount,
         point3D(0), // groupIdx
         convertExact<Space>(groupCount),
+        warpIntrinsicsMemoryHolder,
         *this
     };
 

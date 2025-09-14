@@ -186,6 +186,27 @@ struct TypeMakeUnsignedImpl;
 
 //================================================================
 //
+// makeSigned
+// makeUnsigned
+//
+//================================================================
+
+template <typename Type>
+sysinline auto makeSigned(const Type& value)
+{
+    using Result = TYPE_MAKE_SIGNED(Type);
+    return Result(value);
+}
+
+template <typename Type>
+sysinline auto makeUnsigned(const Type& value)
+{
+    using Result = TYPE_MAKE_UNSIGNED(Type);
+    return Result(value);
+}
+
+//================================================================
+//
 // TYPE_IS_CONTROLLED
 //
 // Determines wheter the numeric type has built-in error state, like IEEE float.
@@ -697,7 +718,7 @@ struct ConvertResult
     static constexpr bool dstIsVector = !TYPE_EQUAL(TYPE_CLEANSE(Dst), DstBase);
 
     // Rebase if Src is vector and Dst is scalar
-    using T = TYPE_SELECT(srcIsVector && !dstIsVector, VECTOR_REBASE(Src, DstBase), TYPE_CLEANSE(Dst));
+    using T = TypeSelect<srcIsVector && !dstIsVector, VECTOR_REBASE(Src, DstBase), TYPE_CLEANSE(Dst)>;
 };
 
 //================================================================
@@ -731,10 +752,10 @@ struct ConvertVector
     };
 
     using Code =
-        TYPE_SELECT(!srcIsVector && !dstIsVector, ConvertScalarScalar,
-        TYPE_SELECT(!srcIsVector && dstIsVector, ConvertScalarVector,
-        TYPE_SELECT(srcIsVector && dstIsVector, ConvertVectorVector,
-        ConvertVectorScalar)));
+        TypeSelect<!srcIsVector && !dstIsVector, ConvertScalarScalar,
+        TypeSelect<!srcIsVector && dstIsVector, ConvertScalarVector,
+        TypeSelect<srcIsVector && dstIsVector, ConvertVectorVector,
+        ConvertVectorScalar>>>;
 
 };
 
@@ -779,10 +800,10 @@ struct ConvertVectorFlag
     ////
 
     using Code =
-        TYPE_SELECT(!srcIsVector && !dstIsVector, ConvertScalarScalar,
-        TYPE_SELECT(!srcIsVector && dstIsVector, ConvertScalarVector,
-        TYPE_SELECT(srcIsVector && dstIsVector, ConvertVectorVector,
-        ConvertVectorScalarProhibited)));
+        TypeSelect<!srcIsVector && !dstIsVector, ConvertScalarScalar,
+        TypeSelect<!srcIsVector && dstIsVector, ConvertScalarVector,
+        TypeSelect<srcIsVector && dstIsVector, ConvertVectorVector,
+        ConvertVectorScalarProhibited>>>;
 
 };
 

@@ -21,7 +21,7 @@
 #if DEVCODE
 
 template <typename Dst>
-devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResampleParams<Dst>& o, Space taskIdx, devPars)
+sysinline void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResampleParams<Dst>& o, Space taskIdx, devPars)
 {
     using FloatType = VECTOR_REBASE(Dst, float32);
 
@@ -195,7 +195,7 @@ devDecl void PREP_PASTE4(FUNCNAME, DIR(Hor, Ver), RANK, Flex)(const ResamplePara
 #if DEVCODE
 
 template <typename Dst>
-devDecl void PREP_PASTE3(FUNCNAME, DIR(Hor, Ver), RANK)(const ResampleParams<Dst>& o, devPars)
+sysinline void PREP_PASTE3(FUNCNAME, DIR(Hor, Ver), RANK)(const ResampleParams<Dst>& o, devPars)
 {
     devDebugCheck(devGroupCountZ == TASK_COUNT);
 

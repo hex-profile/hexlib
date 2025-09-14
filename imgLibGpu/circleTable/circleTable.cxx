@@ -12,17 +12,20 @@
 //
 //================================================================
 
-GPUTOOL_2D
+GPUTOOL_2D_BEG
 (
     makeCircleTable,
     PREP_EMPTY,
     ((float32_x2, dst)),
-    PREP_EMPTY,
-    {
-        float32 r = float32(Xs) / vGlobSize.X;
-        *dst = circleCcw(r);
-    }
+    PREP_EMPTY
 )
+#if DEVCODE
+{
+    float32 r = float32(Xs) / vGlobSize.X;
+    *dst = circleCcw(r);
+}
+#endif
+GPUTOOL_2D_END
 
 //================================================================
 //

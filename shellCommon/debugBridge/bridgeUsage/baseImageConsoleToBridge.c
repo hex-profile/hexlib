@@ -27,13 +27,14 @@ class BridgeImageProviderThunk : public debugBridge::ImageProvider
 public:
 
     BridgeImageProviderThunk(BaseImageProvider& imageProvider, stdPars(Kit))
-        : imageProvider(imageProvider), kit(kit), trace{trace} {}
+        : imageProvider(imageProvider), stdParsCapture {}
 
     virtual void saveBgr32(ImageRef<PixelRgb32> dst)
     {
         auto code = [&] ()
         {
-            auto matrix = Matrix<PixelRgb32>{dst.ptr, dst.pitch, dst.size.X, dst.size.Y, MatrixValidityAssertion{}};
+            Matrix<PixelRgb32> matrix;
+            REQUIRE(matrix.assignValidated(dst.ptr, dst.pitch, dst.size.X, dst.size.Y));
             require(imageProvider.saveBgr32(recastElement<uint8_x4>(matrix), stdPass));
             returnTrue;
         };
@@ -46,7 +47,8 @@ public:
     {
         auto code = [&] ()
         {
-            auto matrix = Matrix<PixelMono>{dst.ptr, dst.pitch, dst.size.X, dst.size.Y, MatrixValidityAssertion{}};
+            Matrix<PixelMono> matrix;
+            REQUIRE(matrix.assignValidated(dst.ptr, dst.pitch, dst.size.X, dst.size.Y));
             require(imageProvider.saveBgr24(matrix, stdPass));
             returnTrue;
         };
@@ -58,8 +60,7 @@ public:
 private:
 
     BaseImageProvider& imageProvider;
-    Kit kit;
-    TraceScope trace;
+    stdParsMember(Kit);
 
 };
 
@@ -90,7 +91,8 @@ stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool data
         // Imitates the processing on counting phase. The pitch on execution phase may differ,
         // but the provider implementation is tolerant to it up to some maximal row alignment.
 
-        auto image = Matrix<uint8_x4>{nullptr, imageProvider.desiredPitch(), size.X, size.Y, MatrixValidityAssertion{}};
+        Matrix<uint8_x4> image;
+        REQUIRE(image.assignValidated(nullptr, imageProvider.desiredPitch(), size.X, size.Y));
         require(imageProvider.saveBgr32(image, stdPass));
     }
     else

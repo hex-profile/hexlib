@@ -94,7 +94,7 @@ struct EmuSampler
 
 #define devDefineSampler(sampler, samplerType, readMode, rank) \
     \
-    static EmuSamplerState PREP_PASTE2(sampler, State) = {0, 0}; \
+    static EmuSamplerState PREP_PASTE2(sampler, State) = {0, 0, {}}; \
     static const EmuSampler<samplerType, readMode, rank> sampler = {&PREP_PASTE2(sampler, State)};
 
 //----------------------------------------------------------------

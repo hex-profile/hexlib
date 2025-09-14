@@ -15,8 +15,21 @@
 
 sysinline void rndgenUniform(RndgenState& state, uint8& result)
 {
-    uint32 tmp = rndgen16(state); // 16 random bits
-    result = tmp;
+    result = rndgen16(state); // 16 random bits
+}
+
+//----------------------------------------------------------------
+
+sysinline void rndgenUniform(RndgenState& state, uint16& result)
+{
+    result = rndgen16(state); // 16 random bits
+}
+
+//----------------------------------------------------------------
+
+sysinline void rndgenUniform(RndgenState& state, uint32& result)
+{
+    result = rndgen32(state);
 }
 
 //----------------------------------------------------------------

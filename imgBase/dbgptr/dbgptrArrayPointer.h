@@ -21,7 +21,7 @@ class DebugArrayPointerByteEngine
 
 public:
 
-    inline explicit DebugArrayPointerByteEngine()
+    sysinline explicit DebugArrayPointerByteEngine()
     {
         memoryStart = 0;
         memorySize = 0;
@@ -34,7 +34,7 @@ public:
 
 public:
 
-    inline explicit DebugArrayPointerByteEngine(DbgptrAddrU arrPtr, Space arrSize)
+    sysinline explicit DebugArrayPointerByteEngine(DbgptrAddrU arrPtr, Space arrSize)
     {
         setup(arrPtr, arrSize, arrPtr);
     }
@@ -57,7 +57,7 @@ public:
 
 public:
 
-    inline explicit DebugArrayPointerByteEngine(const DebugArrayPointerByteEngine& that)
+    sysinline explicit DebugArrayPointerByteEngine(const DebugArrayPointerByteEngine& that)
     {
         this->memoryStart = that.memoryStart;
         this->memorySize = that.memorySize;
@@ -66,7 +66,7 @@ public:
 
 public:
 
-    inline DebugArrayPointerByteEngine& operator =(const DebugArrayPointerByteEngine& that)
+    sysinline DebugArrayPointerByteEngine& operator =(const DebugArrayPointerByteEngine& that)
     {
         this->memoryStart = that.memoryStart;
         this->memorySize = that.memorySize;
@@ -81,7 +81,7 @@ public:
 
 public:
 
-    inline void validateSingleByte() const
+    sysinline void validateSingleByte() const
     {
         if_not (currentPtr - memoryStart < memorySize)
             errorBreak();
@@ -93,7 +93,7 @@ public:
 
 public:
 
-    inline void validateArray(bool ok, DbgptrAddrU testSize) const
+    sysinline void validateArray(bool ok, DbgptrAddrU testSize) const
     {
         check_flag(testSize <= memorySize, ok);
         check_flag(currentPtr - memoryStart <= memorySize - testSize, ok);
@@ -170,25 +170,25 @@ public:
     // Create empty
     //
 
-    inline DebugArrayPointer()
+    sysinline DebugArrayPointer()
         : base() {}
 
     struct Null;
 
-    inline DebugArrayPointer(Null*)
+    sysinline DebugArrayPointer(Null*)
         : base() {}
 
     //
     // Basic copy
     //
 
-    inline DebugArrayPointer(const Self& that)
+    sysinline DebugArrayPointer(const Self& that)
         : base(that.base) {}
 
-    inline DebugArrayPointer(const Base& base)
+    sysinline DebugArrayPointer(const Base& base)
         : base(base) {}
 
-    inline Self& operator =(const Self& that)
+    sysinline Self& operator =(const Self& that)
     {
         base = that.base;
         return *this;
@@ -199,7 +199,7 @@ public:
     //
 
     template <typename Other>
-    inline DebugArrayPointer(const DebugArrayPointer<Other>& that)
+    sysinline DebugArrayPointer(const DebugArrayPointer<Other>& that)
         :
         base(that.base)
     {
@@ -207,7 +207,7 @@ public:
     }
 
     template <typename Other>
-    inline Self& operator =(const DebugArrayPointer<Other>& that)
+    sysinline Self& operator =(const DebugArrayPointer<Other>& that)
     {
         Element* checkConversion = (Other*) 0; checkConversion = checkConversion;
 
@@ -225,7 +225,7 @@ private:
 
 public:
 
-    inline DebugArrayPointer(Element* arrPtr, Space arrSize, const DbgptrArrayPreconditions&)
+    sysinline DebugArrayPointer(Element* arrPtr, Space arrSize, const DbgptrArrayPreconditions&)
     {
         if_not (SpaceU(arrSize) <= SpaceU(maxSize))
             arrSize = 0;
@@ -239,20 +239,20 @@ public:
 
 public:
 
-    inline const Element& read() const
+    sysinline const Element& read() const
     {
         base.validateSingleByte();
         return * (Element*) base.currentPtr;
     }
 
     template <typename Value>
-    inline void write(const Value& value) const
+    sysinline void write(const Value& value) const
     {
         base.validateSingleByte();
         * (Element*) base.currentPtr = value;
     }
 
-    inline Element& modify() const
+    sysinline Element& modify() const
     {
         base.validateSingleByte();
         return * (Element*) base.currentPtr;
@@ -264,7 +264,7 @@ public:
 
 public:
 
-    inline Element* getPtrForInternalUsageOnly() const
+    sysinline Element* getPtrForInternalUsageOnly() const
         {return (Element*) base.currentPtr;}
 
     //
@@ -274,16 +274,16 @@ public:
 
 public:
 
-    inline Self& operator ++()
+    sysinline Self& operator ++()
         {base.currentPtr += sizeof(Element); return *this;}
 
-    inline Self& operator --()
+    sysinline Self& operator --()
         {base.currentPtr -= sizeof(Element); return *this;}
 
-    inline Self operator ++(int)
+    sysinline Self operator ++(int)
         {Self tmp(*this); ++(*this); return tmp;}
 
-    inline Self operator --(int)
+    sysinline Self operator --(int)
         {Self tmp(*this); --(*this); return tmp;}
 
     //
@@ -293,16 +293,25 @@ public:
 
 public:
 
-    inline Self& operator +=(Space diff)
+    sysinline Self& operator +=(Space diff)
     {
         base.currentPtr += (DbgptrAddrU(diff) * sizeof(Element));
         return *this;
     }
 
-    inline Self& operator -=(Space diff)
+    sysinline Self& operator -=(Space diff)
     {
         base.currentPtr -= (DbgptrAddrU(diff) * sizeof(Element));
         return *this;
+    }
+
+    //
+    // addByteOffset
+    //
+
+    sysinline void addByteOffset(DbgptrAddrS ofs)
+    {
+        base.currentPtr += ofs;
     }
 
     //
@@ -311,7 +320,7 @@ public:
 
 public:
 
-    inline const DbgptrReference<Self>& operator *() const
+    sysinline const DbgptrReference<Self>& operator *() const
         {return (const DbgptrReference<Self>&) *this;}
 
     //
@@ -320,7 +329,7 @@ public:
 
 public:
 
-    inline auto& operator [](Space index) const
+    sysinline auto& operator [](Space index) const
     {
         DbgptrReference<Self> result = (const DbgptrReference<Self>&) *this;
         result.asPointer() += index;
@@ -333,7 +342,7 @@ public:
 
 public:
 
-    inline Element* operator ->() const
+    sysinline Element* operator ->() const
         {return &modify();}
 
     //
@@ -343,13 +352,13 @@ public:
 
 public:
 
-    inline Self operator +(Space index) const
+    sysinline Self operator +(Space index) const
     {
         Self tmp = *this; tmp += index;
         return tmp;
     }
 
-    inline Self operator -(Space index) const
+    sysinline Self operator -(Space index) const
     {
         Self tmp = *this; tmp -= index;
         return tmp;
@@ -361,7 +370,7 @@ public:
 
 public:
 
-    inline Space operator -(const Self& that) const
+    sysinline Space operator -(const Self& that) const
         {return Space(((Element*) this->base.currentPtr) - ((Element*) that.base.currentPtr));}
 
     //
@@ -371,7 +380,7 @@ public:
 public:
 
     #define TMP_MACRO(OP) \
-        inline bool operator OP(const Self& that) const \
+        sysinline bool operator OP(const Self& that) const \
             {return this->base.currentPtr OP that.base.currentPtr;}
 
     TMP_MACRO(>)
@@ -418,7 +427,7 @@ COMPILE_ASSERT_EQUAL_LAYOUT(DbgptrReference<DebugArrayPointer<int>>, DebugArrayP
 //================================================================
 
 template <typename Element>
-inline Element* unsafePtr(const DebugArrayPointer<Element>& ptr, Space size)
+sysinline Element* unsafePtr(const DebugArrayPointer<Element>& ptr, Space size)
 {
     ptr.validateRange(size);
     return ptr.getPtrForInternalUsageOnly();
@@ -431,7 +440,7 @@ inline Element* unsafePtr(const DebugArrayPointer<Element>& ptr, Space size)
 //================================================================
 
 template <Space alignment, typename Type>
-inline bool isPtrAligned(const DebugArrayPointer<Type>& ptr)
+sysinline bool isPtrAligned(const DebugArrayPointer<Type>& ptr)
 {
     return isPtrAligned<alignment>(ptr.getPtrForInternalUsageOnly());
 }
@@ -447,3 +456,17 @@ struct PtrElemType<DebugArrayPointer<Type>>
 {
     using T = Type;
 };
+
+//================================================================
+//
+// addOffset
+//
+//================================================================
+
+template <typename Type>
+sysinline DebugArrayPointer<Type> addOffset(const DebugArrayPointer<Type>& ptr, DbgptrAddrS ofs)
+{
+    auto result = ptr;
+    result.addByteOffset(ofs);
+    return result;
+}

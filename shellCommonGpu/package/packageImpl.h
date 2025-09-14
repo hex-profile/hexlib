@@ -7,44 +7,26 @@ namespace packageImpl {
 
 //================================================================
 //
-// uncast
+// uncast<Array>
 //
 //================================================================
 
 template <typename Type>
-inline Array<Type> uncast(const ArrayBase<Type>& arr)
+inline auto& uncast(const ArrayBase<Type>& arr)
 {
-    return recastEqualLayout<Array<Type>>(arr);
-}
-
-//----------------------------------------------------------------
-
-template <typename Type>
-inline Matrix<Type> uncast(const MatrixBase<Type>& mat)
-{
-    return recastEqualLayout<Matrix<Type>>(mat);
+    return recastEqualLayout<const Array<Type>>(arr);
 }
 
 //================================================================
 //
-// uncastRef
-//
-// Only because of GCC bugs.
+// uncast<Matrix>
 //
 //================================================================
 
-template <typename Type>
-inline const Array<Type>& uncastRef(const ArrayBase<Type>& arr)
+template <typename Type, typename Pitch>
+inline auto& uncast(const MatrixBase<Type, Type*, Pitch>& mat)
 {
-    return recastEqualLayout<Array<Type>>(arr);
-}
-
-//----------------------------------------------------------------
-
-template <typename Type>
-inline const Matrix<Type>& uncastRef(const MatrixBase<Type>& mat)
-{
-    return recastEqualLayout<Matrix<Type>>(mat);
+    return recastEqualLayout<const Matrix<Type, Pitch>>(mat);
 }
 
 //----------------------------------------------------------------

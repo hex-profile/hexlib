@@ -1509,7 +1509,8 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
             ////
 
             if (timing.avgElemClocks > 0)
-                printMsg(log, STR("<p>%0 clocks &times; %1 elements</p>"), prettyNumber(fltg(timing.avgElemClocks, 3)), prettyNumber(fltg(timing.avgElemCount, 3)));
+                printMsg(log, STR("<p>%0 clocks &times; %1 elements</p>"),
+                    prettyNumber(timing.avgElemClocks), prettyNumber(timing.avgElemCount));
 
             ////
 

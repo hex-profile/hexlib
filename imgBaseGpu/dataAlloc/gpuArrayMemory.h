@@ -75,3 +75,15 @@ public:
 #define GPU_ARRAY_ALLOC(name, Type, size) \
     GpuArrayMemory<Type> name; \
     require(name.realloc(size, stdPass))
+
+//================================================================
+//
+// matrix
+//
+//================================================================
+
+template <typename Type>
+sysinline auto matrix(const GpuArrayMemory<Type>& arr)
+{
+    return matrix(arr());
+}

@@ -20,7 +20,7 @@ public:
 
 public:
 
-    ImageProviderMemcpy(const Matrix<const Pixel>& source, const ErrorLogKit& kit)
+    ImageProviderMemcpy(const MatrixAP<const Pixel>& source, const ErrorLogKit& kit)
         : source(source), kit(kit) {}
 
 public:
@@ -31,14 +31,14 @@ public:
     Space desiredBaseByteAlignment() const
         {return cpuBaseByteAlignment;}
 
-    stdbool saveBgr32(const Matrix<Pixel>& dest, stdNullPars);
+    stdbool saveBgr32(const MatrixAP<Pixel>& dest, stdNullPars);
 
-    stdbool saveBgr24(const Matrix<uint8>& dest, stdNullPars)
+    stdbool saveBgr24(const MatrixAP<uint8>& dest, stdNullPars)
         {REQUIRE(false); returnTrue;}
 
 private:
 
-    Matrix<const Pixel> source;
+    MatrixAP<const Pixel> source;
     ErrorLogKit kit;
 
 };

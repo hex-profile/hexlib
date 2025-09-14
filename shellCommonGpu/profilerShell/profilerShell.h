@@ -7,6 +7,7 @@
 #include "profilerShell/profiler/profilerImpl.h"
 #include "profilerShell/profilerReport/profilerReport.h"
 #include "profilerShell/profilerTarget.h"
+#include "temporalParamFilter/temporalParamFilter.h"
 #include "timer/timer.h"
 
 //================================================================
@@ -89,10 +90,21 @@ private:
 
     uint32 cycleCount = 0;
 
-    ////
+    //
+    // Frame time support.
+    //
 
-    BoolSwitch displayFrameTime{false};
-    static const Space frameTimeHistCapacity = 128;
-    HistoryObjectStatic<float32, frameTimeHistCapacity> frameTimeHist;
+    BoolSwitch ftmDisplayed{false};
+
+    static constexpr int ftmStages = 8;
+    NumericVar<float32> ftmHalfLife{1e-6f, 1e+6f, 2.f};
+
+    float32 ftmLastTime = float32Nan();
+    tpf::TemporalWeightedFilter<float32, ftmStages> ftmFilter;
+
+    static constexpr float32 ftmResolutionPeriod = 1e-3f; // 1 ms
+    static constexpr float32 ftmDivResolutionPeriod = 1.f / ftmResolutionPeriod;
+
+    stdbool ftmUpdate(float32 frameTime, stdPars(ErrorLogKit));
 
 };

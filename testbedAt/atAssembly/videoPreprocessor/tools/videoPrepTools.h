@@ -9,7 +9,7 @@
 //
 //================================================================
 
-stdbool copyImageRect(const GpuMatrix<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
+stdbool copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrixAP<uint8_x4>& dst, stdPars(GpuProcessKit));
 
 //================================================================
 //

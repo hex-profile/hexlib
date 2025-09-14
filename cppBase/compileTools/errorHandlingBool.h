@@ -4,6 +4,18 @@
 
 //================================================================
 //
+// ERROR_HANDLING_*
+//
+//================================================================
+
+#define ERROR_HANDLING_ROOT
+#define ERROR_HANDLING_PARAMS
+#define ERROR_HANDLING_PASS
+#define ERROR_HANDLING_MEMBER
+#define ERROR_HANDLING_CAPTURE
+
+//================================================================
+//
 // HEXLIB_STDBOOL_CLASS
 //
 //================================================================
@@ -26,11 +38,7 @@
 
 #else
 
-    class
-    #if (__cplusplus >= 201703L) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201703L) && (_MSC_VER >= 1913))
-        [[nodiscard]]
-    #endif
-    stdbool
+    class sysnodiscard stdbool
     {
 
     public:

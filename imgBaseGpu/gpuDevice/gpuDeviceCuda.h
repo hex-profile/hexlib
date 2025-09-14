@@ -1,7 +1,8 @@
 #pragma once
 
-#include "numbers/divRoundCompile.h"
 #include "data/space.h"
+#include "numbers/divRoundCompile.h"
+#include "numbers/int/intBase.h"
 
 //================================================================
 //
@@ -21,10 +22,6 @@
 
 //================================================================
 //
-// devDecl
-//
-// Function modifier that makes the function device-only.
-//
 // devPars
 // devPass
 //
@@ -32,9 +29,6 @@
 // for top-level (kernel-level) device functions.
 //
 //================================================================
-
-#define devDecl \
-    __device__
 
 #define devPars \
     int __dummyPars
@@ -160,7 +154,7 @@
 //
 // devWarpSize
 //
-// Execution unit SIMD size
+// Warp size.
 //
 // devSramBankPeriod
 //
@@ -171,6 +165,8 @@
 #if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 200 || __CUDA_ARCH__ <= 750)
 
     #define devWarpSize 32
+    #define devWarpMask 0xFFFFFFFF
+
     #define devSramBankPeriod (32*4)
 
 #else
@@ -215,9 +211,13 @@
 #define devSramMatrixEx(name, Type, sizeX, sizeY, memPitch) \
     \
     COMPILE_ASSERT((sizeX) >= 0 && (sizeY) >= 0); \
-    COMPILE_ASSERT((sizeX) <= (memPitch)); \
+    COMPILE_ASSERT((memPitch) >= (sizeX)); \
+    \
     __shared__ Type name##MemPtr[(memPitch) * (sizeY)]; MAKE_VARIABLE_USED(name##MemPtr); \
-    enum {name##MemPitch = (memPitch)};
+    static constexpr Space name##MemPitch = (memPitch); \
+    static constexpr bool name##PitchIsNonNeg = true; MAKE_VARIABLE_USED(name##PitchIsNonNeg)
+
+////
 
 #define devSramMatrixDense(name, Type, sizeX, sizeY) \
     devSramMatrixEx(name, Type, sizeX, sizeY, sizeX)
@@ -279,17 +279,7 @@ struct GpuSramPitchFor2dAccess
 
 //================================================================
 //
-// devWarpAll
-//
-// Warp vote functions, to avoid branch divergence.
-//
-//================================================================
-
-#define devWarpAll(cond) __all(cond)
-
-//================================================================
-//
-// devShuffleDown
+// devReadLaneAddBorderClamp
 //
 //================================================================
 
@@ -305,14 +295,52 @@ struct GpuSramPitchFor2dAccess
 
     #if CUDART_VERSION >= 9000
 
-        #define devShuffleDown(value, delta) \
-            __shfl_down_sync(0xFFFFFFFF, value, delta)
+        #define devWarpPredicate(pred) \
+            __ballot_sync(devWarpMask, pred)
+
+        #define devReadLaneBorderWrap(value, lane) \
+            __shfl_sync(devWarpMask, value, lane)
+
+        #define devReadLaneAddBorderClamp(value, delta) \
+            __shfl_down_sync(devWarpMask, value, delta)
+
+        #define devReadLaneSubBorderClamp(value, delta) \
+            __shfl_up_sync(devWarpMask, value, delta)
+
+        #define devReadLaneXor(value, delta) \
+            __shfl_xor_sync(devWarpMask, value, delta)
 
     #else
 
-        #define devShuffleDown(value, delta) \
+        #define devWarpPredicate(pred) \
+            __ballot(pred)
+
+        #define devReadLaneBorderWrap(value, lane) \
+            __shfl(value, lane)
+
+        #define devReadLaneAddBorderClamp(value, delta) \
             __shfl_down(value, delta)
+
+        #define devReadLaneSubBorderClamp(value, delta) \
+            __shfl_up(value, delta)
+
+        #define devReadLaneXor(value, delta) \
+            __shfl_xor(value, delta)
 
     #endif
 
 #endif
+
+//================================================================
+//
+// devPopCount
+//
+//================================================================
+
+template <typename Type>
+sysinline int devPopCount(const Type& value)
+    MISSING_FUNCTION_BODY
+
+template <>
+sysinline int devPopCount(const uint32& value)
+    {return __popc(value);}

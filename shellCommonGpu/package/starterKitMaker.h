@@ -27,7 +27,7 @@ private:
 
     static constexpr size_t formatterSize = 65536;
     CharType formatterPtr[formatterSize];
-    Array<CharType> formatterArray{formatterPtr, formatterSize};
+    Array<CharType> formatterArray = makeArray(formatterPtr, formatterSize);
 
 };
 

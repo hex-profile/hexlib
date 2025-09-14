@@ -272,7 +272,7 @@ class AtImgConsoleImplThunk : public BaseImageConsole
 
 public:
 
-    stdbool addImage(const Matrix<const uint8>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    stdbool addImage(const MatrixAP<const uint8>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
     {
         if_not (dataProcessing)
             return;
@@ -302,7 +302,7 @@ public:
         returnTrue;
     }
 
-    stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
     {
         if_not (dataProcessing)
             returnTrue;
@@ -471,8 +471,24 @@ class AtImageProviderThunk
 
 public:
 
-    AtImageProviderThunk(BaseImageProvider& imageProvider, const TraceScope& trace)
-        : imageProvider(imageProvider), trace(trace) {}
+    AtImageProviderThunk(BaseImageProvider& imageProvider, stdNullPars)
+        : imageProvider(imageProvider), stdParsCapture {}
+
+    at_bool AT_CALL callback
+    (
+        void* context,
+        at_pixel_rgb32* mem_ptr,
+        at_image_space mem_pitch,
+        at_image_space size_X,
+        at_image_space size_Y
+    )
+    {
+        COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
+        MatrixAP<uint8_x4> image;
+        ensure(image.assignValidated((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y));
+
+        return errorBlock(imageProvider.saveBgr32(image, stdPass));
+    }
 
     static at_bool AT_CALL callbackFunc
     (
@@ -484,16 +500,13 @@ public:
     )
     {
         AtImageProviderThunk* self = (AtImageProviderThunk*) context;
-        const TraceScope& trace = self->trace;
-
-        COMPILE_ASSERT_EQUAL_LAYOUT(at_pixel_rgb32, uint8_x4);
-        return errorBlock(self->imageProvider.saveBgr32(Matrix<uint8_x4>((uint8_x4*) mem_ptr, mem_pitch, size_X, size_Y), stdNullPass));
+        return self->callback(context, mem_ptr, mem_pitch, size_X, size_Y);
     }
 
 private:
 
-    TraceScope trace;
     BaseImageProvider& imageProvider;
+    stdParsMember(NullKit);
 
 };
 
@@ -538,7 +551,7 @@ public:
 
     stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdNullPars)
     {
-        AtImageProviderThunk atProvider(imageProvider, trace);
+        AtImageProviderThunk atProvider(imageProvider, stdPass);
 
         if_not (dataProcessing)
         {
@@ -596,7 +609,7 @@ public:
     virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdNullPars)
     {
         MUTEX_GUARD(lock);
-        AtImageProviderThunk atProvider(imageProvider, trace);
+        AtImageProviderThunk atProvider(imageProvider, stdNullPass);
 
         require(base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         returnTrue;
@@ -947,8 +960,8 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api)
         frameMemPitch = 0;
     }
 
-    Matrix<const uint8_x4> frame;
-    REQUIRE(frame.assign(frameMemPtr, frameMemPitch, frameSizeX, frameSizeY) != 0);
+    MatrixAP<const uint8_x4> frame;
+    REQUIRE(frame.assignValidated(frameMemPtr, frameMemPitch, frameSizeX, frameSizeY));
 
     //----------------------------------------------------------------
     //

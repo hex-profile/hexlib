@@ -63,7 +63,7 @@ struct ConvertParamsYuvBgr
     Point<Space> srcOffsetDiv2;
     Point<Space> srcSize;
     DstPixel outerColor;
-    GpuMatrix<DstPixel> dst;
+    GpuMatrixAP<DstPixel> dst;
 };
 
 //================================================================
@@ -135,7 +135,7 @@ devDefineSampler(chromaSamplerV, DevSampler2D, DevSamplerFloat, 1)
         const GpuMatrix<const SrcPixel>& srcChromaV, \
         const Point<Space>& srcOffset, \
         const DstPixel& outerColor, \
-        const GpuMatrix<DstPixel>& dst, \
+        const GpuMatrixAP<DstPixel>& dst, \
         stdPars(GpuProcessKit) \
     ) \
     { \

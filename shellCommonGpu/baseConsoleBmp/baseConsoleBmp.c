@@ -272,7 +272,7 @@ class BaseConsoleBmpImpl : public BaseConsoleBmp
 
     ////
 
-    stdbool saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    stdbool saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
     stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     ////
@@ -395,7 +395,8 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
     ARRAY_EXPOSE(bufferArray);
 
-    Matrix<Pixel> bufferImage(bufferArrayPtr, alignedPitch, imageSize.X, imageSize.Y);
+    Matrix<Pixel> bufferImage;
+    bufferImage.assignUnsafe(bufferArrayPtr, alignedPitch, imageSize.X, imageSize.Y);
 
     //----------------------------------------------------------------
     //
@@ -468,7 +469,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 //
 //================================================================
 
-stdbool BaseConsoleBmpImpl::saveImage(const Matrix<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+stdbool BaseConsoleBmpImpl::saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     require(mdCheck(stdPass));
 

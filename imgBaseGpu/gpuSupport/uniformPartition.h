@@ -20,7 +20,7 @@ public:
 
     sysinline UniformPartition(const Type& size, const Type& count)
     {
-        baseSize = size / count;
+        baseSize = makeUnsigned(size) / makeUnsigned(count);
         baseRem = size - baseSize * count;
     }
 

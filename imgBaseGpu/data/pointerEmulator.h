@@ -8,8 +8,8 @@
 //
 // PointerEmulator
 //
-// Emulates pointer type arithmetic,
-// to use for alien address space pointers.
+// Emulates pointer type arithmetic for use with pointers
+// from foreign address spaces.
 //
 //================================================================
 
@@ -37,14 +37,14 @@ public:
     // Convert from address type
     //
 
-    inline explicit PointerEmulator(AddrU addr)
+    sysinline explicit PointerEmulator(AddrU addr)
         : addr(addr) {}
 
     //
     // Export to address type
     //
 
-    inline operator AddrU() const
+    sysinline operator AddrU() const
         {return addr;}
 
     //
@@ -55,7 +55,7 @@ public:
 
     using SelfConstType = PointerEmulator<AddrU, const Type>;
 
-    inline operator const SelfConstType& () const
+    sysinline operator const SelfConstType& () const
     {
         return recastEqualLayout<const SelfConstType>(*this);
     }
@@ -67,7 +67,7 @@ public:
 public:
 
     #define TMP_MACRO(OP) \
-        inline bool operator OP(const Self& that) const \
+        sysinline bool operator OP(const Self& that) const \
             {return this->addr OP that.addr;}
 
     TMP_MACRO(>)
@@ -86,16 +86,16 @@ public:
 
 public:
 
-    inline Self& operator ++()
+    sysinline Self& operator ++()
         {addr += sizeof(Type); return *this;}
 
-    inline Self& operator --()
+    sysinline Self& operator --()
         {addr -= sizeof(Type); return *this;}
 
-    inline Self operator ++(int)
+    sysinline Self operator ++(int)
         {Self tmp(*this); ++(*this); return tmp;}
 
-    inline Self operator --(int)
+    sysinline Self operator --(int)
         {Self tmp(*this); --(*this); return tmp;}
 
     //
@@ -114,7 +114,7 @@ private:
 public:
 
     template <typename Ofs>
-    inline Self& operator +=(Ofs ofs)
+    sysinline Self& operator +=(Ofs ofs)
     {
         COMPILE_ASSERT(CheckOfsType<Ofs>::value);
 
@@ -123,7 +123,7 @@ public:
     }
 
     template <typename Ofs>
-    inline Self& operator -=(Ofs ofs)
+    sysinline Self& operator -=(Ofs ofs)
     {
         COMPILE_ASSERT(CheckOfsType<Ofs>::value);
 
@@ -132,7 +132,7 @@ public:
     }
 
     template <typename Ofs>
-    inline Self operator +(Ofs ofs) const
+    sysinline Self operator +(Ofs ofs) const
     {
         COMPILE_ASSERT(CheckOfsType<Ofs>::value);
 
@@ -141,7 +141,7 @@ public:
     }
 
     template <typename Ofs>
-    inline Self operator -(Ofs ofs) const
+    sysinline Self operator -(Ofs ofs) const
     {
         COMPILE_ASSERT(CheckOfsType<Ofs>::value);
 
@@ -155,10 +155,17 @@ public:
 
 public:
 
-    inline AddrS operator -(const Self& that) const
+    sysinline AddrS operator -(const Self& that) const
     {
         AddrS diff = AddrS(this->addr - that.addr); // ring arithmetic
         return diff / AddrS(sizeof(Type)); // signed div
+    }
+
+public:
+
+    sysinline void addByteOffset(AddrS ofs)
+    {
+        addr += ofs;
     }
 
 };
@@ -191,3 +198,29 @@ struct PtrAddrType<PointerEmulator<Addr, Type>>
 {
     using AddrU = Addr;
 };
+
+//================================================================
+//
+// PtrRebaseType
+//
+//================================================================
+
+template <typename Src, typename Addr, typename Dst>
+struct PtrRebaseType<PointerEmulator<Addr, Src>, Dst>
+{
+    using T = PointerEmulator<Addr, Dst>;
+};
+
+//================================================================
+//
+// addOffset
+//
+//================================================================
+
+template <typename AddrU, typename Type>
+sysinline auto addOffset(const PointerEmulator<AddrU, Type>& ptr, TYPE_MAKE_SIGNED(AddrU) ofs)
+{
+    auto result = ptr;
+    result.addByteOffset(ofs);
+    return result;
+}

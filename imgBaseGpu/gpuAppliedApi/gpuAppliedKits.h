@@ -137,12 +137,33 @@ KIT_CREATE(GpuTextureAllocKit, GpuTextureAllocator&, gpuTextureAlloc);
 
 //================================================================
 //
+// GpuCountingPhaseProhibitionControlKit
+//
+//================================================================
+
+struct GpuCountingPhaseProhibitionControl;
+
+KIT_CREATE(GpuCountingPhaseProhibitionControlKit, GpuCountingPhaseProhibitionControl&, gpuCountingPhaseProhibitionControl);
+
+//================================================================
+//
 // GpuAppExecKit
 //
 //================================================================
 
-using GpuAppExecKitWithoutFastAlloc = KitCombine<GpuCurrentContextKit, GpuPropertiesKit, GpuCurrentStreamKit, GpuTransferKit, GpuSamplerSetupKit, GpuKernelCallingKit,
-    GpuStreamWaitingKit, GpuEventRecordingKit, GpuEventWaitingKit>;
+using GpuAppExecKitWithoutFastAlloc = KitCombine
+<
+    GpuCurrentContextKit,
+    GpuPropertiesKit,
+    GpuCurrentStreamKit,
+    GpuTransferKit,
+    GpuSamplerSetupKit,
+    GpuKernelCallingKit,
+    GpuStreamWaitingKit,
+    GpuEventRecordingKit,
+    GpuEventWaitingKit,
+    GpuCountingPhaseProhibitionControlKit
+>;
 
 using GpuAppExecKit = KitCombine<GpuAppExecKitWithoutFastAlloc, GpuFastAllocKit>;
 
@@ -153,9 +174,6 @@ using GpuAppExecKit = KitCombine<GpuAppExecKitWithoutFastAlloc, GpuFastAllocKit>
 //================================================================
 
 using GpuAppAllocKit = KitCombine<GpuTextureAllocKit, GpuEventAllocKit>;
-
-#define GPU_APP_ALLOC_KIT_LIST \
-    (GpuTextureAllocKit) (GpuEventAllocKit)
 
 //================================================================
 //

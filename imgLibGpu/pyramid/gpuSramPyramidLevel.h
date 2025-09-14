@@ -91,13 +91,16 @@ sysinline GpuMatrix<Type> GpuSramPyramidLevel<Type>::getImage(Space layer) const
 {
     devDebugCheck(SpaceU(layer) < SpaceU(theLayers));
 
-    return GpuMatrix<Type>
+    GpuMatrix<Type> result;
+
+    result.assignUnsafe
     (
         (Type*) (basePointer + layout.memOffset + layer * layout.layerBytePitch),
         layout.pitch,
-        layout.size.X, layout.size.Y,
-        MatrixValidityAssertion{}
+        layout.size.X, layout.size.Y
     );
+
+    return result;
 }
 
 #endif

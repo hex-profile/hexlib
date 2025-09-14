@@ -33,7 +33,7 @@ public:
     stdbool update(stdPars(Kit))
         {CHECK(false); returnTrue;}
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
         {CHECK(false); returnTrue;}
 
     stdbool overlayClear(stdPars(Kit))
@@ -81,7 +81,7 @@ public:
     stdbool update(stdPars(Kit))
         {return baseConsole.update(stdPassThru);}
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
         {return baseConsole.addImageBgr(img, hint, stdPassThru);}
 
     stdbool overlayClear(stdPars(Kit))
@@ -114,7 +114,7 @@ public:
         \
         stdbool addMatrixFunc \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
             InterpType upsampleType, \
@@ -143,7 +143,7 @@ public:
         \
         stdbool addMatrixChanFunc \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             int channel, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
@@ -172,7 +172,7 @@ private:
     template <typename Type>
     stdbool addMatrixExImpl
     (
-        const GpuMatrix<const Type>& img,
+        const GpuMatrixAP<const Type>& img,
         int channel,
         float32 minVal, float32 maxVal,
         const Point<float32>& upsampleFactor,
@@ -270,7 +270,7 @@ public:
     template <typename Type>
     stdbool addColorImageFunc
     (
-        const GpuMatrix<const Type>& img,
+        const GpuMatrixAP<const Type>& img,
         float32 minVal, float32 maxVal,
         const Point<float32>& upsampleFactor,
         InterpType upsampleType,
@@ -290,7 +290,7 @@ public:
         \
         stdbool funcName \
         ( \
-            const GpuMatrix<const Type>& img, \
+            const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
             const Point<float32>& upsampleFactor, \
             InterpType upsampleType, \

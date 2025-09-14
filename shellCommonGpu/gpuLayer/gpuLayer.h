@@ -237,6 +237,23 @@ struct GpuBenchmarkingControl
 
 //================================================================
 //
+// GpuCountingPhaseProhibitionControl
+//
+// This API allows for the temporary suspension of the prohibition on GPU calls
+// during memory counting. This ban generally helps to track missed calls,
+// which can lead to system slowdown. However, there are instances where it needs
+// to be disabled, and this API provides that capability.
+//
+//================================================================
+
+struct GpuCountingPhaseProhibitionControl
+{
+    virtual void setCountingPhaseGpuProhibition(bool value) =0;
+    virtual bool getCountingPhaseGpuProhibition() =0;
+};
+
+//================================================================
+//
 // GpuInitApi
 //
 //================================================================
@@ -270,7 +287,8 @@ struct GpuExecApi
     public GpuStreamWaiting,
     public GpuEventRecording,
     public GpuEventWaiting,
-    public GpuBenchmarkingControl
+    public GpuBenchmarkingControl,
+    public GpuCountingPhaseProhibitionControl
 {
 };
 

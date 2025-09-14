@@ -39,7 +39,7 @@ struct GpuBaseConsoleImages
 
     virtual stdbool clear(stdPars(Kit)) =0;
     virtual stdbool update(stdPars(Kit)) =0;
-    virtual stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) =0;
+    virtual stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) =0;
 };
 
 //================================================================
@@ -50,14 +50,14 @@ struct GpuBaseConsoleImages
 
 struct GpuImageProviderBgr32
 {
-    virtual stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const =0;
+    virtual stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const =0;
 };
 
 LAMBDA_THUNK
 (
     gpuImageProviderBgr32,
     GpuImageProviderBgr32,
-    stdbool saveImage(const GpuMatrix<uint8_x4>& dest, stdNullPars) const,
+    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdNullPars) const,
     lambda(dest, stdNullPass)
 )
 
@@ -107,7 +107,7 @@ public:
     stdbool update(stdPars(Kit))
         {returnTrue;}
 
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
         {returnTrue;}
 
     stdbool overlayClear(stdPars(Kit))
@@ -148,7 +148,7 @@ public:
 
     stdbool clear(stdPars(Kit));
     stdbool update(stdPars(Kit));
-    stdbool addImageBgr(const GpuMatrix<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit));
+    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit));
     stdbool overlayClear(stdPars(Kit));
     stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit));
     stdbool overlaySetImageFake(stdPars(Kit));

@@ -1,15 +1,15 @@
 #pragma once
 
 #include "compileTools/compileTools.h"
+#include "data/pointerInterface.h"
+#include "dbgptr/dbgptrGate.h"
 #include "numbers/float/floatType.h"
 #include "numbers/float16/float16Type.h"
 #include "vectorTypes/vectorBase.h"
-#include "dbgptr/dbgptrGate.h"
-#include "data/pointerInterface.h"
 
 //================================================================
 //
-// float_XX_rndsat
+// float_XX_rndsat intrinsics.
 //
 // Converts float value to the specified integer type
 // with rounding and clamping to the destination range.
@@ -86,8 +86,8 @@ sysinline Dst convertRoundSaturate(const Src& src);
     TMP_MACRO(float32, uint16, convertNearest<int32>(clampRange<float32>(src, 0, 0xFFFF)))
 
     //
-    // 32-bit numbers need special approach:
-    // Compare only to exactly-representable floats (!)
+    // 32-bit integers need special approach:
+    // Compare only to exactly-representable floats!
     //
 
     template <>
@@ -237,10 +237,10 @@ sysinline float16 convertNormClamp(const float32& src) \
 #else
 
     TMP_MACRO(float32, int8,  convertRoundSaturate<int8>(src * 0x7F))
-    TMP_MACRO(float32, int16, convertRoundSaturate<int8>(src * 0x7FFF))
+    TMP_MACRO(float32, int16, convertRoundSaturate<int16>(src * 0x7FFF))
 
     TMP_MACRO(float32, uint8,  convertRoundSaturate<uint8>(src * 0xFF))
-    TMP_MACRO(float32, uint16, convertRoundSaturate<uint8>(src * 0xFFFF))
+    TMP_MACRO(float32, uint16, convertRoundSaturate<uint16>(src * 0xFFFF))
 
 #endif
 

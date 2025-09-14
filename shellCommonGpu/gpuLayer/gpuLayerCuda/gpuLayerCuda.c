@@ -6,17 +6,18 @@
 #include <stdio.h>
 #include <memory>
 
-#include "userOutput/diagnosticKit.h"
 #include "allocation/sysAllocAlignShell.h"
-#include "errorLog/debugBreak.h"
-#include "timer/timer.h"
-#include "emptyKernel.h"
-#include "userOutput/printMsg.h"
-#include "history/historyObject.h"
+#include "data/spacex.h"
 #include "dataAlloc/arrayObjectMemory.inl"
-#include "types/lt/ltBase.h"
-#include "numbers/divRound.h"
+#include "emptyKernel.h"
+#include "errorLog/debugBreak.h"
 #include "gpuLayer/gpuLayerCuda/cudaErrorReport.h"
+#include "history/historyObject.h"
+#include "numbers/divRound.h"
+#include "timer/timer.h"
+#include "types/lt/ltBase.h"
+#include "userOutput/diagnosticKit.h"
+#include "userOutput/printMsg.h"
 
 //================================================================
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -1339,6 +1340,9 @@ stdbool CoverageQueue::flushAll(Profiler* profiler, stdPars(GpuCoverageKit))
 
     for (Space i = count - 1; i >= 0; --i)
     {
+        REQUIRE(count == history.size());
+        REQUIRE(i < history.size());
+
         CoverageRecord* r = history[i];
         REQUIRE(r != 0);
         require(flushCoverageRecord(*r, syncHappened, profiler, stdPass));
@@ -1968,13 +1972,13 @@ inline CUaddress_mode cudaAddrMode(BorderMode borderMode)
 
 //================================================================
 //
-// CudaExecApiThunk::setSamplerImage
+// CudaExecApiThunk::setSamplerImageEx
 //
 // Overhead is approx 0.7e-6 sec.
 //
 //================================================================
 
-stdbool CudaExecApiThunk::setSamplerImage
+stdbool CudaExecApiThunk::setSamplerImageEx
 (
     const GpuSamplerLink& sampler,
     GpuAddrU imageBaseAddr,

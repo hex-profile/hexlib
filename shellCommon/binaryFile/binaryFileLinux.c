@@ -73,7 +73,7 @@ stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool 
     REQUIRE(filename.size >= 0);
     SimpleString newFilename(filename.ptr, filename.size);
 
-    REQUIRE_TRACE0(def(newFilename), STR("Not enough memory."));
+    REQUIRE_TRACE(def(newFilename), STR("Not enough memory."));
 
     ////
 

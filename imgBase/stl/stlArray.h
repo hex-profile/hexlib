@@ -3,6 +3,9 @@
 #include <vector>
 
 #include "data/array.h"
+#include "errorLog/convertExceptions.h"
+#include "errorLog/errorLog.h"
+#include "compileTools/blockExceptionsSilent.h"
 
 //================================================================
 //
@@ -48,30 +51,42 @@ public:
     inline bool resize(Space size)
     {
         ensure(SpaceU(size) <= SpaceU(maxSize()));
-        BaseArray::assign(size ? &data[0] : nullptr, size);
+        BaseArray::assignUnsafe(size ? &data[0] : nullptr, size);
         return true;
     }
 
 public:
 
-    sysinline bool realloc(Space newSize)
+    template <typename Kit>
+    sysinline stdbool realloc(Space newSize, stdPars(Kit))
     {
+        stdExceptBegin;
+
+        dealloc();
+
+        REQUIRE(newSize >= 0);
+
+        data.resize(newSize);
+
+        REQUIRE(BaseArray::assignValidated(newSize ? &data[0] : nullptr, newSize));
+
+        stdExceptEnd;
+    }
+
+public:
+
+    sysinline bool reallocBool(Space newSize)
+    {
+        boolFuncExceptBegin;
+
         dealloc();
 
         ensure(newSize >= 0);
+        data.resize(newSize);
 
-        try
-        {
-            data.resize(newSize);
-        }
-        catch (...)
-        {
-            ensure(false); // memory allocation failed
-        }
+        ensure(BaseArray::assignValidated(newSize ? &data[0] : nullptr, newSize));
 
-        BaseArray::assign(newSize ? &data[0] : nullptr, newSize);
-
-        return true;
+        boolFuncExceptEnd;
     }
 
 public:

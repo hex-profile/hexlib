@@ -4,6 +4,7 @@
 #include "point4d/point4d.h"
 #include "numbers/mathIntrinsics.h"
 #include "mathFuncs/quatBase.h"
+#include "mathFuncs/rotationMath.h"
 
 //================================================================
 //
@@ -179,6 +180,23 @@ sysinline Point4D<Float> quatFromRodrigues(const Point3D<Float>& R)
 
 //================================================================
 //
+// quatFromRodriguesInCircles
+//
+// Converts Rodrigues vector into a quaternion. Unlike the standard
+// conversion function, this function accepts rotation amount in
+// circles instead of radians, i.e., the rotation range is
+// from -1/2 to 1/2, instead of from -pi to pi.
+//
+//================================================================
+
+template <typename Float>
+sysinline Point4D<Float> quatFromRodriguesInCircles(const Point3D<Float>& R)
+{
+    return quatImaginaryExp(Float(0.5 * 2 * pi64) * R);
+}
+
+//================================================================
+//
 // quatToRodrigues
 //
 // The quaternion should have unit length.
@@ -208,4 +226,64 @@ sysinline Point4D<Float> quatFlipToBase(const Point4D<Float>& Q, const Point4D<F
     Float lenSq2 = vectorLengthSq(Q + base);
 
     return (lenSq1 < lenSq2) ? +Q : -Q;
+}
+
+//================================================================
+//
+// hqCrossProductOfUnitVectors
+//
+// Computes cross product of vectors A and B.
+//
+// The function aims to produce a more precise orthogonal
+// vector as a result.
+//
+// The inputs should have unit length!
+//
+//================================================================
+
+template <typename Float>
+sysinline Point3D<Float> hqCrossProductOfUnitVectors(const Point3D<Float>& A, const Point3D<Float>& B)
+{
+    auto result = crossProduct(A, B);
+
+    result -= A * scalarProd(result, A);
+    result -= B * scalarProd(result, B);
+
+    return result;
+}
+
+//================================================================
+//
+// computeRotationQuaternion
+//
+// This function computes the quaternion that represents the rotation
+// which aligns vector A with vector B.
+//
+// Checked by quatGenTest.
+//
+//================================================================
+
+template <typename Float>
+sysinline auto computeRotationQuaternion(const Point3D<Float>& Av, const Point3D<Float>& Bv)
+{
+    // normalize vectors
+    auto A = vectorNormalize(Av);
+    auto B = vectorNormalize(Bv);
+
+    // rotation axis
+    auto rotationAxis = vectorNormalize(hqCrossProductOfUnitVectors(A, B));
+
+    // transition to the coordinate system in the plane of rotation
+    auto xAxis = B;
+    auto xCoord = scalarProd(A, xAxis);
+
+    // Y axis of the rotation plane
+    auto yAxis = vectorNormalize(hqCrossProductOfUnitVectors(rotationAxis, B));
+    auto yCoord = scalarProd(A, yAxis);
+
+    // consider X and Y coordinates as a complex number and take its phase
+    auto rotationAmount = absv(Float(2 * pi64) * exactPhase(point(xCoord, yCoord)));
+
+    // form the rotation quaternion
+    return vectorNormalize(quatFromRodrigues(rotationAmount * rotationAxis));
 }

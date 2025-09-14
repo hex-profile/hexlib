@@ -15,9 +15,9 @@ namespace packageImpl {
 template <typename Pixel>
 stdbool copyImageFromCpu
 (
-    const Matrix<const Pixel> srcImage,
+    const MatrixAP<const Pixel> srcImage,
     GpuArrayMemory<Pixel>& memory,
-    GpuMatrix<const Pixel>& dst,
+    GpuMatrixAP<const Pixel>& dst,
     GpuCopyThunk& gpuCopier,
     stdPars(GpuProcessKit)
 );

@@ -14,7 +14,7 @@
 
 struct BaseImageConsole
 {
-    virtual stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars) =0;
+    virtual stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars) =0;
     virtual stdbool clear(stdNullPars) =0;
     virtual stdbool update(stdNullPars) =0;
 };
@@ -23,7 +23,7 @@ struct BaseImageConsole
 
 struct BaseImageConsoleNull : public BaseImageConsole
 {
-    virtual stdbool addImage(const Matrix<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
+    virtual stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdNullPars)
         {returnTrue;}
 
     virtual stdbool clear(stdNullPars)
@@ -48,11 +48,11 @@ struct BaseImageProvider
     virtual Space desiredBaseByteAlignment() const =0;
 
     // Saves to BGR32.
-    virtual stdbool saveBgr32(const Matrix<uint8_x4>& dest, stdNullPars) =0;
+    virtual stdbool saveBgr32(const MatrixAP<uint8_x4>& dest, stdNullPars) =0;
 
     // Saves to BGR24. The destination is an uint8 image
     // with width 3 times more than the color image width.
-    virtual stdbool saveBgr24(const Matrix<uint8>& dest, stdNullPars) =0;
+    virtual stdbool saveBgr24(const MatrixAP<uint8>& dest, stdNullPars) =0;
 };
 
 //================================================================

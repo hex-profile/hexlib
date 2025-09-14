@@ -1,6 +1,6 @@
 #include "overlayBuffer.h"
 
-#include "channels/buffers/overlayBuffer/gpuBuffer.h"
+#include "gpuBuffer/gpuBuffer.h"
 #include "gpuProcessKit.h"
 #include "storage/rememberCleanup.h"
 #include "lib/imageTools/getAlignedBufferPitch.h"
@@ -259,7 +259,8 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
 
     ////
 
-    GpuMatrix<Type> storedImage{buffer.ptr<Type>(), pitch, size.X, size.Y, MatrixValidityAssertion{}};
+    GpuMatrix<Type> storedImage;
+    storedImage.assignUnsafe(buffer.ptr<Type>(), pitch, size.X, size.Y);
 
     //----------------------------------------------------------------
     //

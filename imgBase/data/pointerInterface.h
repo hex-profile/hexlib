@@ -18,10 +18,7 @@
 //================================================================
 
 template <typename Pointer>
-struct PtrElemType
-{
-    using T = void;
-};
+struct PtrElemType;
 
 //----------------------------------------------------------------
 
@@ -40,10 +37,7 @@ struct PtrElemType<Type*>
 //================================================================
 
 template <typename Pointer>
-struct PtrAddrType
-{
-    using AddrU = void;
-};
+struct PtrAddrType;
 
 //----------------------------------------------------------------
 
@@ -52,4 +46,23 @@ struct PtrAddrType<Type*>
 {
     COMPILE_ASSERT(sizeof(size_t) == sizeof(Type*));
     using AddrU = size_t;
+};
+
+//================================================================
+//
+// PtrRebaseType
+//
+// Change pointer base type.
+//
+//================================================================
+
+template <typename Pointer, typename Dst>
+struct PtrRebaseType;
+
+//----------------------------------------------------------------
+
+template <typename Src, typename Dst>
+struct PtrRebaseType<Src*, Dst>
+{
+    using T = Dst*;
 };
