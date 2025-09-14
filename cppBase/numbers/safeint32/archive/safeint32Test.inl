@@ -10,7 +10,7 @@ namespace safeint32TestImpl {
 //================================================================
 
 template <typename Perk>
-stdbool typeTest1
+void typeTest1
 (
     const typename Perk::Type sample[],
     int32 N,
@@ -21,10 +21,6 @@ stdbool typeTest1
     {
         REQUIRE(bool(Perk::equal(Perk::opStd(sample[i]), Perk::opTest(sample[i]))));
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -34,7 +30,7 @@ stdbool typeTest1
 //================================================================
 
 template <typename Perk>
-stdbool typeTest2
+void typeTest2
 (
     const typename Perk::Type sampleA[],
     int32 countA,
@@ -60,10 +56,6 @@ stdbool typeTest2
             );
         }
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -289,7 +281,7 @@ struct UnaryPlus : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk, typename Test>
-stdbool testUnaryPlusMinus
+void testUnaryPlusMinus
 (
     RndgenState& rndgen,
     stdPars(ErrorLogKit)
@@ -303,9 +295,7 @@ stdbool testUnaryPlusMinus
     for (int32 i = COMPILE_ARRAY_SIZE(specialCases); i < COMPILE_ARRAY_SIZE(allCases); ++i)
         allCases[i] = randRange(rndgen, uint32(0x00000000UL), uint32(0xFFFFFFFFUL));
 
-    require(typeTest1<Test>(allCases, COMPILE_ARRAY_SIZE(allCases), stdPass));
-
-    returnTrue;
+    typeTest1<Test>(allCases, COMPILE_ARRAY_SIZE(allCases), stdPass);
 }
 
 //================================================================
@@ -355,7 +345,7 @@ struct Name : StdTest<Perk> \
 //================================================================
 
 template <typename Perk, typename Test>
-stdbool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit))
+void testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 64];
 
@@ -367,17 +357,12 @@ stdbool testBinarySpecialCasesAndRandom(RndgenState& rndgen, stdPars(ErrorLogKit
 
     ////
 
-    require
+    typeTest2<Test>
     (
-        typeTest2<Test>
-        (
-            allCases, COMPILE_ARRAY_SIZE(allCases),
-            allCases, COMPILE_ARRAY_SIZE(allCases),
-            stdPass
-        )
+        allCases, COMPILE_ARRAY_SIZE(allCases),
+        allCases, COMPILE_ARRAY_SIZE(allCases),
+        stdPass
     );
-
-    returnTrue;
 }
 
 //================================================================
@@ -393,11 +378,11 @@ DEFINE_SIMPLE_BINARY_TRAIT(Multiplication, *)
 //----------------------------------------------------------------
 
 template <typename Perk>
-stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
+void testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     typedef Multiplication<Perk> Test;
 
-    require((testBinarySpecialCasesAndRandom<Perk, Test>)(rndgen, stdPass));
+    testBinarySpecialCasesAndRandom<Perk, Test>(rndgen, stdPass);
 
     //
     // Special test near overflow edge
@@ -438,10 +423,6 @@ stdbool testMultiplication(RndgenState& rndgen, stdPars(ErrorLogKit))
             REQUIRE(ovf0 != ovf1);
         }
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -491,12 +472,10 @@ struct Division : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk>
-stdbool testDivision(RndgenState& rndgen, stdPars(ErrorLogKit))
+void testDivision(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     bool ok = testBinarySpecialCasesAndRandom<Perk, Division<Perk>>(rndgen, stdPass);
     require(ok);
-
-    returnTrue;
 }
 
 //================================================================
@@ -547,11 +526,9 @@ struct Remainder : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk>
-stdbool testRemainder(RndgenState& rndgen, stdPars(ErrorLogKit))
+void testRemainder(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    require(testBinarySpecialCasesAndRandom<Perk, Remainder<Perk>>(rndgen, stdPass));
-
-    returnTrue;
+    testBinarySpecialCasesAndRandom<Perk, Remainder<Perk>>(rndgen, stdPass);
 }
 
 //================================================================
@@ -565,11 +542,9 @@ DEFINE_SIMPLE_BINARY_TRAIT(Addition, +)
 //----------------------------------------------------------------
 
 template <typename Perk>
-stdbool testAddition(RndgenState& rndgen, stdPars(ErrorLogKit))
+void testAddition(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    require(testBinarySpecialCasesAndRandom<Perk, Addition<Perk>>(rndgen, stdPass));
-
-    returnTrue;
+    testBinarySpecialCasesAndRandom<Perk, Addition<Perk>>(rndgen, stdPass);
 }
 
 //================================================================
@@ -583,11 +558,9 @@ DEFINE_SIMPLE_BINARY_TRAIT(Subtraction, -)
 //----------------------------------------------------------------
 
 template <typename Perk>
-stdbool testSubtraction(RndgenState& rndgen, stdPars(ErrorLogKit))
+void testSubtraction(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    require(testBinarySpecialCasesAndRandom<Perk, Subtraction<Perk>>(rndgen, stdPass));
-
-    returnTrue;
+    testBinarySpecialCasesAndRandom<Perk, Subtraction<Perk>>(rndgen, stdPass);
 }
 
 //================================================================
@@ -681,7 +654,7 @@ struct ShiftLeft : StdTest<Perk>
 //----------------------------------------------------------------
 
 template <typename Perk, typename Test>
-stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
+void testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
     uint32 allCases[COMPILE_ARRAY_SIZE(specialCases) + 64];
 
@@ -693,17 +666,12 @@ stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 
     ////
 
-    require
+    typeTest2<Test>
     (
-        typeTest2<Test>
-        (
-            allCases, COMPILE_ARRAY_SIZE(allCases),
-            shiftCases, COMPILE_ARRAY_SIZE(shiftCases),
-            stdPass
-        )
+        allCases, COMPILE_ARRAY_SIZE(allCases),
+        shiftCases, COMPILE_ARRAY_SIZE(shiftCases),
+        stdPass
     );
-
-    returnTrue;
 }
 
 //================================================================
@@ -713,21 +681,20 @@ stdbool testShift(RndgenState& rndgen, stdPars(ErrorLogKit))
 //================================================================
 
 template <typename Perk>
-stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
+void burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 {
-    require((testUnaryPlusMinus<Perk, UnaryMinus<Perk>>)(rndgen, stdPass));
-    require((testUnaryPlusMinus<Perk, UnaryPlus<Perk>>)(rndgen, stdPass));
-    require(testMultiplication<Perk>(rndgen, stdPass));
+    testUnaryPlusMinus<Perk, UnaryMinus<Perk>>(rndgen, stdPass);
+    testUnaryPlusMinus<Perk, UnaryPlus<Perk>>(rndgen, stdPass);
+    testMultiplication<Perk>(rndgen, stdPass);
 
-    require(testDivision<Perk>(rndgen, stdPass));
-    require(testRemainder<Perk>(rndgen, stdPass));
+    testDivision<Perk>(rndgen, stdPass);
+    testRemainder<Perk>(rndgen, stdPass);
 
-    require(testAddition<Perk>(rndgen, stdPass));
-    require(testSubtraction<Perk>(rndgen, stdPass));
+    testAddition<Perk>(rndgen, stdPass);
+    testSubtraction<Perk>(rndgen, stdPass);
 
-    require((testShift<Perk, ShiftLeft<Perk>>)(rndgen, stdPass));
-    require((testShift<Perk, ShiftRight<Perk>>)(rndgen, stdPass));
-    returnTrue;
+    testShift<Perk, ShiftLeft<Perk>>(rndgen, stdPass);
+    testShift<Perk, ShiftRight<Perk>>(rndgen, stdPass);
 }
 
 //================================================================
@@ -736,12 +703,10 @@ stdbool burninTest(RndgenState& rndgen, stdPars(ErrorLogKit))
 //
 //================================================================
 
-stdbool safeint32Test(stdPars(ErrorLogKit))
+void safeint32Test(stdPars(ErrorLogKit))
 {
     RndgenState rndgen(0x8FA9E36D);
-    require(burninTest<safeint32::Type>(rndgen, stdPass));
-
-    returnTrue;
+    burninTest<safeint32::Type>(rndgen, stdPass);
 }
 
 //----------------------------------------------------------------

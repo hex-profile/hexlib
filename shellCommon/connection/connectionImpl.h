@@ -47,16 +47,16 @@ public:
 
     virtual State state() const;
 
-    virtual stdbool reopen(const Address& address, stdPars(Kit));
+    virtual void reopen(const Address& address, stdPars(Kit));
     virtual void close();
 
-    virtual stdbool reconnect(stdPars(Kit));
+    virtual void reconnect(stdPars(Kit));
     virtual void disconnect();
 
 public:
 
-    stdbool send(const void* dataPtr, size_t dataSize, stdPars(Kit));
-    stdbool receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit));
+    void send(const void* dataPtr, size_t dataSize, stdPars(Kit));
+    void receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit));
 
 private:
 

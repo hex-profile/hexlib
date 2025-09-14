@@ -11,7 +11,7 @@ namespace gpuBaseConsoleThunk {
 //
 //================================================================
 
-using OverlayUpdater = Callable<stdbool (stdParsNull)>;
+using OverlayUpdater = Callable<void (stdParsNull)>;
 
 //================================================================
 //
@@ -54,45 +54,42 @@ struct GpuBaseConsoleThunk : public GpuBaseConsole, private ThunkContext
     // Small image console is not supported.
     //
 
-    virtual stdbool clear(stdPars(Kit))
-        {returnTrue;}
+    virtual void clear(stdPars(Kit))
+        {}
 
-    virtual stdbool update(stdPars(Kit))
-        {returnTrue;}
+    virtual void update(stdPars(Kit))
+        {}
 
     ////
 
-    virtual stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+    virtual void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
     {
         if (hint.target == ImgOutputOverlay)
         {
             auto provider = gpuImageProviderBgr32 | [&] (const GpuMatrixAP<uint8_x4>& dest, stdParsNull)
-                {return gpuMatrixCopy(img, dest, stdPass);};
+                {gpuMatrixCopy(img, dest, stdPass);};
 
-            require(overlaySetImageBgr(img.size(), provider, hint, stdPass));
+            overlaySetImageBgr(img.size(), provider, hint, stdPass);
         }
-
-        returnTrue;
     }
 
     ////
 
-    virtual stdbool overlayClear(stdPars(Kit))
+    virtual void overlayClear(stdPars(Kit))
     {
         overlayBuffer.clearImage();
-        returnTrue;
     }
 
     ////
 
-    virtual stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
+    virtual void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
     {
         stdScopedBegin;
 
         auto& oldKit = kit;
         auto kit = kitCombine(oldKit, auxKit);
 
-        require(overlayBuffer.setImage(size, img, stdPass));
+        overlayBuffer.setImage(size, img, stdPass);
 
         if (textEnabled && kit.dataProcessing)
             printMsg(kit.localLog, STR("OVERLAY: %"), hint.desc);
@@ -100,14 +97,13 @@ struct GpuBaseConsoleThunk : public GpuBaseConsole, private ThunkContext
         stdScopedEnd;
     }
 
-    virtual stdbool overlaySetImageFake(stdPars(Kit))
+    virtual void overlaySetImageFake(stdPars(Kit))
     {
-        returnTrue;
     }
 
-    virtual stdbool overlayUpdate(stdPars(Kit))
+    virtual void overlayUpdate(stdPars(Kit))
     {
-        return overlayUpdater(stdPassNull);
+        overlayUpdater(stdPassNull);
     }
 };
 

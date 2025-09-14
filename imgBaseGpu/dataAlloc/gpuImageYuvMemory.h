@@ -46,7 +46,7 @@ public:
     }
 
     template <typename Kit>
-    inline stdbool realloc
+    inline void realloc
     (
         const Point<Space>& size,
         Space baseByteAlignment,
@@ -59,17 +59,16 @@ public:
 
         REMEMBER_CLEANUP_EX(deallocCleanup, dealloc());
 
-        require(luma.reallocEx(size, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru));
-        require(chroma.reallocEx(chromaSize, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru));
+        luma.reallocEx(size, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);
+        chroma.reallocEx(chromaSize, baseByteAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);
 
         deallocCleanup.cancel();
-        returnTrue;
     }
 
     template <typename Kit>
-    sysinline stdbool realloc(const Point<Space>& size, Rounding sizeRounding, stdPars(Kit))
+    sysinline void realloc(const Point<Space>& size, Rounding sizeRounding, stdPars(Kit))
     {
-        return realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, sizeRounding, stdPassThru);
+        realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, sizeRounding, stdPassThru);
     }
 
 };

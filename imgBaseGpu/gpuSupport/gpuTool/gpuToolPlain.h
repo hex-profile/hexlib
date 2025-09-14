@@ -53,7 +53,7 @@
     \
     hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         Space globSize, \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
@@ -64,7 +64,7 @@
         stdScopedBegin; \
         \
         if_not (kit.dataProcessing) \
-            returnTrue; \
+            return; \
         \
         stdEnterElemCount(globSize); \
         \
@@ -73,7 +73,7 @@
         Space groupCount = divUpNonneg(globSize, chunkSize); \
         \
         if_not (groupCount != 0) \
-            returnTrue; \
+            return; \
         \
         GPT_FOREACH_SAMPLER(samplerList, GPT_BIND_SAMPLER, prefix) \
         \
@@ -82,18 +82,15 @@
         kernelParams.globSize = globSize; \
         GPT_FOREACH(paramList, GPT_SET_PARAM_FIELD) \
         \
-        require \
+        kit.gpuKernelCalling.callKernel \
         ( \
-            kit.gpuKernelCalling.callKernel \
-            ( \
-                point(groupCount, 1), \
-                point((chunkSize), 1), \
-                globSize, \
-                prefix##Kernel, \
-                kernelParams, \
-                kit.gpuCurrentStream, \
-                stdPassLocationMsg("Kernel") \
-            ) \
+            point(groupCount, 1), \
+            point((chunkSize), 1), \
+            globSize, \
+            prefix##Kernel, \
+            kernelParams, \
+            kit.gpuCurrentStream, \
+            stdPassLocationMsg("Kernel") \
         ); \
         \
         stdScopedEnd; \
@@ -107,7 +104,7 @@
 
 #define GPT_PLAIN_CALLER_PROTO(prefix, samplerList, paramList) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         Space globSize, \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \

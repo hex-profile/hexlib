@@ -48,7 +48,7 @@ void BinaryFileWin32::close()
 //
 //================================================================
 
-stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
+void BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
 {
     close();
 
@@ -91,8 +91,6 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
     exchange(currentFilename, newFilename);
     currentSize = newSize;
     currentPosition = 0;
-
-    returnTrue;
 }
 
 //================================================================
@@ -101,7 +99,7 @@ stdbool BinaryFileWin32::open(const CharArray& filename, bool writeAccess, bool 
 //
 //================================================================
 
-stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
+void BinaryFileWin32::truncate(stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != 0);
 
@@ -109,8 +107,6 @@ stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
     REQUIRE_TRACE3(result != 0, STR("Cannot truncate file %0 at offset %1: %2"), currentFilename, currentPosition, getLastError());
 
     currentSize = currentPosition;
-
-    returnTrue;
 }
 
 //================================================================
@@ -119,7 +115,7 @@ stdbool BinaryFileWin32::truncate(stdPars(FileDiagKit))
 //
 //================================================================
 
-stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
+void BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != 0);
     REQUIRE(pos <= currentSize);
@@ -135,8 +131,6 @@ stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
     ////
 
     currentPosition = pos;
-
-    returnTrue;
 }
 
 //================================================================
@@ -145,7 +139,7 @@ stdbool BinaryFileWin32::setPosition(uint64 pos, stdPars(FileDiagKit))
 //
 //================================================================
 
-stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+void BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != 0);
 
@@ -183,8 +177,6 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
     currentPosition += actualBytes;
 
     restorePositionCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -193,7 +185,7 @@ stdbool BinaryFileWin32::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 //
 //================================================================
 
-stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+void BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != 0);
 
@@ -231,8 +223,6 @@ stdbool BinaryFileWin32::write(const void* dataPtr, CpuAddrU dataSize, stdPars(F
     currentSize = maxv(currentSize, currentPosition);
 
     restorePositionCleanup.cancel();
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

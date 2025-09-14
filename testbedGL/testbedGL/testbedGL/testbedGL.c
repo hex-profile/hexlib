@@ -93,7 +93,7 @@ struct Testbed
 
     using RunKit = KitCombine<DiagnosticKit, InterruptKit, IntrinsicLogBufferKit, TimerKit, MallocKit, TestModuleFactoryKit, ExitMessageParamsKit>;
 
-    stdbool run(stdPars(RunKit));
+    void run(stdPars(RunKit));
 
     //----------------------------------------------------------------
     //
@@ -149,7 +149,7 @@ struct Testbed
 
     using WindowReinitCycleKit = KitCombine<RunExKit, WindowManagerKit, WindowReinitRequestKit, ServicesKit, GuiSerializationKit>;
 
-    stdbool windowReinitCycle(stdPars(WindowReinitCycleKit));
+    void windowReinitCycle(stdPars(WindowReinitCycleKit));
 
     //----------------------------------------------------------------
     //
@@ -164,7 +164,7 @@ struct Testbed
     using EventLoopKit = KitCombine<RunExKit, MainWindowKit, WindowManagerKit, WindowReinitRequestKit,
         BufferDrawingKit, PixelBufferKit, ServicesKit, GuiSerializationKit>;
 
-    stdbool eventLoop(stdPars(EventLoopKit));
+    void eventLoop(stdPars(EventLoopKit));
 
     //----------------------------------------------------------------
     //
@@ -297,7 +297,7 @@ void Testbed::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool Testbed::run(stdPars(RunKit))
+void Testbed::run(stdPars(RunKit))
 {
     stdExceptBegin;
 
@@ -307,7 +307,7 @@ stdbool Testbed::run(stdPars(RunKit))
     //
     //----------------------------------------------------------------
 
-    require(setDpiAwareness(stdPass));
+    setDpiAwareness(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -345,7 +345,7 @@ stdbool Testbed::run(stdPars(RunKit))
         SimpleString baseName; baseName << kit.testModuleFactory.configName() << CT(".json");
         REQUIRE(def(baseName));
 
-        require(configKeeper->init({baseName.cstr(), initialSerialization}, stdPass));
+        configKeeper->init({baseName.cstr(), initialSerialization}, stdPass);
     }
 
     REMEMBER_CLEANUP(configKeeper.reset());
@@ -408,7 +408,7 @@ stdbool Testbed::run(stdPars(RunKit))
         SimpleString baseName; baseName << kit.testModuleFactory.configName() << CT(".log");
         REQUIRE(def(baseName));
 
-        require(logKeeper->init({baseName.cstr()}, stdPass));
+        logKeeper->init({baseName.cstr()}, stdPass);
     }
 
     REMEMBER_CLEANUP(logKeeper.reset());
@@ -495,7 +495,7 @@ stdbool Testbed::run(stdPars(RunKit))
     //
 
     GpuInitApiImpl gpuInitApi(kit);
-    require(gpuInitApi.initialize(stdPass));
+    gpuInitApi.initialize(stdPass);
     auto gpuInitKit = gpuInitApi.getKit();
 
     //
@@ -504,19 +504,19 @@ stdbool Testbed::run(stdPars(RunKit))
 
     GpuProperties gpuProperties;
     GpuContextOwner gpuContext;
-    require(gpuContextHelper.createContext(gpuProperties, gpuContext, stdPassKit(kitCombine(kit, gpuInitKit))));
+    gpuContextHelper.createContext(gpuProperties, gpuContext, stdPassKit(kitCombine(kit, gpuInitKit)));
 
     //
     // Streams.
     //
 
     GpuStreamOwner guiStream;
-    require(gpuInitKit.gpuStreamCreation.createStream(gpuContext, false, guiStream, stdPass));
+    gpuInitKit.gpuStreamCreation.createStream(gpuContext, false, guiStream, stdPass);
 
     ////
 
     GpuStreamOwner workerStream;
-    require(gpuInitKit.gpuStreamCreation.createStream(gpuContext, false, workerStream, stdPass));
+    gpuInitKit.gpuStreamCreation.createStream(gpuContext, false, workerStream, stdPass);
 
     //
     // Profiler: Not implemented.
@@ -568,7 +568,7 @@ stdbool Testbed::run(stdPars(RunKit))
 
 #if defined(_WIN32)
     ThreadControl currentThread;
-    require(threadGetCurrent(currentThread, stdPass));
+    threadGetCurrent(currentThread, stdPass);
 
     REQUIRE(currentThread->setPriority(ThreadPriorityPlus1));
 #endif
@@ -581,7 +581,7 @@ stdbool Testbed::run(stdPars(RunKit))
 
     WindowManagerGLFW windowManager;
 
-    require(windowManager.init(stdPass));
+    windowManager.init(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -592,7 +592,7 @@ stdbool Testbed::run(stdPars(RunKit))
     //----------------------------------------------------------------
 
     Point<Space> currentResolution{};
-    require(windowManager.getCurrentDisplayResolution(currentResolution, stdPass));
+    windowManager.getCurrentDisplayResolution(currentResolution, stdPass);
 
     ////
 
@@ -602,7 +602,7 @@ stdbool Testbed::run(stdPars(RunKit))
         guiClass->serialize(kit);
     };
 
-    require(guiClass->init({currentResolution, guiSerialization}, stdPass));
+    guiClass->init({currentResolution, guiSerialization}, stdPass);
 
     REMEMBER_CLEANUP(guiClass.reset());
 
@@ -640,13 +640,13 @@ stdbool Testbed::run(stdPars(RunKit))
     //----------------------------------------------------------------
 
     UniquePtr<ContextBinder> workerGLContext;
-    require(windowManager.createOffscreenGLContext(workerGLContext, stdPass));
+    windowManager.createOffscreenGLContext(workerGLContext, stdPass);
 
     ////
 
-    require(workerGLContext->bind(stdPass));
+    workerGLContext->bind(stdPass);
     REQUIRE(glewInit() == GLEW_OK);
-    require(workerGLContext->unbind(stdPass));
+    workerGLContext->unbind(stdPass);
 
     ////
 
@@ -657,14 +657,13 @@ stdbool Testbed::run(stdPars(RunKit))
 
     ////
 
-    require(worker->init({*workerGLContext, externalsFactory, *guiService}, stdPass));
+    worker->init({*workerGLContext, externalsFactory, *guiService}, stdPass);
 
     auto workerDeinit = [&] (stdPars(auto))
     {
-        require(workerGLContext->bind(stdPass));
+        workerGLContext->bind(stdPass);
         worker.reset();
-        require(workerGLContext->unbind(stdPass));
-        returnTrue;
+        workerGLContext->unbind(stdPass);
     };
 
     REMEMBER_CLEANUP(errorBlock(workerDeinit(stdPassNc)));
@@ -727,7 +726,7 @@ stdbool Testbed::run(stdPars(RunKit))
             GuiSerializationKit{guiSerialization}
         );
 
-        require(windowReinitCycle(stdPassKit(kitEx)));
+        windowReinitCycle(stdPassKit(kitEx));
 
         if_not (windowReinitRequest.on)
             break;
@@ -744,7 +743,7 @@ stdbool Testbed::run(stdPars(RunKit))
 //
 //================================================================
 
-stdbool Testbed::windowReinitCycle(stdPars(WindowReinitCycleKit))
+void Testbed::windowReinitCycle(stdPars(WindowReinitCycleKit))
 {
 
     //----------------------------------------------------------------
@@ -764,7 +763,7 @@ stdbool Testbed::windowReinitCycle(stdPars(WindowReinitCycleKit))
     wc.resizable = true;
 
     UniquePtr<Window> mainWindow;
-    require(kit.windowManager.createWindow(mainWindow, wc, stdPass));
+    kit.windowManager.createWindow(mainWindow, wc, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -774,7 +773,7 @@ stdbool Testbed::windowReinitCycle(stdPars(WindowReinitCycleKit))
 
     UniqueInstance<PixelBufferDrawing> pixelBufferDrawing;
 
-    require(pixelBufferDrawing->reinit(stdPass));
+    pixelBufferDrawing->reinit(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -785,9 +784,9 @@ stdbool Testbed::windowReinitCycle(stdPars(WindowReinitCycleKit))
     PixelBuffer pixelBuffer;
 
     Point<Space> imageSize{};
-    require(mainWindow->getImageSize(imageSize, stdPass));
+    mainWindow->getImageSize(imageSize, stdPass);
 
-    require(pixelBuffer.realloc<uint8_x4>(imageSize, kit.gpuProperties.samplerRowAlignment, stdPass));
+    pixelBuffer.realloc<uint8_x4>(imageSize, kit.gpuProperties.samplerRowAlignment, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -804,12 +803,8 @@ stdbool Testbed::windowReinitCycle(stdPars(WindowReinitCycleKit))
             PixelBufferKit{pixelBuffer}
         );
 
-        require(eventLoop(stdPassKit(kitEx)));
+        eventLoop(stdPassKit(kitEx));
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -818,7 +813,7 @@ stdbool Testbed::windowReinitCycle(stdPars(WindowReinitCycleKit))
 //
 //================================================================
 
-stdbool Testbed::eventLoop(stdPars(EventLoopKit))
+void Testbed::eventLoop(stdPars(EventLoopKit))
 {
     stdScopedBegin;
 
@@ -834,7 +829,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
     {
 
         Point<Space> imageSize{};
-        require(mainWindow.getImageSize(imageSize, stdPass));
+        mainWindow.getImageSize(imageSize, stdPass);
 
         //
         // Resize the pixel buffer if neccessary.
@@ -845,7 +840,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
         PixelBuffer& pixelBuffer = kit.pixelBuffer;
 
         if_not (imageSize == pixelBuffer.size())
-            require(pixelBuffer.realloc<uint8_x4>(imageSize, kit.gpuProperties.samplerRowAlignment, stdPass));
+            pixelBuffer.realloc<uint8_x4>(imageSize, kit.gpuProperties.samplerRowAlignment, stdPass);
 
         //
         // Fill the pixel buffer with CUDA.
@@ -854,35 +849,33 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
         {
             auto baseStream = getNativeHandle(kit.gpuCurrentStream);
 
-            require(pixelBuffer.lock(baseStream, stdPass));
+            pixelBuffer.lock(baseStream, stdPass);
             REMEMBER_CLEANUP_EX(lockCleanup, errorBlock(pixelBuffer.unlock(baseStream, stdPassNc)));
 
             ////
 
             GpuMatrix<uint8_x4> tmp;
-            require(pixelBuffer.getComputeBuffer(tmp, stdPass));
+            pixelBuffer.getComputeBuffer(tmp, stdPass);
 
-            require(drawer(tmp, stdPass));
+            drawer(tmp, stdPass);
 
             ////
 
             lockCleanup.cancel();
-            require(pixelBuffer.unlock(baseStream, stdPass));
+            pixelBuffer.unlock(baseStream, stdPass);
         }
 
         //
         // Draw the pixel buffer.
         //
 
-        require(kit.pixelBufferDrawing.draw(pixelBuffer, point(0), stdPass));
+        kit.pixelBufferDrawing.draw(pixelBuffer, point(0), stdPass);
 
         //
         // Swap buffers.
         //
 
-        require(mainWindow.swapBuffers(stdPass));
-
-        returnTrue;
+        mainWindow.swapBuffers(stdPass);
     };
 
     ////
@@ -897,7 +890,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
     //
     //----------------------------------------------------------------
 
-    require(mainWindow.setVisible(true, stdPass));
+    mainWindow.setVisible(true, stdPass);
 
     ////
 
@@ -913,7 +906,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
 
         auto eventSource = gui::EventSource::O | [&] (bool waitEvents, auto& waitTimeoutMs, auto& receivers, stdParsNull)
         {
-            return mainWindow.getEvents(waitEvents, waitTimeoutMs, receivers, stdPassThru);
+            mainWindow.getEvents(waitEvents, waitTimeoutMs, receivers, stdPassThru);
         };
 
         ////
@@ -973,7 +966,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
                 location.pos = display.pos;
                 location.size = display.size;
 
-                require(mainWindow.setWindowLocation(location, stdPass));
+                mainWindow.setWindowLocation(location, stdPass);
 
                 if_not (verticalSyncSave == display.verticalSync)
                     printMsg(kit.msgLog, STR("Vertical sync %"), display.verticalSync());
@@ -981,7 +974,7 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
             else
             {
                 WindowLocation location;
-                require(mainWindow.getWindowLocation(location, stdPass));
+                mainWindow.getWindowLocation(location, stdPass);
 
                 display.mode = location.mode;
                 display.decorated = location.decorated;
@@ -992,8 +985,6 @@ stdbool Testbed::eventLoop(stdPars(EventLoopKit))
                     display.size = location.size;
                 }
             }
-
-            returnTrue;
         };
 
         errorBlock(handleWindowLocation());

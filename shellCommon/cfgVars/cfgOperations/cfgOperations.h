@@ -56,22 +56,22 @@ struct CfgOperations
     // File I/O.
     //
 
-    virtual stdbool loadFromFile(CfgTree& memory, const Char* filename, bool trackDataChange, stdPars(Kit)) =0;
-    virtual stdbool saveToFile(CfgTree& memory, const Char* filename, stdPars(Kit)) =0;
+    virtual void loadFromFile(CfgTree& memory, const Char* filename, bool trackDataChange, stdPars(Kit)) =0;
+    virtual void saveToFile(CfgTree& memory, const Char* filename, stdPars(Kit)) =0;
 
     //
     // String I/O.
     //
 
-    virtual stdbool loadFromString(CfgTree& memory, const StringRef& str, stdPars(Kit)) =0;
-    virtual stdbool saveToString(CfgTree& memory, StringReceiver& receiver, stdPars(Kit)) =0;
+    virtual void loadFromString(CfgTree& memory, const StringRef& str, stdPars(Kit)) =0;
+    virtual void saveToString(CfgTree& memory, StringReceiver& receiver, stdPars(Kit)) =0;
 
     //
     // Serialization support.
     //
 
-    virtual stdbool saveVars(CfgTree& memory, CfgSerialization& serialization, const SaveVarsOptions& options, stdPars(Kit)) =0;
-    virtual stdbool loadVars(CfgTree& memory, CfgSerialization& serialization, const LoadVarsOptions& options, stdPars(Kit)) =0;
+    virtual void saveVars(CfgTree& memory, CfgSerialization& serialization, const SaveVarsOptions& options, stdPars(Kit)) =0;
+    virtual void loadVars(CfgTree& memory, CfgSerialization& serialization, const LoadVarsOptions& options, stdPars(Kit)) =0;
 
 };
 

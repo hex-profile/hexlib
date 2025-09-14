@@ -223,7 +223,7 @@ devDefineKernel(PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2), PREP_PASS2(Co
 #if HOSTCODE
 
 template <>
-stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
+void convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 (
     const GpuMatrixAP<const uint8_x4>& src,
     const GpuMatrixAP<DST_PIXEL>& dstLuma,
@@ -234,7 +234,7 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 )
 {
     if_not (kit.dataProcessing)
-        returnTrue; // no allocation
+        return; // no allocation
 
     ////
 
@@ -263,18 +263,15 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
 
     REQUIRE(srcCorrect.memPitch() >= 0);
 
-    require
+    kit.gpuSamplerSetting.setSamplerImage
     (
-        kit.gpuSamplerSetting.setSamplerImage
-        (
-            srcSampler,
-            restrictToNonNegativePitch(srcCorrect),
-            BORDER_MIRROR,
-            LinearInterpolation{false},
-            ReadNormalizedFloat{true},
-            NormalizedCoords{true},
-            stdPass
-        )
+        srcSampler,
+        restrictToNonNegativePitch(srcCorrect),
+        BORDER_MIRROR,
+        LinearInterpolation{false},
+        ReadNormalizedFloat{true},
+        NormalizedCoords{true},
+        stdPass
     );
 
     ////
@@ -282,23 +279,16 @@ stdbool convertBgr32ToYuv420<DST_PIXEL, DST_PIXEL2>
     auto srcFullTransform = combine(srcTransform, linearTransform(computeTexstep(src), point(0.f)));
     ConvertBgrYuv420Params<DST_PIXEL, DST_PIXEL2> params{srcFullTransform, dstLuma, dstChroma, dstChromaU, dstChromaV};
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            divUpNonneg(domainSize, point(threadCountX, threadCountY)),
-            point(threadCountX, threadCountY),
-            areaOf(dstChroma),
-            PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2),
-            params,
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        divUpNonneg(domainSize, point(threadCountX, threadCountY)),
+        point(threadCountX, threadCountY),
+        areaOf(dstChroma),
+        PREP_PASTE3(convertKernel, DST_PIXEL, DST_PIXEL2),
+        params,
+        kit.gpuCurrentStream,
+        stdPass
     );
-
-    ////
-
-    returnTrue;
 }
 
 #endif

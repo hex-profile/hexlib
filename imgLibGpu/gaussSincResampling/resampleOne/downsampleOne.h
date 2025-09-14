@@ -14,13 +14,13 @@ namespace gaussSincResampling {
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
+void downsampleOneConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit));
 
 ////
 
 template <typename Src, typename Interm, typename Dst>
-inline stdbool downsampleOneConservative(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
-    {return downsampleOneConservativeMultitask<Src, Interm, Dst>(layeredMatrix(src), layeredMatrix(dst), borderMode, stdPassThru);}
+inline void downsampleOneConservative(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
+    {downsampleOneConservativeMultitask<Src, Interm, Dst>(layeredMatrix(src), layeredMatrix(dst), borderMode, stdPassThru);}
 
 //----------------------------------------------------------------
 

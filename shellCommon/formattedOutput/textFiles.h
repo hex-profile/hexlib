@@ -32,7 +32,7 @@ class InputTextFile
 
 public:
 
-    stdbool open(const CharType* filename, stdPars(TextFileKit))
+    void open(const CharType* filename, stdPars(TextFileKit))
     {
         stream.close();
         stream.clear();
@@ -41,8 +41,6 @@ public:
         REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
 
         openedFilename = filename;
-
-        returnTrue;
     }
 
     bool getLine(std::basic_string<Type>& s, stdPars(TextFileKit))
@@ -66,7 +64,7 @@ public:
 
     bool eof() const {return stream.eof();}
 
-    stdbool readEntireFileToString(StlString& result, stdPars(TextFileKit))
+    void readEntireFileToString(StlString& result, stdPars(TextFileKit))
     {
         std::basic_stringstream<CharType> strStream;
         strStream << stream.rdbuf();
@@ -74,8 +72,6 @@ public:
 
         bool ok = !!stream;
         REQUIRE_TRACE1(ok || stream.eof(), STR("Cannot read file %0"), openedFilename);
-
-        returnTrue;
     }
 
 private:
@@ -96,7 +92,7 @@ class OutputTextFile
 
 public:
 
-    stdbool open(const CharType* filename, stdPars(TextFileKit))
+    void open(const CharType* filename, stdPars(TextFileKit))
     {
         close();
 
@@ -104,8 +100,6 @@ public:
         REQUIRE_TRACE1(!!stream, STR("Cannot open file %0"), filename);
 
         openedFilename = filename;
-
-        returnTrue;
     }
 
     void close()
@@ -125,14 +119,13 @@ public:
         stream.setstate(std::ios::failbit);
     }
 
-    stdbool flushAndClose(stdPars(TextFileKit))
+    void flushAndClose(stdPars(TextFileKit))
     {
         stream.flush();
         bool ok = !!stream;
         stream.close();
         stream.clear();
         REQUIRE_TRACE1(ok, STR("Cannot write to file %0"), openedFilename);
-        returnTrue;
     }
 
     void write(const CharType* ptr, size_t size)

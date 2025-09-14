@@ -8,7 +8,7 @@
 //
 //================================================================
 
-stdbool arrayUsage(stdPars(ErrorLogKit))
+void arrayUsage(stdPars(ErrorLogKit))
 {
     const int srcSize = 10;
     uint8 srcArray[srcSize];
@@ -63,6 +63,4 @@ stdbool arrayUsage(stdPars(ErrorLogKit))
     // Check that array has non-zero size
     REQUIRE(hasData(example));
     REQUIRE(hasData(example.size()));
-
-    returnTrue;
 }

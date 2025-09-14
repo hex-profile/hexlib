@@ -13,7 +13,7 @@
 template <typename AddrU>
 struct MallocCore
 {
-    inline stdbool operator()(AddrU& result, AddrU allocSize, stdPars(ErrorLogKit))
+    inline void operator()(AddrU& result, AddrU allocSize, stdPars(ErrorLogKit))
     {
         REQUIRE(allocSize <= TYPE_MAX(size_t));
         void* allocPtr = malloc(size_t(allocSize));
@@ -22,8 +22,6 @@ struct MallocCore
 
         COMPILE_ASSERT(sizeof(void*) <= sizeof(AddrU));
         result = (AddrU) allocPtr;
-
-        returnTrue;
     }
 };
 
@@ -34,10 +32,10 @@ struct MallocCore
 //================================================================
 
 template <typename AddrU>
-stdbool MallocAllocator<AddrU>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
+void MallocAllocator<AddrU>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
 {
     MallocCore<AddrU> coreAlloc;
-    return sysAllocAlignShell<AddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
+    sysAllocAlignShell<AddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
 }
 
 //================================================================

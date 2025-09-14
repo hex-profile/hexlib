@@ -103,7 +103,7 @@ namespace gaussSincResampling {
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
+void downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, stdPars(GpuProcessKit))
 {
     REQUIRE(equalLayers(src, dst));
     auto layers = dst.layers();
@@ -118,7 +118,7 @@ stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const S
         else if (layers == n) \
         { \
             auto func = downsampleOneAndHalfConservative##n<Src, Interm, Dst>; \
-            require(func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass)); \
+            func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass); \
         }
 
     ////
@@ -136,8 +136,6 @@ stdbool downsampleOneAndHalfConservativeMultitask(const GpuLayeredMatrix<const S
 
     #undef TMP_MACRO
     #undef TMP_PASS
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

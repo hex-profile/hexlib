@@ -41,7 +41,7 @@ static const Space bmpAlignmentMask = 3;
 //================================================================
 
 template <typename Pixel>
-stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
+void getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 {
     REQUIRE(sizeX >= 0);
 
@@ -55,8 +55,6 @@ stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
     REQUIRE(bufSizeX * Space(sizeof(Pixel)) == rowAlignedSize);
 
     pitch = bufSizeX;
-
-    returnTrue;
 }
 
 //================================================================
@@ -150,7 +148,7 @@ static BitmapQuad staticPalette[256] =
 //================================================================
 
 template <typename Pixel>
-stdbool BmpWriter::writeFunc(const MatrixAP<const Pixel>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
+void BmpWriter::writeFunc(const MatrixAP<const Pixel>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
 {
 
     auto src = flipMatrix(image);
@@ -163,7 +161,7 @@ stdbool BmpWriter::writeFunc(const MatrixAP<const Pixel>& image, const CharArray
     //----------------------------------------------------------------
 
     Space requiredPitch = 0;
-    require(getAlignedPitch<Pixel>(srcSizeX, requiredPitch, stdPass));
+    getAlignedPitch<Pixel>(srcSizeX, requiredPitch, stdPass);
     REQUIRE(requiredPitch >= srcSizeX);
 
     Space requiredArea = 0;
@@ -285,18 +283,14 @@ stdbool BmpWriter::writeFunc(const MatrixAP<const Pixel>& image, const CharArray
     //----------------------------------------------------------------
 
     BinaryFileImpl file;
-    require(file.open(filename, true, true, stdPass));
+    file.open(filename, true, true, stdPass);
 
     {
         stdEnter; // Pure file IO
 
-        require(file.write(&header, headerSize, stdPass));
-        require(file.write(usedImageMemPtr, requiredSizeInBytes, stdPass));
+        file.write(&header, headerSize, stdPass);
+        file.write(usedImageMemPtr, requiredSizeInBytes, stdPass);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -305,11 +299,11 @@ stdbool BmpWriter::writeFunc(const MatrixAP<const Pixel>& image, const CharArray
 //
 //================================================================
 
-stdbool BmpWriter::write(const MatrixAP<const uint8>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
-    {return writeFunc(image, filename, disableSlowdown, stdPass);}
+void BmpWriter::write(const MatrixAP<const uint8>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
+    {writeFunc(image, filename, disableSlowdown, stdPass);}
 
-stdbool BmpWriter::write(const MatrixAP<const uint8_x4>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
-    {return writeFunc(image, filename, disableSlowdown, stdPass);}
+void BmpWriter::write(const MatrixAP<const uint8_x4>& image, const CharArray& filename, bool disableSlowdown, stdPars(Kit))
+    {writeFunc(image, filename, disableSlowdown, stdPass);}
 
 //----------------------------------------------------------------
 

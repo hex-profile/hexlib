@@ -72,12 +72,12 @@ public:
 
 public:
 
-    stdbool realloc(stdPars(memController::FastAllocToolkit))
+    void realloc(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         TargetReallocKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
-        return toolModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
+        toolModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
     }
 
 public:
@@ -103,12 +103,12 @@ class ToolModuleProcessThunk : public MemControllerProcessTarget
 
 public:
 
-    stdbool process(stdPars(memController::FastAllocToolkit))
+    void process(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         TargetProcessKit joinKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
-        return toolModule.process(toolTarget, stdPassThruKit(kitCombine(kit, joinKit, VerbosityKit(Verbosity::On))));
+        toolModule.process(toolTarget, stdPassThruKit(kitCombine(kit, joinKit, VerbosityKit(Verbosity::On))));
     }
 
 public:
@@ -155,12 +155,12 @@ public:
 
     bool reallocValid() const {return engine.reallocValid();}
 
-    stdbool realloc(stdPars(memController::FastAllocToolkit))
+    void realloc(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseGpuKit);
         EngineBaseKit gpuKit = kit.dataProcessing ? baseGpuKit : kitReplace(baseGpuKit, prohibitedApi.getKit());
 
-        return engine.realloc(stdPassThruKit(kitCombine(kit, gpuKit)));
+        engine.realloc(stdPassThruKit(kitCombine(kit, gpuKit)));
     }
 
 public:
@@ -190,13 +190,13 @@ public:
 
     bool reallocValid() const {return engine.reallocValid();}
 
-    stdbool process(stdPars(memController::FastAllocToolkit))
+    void process(stdPars(memController::FastAllocToolkit))
     {
         GpuProhibitedExecApiThunk prohibitedApi(baseKit);
         EngineBaseKit gpuKit = kit.dataProcessing ? baseKit : kitReplace(baseKit, prohibitedApi.getKit());
 
         auto resultKit = kitCombine(kit, gpuKit, extraKit);
-        return engine.process(stdPassThruKit(resultKit));
+        engine.process(stdPassThruKit(resultKit));
     }
 
 public:
@@ -227,11 +227,10 @@ public:
 
 public:
 
-    stdbool process(stdPars(ToolTargetProcessKit))
+    void process(stdPars(ToolTargetProcessKit))
     {
         EngineMemControllerTarget engineThunk(engine, baseKit, kit);
-        require(memController.processCountTemp(engineThunk, tempUsage, tempActivity, stdPassKit(baseKit)));
-        returnTrue;
+        memController.processCountTemp(engineThunk, tempUsage, tempActivity, stdPassKit(baseKit));
     }
 
 public:
@@ -264,13 +263,11 @@ public:
 
 public:
 
-    stdbool process(stdPars(ToolTargetProcessKit))
+    void process(stdPars(ToolTargetProcessKit))
     {
         EngineMemControllerTarget engineThunk(engine, baseKit, kit);
 
-        require(memController.processAllocTemp(engineThunk, baseKit, tempUsage, stdPassKit(baseKit)));
-
-        returnTrue;
+        memController.processAllocTemp(engineThunk, baseKit, tempUsage, stdPassKit(baseKit));
     }
 
 public:
@@ -319,18 +316,16 @@ inline bool operator==(const FileProperties& a, const FileProperties& b)
 //================================================================
 
 template <typename Kit>
-stdbool getFileProperties(const CharType* filename, FileProperties& result, stdPars(Kit))
+void getFileProperties(const CharType* filename, FileProperties& result, stdPars(Kit))
 {
     result = FileProperties{};
 
     if_not (fileTools::isFile(filename))
-        returnTrue;
+        return;
 
     result.exists = true;
     REQUIRE(fileTools::getChangeTime(filename, result.changeTime));
     REQUIRE(fileTools::getFileSize(filename, result.fileSize));
-
-    returnTrue;
 }
 
 //================================================================
@@ -346,9 +341,9 @@ public:
 
     using UpdateKit = KitCombine<DiagnosticKit, LocalLogKit>;
 
-    stdbool checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit));
-    stdbool reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit));
-    stdbool saveVariablesOnChange(CfgSerialization& serialization, stdPars(UpdateKit));
+    void checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit));
+    void reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit));
+    void saveVariablesOnChange(CfgSerialization& serialization, stdPars(UpdateKit));
 
 private:
 
@@ -364,7 +359,7 @@ private:
 //
 //================================================================
 
-stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit))
+void InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSerialization& serialization, bool& steady, stdPars(UpdateKit))
 {
     steady = false;
 
@@ -373,23 +368,21 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSeriali
     //
 
     if_not (strEqual(inputName, currentInputName.str()))
-        returnTrue;
+        return;
 
     //
     // Config properties.
     //
 
     FileProperties properties;
-    require(getFileProperties(currentConfigName.cstr(), properties, stdPass));
+    getFileProperties(currentConfigName.cstr(), properties, stdPass);
 
     if_not (properties == currentProperties)
-        returnTrue;
+        return;
 
     ////
 
     steady = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -398,7 +391,7 @@ stdbool InputMetadataHandler::checkSteady(const CharArray& inputName, CfgSeriali
 //
 //================================================================
 
-stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit))
+void InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, CfgSerialization& serialization, stdPars(UpdateKit))
 {
     //----------------------------------------------------------------
     //
@@ -408,10 +401,10 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
     bool steady = false;
 
-    require(checkSteady(inputName, serialization, steady, stdPass));
+    checkSteady(inputName, serialization, steady, stdPass);
 
     if (steady)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -446,7 +439,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 
     ////
 
-    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
+    getFileProperties(currentConfigName.cstr(), currentProperties, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -457,7 +450,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     UniqueInstance<ConfigFile> metadataConfig;
 
     if (currentProperties.exists)
-        require(metadataConfig->loadFile(currentConfigName, stdPass));
+        metadataConfig->loadFile(currentConfigName, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -465,13 +458,13 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     //
     //----------------------------------------------------------------
 
-    require(metadataConfig->loadVars(serialization, true, stdPass));
-    require(metadataConfig->saveVars(serialization, true, stdPass));
+    metadataConfig->loadVars(serialization, true, stdPass);
+    metadataConfig->saveVars(serialization, true, stdPass);
 
     errorBlock(metadataConfig->updateFile(true, stdPassNc)); // Correct the config file.
 
     // Update the file properties after correction.
-    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
+    getFileProperties(currentConfigName.cstr(), currentProperties, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -480,8 +473,6 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
     //----------------------------------------------------------------
 
     resetStateCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -490,7 +481,7 @@ stdbool InputMetadataHandler::reloadFileOnChange(const CharArray& inputName, Cfg
 //
 //================================================================
 
-stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serialization, stdPars(UpdateKit))
+void InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serialization, stdPars(UpdateKit))
 {
     //----------------------------------------------------------------
     //
@@ -499,10 +490,10 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
     //----------------------------------------------------------------
 
     if (cfgvarsSynced(serialization))
-        returnTrue;
+        return;
 
     if_not (currentProperties.exists)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -517,17 +508,15 @@ stdbool InputMetadataHandler::saveVariablesOnChange(CfgSerialization& serializat
     ////
 
     UniqueInstance<ConfigFile> metadataConfig;
-    require(metadataConfig->loadFile(currentConfigName, stdPass));
+    metadataConfig->loadFile(currentConfigName, stdPass);
 
-    require(metadataConfig->saveVars(serialization, false, stdPass));
-    require(metadataConfig->updateFile(false, stdPass));
+    metadataConfig->saveVars(serialization, false, stdPass);
+    metadataConfig->updateFile(false, stdPass);
 
     // Update the file properties.
-    require(getFileProperties(currentConfigName.cstr(), currentProperties, stdPass));
+    getFileProperties(currentConfigName.cstr(), currentProperties, stdPass);
 
     resetStateCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -569,8 +558,8 @@ public:
     virtual bool reallocValid() const
         {return base->reallocValid();}
 
-    virtual stdbool realloc(stdPars(ReallocKit))
-        {return base->realloc(stdPassThru);}
+    virtual void realloc(stdPars(ReallocKit))
+        {base->realloc(stdPassThru);}
 
     virtual void dealloc()
         {base->dealloc();}
@@ -578,14 +567,14 @@ public:
     virtual void inspectProcess(ProcessInspector& inspector)
         {return base->inspectProcess(inspector);}
 
-    virtual stdbool process(stdPars(ProcessKit))
+    virtual void process(stdPars(ProcessKit))
     {
         auto processApi = testShell::Process::O | [&] (stdParsNull)
         {
-            return base->process(stdPass);
+            base->process(stdPass);
         };
 
-        return testShell->process(processApi, stdPassThru);
+        testShell->process(processApi, stdPassThru);
     }
 
 private:
@@ -615,14 +604,14 @@ public:
 
 public:
 
-    stdbool init(const TestModuleFactory& engineFactory, stdPars(InitKit));
-    stdbool finalize(stdPars(InitKit));
-    stdbool process(stdPars(ProcessKit));
+    void init(const TestModuleFactory& engineFactory, stdPars(InitKit));
+    void finalize(stdPars(InitKit));
+    void process(stdPars(ProcessKit));
 
 public:
 
-    stdbool processWithProfiler(stdPars(ProcessProfilerKit));
-    stdbool processFinal(stdPars(ProcessFinalKit));
+    void processWithProfiler(stdPars(ProcessProfilerKit));
+    void processFinal(stdPars(ProcessFinalKit));
 
 private:
 
@@ -766,7 +755,7 @@ void AtAssemblyImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(InitKit))
+void AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(InitKit))
 {
     initialized = false;
 
@@ -792,10 +781,9 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
 
     auto handleConfig = [&] ()
     {
-        require(configFile.loadVars(serialization, true, stdPass));
-        require(configFile.saveVars(serialization, true, stdPass));
-        require(configFile.updateFile(true, stdPass));
-        returnTrue;
+        configFile.loadVars(serialization, true, stdPass);
+        configFile.saveVars(serialization, true, stdPass);
+        configFile.updateFile(true, stdPass);
     };
 
     errorBlock(handleConfig());
@@ -807,9 +795,9 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
     using namespace signalImpl;
 
     int32 signalCount{};
-    require(registerSignals(serialization, kit.atSignalSet, signalCount, stdPass));
+    registerSignals(serialization, kit.atSignalSet, signalCount, stdPass);
 
-    require(signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+    signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass);
 
     REMEMBER_CLEANUP_EX(signalsCleanup, {kit.atSignalSet.actsetClear(); signalHist.dealloc();});
 
@@ -817,7 +805,7 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
     // Profiler
     //
 
-    require(profilerShell.init(stdPass));
+    profilerShell.init(stdPass);
     REMEMBER_CLEANUP_EX(profilerCleanup, profilerShell.deinit());
 
     //
@@ -825,17 +813,17 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
     //
 
     GpuInitApiImpl gpuInitApi(kit);
-    require(gpuInitApi.initialize(stdPass));
+    gpuInitApi.initialize(stdPass);
     GpuInitKit gpuInitKit = gpuInitApi.getKit();
 
     ////
 
-    require(gpuContextHelper.createContext(gpuProperties, gpuContext, stdPassKit(kitCombine(kit, gpuInitKit))));
+    gpuContextHelper.createContext(gpuProperties, gpuContext, stdPassKit(kitCombine(kit, gpuInitKit)));
     REMEMBER_CLEANUP_EX(gpuContextCleanup, gpuContext.clear());
 
     ////
 
-    require(gpuInitKit.gpuStreamCreation.createStream(gpuContext, true, gpuStream, stdPass));
+    gpuInitKit.gpuStreamCreation.createStream(gpuContext, true, gpuStream, stdPass);
 
     //
     // Record success
@@ -847,8 +835,6 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
     gpuContextCleanup.cancel();
 
     initialized = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -857,10 +843,10 @@ stdbool AtAssemblyImpl::init(const TestModuleFactory& engineFactory, stdPars(Ini
 //
 //================================================================
 
-stdbool AtAssemblyImpl::finalize(stdPars(InitKit))
+void AtAssemblyImpl::finalize(stdPars(InitKit))
 {
     if_not (initialized)
-        returnTrue;
+        return;
 
     //
     // Make finalization work
@@ -870,8 +856,6 @@ stdbool AtAssemblyImpl::finalize(stdPars(InitKit))
 
     errorBlock(configFile.saveVars(serialization, false, stdPassNc)) &&
     errorBlock(configFile.updateFile(false, stdPassNc));
-
-    returnTrue;
 }
 
 //================================================================
@@ -880,7 +864,7 @@ stdbool AtAssemblyImpl::finalize(stdPars(InitKit))
 //
 //================================================================
 
-stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
+void AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 {
     using namespace memController;
 
@@ -909,7 +893,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     {
         toolModule.setFrameSize(inputFrameSize);
         ToolModuleReallocThunk toolModuleThunk(toolModule, kit);
-        require(toolMemory.handleStateRealloc(toolModuleThunk, kit, toolStateUsage, toolStateActivity, stdPass));
+        toolMemory.handleStateRealloc(toolModuleThunk, kit, toolStateUsage, toolStateActivity, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -934,7 +918,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     ////
 
-    require(inputMetadataHandler.reloadFileOnChange(kit.atVideoInfo.videofileName, metadataSerialization, stdPass));
+    inputMetadataHandler.reloadFileOnChange(kit.atVideoInfo.videofileName, metadataSerialization, stdPass);
     REMEMBER_CLEANUP(errorBlock(inputMetadataHandler.saveVariablesOnChange(metadataSerialization, stdPassNc)));
 
     //----------------------------------------------------------------
@@ -948,7 +932,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 
     {
         EngineReallocThunk engineModuleThunk(*engineModule, kit);
-        require(engineMemory.handleStateRealloc(engineModuleThunk, kit, engineStateUsage, engineStateActivity, stdPass));
+        engineMemory.handleStateRealloc(engineModuleThunk, kit, engineStateUsage, engineStateActivity, stdPass);
     }
 
     REQUIRE(engineStateActivity.fastAllocCount <= 1);
@@ -988,7 +972,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         EngineTempCountToolTarget engineThunk(*engineModule, engineMemory, engineTempUsage, engineTempActivity, kit);
         ToolModuleProcessThunk toolModuleThunk(toolModule, engineThunk, kitEx);
 
-        require(toolMemory.processCountTemp(toolModuleThunk, toolTempUsage, toolTempActivity, stdPass));
+        toolMemory.processCountTemp(toolModuleThunk, toolTempUsage, toolTempActivity, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -997,7 +981,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     //
     //----------------------------------------------------------------
 
-    require(toolMemory.handleTempRealloc(toolTempUsage, kit, toolTempActivity, stdPass));
+    toolMemory.handleTempRealloc(toolTempUsage, kit, toolTempActivity, stdPass);
 
     REQUIRE(toolTempActivity.fastAllocCount <= 1);
     REQUIRE(toolTempActivity.sysAllocCount <= 1);
@@ -1013,7 +997,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
     //
     //----------------------------------------------------------------
 
-    require(engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
+    engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass);
 
     REQUIRE(engineTempActivity.fastAllocCount <= 1);
     REQUIRE(engineTempActivity.sysAllocCount <= 1);
@@ -1047,13 +1031,11 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
         ToolModuleProcessThunk toolModuleThunk(toolModule, engineThunk, kitEx);
 
         MemoryUsage actualToolTempUsage;
-        require(toolMemory.processAllocTemp(toolModuleThunk, kit, actualToolTempUsage, stdPass));
+        toolMemory.processAllocTemp(toolModuleThunk, kit, actualToolTempUsage, stdPass);
 
         CHECK(actualToolTempUsage == toolTempUsage);
         CHECK(actualEngineTempUsage == engineTempUsage);
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -1062,7 +1044,7 @@ stdbool AtAssemblyImpl::processFinal(stdPars(ProcessFinalKit))
 //
 //================================================================
 
-stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
+void AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 {
     //----------------------------------------------------------------
     //
@@ -1077,18 +1059,17 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
         auto action = [&] ()
         {
             // Flush current vars to disk
-            require(configFile.saveVars(serialization, false, stdPass));
+            configFile.saveVars(serialization, false, stdPass);
 
             // Edit the file
-            require(configFile.editFile(configEditor(), stdPass));
+            configFile.editFile(configEditor(), stdPass);
 
             // Load vars
-            require(configFile.loadVars(serialization, true, stdPass));
+            configFile.loadVars(serialization, true, stdPass);
 
             // Fix incorrect values in the file
-            require(configFile.saveVars(serialization, true, stdPass));
-            require(configFile.updateFile(true, stdPass));
-            returnTrue;
+            configFile.saveVars(serialization, true, stdPass);
+            configFile.updateFile(true, stdPass);
         };
 
         errorBlock(action());
@@ -1120,10 +1101,10 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 
     auto gpuExecToAssembly = gpuShell::GpuShellTarget::O | [&] (stdPars(gpuShell::GpuShellKit))
     {
-        return processFinal(stdPassThruKit(kitCombine(baseKit, kit)));
+        processFinal(stdPassThruKit(kitCombine(baseKit, kit)));
     };
 
-    require(gpuShell.execCyclicShell(gpuExecToAssembly, stdPassKit(gpuShellToolkit)));
+    gpuShell.execCyclicShell(gpuExecToAssembly, stdPassKit(gpuShellToolkit));
 
     //----------------------------------------------------------------
     //
@@ -1141,10 +1122,6 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
         if (updateHappened)
             printMsgL(kit, STR("Saving config file."), msgWarn);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1153,7 +1130,7 @@ stdbool AtAssemblyImpl::processWithProfiler(stdPars(ProcessProfilerKit))
 //
 //================================================================
 
-stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
+void AtAssemblyImpl::process(stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -1204,7 +1181,7 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //----------------------------------------------------------------
 
     bool frameAdvance = false;
-    require(frameChangeDetector.check(kit.atVideoInfo, frameAdvance, stdPass));
+    frameChangeDetector.check(kit.atVideoInfo, frameAdvance, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -1213,10 +1190,10 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
     //----------------------------------------------------------------
 
     if_not (frameAdvance || overview.realEventsFound || !overview.anyEventsFound)
-        returnTrue;
+        return;
 
     kit.localLog.clear();
-    require(kit.atImgConsole.clear(stdPass));
+    kit.atImgConsole.clear(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -1262,10 +1239,10 @@ stdbool AtAssemblyImpl::process(stdPars(ProcessKit))
 
         auto profilerTarget = ProfilerTarget::O | [&] (stdPars(ProfilerKit))
         {
-            return processWithProfiler(stdPassThruKit(kitCombine(kit, baseKit)));
+            processWithProfiler(stdPassThruKit(kitCombine(kit, baseKit)));
         };
 
-        require(profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass));
+        profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass);
     }
 
     ////
@@ -1285,14 +1262,14 @@ AtAssembly::AtAssembly()
 AtAssembly::~AtAssembly()
     {}
 
-stdbool AtAssembly::init(const TestModuleFactory& engineFactory, stdPars(InitKit))
-    {return instance->init(engineFactory, stdPassThru);}
+void AtAssembly::init(const TestModuleFactory& engineFactory, stdPars(InitKit))
+    {instance->init(engineFactory, stdPassThru);}
 
-stdbool AtAssembly::finalize(stdPars(InitKit))
-    {return instance->finalize(stdPassThru);}
+void AtAssembly::finalize(stdPars(InitKit))
+    {instance->finalize(stdPassThru);}
 
-stdbool AtAssembly::process(stdPars(ProcessKit))
-    {return instance->process(stdPassThru);}
+void AtAssembly::process(stdPars(ProcessKit))
+    {instance->process(stdPassThru);}
 
 //----------------------------------------------------------------
 

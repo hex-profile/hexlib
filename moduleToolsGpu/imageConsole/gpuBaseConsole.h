@@ -37,9 +37,9 @@ struct GpuBaseConsoleImages
 {
     using Kit = GpuBaseConsoleKit;
 
-    virtual stdbool clear(stdPars(Kit)) =0;
-    virtual stdbool update(stdPars(Kit)) =0;
-    virtual stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) =0;
+    virtual void clear(stdPars(Kit)) =0;
+    virtual void update(stdPars(Kit)) =0;
+    virtual void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) =0;
 };
 
 //================================================================
@@ -50,14 +50,14 @@ struct GpuBaseConsoleImages
 
 struct GpuImageProviderBgr32
 {
-    virtual stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const =0;
+    virtual void saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const =0;
 };
 
 LAMBDA_THUNK
 (
     gpuImageProviderBgr32,
     GpuImageProviderBgr32,
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const,
+    void saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const,
     lambda(dest, stdPassNull)
 )
 
@@ -71,10 +71,10 @@ struct GpuBaseConsoleOverlay
 {
     using Kit = GpuBaseConsoleKit;
 
-    virtual stdbool overlayClear(stdPars(Kit)) =0;
-    virtual stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit)) =0;
-    virtual stdbool overlaySetImageFake(stdPars(Kit)) =0;
-    virtual stdbool overlayUpdate(stdPars(Kit)) =0;
+    virtual void overlayClear(stdPars(Kit)) =0;
+    virtual void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit)) =0;
+    virtual void overlaySetImageFake(stdPars(Kit)) =0;
+    virtual void overlayUpdate(stdPars(Kit)) =0;
 };
 
 //================================================================
@@ -101,26 +101,26 @@ class GpuBaseConsoleNull : public GpuBaseConsole
 
 public:
 
-    stdbool clear(stdPars(Kit))
-        {returnTrue;}
+    void clear(stdPars(Kit))
+        {}
 
-    stdbool update(stdPars(Kit))
-        {returnTrue;}
+    void update(stdPars(Kit))
+        {}
 
-    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
-        {returnTrue;}
+    void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+        {}
 
-    stdbool overlayClear(stdPars(Kit))
-        {returnTrue;}
+    void overlayClear(stdPars(Kit))
+        {}
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
-        {returnTrue;}
+    void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
+        {}
 
-    stdbool overlaySetImageFake(stdPars(Kit))
-        {returnTrue;}
+    void overlaySetImageFake(stdPars(Kit))
+        {}
 
-    stdbool overlayUpdate(stdPars(Kit))
-        {returnTrue;}
+    void overlayUpdate(stdPars(Kit))
+        {}
 
     bool getTextEnabled()
         {return false;}
@@ -146,13 +146,13 @@ public:
 
 public:
 
-    stdbool clear(stdPars(Kit));
-    stdbool update(stdPars(Kit));
-    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit));
-    stdbool overlayClear(stdPars(Kit));
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit));
-    stdbool overlaySetImageFake(stdPars(Kit));
-    stdbool overlayUpdate(stdPars(Kit));
+    void clear(stdPars(Kit));
+    void update(stdPars(Kit));
+    void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit));
+    void overlayClear(stdPars(Kit));
+    void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit));
+    void overlaySetImageFake(stdPars(Kit));
+    void overlayUpdate(stdPars(Kit));
     bool getTextEnabled();
     void setTextEnabled(bool textEnabled);
 

@@ -28,8 +28,8 @@
 #define GPU_MATRIX_SET__HOST_FUNC(Type) \
     \
     template <> \
-    stdbool gpuMatrixSetImpl(const GpuMatrixAP<Type>& dst, const Type& value, stdPars(GpuProcessKit)) \
-        {return gpuMatrixSetFunc_##Type(dst, value, stdPassThru);}
+    void gpuMatrixSetImpl(const GpuMatrixAP<Type>& dst, const Type& value, stdPars(GpuProcessKit)) \
+        {gpuMatrixSetFunc_##Type(dst, value, stdPassThru);}
 
 //================================================================
 //
@@ -56,5 +56,5 @@
 #define GPU_ARRAY_SET__HOST_FUNC(Type) \
     \
     template <> \
-    stdbool gpuArraySet(const GpuArray<Type>& dst, const Type& value, stdPars(GpuProcessKit)) \
-        {return gpuArraySetFunc_##Type(dst, value, stdPassThru);}
+    void gpuArraySet(const GpuArray<Type>& dst, const Type& value, stdPars(GpuProcessKit)) \
+        {gpuArraySetFunc_##Type(dst, value, stdPassThru);}

@@ -28,7 +28,7 @@ using Kit = MsgLogExKit;
 
 using ActionReceiver = Callable<void (ActionId id, CharArray name, CharArray key, CharArray comment)>;
 
-stdbool gatherActionSet(CfgSerialization& serialization, ActionReceiver& receiver, size_t& actionCount, stdPars(Kit));
+void gatherActionSet(CfgSerialization& serialization, ActionReceiver& receiver, size_t& actionCount, stdPars(Kit));
 
 //================================================================
 //

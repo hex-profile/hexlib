@@ -15,7 +15,7 @@
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool bsplineCubicPrefilter
+void bsplineCubicPrefilter
 (
     const GpuMatrix<const Src>& src,
     const GpuMatrix<Dst>& dst,
@@ -31,7 +31,7 @@ stdbool bsplineCubicPrefilter
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool bsplineCubicUnprefilter
+void bsplineCubicUnprefilter
 (
     const GpuMatrix<const Src>& src,
     const GpuMatrix<Dst>& dst,

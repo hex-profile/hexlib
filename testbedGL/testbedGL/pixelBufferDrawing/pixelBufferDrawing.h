@@ -23,9 +23,9 @@ struct PixelBufferDrawing
     virtual void deinit() =0;
 
     using ReinitKit = KitCombine<DiagnosticKit, MallocKit>;
-    virtual stdbool reinit(stdPars(ReinitKit)) =0;
+    virtual void reinit(stdPars(ReinitKit)) =0;
 
     ////
 
-    virtual stdbool draw(const PixelBuffer& buffer, const Point<Space>& pos, stdPars(DiagnosticKit)) =0;
+    virtual void draw(const PixelBuffer& buffer, const Point<Space>& pos, stdPars(DiagnosticKit)) =0;
 };

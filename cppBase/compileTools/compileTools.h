@@ -104,29 +104,6 @@ sysinline bool anyv(const void* value)
 
 //================================================================
 //
-// for_count
-// for_range
-//
-// These "for" macros automatically determine the loop variable type.
-//
-// In the range variant, the loop variable takes type of the "end" expression.
-//
-//================================================================
-
-#define for_count(i, count) \
-    for (auto i = TYPE_CLEANSE(decltype(count)){0}; i < (count); ++i)
-
-#define for_count_ex(i, count, extra) \
-    for (auto i = TYPE_CLEANSE(decltype(count)){0}; i < (count); ++i, extra)
-
-#define for_range(i, org, end) \
-    for (auto i = TYPE_CLEANSE(decltype(end)){org}; i < (end); ++i)
-
-#define for_range_ex(i, org, end, extra) \
-    for (auto i = TYPE_CLEANSE(decltype(end)){org}; i < (end); ++i, extra)
-
-//================================================================
-//
 // check_flag
 //
 // If the condition is not satisfied, clears the flag.
@@ -527,3 +504,55 @@ struct GetNthType<N, T0, Types...>
 //================================================================
 
 #define may_throw noexcept(false)
+
+//================================================================
+//
+// for_count*
+// for_range*
+//
+//----------------------------------------------------------------
+//
+// These "for" macros automatically determine the type of the loop variable.
+//
+// In the range version, the loop variable takes the type of the "end" expression.
+//
+//================================================================
+
+#define for_range_ex(i, org, end, extra) \
+    for (auto i = TYPE_CLEANSE(decltype(end)){org}; i < (end); ++i, extra)
+
+#define for_range(i, org, end) \
+    for_range_ex(i, org, end, (void) 0)
+
+////
+
+#define for_count_ex(i, count, extra) \
+    for_range_ex(i, 0, count, extra)
+
+#define for_count(i, count) \
+    for_range(i, 0, count)
+
+////
+
+template <typename Type>
+sysinline Type for_checkTypeIsSignedAndSubtractOne(const Type& value)
+{
+    COMPILE_ASSERT(Type(-1) < Type(0));
+    return Type(value - 1);
+}
+
+////
+
+#define for_range_reverse_ex(i, org, end, extra) \
+    for (auto i = for_checkTypeIsSignedAndSubtractOne(end); i >= (org); --i, extra)
+
+#define for_range_reverse(i, org, end) \
+    for_range_reverse_ex(i, org, end, (void) 0)
+
+////
+
+#define for_count_reverse_ex(i, count, extra) \
+    for_range_reverse_ex(i, 0, count, extra)
+
+#define for_count_reverse(i, count) \
+    for_range_reverse(i, 0, count)

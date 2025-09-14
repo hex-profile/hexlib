@@ -11,7 +11,7 @@
 //================================================================
 
 template <typename Type, typename Pitch>
-stdbool readGpuElement
+void readGpuElement
 (
     const GpuMatrix<const Type, Pitch>& image,
     const Point<Space>& pos,
@@ -23,10 +23,10 @@ stdbool readGpuElement
     REQUIRE(image.subs(pos, point(1), gpuElement));
 
     MatrixMemory<Type> cpuElement;
-    require(cpuElement.reallocForGpuExch(point(1), stdPass));
+    cpuElement.reallocForGpuExch(point(1), stdPass);
 
     GpuCopyThunk gpuCopy;
-    require(gpuCopy(gpuElement, cpuElement, stdPass));
+    gpuCopy(gpuElement, cpuElement, stdPass);
     gpuCopy.waitClear();
 
     result = Type{};
@@ -36,6 +36,4 @@ stdbool readGpuElement
         MATRIX_EXPOSE(cpuElement);
         result = *cpuElementMemPtr;
     }
-
-    returnTrue;
 }

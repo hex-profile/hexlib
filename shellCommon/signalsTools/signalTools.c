@@ -25,7 +25,7 @@ using StringStorage = StringStorageEx<CharType>;
 //
 //================================================================
 
-stdbool gatherActionSet(CfgSerialization& serialization, ActionReceiver& receiver, size_t& actionCount, stdPars(Kit))
+void gatherActionSet(CfgSerialization& serialization, ActionReceiver& receiver, size_t& actionCount, stdPars(Kit))
 {
     stdExceptBegin;
 

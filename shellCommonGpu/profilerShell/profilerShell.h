@@ -35,7 +35,7 @@ public:
 
     void serialize(const CfgSerializeKit& kit, bool hotkeys);
 
-    stdbool init(stdPars(InitKit));
+    void init(stdPars(InitKit));
     void deinit();
 
 public:
@@ -47,14 +47,14 @@ public:
 
     bool profilingActive() const {return profilerActive;}
 
-    stdbool process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit));
+    void process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit));
 
 
-    stdbool makeReport(float32 processingThroughput, stdPars(ReportKit));
+    void makeReport(float32 processingThroughput, stdPars(ReportKit));
 
 private:
 
-    stdbool makeHtmlReport(float32 processingThroughput, stdPars(ReportKit));
+    void makeHtmlReport(float32 processingThroughput, stdPars(ReportKit));
 
 private:
 
@@ -105,6 +105,6 @@ private:
     static constexpr float32 ftmResolutionPeriod = 1e-3f; // 1 ms
     static constexpr float32 ftmDivResolutionPeriod = 1.f / ftmResolutionPeriod;
 
-    stdbool ftmUpdate(float32 frameTime, stdPars(ErrorLogKit));
+    void ftmUpdate(float32 frameTime, stdPars(ErrorLogKit));
 
 };

@@ -33,31 +33,12 @@ void exceptThrowFailure();
 
 //================================================================
 //
-// stdbool
-//
-//================================================================
-
-class stdbool
-{
-};
-
-//----------------------------------------------------------------
-
-sysinline stdbool allv(const stdbool& value)
-    {return value;}
-
-//================================================================
-//
-// returnTrue
 // returnFalse
 //
 //================================================================
 
-#define returnTrue \
-    return stdbool()
-
 #define returnFalse \
-    return (exceptThrowFailure(), stdbool())
+    return exceptThrowFailure()
 
 //================================================================
 //
@@ -70,11 +51,6 @@ sysinline stdbool allv(const stdbool& value)
 template <typename Type>
 sysinline void requireHelper(const Type& value)
     MISSING_FUNCTION_BODY
-
-template <>
-sysinline void requireHelper(const stdbool& value)
-{
-}
 
 template <>
 sysinline void requireHelper(const bool& value)
@@ -99,7 +75,7 @@ sysinline bool errorBlockHelper(const Action& action)
 {
     try
     {
-        stdbool ignore = action(); // stdbool value is not used
+        action();
     }
     catch (...)
     {
@@ -112,4 +88,4 @@ sysinline bool errorBlockHelper(const Action& action)
 //----------------------------------------------------------------
 
 #define errorBlock(action) \
-    errorBlockHelper([&] () -> stdbool {return (action);})
+    errorBlockHelper([&] () -> void {return (action);})

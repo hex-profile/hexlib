@@ -31,16 +31,16 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    stdbool realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
-        {return Base::realloc(size, byteAlignment, allocator, stdPassThru);}
+    void realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
+        {Base::realloc(size, byteAlignment, allocator, stdPassThru);}
 
     template <typename Kit>
-    inline stdbool realloc(Space size, Space byteAlignment, stdPars(Kit))
-        {return Base::realloc(size, byteAlignment, kit.gpuFastAlloc, stdPassThru);}
+    inline void realloc(Space size, Space byteAlignment, stdPars(Kit))
+        {Base::realloc(size, byteAlignment, kit.gpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
-    inline stdbool realloc(Space size, stdPars(Kit))
-        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuFastAlloc, stdPassThru);}
+    inline void realloc(Space size, stdPars(Kit))
+        {Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuFastAlloc, stdPassThru);}
 
     //
     // Cast to GpuArray
@@ -74,7 +74,7 @@ public:
 
 #define GPU_ARRAY_ALLOC(name, Type, size) \
     GpuArrayMemory<Type> name; \
-    require(name.realloc(size, stdPass));
+    name.realloc(size, stdPass);
 
 //================================================================
 //

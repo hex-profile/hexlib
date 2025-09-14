@@ -36,7 +36,7 @@ using StringArray = vector<StlString>;
 
 struct SourceCache
 {
-    virtual stdbool getFile(const StlString& filename, StringArray*& result, stdParsNull) =0;
+    virtual void getFile(const StlString& filename, StringArray*& result, stdParsNull) =0;
 };
 
 //================================================================
@@ -45,12 +45,12 @@ struct SourceCache
 //
 //================================================================
 
-stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
+void writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 {
     StlString thisFilename = outputDirPrefix + CT("profiler.css");
 
     OutputTextFile file;
-    require(file.open(thisFilename.c_str(), stdPass));
+    file.open(thisFilename.c_str(), stdPass);
 
     ////
 
@@ -65,9 +65,7 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 
     ////
 
-    require(file.flushAndClose(stdPass));
-
-    returnTrue;
+    file.flushAndClose(stdPass);
 }
 
 //================================================================
@@ -76,7 +74,7 @@ stdbool writeStylesheet(const StlString& outputDirPrefix, stdPars(ReportKit))
 //
 //================================================================
 
-stdbool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
+void writeJavascript(OutputTextFile& file, stdPars(ReportKit))
 {
     StlString jsText =
     # include "profiler.js"
@@ -86,10 +84,6 @@ stdbool writeJavascript(OutputTextFile& file, stdPars(ReportKit))
     jsText = jsText.substr(1, jsText.size() - 2);
 
     file.write(jsText.data(), jsText.size());
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -242,7 +236,7 @@ bool getIndent(const StlString& str, Space& result)
 //
 //================================================================
 
-stdbool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& result, Space maxScanDistance, stdPars(ErrorLogKit))
+void cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& result, Space maxScanDistance, stdPars(ErrorLogKit))
 {
     using namespace std;
 
@@ -422,10 +416,6 @@ stdbool cutSmartBlock(const StringArray& text, Space rowIndex, StringArray& resu
 
     for (Space i = firstRow; i <= lastRow; ++i)
         result.push_back(text[i]);
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -599,7 +589,7 @@ struct CodeBlockParams
 //
 //================================================================
 
-stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
+void getCodeBlockCore(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
     result.clear();
 
@@ -622,7 +612,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
     //
 
     StringArray* arr = 0;
-    require(sourceCache.getFile(filename, arr, stdPass));
+    sourceCache.getFile(filename, arr, stdPass);
     REQUIRE(arr != 0);
     StringArray& text = *arr;
 
@@ -666,10 +656,6 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
     result.filename = stripFilePath(filename);
     result.lineNumber = lineNumber;
     result.userMsg = userMsg;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -678,7 +664,7 @@ stdbool getCodeBlockCore(const StlString& location, const CodeBlockParams& o, So
 //
 //================================================================
 
-stdbool getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
+void getCodeBlock(const StlString& location, const CodeBlockParams& o, SourceCache& sourceCache, CodeLocation& result, stdPars(ReportKit))
 {
     if_not (errorBlock(getCodeBlockCore(location, o, sourceCache, result, stdPassThruNc)))
     {
@@ -686,8 +672,6 @@ stdbool getCodeBlock(const StlString& location, const CodeBlockParams& o, Source
         result.userMsg = location;
         result.code.push_back(CT("(failed to get file contents)"));
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -1023,7 +1007,7 @@ inline FormatNumber<float32> formatTime(const float32& value, const DisplayParam
 //
 //================================================================
 
-stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisInfo, const StlString& parentHtml, const HtmlReportParams& o, stdPars(ReportKit))
+void generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisInfo, const StlString& parentHtml, const HtmlReportParams& o, stdPars(ReportKit))
 {
     using namespace std;
 
@@ -1192,7 +1176,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
     StlString thisFilename = o.outputDirPrefix + thisInfo.filename;
 
     OutputTextFile file;
-    require(file.open(thisFilename.c_str(), stdPass));
+    file.open(thisFilename.c_str(), stdPass);
 
     auto log = getLog(file, kit);
 
@@ -1223,7 +1207,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         //
         //----------------------------------------------------------------
 
-        require(writeJavascript(file, stdPass));
+        writeJavascript(file, stdPass);
 
         //----------------------------------------------------------------
         //
@@ -1537,7 +1521,7 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
 
     ////
 
-    require(file.flushAndClose(stdPass));
+    file.flushAndClose(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -1551,12 +1535,8 @@ stdbool generateHtmlForTree(const ProfilerNode& thisNode, const NodeInfo& thisIn
         const NodeInfo& info = nodeInfo[i];
 
         if (info.expandFlag)
-            require(generateHtmlForTree(node, info, thisInfo.filename, o, stdPass));
+            generateHtmlForTree(node, info, thisInfo.filename, o, stdPass);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1574,7 +1554,7 @@ public:
 
 public:
 
-    stdbool getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit));
+    void getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit));
 
 private:
 
@@ -1595,7 +1575,7 @@ private:
 //
 //================================================================
 
-stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit))
+void SourceCacheImpl::getFile(const StringArray& searchPath, const StlString& filename, StringArray*& result, stdPars(Kit))
 {
     using namespace std;
 
@@ -1613,7 +1593,7 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
     if (!seachResult.second)
     {
         require(searchValue.ok);
-        returnTrue;
+        return;
     }
 
     //
@@ -1657,10 +1637,6 @@ stdbool SourceCacheImpl::getFile(const StringArray& searchPath, const StlString&
     ////
 
     searchValue.ok = true;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1674,8 +1650,8 @@ class SourceCacheThunk : public SourceCache
 
 public:
 
-    stdbool getFile(const StlString& filename, StringArray*& result, stdParsNull)
-        {return impl.getFile(searchPath, filename, result, stdPassThru);}
+    void getFile(const StlString& filename, StringArray*& result, stdParsNull)
+        {impl.getFile(searchPath, filename, result, stdPassThru);}
 
 public:
 
@@ -1705,7 +1681,7 @@ public:
 
     HtmlReportImpl();
     void serialize(const CfgSerializeKit& kit);
-    stdbool makeReport(const MakeReportParams& o, stdPars(ReportFileKit));
+    void makeReport(const MakeReportParams& o, stdPars(ReportFileKit));
 
 private:
 
@@ -1776,7 +1752,7 @@ void HtmlReportImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFileKit))
+void HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFileKit))
 {
     REQUIRE(o.cycleCount >= 0);
     require(o.cycleCount >= 1);
@@ -1852,7 +1828,7 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
         ////
 
         StlString outputDirPrefix = StlString(o.outputDir) + CT("/");
-        require(writeStylesheet(outputDirPrefix, stdPass));
+        writeStylesheet(outputDirPrefix, stdPass);
 
         CodeBlockParams codeBlockParams{(simpleMaxRows | 1) / 2, smartMaxScanRows, smartMaxRows};
 
@@ -1875,17 +1851,13 @@ stdbool HtmlReportImpl::makeReport(const MakeReportParams& o, stdPars(ReportFile
         };
 
         HtmlReportParams params{timingParams, codeBlockParams, displayParams, outputDirPrefix, timeStr, sourceCacheThunk};
-        require(generateHtmlForTree(*rootNode, rootInfo, StlString(), params, stdPass));
+        generateHtmlForTree(*rootNode, rootInfo, StlString(), params, stdPass);
 
     }
     catch (exception& e)
     {
         printMsg(kit.msgLog, STR("STL exception: %0"), e.what(), msgErr);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

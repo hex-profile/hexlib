@@ -13,7 +13,7 @@ namespace testShell {
 //
 //================================================================
 
-using Process = Callable<stdbool (stdParsNull)>;
+using Process = Callable<void (stdParsNull)>;
 
 //================================================================
 //
@@ -29,7 +29,7 @@ struct TestShell
     virtual void serialize(const ModuleSerializeKit& kit) =0;
 
     using ProcessKit = KitCombine<GpuModuleProcessKit, GpuRgbFrameKit>;
-    virtual stdbool process(Process& baseProcess, stdPars(ProcessKit)) =0;
+    virtual void process(Process& baseProcess, stdPars(ProcessKit)) =0;
 };
 
 //----------------------------------------------------------------

@@ -55,13 +55,13 @@ public:
     BaseConsoleAvi();
     ~BaseConsoleAvi();
 
-    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    void saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    void saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
-    stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
-    stdbool setFps(const FPS& fps, stdPars(Kit));
-    stdbool setCodec(const Codec& codec, stdPars(Kit));
-    stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit));
+    void setOutputDir(const CharType* outputDir, stdPars(Kit));
+    void setFps(const FPS& fps, stdPars(Kit));
+    void setCodec(const Codec& codec, stdPars(Kit));
+    void setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit));
 
 private:
 
@@ -87,45 +87,43 @@ public:
 
 public:
 
-    stdbool addImage(const MatrixAP<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
+    void addImage(const MatrixAP<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
     {
-        require(baseConsole.addImage(img, hint, dataProcessing, stdPass));
-        require(saver.saveImage(img, hint.desc, hint.id, stdPass));
-        returnTrue;
+        baseConsole.addImage(img, hint, dataProcessing, stdPass);
+        saver.saveImage(img, hint.desc, hint.id, stdPass);
     }
 
-    stdbool clear(stdParsNull)
+    void clear(stdParsNull)
     {
-        return baseConsole.clear(stdPassThru);
+        baseConsole.clear(stdPassThru);
     }
 
-    stdbool update(stdParsNull)
+    void update(stdParsNull)
     {
-        return baseConsole.update(stdPassThru);
+        baseConsole.update(stdPassThru);
     }
 
 public:
 
-    stdbool overlayClear(stdParsNull)
+    void overlayClear(stdParsNull)
     {
-        return baseOverlay.overlayClear(stdPassThru);
+        baseOverlay.overlayClear(stdPassThru);
     }
 
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
+    void overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
     {
-        require(baseOverlay.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
-        require(saver.saveImage(size, imageProvider, desc, id, stdPass));
-        returnTrue;
+        baseOverlay.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass);
+        saver.saveImage(size, imageProvider, desc, id, stdPass);
     }
 
-    stdbool overlaySetFake(stdParsNull)
+    void overlaySetFake(stdParsNull)
     {
-        return baseOverlay.overlaySetFake(stdPassThru);
+        baseOverlay.overlaySetFake(stdPassThru);
     }
 
-    stdbool overlayUpdate(stdParsNull)
+    void overlayUpdate(stdParsNull)
     {
-        return baseOverlay.overlayUpdate(stdPassThru);
+        baseOverlay.overlayUpdate(stdPassThru);
     }
 
 private:

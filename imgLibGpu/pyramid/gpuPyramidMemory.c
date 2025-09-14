@@ -30,7 +30,7 @@ void GpuPyramidMemory<Type>::dealloc()
 //================================================================
 
 template <typename Type>
-stdbool GpuPyramidMemory<Type>::reallocEx
+void GpuPyramidMemory<Type>::reallocEx
 (
     const Point<Space>& newBaseSize,
     Space newLevels,
@@ -58,7 +58,7 @@ stdbool GpuPyramidMemory<Type>::reallocEx
 
     REQUIRE(newLevels >= 0);
     REQUIRE(newLayers >= 0);
-    require(pyramidArray.realloc(newLevels, stdPass));
+    pyramidArray.realloc(newLevels, stdPass);
 
     ////
 
@@ -71,15 +71,13 @@ stdbool GpuPyramidMemory<Type>::reallocEx
     for_count (i, newLevels)
     {
         auto size = pyramidLevelSize(newBaseSize, i, scale, sizeRounding, options);
-        require(pyramidArrayPtr[i].reallocEx(newLayers, size, baseByteAlignment, rowByteAlignment, allocator, stdPass));
+        pyramidArrayPtr[i].reallocEx(newLayers, size, baseByteAlignment, rowByteAlignment, allocator, stdPass);
     }
 
     ////
 
     currentLayers = newLayers;
     deallocCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================

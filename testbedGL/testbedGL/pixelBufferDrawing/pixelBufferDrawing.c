@@ -19,14 +19,14 @@ using ReportCompileInfoKit = KitCombine<DiagnosticKit, MallocKit>;
 //
 //================================================================
 
-stdbool reportCompileInfo(GLuint shader, const CharArray& prefix, stdPars(ReportCompileInfoKit))
+void reportCompileInfo(GLuint shader, const CharArray& prefix, stdPars(ReportCompileInfoKit))
 {
     REQUIRE_GL_FUNC(glGetShaderiv);
     GLint compileSuccess = 0;
     REQUIRE_GL(glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess));
 
     if (compileSuccess)
-        returnTrue;
+        return;
 
     ////
 
@@ -35,10 +35,10 @@ stdbool reportCompileInfo(GLuint shader, const CharArray& prefix, stdPars(Report
     REQUIRE_GL(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &bufferSize));
 
     REQUIRE(bufferSize >= 1);
-    if (bufferSize == 1) returnTrue;
+    if (bufferSize == 1) return;
 
     ArrayMemory<char> tmp;
-    require(tmp.realloc(bufferSize, cpuBaseByteAlignment, kit.malloc, stdPass));
+    tmp.realloc(bufferSize, cpuBaseByteAlignment, kit.malloc, stdPass);
     ARRAY_EXPOSE_UNSAFE(tmp);
 
     REQUIRE_GL_FUNC(glGetShaderInfoLog);
@@ -48,10 +48,6 @@ stdbool reportCompileInfo(GLuint shader, const CharArray& prefix, stdPars(Report
 
     printMsg(kit.msgLog, STR("%0"), prefix, msgErr);
     printMsg(kit.msgLog, STR("%0"), const_cast<const char*>(tmpPtr), msgErr);
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -60,7 +56,7 @@ stdbool reportCompileInfo(GLuint shader, const CharArray& prefix, stdPars(Report
 //
 //================================================================
 
-stdbool compileShaderProgram(const char* vertexShaderSrc, const char* fragmentShaderSrc, GLuint& program, stdPars(ReportCompileInfoKit))
+void compileShaderProgram(const char* vertexShaderSrc, const char* fragmentShaderSrc, GLuint& program, stdPars(ReportCompileInfoKit))
 {
     //----------------------------------------------------------------
     //
@@ -90,7 +86,7 @@ stdbool compileShaderProgram(const char* vertexShaderSrc, const char* fragmentSh
 
     REQUIRE_GL_FUNC(glCompileShader);
     REQUIRE_GL(glCompileShader(vertexShader));
-    require(reportCompileInfo(vertexShader, STR("Vertex shader compilation:"), stdPass));
+    reportCompileInfo(vertexShader, STR("Vertex shader compilation:"), stdPass);
 
     ////
 
@@ -122,7 +118,7 @@ stdbool compileShaderProgram(const char* vertexShaderSrc, const char* fragmentSh
 
     REQUIRE_GL_FUNC(glCompileShader);
     REQUIRE_GL(glCompileShader(fragmentShader));
-    require(reportCompileInfo(fragmentShader, STR("Fragment shader compilation:"), stdPass));
+    reportCompileInfo(fragmentShader, STR("Fragment shader compilation:"), stdPass);
 
     ////
 
@@ -168,7 +164,7 @@ stdbool compileShaderProgram(const char* vertexShaderSrc, const char* fragmentSh
             if_not (logSize == 1)
             {
                 ArrayMemory<char> tmp;
-                require(tmp.realloc(logSize, cpuBaseByteAlignment, kit.malloc, stdPass));
+                tmp.realloc(logSize, cpuBaseByteAlignment, kit.malloc, stdPass);
                 ARRAY_EXPOSE_UNSAFE(tmp);
 
                 REQUIRE_GL_FUNC(glGetProgramInfoLog);
@@ -192,8 +188,6 @@ stdbool compileShaderProgram(const char* vertexShaderSrc, const char* fragmentSh
     cleanProgram.cancel();
     cleanVertexShader.cancel();
     cleanFragmentShader.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -236,9 +230,9 @@ public:
         state = {};
     }
 
-    stdbool reinit(stdPars(ReportCompileInfoKit));
+    void reinit(stdPars(ReportCompileInfoKit));
 
-    stdbool draw(const PixelBuffer& buffer, const Point<Space>& pos, stdPars(DiagnosticKit));
+    void draw(const PixelBuffer& buffer, const Point<Space>& pos, stdPars(DiagnosticKit));
 
 private:
 
@@ -300,7 +294,7 @@ const char* PixelBufferDrawingImpl::fragmentShaderText =
 //
 //================================================================
 
-stdbool PixelBufferDrawingImpl::reinit(stdPars(ReportCompileInfoKit))
+void PixelBufferDrawingImpl::reinit(stdPars(ReportCompileInfoKit))
 {
     deinit();
 
@@ -308,7 +302,7 @@ stdbool PixelBufferDrawingImpl::reinit(stdPars(ReportCompileInfoKit))
 
     ////
 
-    require(compileShaderProgram(vertexShaderText, fragmentShaderText, shaderProgram, stdPass));
+    compileShaderProgram(vertexShaderText, fragmentShaderText, shaderProgram, stdPass);
 
     ////
 
@@ -329,8 +323,6 @@ stdbool PixelBufferDrawingImpl::reinit(stdPars(ReportCompileInfoKit))
     ////
 
     totalCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -339,7 +331,7 @@ stdbool PixelBufferDrawingImpl::reinit(stdPars(ReportCompileInfoKit))
 //
 //================================================================
 
-stdbool PixelBufferDrawingImpl::draw(const PixelBuffer& buffer, const Point<Space>& pos, stdPars(DiagnosticKit))
+void PixelBufferDrawingImpl::draw(const PixelBuffer& buffer, const Point<Space>& pos, stdPars(DiagnosticKit))
 {
     REQUIRE(shaderProgram != 0);
 
@@ -352,7 +344,7 @@ stdbool PixelBufferDrawingImpl::draw(const PixelBuffer& buffer, const Point<Spac
 
     GLuint64EXT bufferAddress = 0;
     Space bufferPitch = 0;
-    require(buffer.getGraphicsBuffer(bufferAddress, bufferPitch, stdPass));
+    buffer.getGraphicsBuffer(bufferAddress, bufferPitch, stdPass);
     REQUIRE(bufferPitch >= 0);
 
     ////
@@ -416,8 +408,4 @@ stdbool PixelBufferDrawingImpl::draw(const PixelBuffer& buffer, const Point<Spac
 
     constexpr bool drawCheck = true;
     REQUIRE_GL(drawCheck);
-
-    ////
-
-    returnTrue;
 }

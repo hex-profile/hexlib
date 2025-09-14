@@ -25,7 +25,7 @@ MatrixMemory<int> m0;
 // Allocate matrix; check allocation error.
 // If reallocation fails, matrix will have zero size.
 // Destructor deallocates memory automatically.
-require(m0.realloc(point(33, 17), stdPass));
+m0.realloc(point(33, 17), stdPass);
 
 // Change matrix layout without reallocation; check error.
 // New size should be <= allocated size, otherwise the call fails and the layout is not changed.
@@ -38,7 +38,7 @@ REQUIRE(m0.maxSize() == point(13, 15));
 
 // Reallocate matrix base aligned to 512 bytes and pitch aligned to 32 bytes;
 // The pitch alignment will be used across "resize" calls until the next "realloc";
-require(m0.realloc(point(333, 111), 512, 32, stdPass));
+m0.realloc(point(333, 111), 512, 32, stdPass);
 REQUIRE(m0.resize(129, 15));
 
 // Convert to Matrix<> implicitly and explicitly (for template arguments).
@@ -81,7 +81,7 @@ private:
 
 public:
 
-    stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
+    void realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////
 
@@ -181,20 +181,20 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    sysinline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, stdPars(Kit))
-        {return Base::realloc(size, baseByteAlignment, rowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
+    sysinline void realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, stdPars(Kit))
+        {Base::realloc(size, baseByteAlignment, rowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     ////
 
     template <typename Kit>
-    sysinline stdbool reallocForGpuExch(const Point<Space>& size, stdPars(Kit))
-        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.cpuFastAlloc, stdPassThru);}
+    sysinline void reallocForGpuExch(const Point<Space>& size, stdPars(Kit))
+        {Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     ////
 
     template <typename Kit>
-    sysinline stdbool reallocForCpuOnly(const Point<Space>& size, stdPars(Kit))
-        {return Base::realloc(size, cpuBaseByteAlignment, cpuRowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
+    sysinline void reallocForCpuOnly(const Point<Space>& size, stdPars(Kit))
+        {Base::realloc(size, cpuBaseByteAlignment, cpuRowByteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
 };
 
@@ -206,8 +206,8 @@ public:
 
 #define MATRIX_ALLOC_FOR_GPU_EXCH(name, Type, size) \
     MatrixMemory<Type> name; \
-    require(name.reallocForGpuExch(size, stdPass));
+    name.reallocForGpuExch(size, stdPass);
 
 #define MATRIX_ALLOC_FOR_CPU_ONLY(name, Type, size) \
     MatrixMemory<Type> name; \
-    require(name.reallocForCpuOnly(size, stdPass));
+    name.reallocForCpuOnly(size, stdPass);

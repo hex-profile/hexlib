@@ -45,7 +45,7 @@ struct LogKeeperImpl : public LogKeeper
     //
     //----------------------------------------------------------------
 
-    virtual stdbool init(const InitArgs& args, stdPars(InitKit));
+    virtual void init(const InitArgs& args, stdPars(InitKit));
 
     //----------------------------------------------------------------
     //
@@ -69,7 +69,7 @@ struct LogKeeperImpl : public LogKeeper
 
     using CycleDiagKit = KitCombine<DiagnosticKit, TimerKit>;
 
-    stdbool processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit));
+    void processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit));
 
     //----------------------------------------------------------------
     //
@@ -144,9 +144,9 @@ void LogKeeperImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool LogKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
+void LogKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
 {
-    require(formatterArray.realloc(8192, stdPass));
+    formatterArray.realloc(8192, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -169,10 +169,10 @@ stdbool LogKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
 
     BinaryFileImpl file;
 
-    require(file.open(logFilename.str(), true, true, stdPass));
+    file.open(logFilename.str(), true, true, stdPass);
 
     if (clearOnStart)
-        require(file.truncate(stdPass));
+        file.truncate(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -181,8 +181,6 @@ stdbool LogKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
     //----------------------------------------------------------------
 
     initialized = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -295,7 +293,7 @@ void LogKeeperImpl::processingCycle(const RunArgs& args, ShutdownReq& shutdown)
 //
 //================================================================
 
-stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit))
+void LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit))
 {
 
     //----------------------------------------------------------------
@@ -312,7 +310,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
     auto setTimeout = [&] ()
     {
         if_not (firstUnsavedUpdate)
-            returnTrue;
+            return;
 
         ////
 
@@ -328,7 +326,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
         if (waitTime == 0)
         {
             wait = false;
-            returnTrue;
+            return;
         }
 
         ////
@@ -336,10 +334,6 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
         uint32 ms = 0;
         REQUIRE(convertNearest(waitTime * 1e3f, ms));
         waitTimeMs = ms;
-
-        ////
-
-        returnTrue;
     };
 
     errorBlock(setTimeout()); // Cannot exit by error before shutdown servicing.
@@ -386,19 +380,17 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
         if_not (fileUpdatingDisabled)
         {
             BinaryFileImpl file;
-            require(file.open(logFilename.str(), true, true, stdPass));
-            require(file.setPosition(file.getSize(), stdPass));
+            file.open(logFilename.str(), true, true, stdPass);
+            file.setPosition(file.getSize(), stdPass);
 
             auto data = logMemory->getDataRef();
 
-            require(file.write(data.ptr, data.size * sizeof(*data.ptr), stdPass));
+            file.write(data.ptr, data.size * sizeof(*data.ptr), stdPass);
         }
 
         ////
 
         fileErrorHandler.cancel();
-
-        returnTrue;
     };
 
     //----------------------------------------------------------------
@@ -427,7 +419,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
         if (logMemory->hasUpdates())
             errorBlock(updateLogFile(stdPassNc));
 
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -478,7 +470,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
         auto& editRequest = inputUpdates.editRequest;
 
         if_not (editRequest.hasUpdates())
-            returnTrue;
+            return;
 
         REMEMBER_CLEANUP(editRequest.reset());
 
@@ -490,7 +482,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
         {
             fileUpdatingDisabled = false;
 
-            require(updateLogFile(stdPass));
+            updateLogFile(stdPass);
         }
 
         //
@@ -509,8 +501,7 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
             cmdLine << editor << CT(" \"") << logFilename << CT("\"");
             REQUIRE(def(cmdLine));
 
-            require(runAndWaitProcess(cmdLine.cstr(), stdPass));
-            returnTrue;
+            runAndWaitProcess(cmdLine.cstr(), stdPass);
         };
 
         if_not (errorBlock(launchEditor(editRequest.getEditor(), stdPassNc)))
@@ -521,17 +512,9 @@ stdbool LogKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, s
 
         if (editingReport)
             printMsg(kit.msgLog, STR("Log keeper: Editing finished."), logFilename);
-
-        ////
-
-        returnTrue;
     };
 
     errorBlock(editLog());
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -317,7 +317,7 @@ public:
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != DisplayNothing;}
 
-    stdbool process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
+    void process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -362,12 +362,12 @@ void ResamplingTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
+void ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
 {
     DisplayType displayType = kit.verbosity >= Verbosity::On ? displaySwitch : DisplayNothing;
 
     if (displayType == DisplayNothing)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -376,16 +376,16 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     //----------------------------------------------------------------
 
     GPU_MATRIX_ALLOC(srcImage, FloatPixel, o.gpuRgbFrame.size());
-    require(convertToFloatPixel(o.gpuRgbFrame, srcImage, stdPass));
+    convertToFloatPixel(o.gpuRgbFrame, srcImage, stdPass);
     Point<Space> srcSize = srcImage.size();
 
     ////
 
     if (displayType == DisplaySource)
     {
-        require(kit.gpuImageConsole.addMatrixEx(srcImage,
+        kit.gpuImageConsole.addMatrixEx(srcImage,
             kit.display.factor * pixelMin(), kit.display.factor * pixelMax(), point(1.f),
-            INTERP_NEAREST, srcSize, BORDER_ZERO, STR("Source Image"), stdPass));
+            INTERP_NEAREST, srcSize, BORDER_ZERO, STR("Source Image"), stdPass);
     }
 
     //----------------------------------------------------------------
@@ -467,21 +467,21 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
         test == Test::UpsampleThreeTimes ||
         test == Test::UpsampleFourTimes
     )
-        require(resamplePyramidModel(srcImage, dstImage, 1.f/resampleFactor, resampleFactorScalar <= 1 ? downsamplingKernel : upsamplingKernel, stdPass));
+        resamplePyramidModel(srcImage, dstImage, 1.f/resampleFactor, resampleFactorScalar <= 1 ? downsamplingKernel : upsamplingKernel, stdPass);
 
     if (test == Test::InterpolationBicubic)
-        require(resampleCubicModel(srcImage, dstImage, 1.f/resampleFactor, cubicKernel, stdPass));
+        resampleCubicModel(srcImage, dstImage, 1.f/resampleFactor, cubicKernel, stdPass);
 
     if (test == Test::InterpolationUnserBspline)
     {
         GPU_MATRIX_ALLOC(srcImagePrefiltered, FloatPixel, srcSize);
-        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));
-        require(upsampleTexCubicBspline(srcImagePrefiltered, dstImage, 1.f/resampleFactor, stdPass));
+        bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass);
+        upsampleTexCubicBspline(srcImagePrefiltered, dstImage, 1.f/resampleFactor, stdPass);
     }
 
     if (test == Test::UnprefilterUnserBspline)
     {
-        require(gpuMatrixCopy(makeConst(srcImage), dstImage, stdPass));
+        gpuMatrixCopy(makeConst(srcImage), dstImage, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -495,53 +495,65 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     using namespace gaussSincResampling;
 
     if (test == Test::DownsampleOneAndHalf)
-        require((downsampleOneAndHalfConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        downsampleOneAndHalfConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     if (test == Test::UpsampleOneAndHalf)
-        require((upsampleOneAndHalfBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        upsampleOneAndHalfBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     ////
 
     if (test == Test::DownsampleOneAndThird)
-        require((downsampleOneAndThirdConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        downsampleOneAndThirdConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     if (test == Test::UpsampleOneAndThird)
-        require((upsampleOneAndThirdBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        upsampleOneAndThirdBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     ////
 
     if (test == Test::DownsampleOneAndQuarter)
-        require((downsampleOneAndQuarterConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        downsampleOneAndQuarterConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     if (test == Test::UpsampleOneAndQuarter)
-        require((upsampleOneAndQuarterBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        upsampleOneAndQuarterBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     ////
 
     if (test == Test::DownsampleOne)
-        require((downsampleOneConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        downsampleOneConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     ////
 
     if (test == Test::DownsampleTwice)
-        require((downsampleTwiceConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        downsampleTwiceConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     if (test == Test::UpsampleTwice)
-        require((upsampleTwiceBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        upsampleTwiceBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     ////
 
     if (test == Test::UpsampleThreeTimes)
-        require((upsampleThreeTimesBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        upsampleThreeTimesBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     ////
 
     if (test == Test::DownsampleFourTimes)
-        require((downsampleFourTimesConservative<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        downsampleFourTimesConservative<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     if (test == Test::UpsampleFourTimes)
-        require((upsampleFourTimesBalanced<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass));
+        upsampleFourTimesBalanced<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), dstImageTest, BORDER_MIRROR, stdPass);
+
     ////
 
     if (test == Test::InterpolationBicubic)
-        require(upsampleTexCubic(srcImage, dstImageTest, 1.f/resampleFactor, stdPass));
+        upsampleTexCubic(srcImage, dstImageTest, 1.f/resampleFactor, stdPass);
 
     ////
 
     if (test == Test::InterpolationUnserBspline)
     {
         GPU_MATRIX_ALLOC(srcImagePrefiltered, FloatPixel, srcSize);
-        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));
-        require(upsampleTexCubicBsplineFast(srcImagePrefiltered, dstImageTest, 1.f/resampleFactor, stdPass));
+        bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>(srcImage, srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass);
+        upsampleTexCubicBsplineFast(srcImagePrefiltered, dstImageTest, 1.f/resampleFactor, stdPass);
     }
 
     ////
@@ -549,10 +561,10 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     if (test == Test::UnprefilterUnserBspline)
     {
         GPU_MATRIX_ALLOC(srcImagePrefiltered, FloatPixel, srcSize);
-        require((bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>)(makeConst(srcImage), srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass));
+        bsplineCubicPrefilter<FloatPixel, FloatPixel, FloatPixel>(makeConst(srcImage), srcImagePrefiltered, point(1.f), BORDER_MIRROR, stdPass);
         GPU_MATRIX_ALLOC(tmp, int8, srcSize);
-        require((bsplineCubicUnprefilter<FloatPixel, FloatPixel, int8>)(makeConst(srcImagePrefiltered), tmp, point(1.f), BORDER_MIRROR, stdPass));
-        require(convertToFloatPixelEx(tmp, dstImageTest, 1.f, stdPass));
+        bsplineCubicUnprefilter<FloatPixel, FloatPixel, int8>(makeConst(srcImagePrefiltered), tmp, point(1.f), BORDER_MIRROR, stdPass);
+        convertToFloatPixelEx(tmp, dstImageTest, 1.f, stdPass);
     }
 
     ////
@@ -561,10 +573,10 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     {
         int version = kit.display.circularIndex(2);
 
-        require(kit.gpuImageConsole.addMatrixEx(version ? dstImageTest : dstImage,
+        kit.gpuImageConsole.addMatrixEx(version ? dstImageTest : dstImage,
             kit.display.factor * pixelMin(), kit.display.factor * pixelMax(), point(1.f),
             INTERP_NEAREST, dstSize, BORDER_ZERO,
-            paramMsg(STR("Destination Image (%)"), version ? STR("Test") : STR("Ref")), stdPass));
+            paramMsg(STR("Destination Image (%)"), version ? STR("Test") : STR("Ref")), stdPass);
     }
 
     //----------------------------------------------------------------
@@ -574,21 +586,21 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     //----------------------------------------------------------------
 
     GPU_MATRIX_ALLOC(error, float32, dstSize);
-    require(computeError(dstImage, dstImageTest, error, stdPass));
+    computeError(dstImage, dstImageTest, error, stdPass);
 
     ////
 
     if (displayType == DisplayError)
     {
-        require(kit.gpuImageConsole.addMatrixEx(error, -kit.display.factor, +kit.display.factor, point(1.f),
-            INTERP_NEAREST, dstSize, BORDER_ZERO, STR("Error"), stdPass));
+        kit.gpuImageConsole.addMatrixEx(error, -kit.display.factor, +kit.display.factor, point(1.f),
+            INTERP_NEAREST, dstSize, BORDER_ZERO, STR("Error"), stdPass);
     }
 
     ////
 
     MATRIX_ALLOC_FOR_GPU_EXCH(errorCpuFull, float32, dstSize);
     GpuCopyThunk gpuCopy;
-    require(gpuCopy(error, errorCpuFull, stdPass));
+    gpuCopy(error, errorCpuFull, stdPass);
     gpuCopy.waitClear();
 
     ////
@@ -601,16 +613,12 @@ stdbool ResamplingTestImpl::process(const ProcessParams& o, stdPars(GpuModulePro
     ////
 
     float32 maxErr = 0;
-    require(computeMaxAbsError(errorCpu, maxErr, stdPass));
+    computeMaxAbsError(errorCpu, maxErr, stdPass);
 
     float32 meanErr = 0;
-    require(computeMeanAbsError(errorCpu, meanErr, stdPass));
+    computeMeanAbsError(errorCpu, meanErr, stdPass);
 
     printMsgL(kit, STR("Max err %0 bits, Mean err %1 bits"), fltf(-fastLog2(maxErr), 1), fltf(-fastLog2(meanErr), 1));
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename Pointer>
-stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
+void ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     //
     // check size
@@ -37,7 +37,7 @@ stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, Allocat
     COMPILE_ASSERT(sizeof(SpaceU) <= sizeof(AddrU));
 
     AddrU newAddr = 0;
-    require(allocator.alloc(SpaceU(byteAllocSize), SpaceU(byteAlignment), memoryDealloc, newAddr, stdPass));
+    allocator.alloc(SpaceU(byteAllocSize), SpaceU(byteAlignment), memoryDealloc, newAddr, stdPass);
 
     COMPILE_ASSERT(sizeof(Pointer) == sizeof(newAddr));
     Pointer newPtr = Pointer(newAddr);
@@ -50,6 +50,4 @@ stdbool ArrayMemoryEx<Pointer>::realloc(Space size, Space byteAlignment, Allocat
     ////
 
     BaseArray::assignUnsafe(newPtr, size);
-
-    returnTrue;
 }

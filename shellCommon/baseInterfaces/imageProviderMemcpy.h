@@ -31,10 +31,10 @@ public:
     Space desiredBaseByteAlignment() const
         {return cpuBaseByteAlignment;}
 
-    stdbool saveBgr32(const MatrixAP<Pixel>& dest, stdParsNull);
+    void saveBgr32(const MatrixAP<Pixel>& dest, stdParsNull);
 
-    stdbool saveBgr24(const MatrixAP<uint8>& dest, stdParsNull)
-        {REQUIRE(false); returnTrue;}
+    void saveBgr24(const MatrixAP<uint8>& dest, stdParsNull)
+        {REQUIRE(false);}
 
 private:
 

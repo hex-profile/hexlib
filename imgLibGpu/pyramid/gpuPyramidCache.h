@@ -17,7 +17,7 @@ class GpuPyramidCache
 
 public:
 
-    stdbool realloc(stdPars(GpuProcessKit));
+    void realloc(stdPars(GpuProcessKit));
 
     sysinline void dealloc()
     {
@@ -28,7 +28,7 @@ public:
 public:
 
     template <typename Type>
-    stdbool getDevicePyramid(const GpuPyramid<Type>& pyramid, GpuPyramidParam<Type>& result, stdPars(GpuProcessKit))
+    void getDevicePyramid(const GpuPyramid<Type>& pyramid, GpuPyramidParam<Type>& result, stdPars(GpuProcessKit))
     {
         REQUIRE(allocated);
 
@@ -51,21 +51,17 @@ public:
         ////
 
         if_not (kit.dataProcessing)
-            returnTrue;
+            return;
 
         ////
 
         if_not (isEqualLayout(tmpLayout, *cpuHolderPtr))
-            require(slowUpdate(tmpLayout, stdPass));
-
-        ////
-
-        returnTrue;
+            slowUpdate(tmpLayout, stdPass);
     }
 
 private:
 
-    stdbool slowUpdate(const GpuPyramidLayout& layout, stdPars(GpuProcessKit));
+    void slowUpdate(const GpuPyramidLayout& layout, stdPars(GpuProcessKit));
 
 private:
 

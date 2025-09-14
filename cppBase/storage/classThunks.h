@@ -91,47 +91,47 @@
 
 #define CLASSTHUNK_STDEX0(Class, RetType, defaultRetVal, func, funcModifier, Kit) \
     RetType Class::func(stdPars(Kit)) funcModifier \
-        {return instance->func(stdPassThru);}
+        {instance->func(stdPassThru);}
 
 #define CLASSTHUNK_STDEX1(Class, RetType, defaultRetVal, func, funcModifier, Type0, Kit) \
     RetType Class::func(Type0 v0, stdPars(Kit)) funcModifier \
-        {return instance->func(v0, stdPassThru);}
+        {instance->func(v0, stdPassThru);}
 
 #define CLASSTHUNK_STDEX2(Class, RetType, defaultRetVal, func, funcModifier, Type0, Type1, Kit) \
     RetType Class::func(Type0 v0, Type1 v1, stdPars(Kit)) funcModifier \
-        {return instance->func(v0, v1, stdPassThru);}
+        {instance->func(v0, v1, stdPassThru);}
 
 #define CLASSTHUNK_STDEX3(Class, RetType, defaultRetVal, func, funcModifier, Type0, Type1, Type2, Kit) \
     RetType Class::func(Type0 v0, Type1 v1, Type2 v2, stdPars(Kit)) funcModifier \
-        {return instance->func(v0, v1, v2, stdPassThru);}
+        {instance->func(v0, v1, v2, stdPassThru);}
 
 #define CLASSTHUNK_STDEX4(Class, RetType, defaultRetVal, func, funcModifier, Type0, Type1, Type2, Type3, Kit) \
     RetType Class::func(Type0 v0, Type1 v1, Type2 v2, Type3 v3, stdPars(Kit)) funcModifier \
-        {return instance->func(v0, v1, v2, v3, stdPassThru);}
+        {instance->func(v0, v1, v2, v3, stdPassThru);}
 
 #define CLASSTHUNK_STDEX5(Class, RetType, defaultRetVal, func, funcModifier, Type0, Type1, Type2, Type3, Type4, Kit) \
     RetType Class::func(Type0 v0, Type1 v1, Type2 v2, Type3 v3, Type4 v4, stdPars(Kit)) funcModifier \
-        {return instance->func(v0, v1, v2, v3, v4, stdPassThru);}
+        {instance->func(v0, v1, v2, v3, v4, stdPassThru);}
 
 //----------------------------------------------------------------
 
 #define CLASSTHUNK_BOOL_STD0(Class, func, Kit) \
-    CLASSTHUNK_STDEX0(Class, stdbool, false, func, PREP_EMPTY, Kit)
+    CLASSTHUNK_STDEX0(Class, void, false, func, PREP_EMPTY, Kit)
 
 #define CLASSTHUNK_BOOL_STD1(Class, func, Type0, Kit) \
-    CLASSTHUNK_STDEX1(Class, stdbool, false, func, PREP_EMPTY, Type0, Kit)
+    CLASSTHUNK_STDEX1(Class, void, false, func, PREP_EMPTY, Type0, Kit)
 
 #define CLASSTHUNK_BOOL_STD2(Class, func, Type0, Type1, Kit) \
-    CLASSTHUNK_STDEX2(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Kit)
+    CLASSTHUNK_STDEX2(Class, void, false, func, PREP_EMPTY, Type0, Type1, Kit)
 
 #define CLASSTHUNK_BOOL_STD3(Class, func, Type0, Type1, Type2, Kit) \
-    CLASSTHUNK_STDEX3(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Type2, Kit)
+    CLASSTHUNK_STDEX3(Class, void, false, func, PREP_EMPTY, Type0, Type1, Type2, Kit)
 
 #define CLASSTHUNK_BOOL_STD4(Class, func, Type0, Type1, Type2, Type3, Kit) \
-    CLASSTHUNK_STDEX4(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Kit)
+    CLASSTHUNK_STDEX4(Class, void, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Kit)
 
 #define CLASSTHUNK_BOOL_STD5(Class, func, Type0, Type1, Type2, Type3, Type4, Kit) \
-    CLASSTHUNK_STDEX5(Class, stdbool, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Type4, Kit)
+    CLASSTHUNK_STDEX5(Class, void, false, func, PREP_EMPTY, Type0, Type1, Type2, Type3, Type4, Kit)
 
 //----------------------------------------------------------------
 

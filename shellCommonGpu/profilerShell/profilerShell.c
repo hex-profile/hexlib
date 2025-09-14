@@ -52,13 +52,11 @@ void ProfilerShell::serialize(const CfgSerializeKit& kit, bool hotkeys)
 //
 //================================================================
 
-stdbool ProfilerShell::init(stdPars(InitKit))
+void ProfilerShell::init(stdPars(InitKit))
 {
     deinit(); // deinit and reset to zero
 
-    require(profilerImpl.realloc(profilerCapacity, stdPass));
-
-    returnTrue;
+    profilerImpl.realloc(profilerCapacity, stdPass);
 }
 
 //================================================================
@@ -81,7 +79,7 @@ void ProfilerShell::deinit()
 //
 //================================================================
 
-stdbool ProfilerShell::makeHtmlReport(float32 processingThroughput, stdPars(ReportKit))
+void ProfilerShell::makeHtmlReport(float32 processingThroughput, stdPars(ReportKit))
 {
     SimpleString outputDir{htmlOutputDir()};
     REQUIRE(def(outputDir));
@@ -119,14 +117,12 @@ stdbool ProfilerShell::makeHtmlReport(float32 processingThroughput, stdPars(Repo
 
     auto kitEx = kit; // kitReplace(kit, MsgLogKit(kit.localLog));
 
-    require(htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(),
-        cycleCount, processingThroughput, outputDir.cstr()}, stdPassKit(kitEx)));
+    htmlReport.makeReport(MakeReportParams{profilerImpl.getRootNode(), profilerImpl.divTicksPerSec(),
+        cycleCount, processingThroughput, outputDir.cstr()}, stdPassKit(kitEx));
 
     float32 reportTime = kit.timer.diff(reportBegin, kit.timer.moment());
 
     printMsg(kit.localLog, STR("Profiler report saved to %0 (%1 ms)"), outputDir, fltf(reportTime * 1e3f, 2), msgWarn);
-
-    returnTrue;
 }
 
 //================================================================
@@ -165,7 +161,7 @@ void ProfilerShell::leaveExternalScope()
 //
 //================================================================
 
-stdbool ProfilerShell::ftmUpdate(float32 frameTime, stdPars(ErrorLogKit))
+void ProfilerShell::ftmUpdate(float32 frameTime, stdPars(ErrorLogKit))
 {
     REQUIRE(frameTime >= 0);
 
@@ -185,8 +181,6 @@ stdbool ProfilerShell::ftmUpdate(float32 frameTime, stdPars(ErrorLogKit))
 
     for_count (i, periods)
         ftmFilter.add(weight, frameTime, temporalFactor);
-
-    returnTrue;
 }
 
 //================================================================
@@ -195,7 +189,7 @@ stdbool ProfilerShell::ftmUpdate(float32 frameTime, stdPars(ErrorLogKit))
 //
 //================================================================
 
-stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit))
+void ProfilerShell::process(ProfilerTarget& target, float32 processingThroughput, stdPars(ProcessKit))
 {
     //----------------------------------------------------------------
     //
@@ -206,14 +200,12 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     auto frameTimeReport = [&] ()
     {
         if_not (ftmDisplayed)
-            returnTrue;
+            return;
 
         float32 avgTime = ftmFilter();
 
         printMsg(kit.localLog, STR("% fps, cycle % ms, last % ms"),
             fltf(1.f / avgTime, 1), fltf(avgTime * 1e3, 1), fltf(ftmLastTime * 1e3, 1));
-
-        returnTrue;
     };
 
     ////
@@ -254,8 +246,8 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
         TimeMoment processStart = kit.timer.moment();
         REMEMBER_CLEANUP(errorBlock(ftmUpdate(kit.timer.diff(processStart, kit.timer.moment()), stdPassNc)));
 
-        require(target(stdPassKit(ProfilerKit(nullptr))));
-        returnTrue;
+        target(stdPassKit(ProfilerKit(nullptr)));
+        return;
     }
 
     //----------------------------------------------------------------
@@ -320,8 +312,6 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
     ////
 
     require(processOk);
-
-    returnTrue;
 }
 
 //================================================================
@@ -330,10 +320,9 @@ stdbool ProfilerShell::process(ProfilerTarget& target, float32 processingThrough
 //
 //================================================================
 
-stdbool ProfilerShell::makeReport(float32 processingThroughput, stdPars(ReportKit))
+void ProfilerShell::makeReport(float32 processingThroughput, stdPars(ReportKit))
 {
     leaveExternalScope();
     REMEMBER_CLEANUP(enterExternalScope());
-    require(makeHtmlReport(processingThroughput, stdPass));
-    returnTrue;
+    makeHtmlReport(processingThroughput, stdPass);
 }

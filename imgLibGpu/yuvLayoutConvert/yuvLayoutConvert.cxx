@@ -101,7 +101,7 @@ GPUTOOL_2D_END
 #if HOSTCODE
 
 template <>
-stdbool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit))
+void convertRawToYuv420(const GpuArray<const uint8>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit))
 {
     Point<Space> imageSize = dst.luma.size();
     REQUIRE(yuv420SizeValid(imageSize));
@@ -109,12 +109,8 @@ stdbool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuPackedYuv<
 
     ////
 
-    require(importLumaData(dst.luma, src, stdPass));
-    require(importChromaData(dst.chroma, src, stdPass));
-
-    ////
-
-    returnTrue;
+    importLumaData(dst.luma, src, stdPass);
+    importChromaData(dst.chroma, src, stdPass);
 }
 
 #endif
@@ -128,10 +124,9 @@ stdbool convertRawToYuv420(const GpuArray<const uint8>& src, const GpuPackedYuv<
 #if HOSTCODE
 
 template <>
-stdbool convertRawToYuv420(const GpuArray<const uint16>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit))
+void convertRawToYuv420(const GpuArray<const uint16>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit))
 {
     REQUIRE(false); // not implemented
-    returnTrue;
 }
 
 #endif
@@ -215,7 +210,7 @@ GPUTOOL_2D_END
 #if HOSTCODE
 
 template <>
-stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<uint8>& dst, stdPars(GpuProcessKit))
+void convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<uint8>& dst, stdPars(GpuProcessKit))
 {
     Point<Space> imageSize = src.luma.size();
     REQUIRE(yuv420SizeValid(imageSize));
@@ -223,12 +218,8 @@ stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<u
 
     ////
 
-    require(exportLumaData(src.luma, dst, stdPass));
-    require(exportChromaData(src.chroma, dst, stdPass));
-
-    ////
-
-    returnTrue;
+    exportLumaData(src.luma, dst, stdPass);
+    exportChromaData(src.chroma, dst, stdPass);
 }
 
 #endif
@@ -242,11 +233,9 @@ stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<u
 #if HOSTCODE
 
 template <>
-stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<uint16>& dst, stdPars(GpuProcessKit))
+void convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<uint16>& dst, stdPars(GpuProcessKit))
 {
     REQUIRE(false); // not implemented
-
-    returnTrue;
 }
 
 #endif

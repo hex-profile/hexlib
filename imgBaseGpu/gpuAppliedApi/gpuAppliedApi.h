@@ -78,11 +78,11 @@ struct GpuTextureOwner : public GpuTexture
 
 struct GpuTextureAllocator
 {
-    virtual stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull) =0;
+    virtual void createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull) =0;
 
     template <typename Type>
-    inline stdbool createTexture(const Point<Space>& size, GpuTextureOwner& result, stdParsNull)
-        {return createTexture(size, GpuGetChannelType<Type>::val, VectorTypeRank<Type>::val, result, stdPassNullThru);}
+    inline void createTexture(const Point<Space>& size, GpuTextureOwner& result, stdParsNull)
+        {createTexture(size, GpuGetChannelType<Type>::val, VectorTypeRank<Type>::val, result, stdPassNullThru);}
 };
 
 //================================================================
@@ -95,18 +95,16 @@ struct GpuTextureAllocator
 
 struct GpuStreamWaiting
 {
-    virtual stdbool waitStream(const GpuStream& stream, stdParsNull) =0;
+    virtual void waitStream(const GpuStream& stream, stdParsNull) =0;
 };
 
 //----------------------------------------------------------------
 
 template <typename Kit>
-sysinline stdbool gpuSyncCurrentStream(stdPars(Kit))
+sysinline void gpuSyncCurrentStream(stdPars(Kit))
 {
     if (kit.dataProcessing)
-        require(kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPassThru));
-
-    returnTrue;
+        kit.gpuStreamWaiting.waitStream(kit.gpuCurrentStream, stdPassThru);
 }
 
 //================================================================
@@ -142,7 +140,7 @@ struct GpuEventOwner : public GpuEvent
 
 struct GpuEventAllocator
 {
-    virtual stdbool eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdParsNull) =0;
+    virtual void eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdParsNull) =0;
 };
 
 //================================================================
@@ -161,7 +159,7 @@ struct GpuEventRecording
     // so waiting on such event will wait for the new work set to finish.
     //
 
-    virtual stdbool recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull) =0;
+    virtual void recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull) =0;
 
     //
     // Puts into the other stream a command to wait for
@@ -170,7 +168,7 @@ struct GpuEventRecording
     // The wait is performed on GPU without CPU sync.
     //
 
-    virtual stdbool putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull) =0;
+    virtual void putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull) =0;
 };
 
 //================================================================
@@ -185,13 +183,12 @@ struct GpuEventWaiting
     // Waits on CPU for the event's work set to complete.
     //
 
-    virtual stdbool waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull) =0;
+    virtual void waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull) =0;
 
-    inline stdbool waitEvent(const GpuEvent& event, stdParsNull)
+    inline void waitEvent(const GpuEvent& event, stdParsNull)
     {
         bool tmp = false;
-        require(waitEvent(event, tmp, stdPassNullThru));
-        returnTrue;
+        waitEvent(event, tmp, stdPassNullThru);
     }
 
     //
@@ -199,7 +196,7 @@ struct GpuEventWaiting
     // Both events should be finished, otherwise error is returned.
     //
 
-    virtual stdbool eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull) =0;
+    virtual void eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull) =0;
 };
 
 //================================================================
@@ -227,7 +224,7 @@ struct GpuTransfer
 
     #define TMP_COPY_ARRAY_PROTO(funcName, SrcAddr, DstAddr) \
         \
-        virtual stdbool funcName \
+        virtual void funcName \
         ( \
             SrcAddr srcAddr, \
             DstAddr dstAddr, \
@@ -250,7 +247,7 @@ struct GpuTransfer
 
     #define TMP_COPY_MATRIX_PROTO(funcName, SrcAddr, DstAddr) \
         \
-        virtual stdbool funcName \
+        virtual void funcName \
         ( \
             SrcAddr srcAddr, Space srcBytePitch, \
             DstAddr dstAddr, Space dstBytePitch, \
@@ -278,26 +275,22 @@ struct GpuTransfer
 #define TMP_COPY_ARRAY_INLINE(funcName, SrcAddr, DstAddr, SrcPtr, DstPtr, pureGpuValue) \
     \
     template <typename Src, typename Dst, typename Kit> \
-    inline stdbool enqueueCopy(const ArrayEx<SrcPtr(Src)>& src, const ArrayEx<DstPtr(Dst)>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
+    inline void enqueueCopy(const ArrayEx<SrcPtr(Src)>& src, const ArrayEx<DstPtr(Dst)>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
     { \
         COMPILE_ASSERT(TYPE_EQUAL(Src, Dst) || TYPE_EQUAL(Src, const Dst)); \
         \
         REQUIRE(equalSize(src, dst)); \
         \
-        require \
+        kit.gpuTransfer.funcName \
         ( \
-            kit.gpuTransfer.funcName \
-            ( \
-                SrcAddr(src.ptrUnsafeForInternalUseOnly()), \
-                DstAddr(dst.ptrUnsafeForInternalUseOnly()), \
-                dst.size() * sizeof(Dst), \
-                stream, \
-                stdPass \
-            ) \
+            SrcAddr(src.ptrUnsafeForInternalUseOnly()), \
+            DstAddr(dst.ptrUnsafeForInternalUseOnly()), \
+            dst.size() * sizeof(Dst), \
+            stream, \
+            stdPass \
         ); \
         \
         pureGpu = pureGpuValue; \
-        returnTrue; \
     }
 
 TMP_COPY_ARRAY_INLINE(copyArrayCpuCpu, CpuAddrU, CpuAddrU, CpuPtr, CpuPtr, false)
@@ -318,29 +311,25 @@ TMP_COPY_ARRAY_INLINE(copyArrayGpuGpu, GpuAddrU, GpuAddrU, GpuPtr, GpuPtr, true)
 #define TMP_COPY_MATRIX_INLINE(funcName, SrcAddr, DstAddr, SrcPtr, DstPtr, pureGpuValue) \
     \
     template <typename Src, typename SrcPitch, typename Dst, typename DstPitch, typename Kit> \
-    inline stdbool enqueueCopy(const MatrixEx<SrcPtr(Src), SrcPitch>& src, const MatrixEx<DstPtr(Dst), DstPitch>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
+    inline void enqueueCopy(const MatrixEx<SrcPtr(Src), SrcPitch>& src, const MatrixEx<DstPtr(Dst), DstPitch>& dst, const GpuStream& stream, bool& pureGpu, stdPars(Kit)) \
     { \
         COMPILE_ASSERT(TYPE_EQUAL(Src, Dst) || TYPE_EQUAL(Src, const Dst)); \
         \
         REQUIRE(equalSize(src, dst)); \
         \
-        require \
+        kit.gpuTransfer.funcName \
         ( \
-            kit.gpuTransfer.funcName \
-            ( \
-                SrcAddr(src.memPtrUnsafeInternalUseOnly()), \
-                src.memPitch() * sizeof(Dst), \
-                DstAddr(dst.memPtrUnsafeInternalUseOnly()), \
-                dst.memPitch() * sizeof(Dst), \
-                dst.sizeX() * sizeof(Dst), \
-                dst.sizeY(), \
-                stream, \
-                stdPass \
-            ) \
+            SrcAddr(src.memPtrUnsafeInternalUseOnly()), \
+            src.memPitch() * sizeof(Dst), \
+            DstAddr(dst.memPtrUnsafeInternalUseOnly()), \
+            dst.memPitch() * sizeof(Dst), \
+            dst.sizeX() * sizeof(Dst), \
+            dst.sizeY(), \
+            stream, \
+            stdPass \
         ); \
         \
         pureGpu = pureGpuValue; \
-        returnTrue; \
     }
 
 TMP_COPY_MATRIX_INLINE(copyMatrixCpuCpu, CpuAddrU, CpuAddrU, CpuPtr, CpuPtr, false)
@@ -429,27 +418,25 @@ class GpuCopyThunk
 public:
 
     template <typename Src, typename Dst, typename Kit>
-    inline stdbool operator()(const Src& src, const Dst& dst, const GpuStream& stream, stdPars(Kit))
+    inline void operator()(const Src& src, const Dst& dst, const GpuStream& stream, stdPars(Kit))
     {
         if (kit.dataProcessing)
         {
             bool pureGpu = false;
 
-            require(enqueueCopy(src, dst, stream, pureGpu, stdPassThru));
+            enqueueCopy(src, dst, stream, pureGpu, stdPassThru);
 
             if (!pureGpu)
                 ioGuard.reassign(stream, kit.gpuStreamWaiting);
         }
-
-        returnTrue;
     }
 
     ////
 
     template <typename Src, typename Dst, typename Kit>
-    inline stdbool operator()(const Src& src, const Dst& dst, stdPars(Kit))
+    inline void operator()(const Src& src, const Dst& dst, stdPars(Kit))
     {
-        return operator()(src, dst, kit.gpuCurrentStream, stdPassThru);
+        operator()(src, dst, kit.gpuCurrentStream, stdPassThru);
     }
 
     ////
@@ -506,7 +493,7 @@ public:
 
 struct GpuKernelCalling
 {
-    virtual stdbool callKernel
+    virtual void callKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,
@@ -519,7 +506,7 @@ struct GpuKernelCalling
     =0;
 
     template <typename Params>
-    inline stdbool callKernel
+    inline void callKernel
     (
         const GroupCount& groupCount,
         const Point<Space>& threadCount,
@@ -530,7 +517,7 @@ struct GpuKernelCalling
         stdParsNull
     )
     {
-        return callKernel(groupCount, threadCount, dbgElemCount, kernelLink, &params, sizeof(params), stream, stdPassNullThru);
+        callKernel(groupCount, threadCount, dbgElemCount, kernelLink, &params, sizeof(params), stream, stdPassNullThru);
     }
 
 };

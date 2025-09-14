@@ -13,7 +13,7 @@ using TestKit = KitCombine<CpuFastAllocKit, ErrorLogKit>;
 
 //----------------------------------------------------------------
 
-stdbool matrixMemoryUsage(stdPars(TestKit))
+void matrixMemoryUsage(stdPars(TestKit))
 {
     // Construct empty matrix; no memory allocation performed.
     MatrixMemory<int> m0;
@@ -21,7 +21,7 @@ stdbool matrixMemoryUsage(stdPars(TestKit))
     // Allocate matrix; check allocation error.
     // If reallocation fails, matrix will have zero size.
     // Destructor deallocates memory automatically.
-    require(m0.realloc(point(33, 17), cpuBaseByteAlignment, cpuRowByteAlignment, stdPass));
+    m0.realloc(point(33, 17), cpuBaseByteAlignment, cpuRowByteAlignment, stdPass);
 
     // Change matrix layout without reallocation; check error.
     // New size should be <= allocated size, otherwise the call fails and the layout is not changed.
@@ -34,13 +34,11 @@ stdbool matrixMemoryUsage(stdPars(TestKit))
 
     // Reallocate matrix base aligned to 512 bytes and pitch aligned to 32 bytes;
     // The pitch alignment will be used across "resize" calls until the next "realloc";
-    require(m0.realloc(point(333, 111), 512, 32, stdPass));
+    m0.realloc(point(333, 111), 512, 32, stdPass);
     REQUIRE(m0.resize(129, 15));
 
     // Convert to Matrix<> implicitly and explicitly (for template arguments).
     Matrix<int> tmp0 = m0;
     Matrix<const int> tmp1 = m0;
     Matrix<int> tmp2 = m0();
-
-    returnTrue;
 }

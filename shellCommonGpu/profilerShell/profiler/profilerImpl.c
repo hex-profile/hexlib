@@ -32,7 +32,7 @@ using NodePtr = ProfilerNode*;
 //
 //================================================================
 
-stdbool ProfilerImpl::realloc(Space capacity, stdPars(AllocKit))
+void ProfilerImpl::realloc(Space capacity, stdPars(AllocKit))
 {
     dealloc();
 
@@ -41,7 +41,7 @@ stdbool ProfilerImpl::realloc(Space capacity, stdPars(AllocKit))
     //
 
     REQUIRE(capacity >= 1);
-    require(nodePool.realloc(capacity, cpuBaseByteAlignment, kit.malloc, stdPass));
+    nodePool.realloc(capacity, cpuBaseByteAlignment, kit.malloc, stdPass);
 
     ARRAY_EXPOSE(nodePool);
     REQUIRE(nodePoolSize >= 1);
@@ -49,10 +49,6 @@ stdbool ProfilerImpl::realloc(Space capacity, stdPars(AllocKit))
     currentScope->init(CT("<all>"));
 
     nodeCount = 1;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

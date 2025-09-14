@@ -73,7 +73,7 @@ public:
 
 public:
 
-    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull);
+    void alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull);
     static void deallocFunc(MemoryDeallocContext& context);
 
 public:

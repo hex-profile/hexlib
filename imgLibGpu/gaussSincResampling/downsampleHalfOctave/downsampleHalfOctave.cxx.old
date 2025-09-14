@@ -169,16 +169,14 @@ GPUTOOL_2D_END
 
 #if HOSTCODE 
 
-stdbool DownsampleHalfOctaveConservative::realloc(stdPars(GpuProcessKit))
+void DownsampleHalfOctaveConservative::realloc(stdPars(GpuProcessKit))
 {
     allocated = false;
 
-    require(coeffs.realloc(point(downHoFilterLength, phaseCount), stdPass));
-    require(makeDownsampleHalfOctaveCoeffsNormal(coeffs, stdPass));
+    coeffs.realloc(point(downHoFilterLength, phaseCount), stdPass);
+    makeDownsampleHalfOctaveCoeffsNormal(coeffs, stdPass);
 
     allocated = true;
-
-    returnTrue;
 }
 
 #endif

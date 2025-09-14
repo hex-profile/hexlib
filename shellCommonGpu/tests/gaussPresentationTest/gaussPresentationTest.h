@@ -28,9 +28,9 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const;
-    stdbool realloc(stdPars(GpuModuleReallocKit));
+    void realloc(stdPars(GpuModuleReallocKit));
     bool reallocValid() const;
-    stdbool process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
+    void process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
 
 private:
 

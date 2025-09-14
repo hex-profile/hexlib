@@ -41,7 +41,7 @@ public:
 
 public:
 
-    stdbool reallocEx(Space layers, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
+    void reallocEx(Space layers, const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
 
 public:
 
@@ -136,8 +136,8 @@ public:
     //
 
     template <typename Kit>
-    sysinline stdbool realloc(Space layers, const Point<Space>& size, stdPars(Kit))
-        {return reallocEx(layers, size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
+    sysinline void realloc(Space layers, const Point<Space>& size, stdPars(Kit))
+        {reallocEx(layers, size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:
 
@@ -177,4 +177,4 @@ private:
 
 #define GPU_LAYERED_MATRIX_ALLOC(name, Type, layers, size) \
     GpuLayeredMatrixMemory<Type> name; \
-    require(name.realloc(layers, size, stdPass));
+    name.realloc(layers, size, stdPass);

@@ -352,7 +352,7 @@ static void EMU_SAMPLER_TEX_DECL emuSamplerLinear2D(const EmuSamplerData& data, 
 //================================================================
 
 template <typename MemType>
-static stdbool setupSamplerImage
+static void setupSamplerImage
 (
     EmuSamplerState& state,
     GpuAddrU imageBaseAddr,
@@ -436,8 +436,6 @@ static stdbool setupSamplerImage
     REQUIRE(func);
 
     state.tex2D = func;
-
-    returnTrue;
 }
 
 //================================================================
@@ -446,7 +444,7 @@ static stdbool setupSamplerImage
 //
 //================================================================
 
-using SetupEmuSamplerImage = stdbool
+using SetupEmuSamplerImage = void
 (
     EmuSamplerState& state,
     GpuAddrU imageBaseAddr,
@@ -465,7 +463,7 @@ using SetupEmuSamplerImage = stdbool
 //
 //================================================================
 
-stdbool emuSetSamplerImage
+void emuSetSamplerImage
 (
     const GpuSamplerLink& sampler,
     GpuAddrU imageBaseAddr,
@@ -532,9 +530,7 @@ stdbool emuSetSamplerImage
 
     REQUIRE(setupFunc != 0);
     REQUIRE(sampler.state != 0);
-    require(setupFunc(*sampler.state, imageBaseAddr, imageBytePitch, imageSize, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPass));
-
-    returnTrue;
+    setupFunc(*sampler.state, imageBaseAddr, imageBytePitch, imageSize, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPass);
 }
 
 //================================================================
@@ -584,7 +580,7 @@ void emuSamplerRead1Dfetch(const EmuSamplerData& data, Space offset, void* resul
 //================================================================
 
 template <typename MemType>
-static stdbool setupSamplerArray
+static void setupSamplerArray
 (
     EmuSamplerState& state,
     GpuAddrU arrayAddr,
@@ -645,8 +641,6 @@ static stdbool setupSamplerArray
 
     REQUIRE(func);
     state.tex1Dfetch = func;
-
-    returnTrue;
 }
 
 //================================================================
@@ -655,7 +649,7 @@ static stdbool setupSamplerArray
 //
 //================================================================
 
-using SetupEmuSamplerArray = stdbool
+using SetupEmuSamplerArray = void
 (
     EmuSamplerState& state,
     GpuAddrU arrayAddr,
@@ -673,7 +667,7 @@ using SetupEmuSamplerArray = stdbool
 //
 //================================================================
 
-stdbool emuSetSamplerArray
+void emuSetSamplerArray
 (
     const GpuSamplerLink& sampler,
     GpuAddrU arrayAddr,
@@ -736,9 +730,7 @@ stdbool emuSetSamplerArray
 
     REQUIRE(setupFunc != 0);
     REQUIRE(sampler.state != 0);
-    require(setupFunc(*sampler.state, arrayAddr, arrayByteSize, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPass));
-
-    returnTrue;
+    setupFunc(*sampler.state, arrayAddr, arrayByteSize, borderMode, linearInterpolation, readNormalizedFloat, normalizedCoords, stdPass);
 }
 
 //----------------------------------------------------------------

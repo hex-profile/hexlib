@@ -71,7 +71,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != DisplayNothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -111,12 +111,12 @@ void Rotation3DTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
+void Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     DisplayType displayType = kit.verbosity >= Verbosity::On ? displaySwitch : DisplayNothing;
 
     if (displayType == DisplayNothing)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -289,8 +289,4 @@ stdbool Rotation3DTestImpl::process(stdPars(GpuModuleProcessKit))
 
     failMessage.cancel();
     printMsgL(kit, STR("Rotation 3D Math Test OK"));
-
-    ////
-
-    returnTrue;
 }

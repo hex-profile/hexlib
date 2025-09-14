@@ -73,7 +73,7 @@ struct MinimalShell
 
     using InitKit = KitCombine<DiagnosticKit, MallocKit>;
 
-    virtual stdbool init(stdPars(InitKit)) =0;
+    virtual void init(stdPars(InitKit)) =0;
 
     //----------------------------------------------------------------
     //
@@ -94,7 +94,7 @@ struct MinimalShell
 
     using ProcessKit = KitCombine<BaseProcessKit, BaseImageConsolesKit, UserPointKit, DesiredOutputSizeKit>;
 
-    virtual stdbool process(const ProcessArgs& args, stdPars(ProcessKit)) =0;
+    virtual void process(const ProcessArgs& args, stdPars(ProcessKit)) =0;
 
     //----------------------------------------------------------------
     //
@@ -106,7 +106,7 @@ struct MinimalShell
 
     using ReportKit = BaseProcessKit;
 
-    virtual stdbool profilingReport(const GpuExternalContext* externalContext, stdPars(ReportKit)) =0;
+    virtual void profilingReport(const GpuExternalContext* externalContext, stdPars(ReportKit)) =0;
 
 };
 

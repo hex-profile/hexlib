@@ -32,7 +32,7 @@ public:
 public:
 
     void serialize(const ModuleSerializeKit& kit);
-    stdbool process(const Process& o, stdPars(ProcessKit));
+    void process(const Process& o, stdPars(ProcessKit));
 
 private:
 

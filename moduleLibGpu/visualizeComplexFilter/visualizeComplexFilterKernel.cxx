@@ -69,7 +69,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool visualizeComplexFilterFunc
+void visualizeComplexFilterFunc
 (
     const GpuMatrix<const ComplexFloat>& src,
     const GpuMatrix<ComplexFloat>& dst,
@@ -81,9 +81,7 @@ stdbool visualizeComplexFilterFunc
 )
 {
     REQUIRE(upsampleFactor > 0);
-    require(visualizePreparationImageKernel(src, dst, upsampleFactor, 1.f / upsampleFactor, interpolation, dstModulation, dstModulationFreq, stdPass));
-
-    returnTrue;
+    visualizePreparationImageKernel(src, dst, upsampleFactor, 1.f / upsampleFactor, interpolation, dstModulation, dstModulationFreq, stdPass);
 }
 
 #endif

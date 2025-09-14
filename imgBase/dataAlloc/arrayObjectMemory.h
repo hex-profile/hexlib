@@ -68,13 +68,13 @@ public:
     // realloc
     //
 
-    stdbool reallocEx(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit));
+    void reallocEx(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit));
 
     ////
 
     template <typename Kit>
-    inline stdbool reallocInHeap(Space size, stdPars(Kit))
-        {return reallocEx(size, maxNaturalAlignment, kit.malloc, true, stdPassThru);}
+    inline void reallocInHeap(Space size, stdPars(Kit))
+        {reallocEx(size, maxNaturalAlignment, kit.malloc, true, stdPassThru);}
 
     //
     // dealloc
@@ -97,4 +97,4 @@ private:
 #define ARRAY_OBJECT_HEAP_ALLOC(name, Type, size) \
     \
     ArrayObjectMemory<Type> name; \
-    require(name.reallocInHeap(size, stdPass));
+    name.reallocInHeap(size, stdPass);

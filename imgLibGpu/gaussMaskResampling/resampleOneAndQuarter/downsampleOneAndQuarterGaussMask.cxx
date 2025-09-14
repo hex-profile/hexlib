@@ -157,7 +157,7 @@ namespace gaussMaskResampling {
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndQuarterGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
+void downsampleOneAndQuarterGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
 {
     REQUIRE(equalLayers(src, dst));
     auto layers = dst.layers();
@@ -175,7 +175,7 @@ stdbool downsampleOneAndQuarterGaussMaskMultitask(const GpuLayeredMatrix<const S
                 downsampleOneAndQuarterGaussMaskInitial##n<Src, Interm, Dst> : \
                 downsampleOneAndQuarterGaussMaskSustaining##n<Src, Interm, Dst>; \
             \
-            require(func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass)); \
+            func(PREP_ENUM(n, TMP_PASS, _), borderMode, stdPass); \
         }
 
     ////
@@ -193,8 +193,6 @@ stdbool downsampleOneAndQuarterGaussMaskMultitask(const GpuLayeredMatrix<const S
 
     #undef TMP_MACRO
     #undef TMP_PASS
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

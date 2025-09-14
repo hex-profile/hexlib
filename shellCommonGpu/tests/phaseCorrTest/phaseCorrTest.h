@@ -53,7 +53,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool isActive() const;
-    stdbool process(const Process& o, stdPars(ProcessKit));
+    void process(const Process& o, stdPars(ProcessKit));
 
 private:
 

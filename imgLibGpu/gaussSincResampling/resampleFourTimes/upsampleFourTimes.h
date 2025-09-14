@@ -12,7 +12,7 @@ namespace gaussSincResampling {
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool upsampleFourTimesBalanced
+void upsampleFourTimesBalanced
 (
     const GpuMatrix<const Src>& src,
     const GpuMatrix<Dst>& dst,
@@ -21,7 +21,7 @@ stdbool upsampleFourTimesBalanced
 );
 
 template <typename Src, typename Interm, typename Dst>
-stdbool upsampleFourTimesBalancedDual
+void upsampleFourTimesBalancedDual
 (
     const GpuMatrix<const Src>& srcA,
     const GpuMatrix<Dst>& dstA,

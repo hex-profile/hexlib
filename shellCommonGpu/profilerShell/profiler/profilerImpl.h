@@ -44,7 +44,7 @@ public:
 
 public:
 
-    stdbool realloc(Space capacity, stdPars(AllocKit));
+    void realloc(Space capacity, stdPars(AllocKit));
     void dealloc();
 
 public:

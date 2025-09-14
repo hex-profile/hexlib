@@ -67,10 +67,10 @@ devDefineKernel(copyRectKernel, CopyRectKernel, o)
 
 #if HOSTCODE
 
-stdbool copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrixAP<uint8_x4>& dst, stdPars(GpuProcessKit))
+void copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrixAP<uint8_x4>& dst, stdPars(GpuProcessKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -89,8 +89,8 @@ stdbool copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>
 
     ////
 
-    require(kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastElement<const uint32>(tmpSrc), BORDER_ZERO,
-        LinearInterpolation{false}, ReadNormalizedFloat{false}, NormalizedCoords{false}, stdPass));
+    kit.gpuSamplerSetting.setSamplerImage(srcSamplerBgra, recastElement<const uint32>(tmpSrc), BORDER_ZERO,
+        LinearInterpolation{false}, ReadNormalizedFloat{false}, NormalizedCoords{false}, stdPass);
 
     ////
 
@@ -98,21 +98,16 @@ stdbool copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>
     params.ofsPlusHalf = convertFloat32(tmpOfs) + 0.5f;
     params.dst = recastElement<uint32>(tmpDst);
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            divUpNonneg(tmpDst.size(), point(copyThreadCountX, 1)),
-            point(copyThreadCountX, 1),
-            areaOf(tmpDst),
-            copyRectKernel,
-            params,
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        divUpNonneg(tmpDst.size(), point(copyThreadCountX, 1)),
+        point(copyThreadCountX, 1),
+        areaOf(tmpDst),
+        copyRectKernel,
+        params,
+        kit.gpuCurrentStream,
+        stdPass
     );
-
-    returnTrue;
 }
 
 #endif

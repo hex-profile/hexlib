@@ -13,7 +13,7 @@
 //================================================================
 
 template <typename MatrixType, typename ArrayType, typename Kit>
-inline stdbool getMatrixMemoryRangeAsArray(const MatrixType& img, ArrayType& result, stdPars(Kit))
+inline void getMatrixMemoryRangeAsArray(const MatrixType& img, ArrayType& result, stdPars(Kit))
 {
     MATRIX_EXPOSE_UNSAFE(img);
 
@@ -21,8 +21,6 @@ inline stdbool getMatrixMemoryRangeAsArray(const MatrixType& img, ArrayType& res
     REQUIRE(imgMemPitch >= imgSizeX);
 
     result.assignUnsafe(imgMemPtr, imgMemPitch * imgSizeY);
-
-    returnTrue;
 }
 
 //================================================================
@@ -32,7 +30,7 @@ inline stdbool getMatrixMemoryRangeAsArray(const MatrixType& img, ArrayType& res
 //================================================================
 
 template <typename SrcPtr, typename SrcPitch, typename DstPtr, typename DstPitch, typename Kit>
-sysinline stdbool copyMatrixAsArray
+sysinline void copyMatrixAsArray
 (
     const MatrixEx<SrcPtr, SrcPitch>& srcMatrix,
     const MatrixEx<DstPtr, DstPitch>& dstMatrix,
@@ -41,7 +39,7 @@ sysinline stdbool copyMatrixAsArray
 )
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -66,14 +64,12 @@ sysinline stdbool copyMatrixAsArray
     ////
 
     ArrayEx<SrcPtr> srcArray;
-    require(getMatrixMemoryRangeAsArray(src, srcArray, stdPass));
+    getMatrixMemoryRangeAsArray(src, srcArray, stdPass);
 
     ArrayEx<DstPtr> dstArray;
-    require(getMatrixMemoryRangeAsArray(dst, dstArray, stdPass));
+    getMatrixMemoryRangeAsArray(dst, dstArray, stdPass);
 
     ////
 
-    require(gpuCopy(srcArray, dstArray, stdPass));
-
-    returnTrue;
+    gpuCopy(srcArray, dstArray, stdPass);
 }

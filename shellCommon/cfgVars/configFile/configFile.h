@@ -87,30 +87,30 @@ struct ConfigFile
 
     ////
 
-    virtual stdbool loadFile(const SimpleString& cfgFilename, stdPars(Kit)) =0;
+    virtual void loadFile(const SimpleString& cfgFilename, stdPars(Kit)) =0;
     virtual void unloadFile() =0;
 
     ////
 
-    virtual stdbool loadVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit)) =0;
+    virtual void loadVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit)) =0;
 
-    virtual stdbool saveVars(CfgSerialization& serialization, bool forceUpdate, bool& updateHappened, stdPars(Kit)) =0;
+    virtual void saveVars(CfgSerialization& serialization, bool forceUpdate, bool& updateHappened, stdPars(Kit)) =0;
 
-    sysinline stdbool saveVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit))
+    sysinline void saveVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit))
     {
         bool updateHappened{};
-        return saveVars(serialization, forceUpdate, updateHappened, stdPassThru);
+        saveVars(serialization, forceUpdate, updateHappened, stdPassThru);
     }
 
     ////
 
-    virtual stdbool updateFile(bool forceUpdate, stdPars(Kit)) =0;
-    virtual stdbool editFile(const SimpleString& configEditor, stdPars(Kit)) =0;
+    virtual void updateFile(bool forceUpdate, stdPars(Kit)) =0;
+    virtual void editFile(const SimpleString& configEditor, stdPars(Kit)) =0;
 
     ////
 
-    virtual stdbool saveToString(StringReceiver& receiver, stdPars(Kit)) =0;
-    virtual stdbool loadFromString(const CharArray& str, stdPars(Kit)) =0;
+    virtual void saveToString(StringReceiver& receiver, stdPars(Kit)) =0;
+    virtual void loadFromString(const CharArray& str, stdPars(Kit)) =0;
 };
 
 //----------------------------------------------------------------

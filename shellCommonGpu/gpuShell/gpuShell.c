@@ -38,10 +38,10 @@ bool GpuContextHelper::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit))
+void GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit))
 {
     int32 gpuDeviceCount = 0;
-    require(kit.gpuInitialization.getDeviceCount(gpuDeviceCount, stdPass));
+    kit.gpuInitialization.getDeviceCount(gpuDeviceCount, stdPass);
 
     REQUIRE_EX(gpuDeviceCount >= 1, printMsg(kit.msgLog, STR("No GPU devices found"), msgErr));
 
@@ -53,7 +53,7 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
         printMsg(kit.msgLog, STR("GPU device index % cannot be selected (totally % GPUs found)"),
             gpuDeviceIndex(), gpuDeviceCount, msgErr));
 
-    require(kit.gpuInitialization.getProperties(gpuDeviceIndex, gpuProperties, stdPass));
+    kit.gpuInitialization.getProperties(gpuDeviceIndex, gpuProperties, stdPass);
     REMEMBER_CLEANUP_EX(gpuPropertiesCleanup, gpuProperties = GpuProperties{});
 
     //
@@ -61,15 +61,13 @@ stdbool GpuContextHelper::createContext(GpuProperties& gpuProperties, GpuContext
     //
 
     void* baseContext = 0;
-    require(kit.gpuContextCreation.createContext(gpuDeviceIndex, gpuScheduling(), gpuContext, baseContext, stdPass));
+    kit.gpuContextCreation.createContext(gpuDeviceIndex, gpuScheduling(), gpuContext, baseContext, stdPass);
     REMEMBER_CLEANUP_EX(gpuContextCleanup, gpuContext.clear());
 
     ////
 
     gpuPropertiesCleanup.cancel();
     gpuContextCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -86,9 +84,9 @@ class GpuAllocatorJoinContextThunk : public AllocatorInterface<AddrU>
 
 public:
 
-    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
+    void alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
     {
-        return base->alloc(context, size, alignment, owner, result, stdPassNullThru);
+        base->alloc(context, size, alignment, owner, result, stdPassNullThru);
     }
 
     void setup(GpuMemoryAllocator<AddrU>& base, const GpuContext& context)
@@ -129,7 +127,7 @@ void GpuShellImpl::serialize(const CfgSerializeKit& kit, bool hotkeys)
 //
 //================================================================
 
-stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit))
+void GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit))
 {
     GpuInitKit initKit = kit.gpuInitApi.getKit();
 
@@ -141,7 +139,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
 
     GpuThreadContextSave contextSave;
 
-    require(kit.gpuInitApi.threadContextSet(kit.gpuCurrentContext, contextSave, stdPass));
+    kit.gpuInitApi.threadContextSet(kit.gpuCurrentContext, contextSave, stdPass);
     REMEMBER_CLEANUP_ERROR_BLOCK(kit.gpuInitApi.threadContextRestore(contextSave, stdPassNc));
 
     //----------------------------------------------------------------
@@ -179,7 +177,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
     else
     {
         printMsg(kit.localLog, STR("GPU Coverage Mode"), msgWarn);
-        require(kit.gpuInitApi.coverageInit(kit.gpuCurrentStream, coverageQueueCapacity, stdPass));
+        kit.gpuInitApi.coverageInit(kit.gpuCurrentStream, coverageQueueCapacity, stdPass);
     }
 
 #endif
@@ -206,7 +204,7 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
     //
     //----------------------------------------------------------------
 
-    require(app(stdPassKit(execAppKit)));
+    app(stdPassKit(execAppKit));
 
     //----------------------------------------------------------------
     //
@@ -228,10 +226,6 @@ stdbool GpuShellImpl::execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToo
     }
 
 #endif
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

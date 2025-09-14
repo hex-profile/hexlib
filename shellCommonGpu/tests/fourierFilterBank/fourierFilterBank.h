@@ -30,9 +30,9 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool reallocValid() const;
-    stdbool realloc(stdPars(GpuModuleReallocKit));
+    void realloc(stdPars(GpuModuleReallocKit));
     bool active() const;
-    stdbool process(const Process& o, stdPars(GpuModuleProcessKit));
+    void process(const Process& o, stdPars(GpuModuleProcessKit));
 
 private:
 

@@ -124,7 +124,7 @@ void FiberOwner::destroy()
 //
 //================================================================
 
-stdbool EmuWin32::create(stdPars(CreateKit))
+void EmuWin32::create(stdPars(CreateKit))
 {
     //
     // Deallocate everything and set to zero
@@ -136,7 +136,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     // Create fiber tasks memory. Remember to deallocate array in case of error.
     //
 
-    require(fiberTasks.realloc(EMU_MAX_THREAD_COUNT, cpuBaseByteAlignment, kit.malloc, stdPass));
+    fiberTasks.realloc(EMU_MAX_THREAD_COUNT, cpuBaseByteAlignment, kit.malloc, stdPass);
     REMEMBER_CLEANUP_EX(fiberTasksCleanup, fiberTasks.dealloc());
     ARRAY_EXPOSE(fiberTasks);
 
@@ -144,7 +144,7 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     // Create fibers. Remember to deallocate fibers in case of error.
     //
 
-    require(fibers.reallocInHeap(EMU_MAX_THREAD_COUNT, stdPass));
+    fibers.reallocInHeap(EMU_MAX_THREAD_COUNT, stdPass);
     REMEMBER_CLEANUP_EX(fibersCleanup, fibers.dealloc());
     ARRAY_EXPOSE(fibers);
 
@@ -157,12 +157,12 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     //
 
     COMPILE_ASSERT(EMU_MAX_SRAM_SIZE % maxNaturalAlignment == 0);
-    require(sramHolder.realloc(EMU_MAX_SRAM_SIZE, maxNaturalAlignment, kit.malloc, stdPass));
+    sramHolder.realloc(EMU_MAX_SRAM_SIZE, maxNaturalAlignment, kit.malloc, stdPass);
     REMEMBER_CLEANUP_EX(sramCleanup, sramHolder.dealloc());
 
     ////
 
-    require(warpIntrinsicsMemoryHolder.realloc(EMU_MAX_THREAD_COUNT, sizeof(EmuMaxWarpIntrinsicsType), kit.malloc, stdPass));
+    warpIntrinsicsMemoryHolder.realloc(EMU_MAX_THREAD_COUNT, sizeof(EmuMaxWarpIntrinsicsType), kit.malloc, stdPass);
     REMEMBER_CLEANUP_EX(warpIntrinsicsMemoryCleanup, warpIntrinsicsMemoryHolder.dealloc());
 
     //
@@ -175,10 +175,6 @@ stdbool EmuWin32::create(stdPars(CreateKit))
     warpIntrinsicsMemoryCleanup.cancel();
 
     created = true;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

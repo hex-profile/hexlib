@@ -272,7 +272,7 @@ class AtImgConsoleImplThunk : public BaseImageConsole
 
 public:
 
-    stdbool addImage(const MatrixAP<const uint8>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
+    void addImage(const MatrixAP<const uint8>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
     {
         if_not (dataProcessing)
             return;
@@ -298,14 +298,12 @@ public:
             )
             != 0
         );
-
-        returnTrue;
     }
 
-    stdbool addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
+    void addImage(const MatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
     {
         if_not (dataProcessing)
-            returnTrue;
+            return;
 
         ////
 
@@ -331,20 +329,16 @@ public:
             )
             != 0
         );
-
-        returnTrue;
     }
 
-    stdbool clear(stdParsNull)
+    void clear(stdParsNull)
     {
         require(api->outimg_clear(api) != 0);
-        returnTrue;
     }
 
-    stdbool update(stdParsNull)
+    void update(stdParsNull)
     {
         require(api->outimg_update(api) != 0);
-        returnTrue;
     }
 
 public:
@@ -547,13 +541,12 @@ public:
 
 public:
 
-    stdbool overlayClear(stdParsNull)
+    void overlayClear(stdParsNull)
     {
         require(api->video_image_set(api, 0, 0, nullptr, atImageProviderNull) != 0);
-        returnTrue;
     }
 
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
+    void overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
     {
         AtImageProviderThunk atProvider(imageProvider, stdPass);
 
@@ -571,20 +564,16 @@ public:
 
             require(api->video_image_set(api, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
         }
-
-        returnTrue;
     }
 
-    stdbool overlaySetFake(stdParsNull)
+    void overlaySetFake(stdParsNull)
     {
-        returnTrue;
     }
 
-    stdbool overlayUpdate(stdParsNull)
+    void overlayUpdate(stdParsNull)
     {
         at_bool result = api->video_image_update(api);
         require(DEBUG_BREAK_CHECK(result != 0));
-        returnTrue;
     }
 
 public:
@@ -610,13 +599,12 @@ class AtAsyncOverlayImpl : public AtAsyncOverlay
 
 public:
 
-    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdParsNull)
+    virtual void setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdParsNull)
     {
         MUTEX_GUARD(lock);
         AtImageProviderThunk atProvider(imageProvider, stdPassNull);
 
         require(base.set_image(base.context, size.X, size.Y, &atProvider, atProvider.callbackFunc) != 0);
-        returnTrue;
     }
 
     AtAsyncOverlayImpl()
@@ -640,10 +628,9 @@ public:
 
     using InitKit = ThreadToolKit;
 
-    stdbool init(stdPars(InitKit))
+    void init(stdPars(InitKit))
     {
-        require(mutexCreate(lock, stdPass));
-        returnTrue;
+        mutexCreate(lock, stdPass);
     }
 
 private:
@@ -701,7 +688,7 @@ private:
 //
 //================================================================
 
-stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, AllocatorInterface<CpuAddrU>& allocator, stdPars(ErrorLogKit))
+void getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, AllocatorInterface<CpuAddrU>& allocator, stdPars(ErrorLogKit))
 {
     size_t atSizeApi = 0;
     require(api.videofile_name(&api, NULL, 0, &atSizeApi) != 0);
@@ -711,7 +698,7 @@ stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, A
     ////
 
     if_not (result.resize(atSize))
-        require(result.realloc(atSize, cpuBaseByteAlignment, allocator, stdPass));
+        result.realloc(atSize, cpuBaseByteAlignment, allocator, stdPass);
 
     ////
 
@@ -724,8 +711,6 @@ stdbool getVideoName(const at_api_process& api, ArrayMemory<CharType>& result, A
     ////
 
     require(resultSize == atFullSize);
-
-    returnTrue;
 }
 
 //================================================================
@@ -790,7 +775,7 @@ struct Client
 //
 //================================================================
 
-stdbool atClientCreateCore(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory, stdParsNull)
+void atClientCreateCore(void** instance, const at_api_create* api, const TestModuleFactory& engineFactory, stdParsNull)
 {
     *instance = 0;
 
@@ -811,7 +796,7 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const Test
 
     ////
 
-    require(client->asyncOverlay.init(stdPass));
+    client->asyncOverlay.init(stdPass);
 
     ////
 
@@ -821,14 +806,12 @@ stdbool atClientCreateCore(void** instance, const at_api_create* api, const Test
 
     ////
 
-    require(client->assembly.init(engineFactory, stdPass));
+    client->assembly.init(engineFactory, stdPass);
 
     ////
 
     clientCleanup.cancel();
     *instance = client;
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -891,10 +874,10 @@ public:
     inline MallocMonitorThunk(AllocatorInterface<AddrU>& base)
         : base(base) {}
 
-    stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
+    void alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
     {
         ++counter;
-        return base.alloc(size, alignment, owner, result, stdPassNullThru);
+        base.alloc(size, alignment, owner, result, stdPassNullThru);
     }
 
 public:
@@ -913,7 +896,7 @@ private:
 //
 //================================================================
 
-stdbool atClientProcessCore(void* instance, const at_api_process* api, stdParsNull)
+void atClientProcessCore(void* instance, const at_api_process* api, stdParsNull)
 {
     Client* client = static_cast<Client*>(instance);
     REQUIRE_AT_EX(client != 0, false, returnFalse);
@@ -1036,9 +1019,7 @@ stdbool atClientProcessCore(void* instance, const at_api_process* api, stdParsNu
 
     ////
 
-    require(client->assembly.process(stdPassKit(processKit)));
-
-    returnTrue;
+    client->assembly.process(stdPassKit(processKit));
 }
 
 //----------------------------------------------------------------

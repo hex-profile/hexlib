@@ -42,12 +42,12 @@ public:
     ////
 
     template <typename Kit>
-    stdbool setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(Kit));
+    void setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(Kit));
 
     ////
 
     template <typename Kit>
-    stdbool useImage(ImageUser& imageUser, stdPars(Kit));
+    void useImage(ImageUser& imageUser, stdPars(Kit));
 
     //----------------------------------------------------------------
     //
@@ -85,22 +85,21 @@ private:
     ////
 
     template <typename Kit>
-    stdbool eventsEnsureAlloc(stdPars(Kit))
+    void eventsEnsureAlloc(stdPars(Kit))
     {
         if (eventsAllocated)
-            returnTrue;
+            return;
 
         ////
 
         REMEMBER_CLEANUP_EX(errorCleanup, eventsDealloc());
 
-        require(kit.gpuEventAlloc.eventCreate(kit.gpuCurrentContext, false, readingCompletion, stdPass));
-        require(kit.gpuEventAlloc.eventCreate(kit.gpuCurrentContext, false, writingCompletion, stdPass));
+        kit.gpuEventAlloc.eventCreate(kit.gpuCurrentContext, false, readingCompletion, stdPass);
+        kit.gpuEventAlloc.eventCreate(kit.gpuCurrentContext, false, writingCompletion, stdPass);
 
         ////
 
         errorCleanup.cancel();
-        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -129,7 +128,7 @@ private:
 //================================================================
 
 template <typename Kit>
-stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
+void OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
 {
 
     //----------------------------------------------------------------
@@ -140,8 +139,8 @@ stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
 
     if_not (imageSet)
     {
-        require(imageUser(false, {}, stdPass));
-        returnTrue;
+        imageUser(false, {}, stdPass);
+        return;
     }
 
     //----------------------------------------------------------------
@@ -152,7 +151,7 @@ stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
     //----------------------------------------------------------------
 
     if (kit.dataProcessing)
-        require(kit.gpuEventRecording.putEventDependency(writingCompletion, kit.gpuCurrentStream, stdPass));
+        kit.gpuEventRecording.putEventDependency(writingCompletion, kit.gpuCurrentStream, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -163,9 +162,7 @@ stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
     auto recordCompletion = [&] (stdPars(auto))
     {
         if (kit.dataProcessing)
-            require(kit.gpuEventRecording.recordEvent(readingCompletion, kit.gpuCurrentStream, stdPass));
-
-        returnTrue;
+            kit.gpuEventRecording.recordEvent(readingCompletion, kit.gpuCurrentStream, stdPass);
     };
 
     REMEMBER_CLEANUP_EX(errorExit, errorBlock(recordCompletion(stdPassNc)));
@@ -176,7 +173,7 @@ stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
     //
     //----------------------------------------------------------------
 
-    require(imageUser(imageSet, image, stdPass));
+    imageUser(imageSet, image, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -185,11 +182,7 @@ stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
     //----------------------------------------------------------------
 
     errorExit.cancel();
-    require(recordCompletion(stdPass));
-
-    ////
-
-    returnTrue;
+    recordCompletion(stdPass);
 }
 
 //================================================================
@@ -199,7 +192,7 @@ stdbool OverlayHolder::useImage(ImageUser& imageUser, stdPars(Kit))
 //================================================================
 
 template <typename Kit>
-stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(Kit))
+void OverlayHolder::setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(Kit))
 {
     REQUIRE(size >= 0);
 
@@ -213,7 +206,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
     //----------------------------------------------------------------
 
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -221,7 +214,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
     //
     //----------------------------------------------------------------
 
-    require(eventsEnsureAlloc(stdPass));
+    eventsEnsureAlloc(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -230,7 +223,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
     //----------------------------------------------------------------
 
     Space pitch{};
-    require(getAlignedBufferPitch(sizeof(Type), size.X, kit.gpuProperties.samplerRowAlignment, pitch, stdPass));
+    getAlignedBufferPitch(sizeof(Type), size.X, kit.gpuProperties.samplerRowAlignment, pitch, stdPass);
 
     ////
 
@@ -254,7 +247,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
 
     if_not (SpaceU(allocSizeInBytes) <= buffer.size())
     {
-        require(buffer.realloc(allocSizeInBytes, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass));
+        buffer.realloc(allocSizeInBytes, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass);
     }
 
     ////
@@ -269,7 +262,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
     //
     //----------------------------------------------------------------
 
-    require(kit.gpuEventRecording.putEventDependency(readingCompletion, kit.gpuCurrentStream, stdPass));
+    kit.gpuEventRecording.putEventDependency(readingCompletion, kit.gpuCurrentStream, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -280,9 +273,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
     auto recordCompletion = [&] (stdPars(auto))
     {
         if (kit.dataProcessing)
-            require(kit.gpuEventRecording.recordEvent(writingCompletion, kit.gpuCurrentStream, stdPass));
-
-        returnTrue;
+            kit.gpuEventRecording.recordEvent(writingCompletion, kit.gpuCurrentStream, stdPass);
     };
 
     REMEMBER_CLEANUP_EX(errorExit, errorBlock(recordCompletion(stdPassNc)));
@@ -293,7 +284,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
     //
     //----------------------------------------------------------------
 
-    require(provider.saveImage(storedImage, stdPass));
+    provider.saveImage(storedImage, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -302,7 +293,7 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
     //----------------------------------------------------------------
 
     errorExit.cancel();
-    require(recordCompletion(stdPass));
+    recordCompletion(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -312,8 +303,6 @@ stdbool OverlayHolder::setImage(const Point<Space>& size, const GpuImageProvider
 
     image = storedImage;
     imageSet = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -385,15 +374,15 @@ struct OverlayBufferImpl : public OverlayBuffer
         cleared = true;
     }
 
-    virtual stdbool setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(SetImageKit))
+    virtual void setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(SetImageKit))
     {
         reset();
-        return holder.setImage(size, provider, stdPass);
+        holder.setImage(size, provider, stdPass);
     }
 
-    virtual stdbool useImage(ImageUser& imageUser, stdPars(UseImageKit))
+    virtual void useImage(ImageUser& imageUser, stdPars(UseImageKit))
     {
-        return holder.useImage(imageUser, stdPass);
+        holder.useImage(imageUser, stdPass);
     }
 
     //----------------------------------------------------------------

@@ -12,7 +12,7 @@
 //
 //================================================================
 
-inline stdbool getAlignedBufferPitch(Space elemSize, Space sizeX, Space rowByteAlignment, Space& pitch, stdPars(ErrorLogKit))
+inline void getAlignedBufferPitch(Space elemSize, Space sizeX, Space rowByteAlignment, Space& pitch, stdPars(ErrorLogKit))
 {
     REQUIRE(sizeX >= 0);
 
@@ -50,6 +50,4 @@ inline stdbool getAlignedBufferPitch(Space elemSize, Space sizeX, Space rowByteA
     ////
 
     pitch = alignedSizeX;
-
-    returnTrue;
 }

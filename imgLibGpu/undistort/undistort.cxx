@@ -74,7 +74,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool makeUndistortMap
+void makeUndistortMap
 (
     const CameraIntrinsics<float32>& intrinsics,
     const CameraDistortion<float32>& distortion,
@@ -84,21 +84,16 @@ stdbool makeUndistortMap
     stdPars(GpuProcessKit)
 )
 {
-    require
+    makeUndistortMapFunc
     (
-        makeUndistortMapFunc
-        (
-            map,
-            mapScaleFactor,
-            mapValueFactor,
-            intrinsics,
-            ~intrinsics,
-            distortion,
-            stdPass
-        )
+        map,
+        mapScaleFactor,
+        mapValueFactor,
+        intrinsics,
+        ~intrinsics,
+        distortion,
+        stdPass
     );
-
-    returnTrue;
 }
 
 #endif

@@ -9,7 +9,7 @@
 //
 //================================================================
 
-stdbool fourierSeparable
+void fourierSeparable
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,
@@ -24,7 +24,7 @@ stdbool fourierSeparable
 //
 //================================================================
 
-stdbool invFourierSeparable
+void invFourierSeparable
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,
@@ -40,7 +40,7 @@ stdbool invFourierSeparable
 //
 //================================================================
 
-stdbool orientedFourier
+void orientedFourier
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,
@@ -55,7 +55,7 @@ stdbool orientedFourier
 //
 //================================================================
 
-stdbool invOrientedFourier
+void invOrientedFourier
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,

@@ -19,7 +19,7 @@ using ReportKit = KitCombine<ErrorLogKit, MsgLogKit>;
 //
 //================================================================
 
-stdbool namedNodesReport
+void namedNodesReport
 (
     ProfilerNode* rootNode,
     float32 divTicksPerSec,

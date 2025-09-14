@@ -32,5 +32,5 @@ using MemoryOwner = ResourceOwner<MemoryDeallocContext>;
 template <typename AddrU>
 struct AllocatorInterface
 {
-    virtual stdbool alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull) =0;
+    virtual void alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull) =0;
 };

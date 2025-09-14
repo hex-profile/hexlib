@@ -12,7 +12,7 @@
 //
 //================================================================
 
-stdbool makeUndistortMap
+void makeUndistortMap
 (
     const CameraIntrinsics<float32>& intrinsics,
     const CameraDistortion<float32>& distortion,

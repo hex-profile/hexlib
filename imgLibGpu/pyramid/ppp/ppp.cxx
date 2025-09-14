@@ -22,7 +22,7 @@ namespace ppp {
 
 #if HOSTCODE
 
-stdbool getTotalPyramidTileCount
+void getTotalPyramidTileCount
 (
     const PyramidStructure& pyramid,
     const Point<Space>& tileSize,
@@ -64,8 +64,6 @@ stdbool getTotalPyramidTileCount
 
     resultTileCount = totalTileCount;
     configHash = hash;
-
-    returnTrue;
 }
 
 #endif
@@ -78,7 +76,7 @@ stdbool getTotalPyramidTileCount
 
 #if HOSTCODE
 
-stdbool getTotalPyramidTileCount
+void getTotalPyramidTileCount
 (
     const GpuPyramidLayout& layout,
     const Point<Space>& tileSize,
@@ -119,8 +117,6 @@ stdbool getTotalPyramidTileCount
 
     resultTotalTileCount = totalTileCount;
     configHash = hash;
-
-    returnTrue;
 }
 
 #endif
@@ -230,7 +226,7 @@ GPUTOOL_PLAIN_END
 
 #if HOSTCODE
 
-stdbool prepareGuidingArray
+void prepareGuidingArray
 (
     const PyramidStructure& pyramid,
     const Point<Space>& tileSize,
@@ -265,11 +261,7 @@ stdbool prepareGuidingArray
 
     ////
 
-    require(computeGuidingArray(totalTileCount, pyramidStructure, result, stdPass));
-
-    ////
-
-    returnTrue;
+    computeGuidingArray(totalTileCount, pyramidStructure, result, stdPass);
 }
 
 #endif
@@ -282,18 +274,16 @@ stdbool prepareGuidingArray
 
 #if HOSTCODE
 
-stdbool checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& guide, stdPars(ErrorLogKit))
+void checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& guide, stdPars(ErrorLogKit))
 {
     Space totalTileCount = 0;
     uint32 configHash = 0;
     REQUIRE(guide.tileSize >= 1);
-    require(getTotalPyramidTileCount(layout, guide.tileSize, totalTileCount, configHash, stdPass));
+    getTotalPyramidTileCount(layout, guide.tileSize, totalTileCount, configHash, stdPass);
 
     REQUIRE(guide.configHash == configHash);
     REQUIRE(guide.guideArray.size() == totalTileCount);
     REQUIRE(guide.levels == layout.levels);
-
-    returnTrue;
 }
 
 #endif
@@ -306,7 +296,7 @@ stdbool checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& gu
 
 #if HOSTCODE
 
-stdbool PyramidGuideMemory::realloc(const PyramidStructure& pyramid, const Point<Space>& tileSize, stdPars(GpuProcessKit))
+void PyramidGuideMemory::realloc(const PyramidStructure& pyramid, const Point<Space>& tileSize, stdPars(GpuProcessKit))
 {
     dealloc();
 
@@ -314,25 +304,21 @@ stdbool PyramidGuideMemory::realloc(const PyramidStructure& pyramid, const Point
 
     Space totalTileCount = 0;
     uint32 configHash = 0;
-    require(getTotalPyramidTileCount(pyramid, tileSize, totalTileCount, configHash, stdPass));
+    getTotalPyramidTileCount(pyramid, tileSize, totalTileCount, configHash, stdPass);
 
     ////
 
-    require(theGuideArray.realloc(totalTileCount, stdPass));
+    theGuideArray.realloc(totalTileCount, stdPass);
 
     ////
 
-    require(prepareGuidingArray(pyramid, tileSize, theGuideArray, stdPass));
+    prepareGuidingArray(pyramid, tileSize, theGuideArray, stdPass);
 
     ////
 
     theLevels = pyramid.levels();
     theTileSize = tileSize;
     theConfigHash = configHash;
-
-    ////
-
-    returnTrue;
 }
 
 #endif

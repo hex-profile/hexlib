@@ -42,7 +42,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != Display::Nothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -77,12 +77,12 @@ void PopCountTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool PopCountTestImpl::process(stdPars(GpuModuleProcessKit))
+void PopCountTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     Display displayType = kit.verbosity >= Verbosity::On ? displaySwitch : Display::Nothing;
 
     if (displayType == Display::Nothing)
-        returnTrue;
+        return;
 
     ////
 
@@ -96,10 +96,6 @@ stdbool PopCountTestImpl::process(stdPars(GpuModuleProcessKit))
     }
 
     printMsgL(kit, STR("PopCount test OK"));
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

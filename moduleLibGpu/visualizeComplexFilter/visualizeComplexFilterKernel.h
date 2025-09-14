@@ -13,7 +13,7 @@ namespace visualizeComplex {
 //
 //================================================================
 
-stdbool visualizeComplexFilterFunc
+void visualizeComplexFilterFunc
 (
     const GpuMatrix<const ComplexFloat>& src,
     const GpuMatrix<ComplexFloat>& dst,

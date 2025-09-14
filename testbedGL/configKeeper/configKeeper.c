@@ -44,7 +44,7 @@ struct ConfigKeeperImpl : public ConfigKeeper
     //
     //----------------------------------------------------------------
 
-    virtual stdbool init(const InitArgs& args, stdPars(InitKit));
+    virtual void init(const InitArgs& args, stdPars(InitKit));
 
     //----------------------------------------------------------------
     //
@@ -68,7 +68,7 @@ struct ConfigKeeperImpl : public ConfigKeeper
 
     using CycleDiagKit = KitCombine<DiagnosticKit, TimerKit>;
 
-    stdbool processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit));
+    void processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit));
 
     //----------------------------------------------------------------
     //
@@ -146,9 +146,9 @@ void ConfigKeeperImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool ConfigKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
+void ConfigKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
 {
-    require(formatterArray.realloc(4096, stdPass));
+    formatterArray.realloc(4096, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -176,17 +176,17 @@ stdbool ConfigKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
 
     if (configFound)
     {
-        require(cfgOperations->loadFromFile(*configMemory, configFilename.cstr(), false, stdPass));
-        require(cfgOperations->loadVars(*configMemory, args.serialization, {false, true}, stdPass));
+        cfgOperations->loadFromFile(*configMemory, configFilename.cstr(), false, stdPass);
+        cfgOperations->loadVars(*configMemory, args.serialization, {false, true}, stdPass);
     }
 
     //
     // Save all vars, update the file.
     //
 
-    require(cfgOperations->saveVars(*configMemory, args.serialization, {false, true}, stdPass));
+    cfgOperations->saveVars(*configMemory, args.serialization, {false, true}, stdPass);
 
-    require(cfgOperations->saveToFile(*configMemory, configFilename.cstr(), stdPass));
+    cfgOperations->saveToFile(*configMemory, configFilename.cstr(), stdPass);
 
     if_not (configFound)
         printMsg(kit.msgLog, STR("Created config file %"), configFilename, msgWarn);
@@ -198,8 +198,6 @@ stdbool ConfigKeeperImpl::init(const InitArgs& args, stdPars(InitKit))
     //----------------------------------------------------------------
 
     initialized = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -312,7 +310,7 @@ void ConfigKeeperImpl::processingCycle(const RunArgs& args, ShutdownReq& shutdow
 //
 //================================================================
 
-stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit))
+void ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown, stdPars(CycleDiagKit))
 {
 
     //----------------------------------------------------------------
@@ -329,7 +327,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
     auto setTimeout = [&] ()
     {
         if_not (firstUnsavedUpdate)
-            returnTrue;
+            return;
 
         ////
 
@@ -345,7 +343,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
         if (waitTime == 0)
         {
             wait = false;
-            returnTrue;
+            return;
         }
 
         ////
@@ -353,10 +351,6 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
         uint32 ms = 0;
         REQUIRE(convertNearest(waitTime * 1e3f, ms));
         waitTimeMs = ms;
-
-        ////
-
-        returnTrue;
     };
 
     errorBlock(setTimeout()); // Cannot exit by error before shutdown servicing.
@@ -396,12 +390,10 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
 
         if_not (fileUpdatingDisabled)
         {
-            require(cfgOperations->saveToFile(*configMemory, configFilename.cstr(), stdPass));
+            cfgOperations->saveToFile(*configMemory, configFilename.cstr(), stdPass);
         }
 
         fileErrorHandler.cancel();
-
-        returnTrue;
     };
 
     //----------------------------------------------------------------
@@ -417,7 +409,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
         if (firstUnsavedUpdate)
             errorBlock(saveConfig(stdPassNc));
 
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -507,7 +499,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
         auto& editRequest = inputUpdates.editRequest;
 
         if_not (editRequest.hasUpdates())
-            returnTrue;
+            return;
 
         REMEMBER_CLEANUP(editRequest.reset());
 
@@ -519,7 +511,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
         {
             fileUpdatingDisabled = false;
 
-            require(saveConfig(stdPass));
+            saveConfig(stdPass);
         }
 
         //
@@ -538,8 +530,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
             cmdLine << editor << CT(" \"") << configFilename << CT("\"");
             REQUIRE(def(cmdLine));
 
-            require(runAndWaitProcess(cmdLine.cstr(), stdPass));
-            returnTrue;
+            runAndWaitProcess(cmdLine.cstr(), stdPass);
         };
 
         if_not (errorBlock(launchEditor(editRequest.getEditor(), stdPassNc)))
@@ -559,7 +550,7 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
 
         configMemory->clearAllDataChangedFlags();
 
-        require(cfgOperations->loadFromFile(*configMemory, configFilename.cstr(), true, stdPass));
+        cfgOperations->loadFromFile(*configMemory, configFilename.cstr(), true, stdPass);
 
         UniqueInstance<CfgTree> userUpdate; // Editing is rare, always allocate.
         configMemory->generateUpdate(*userUpdate);
@@ -569,24 +560,16 @@ stdbool ConfigKeeperImpl::processDiag(const RunArgs& args, ShutdownReq& shutdown
         //
 
         auto serialization = cfgSerializationThunk | [&] (auto& kit) {serialize(kit);};
-        require(cfgOperations->loadVars(*userUpdate, serialization, {false, true}, stdPass));
+        cfgOperations->loadVars(*userUpdate, serialization, {false, true}, stdPass);
 
         //
         // Send the update to the GUI.
         //
 
         REQUIRE(args.guiService.addConfigUpdate(*userUpdate));
-
-        ////
-
-        returnTrue;
     };
 
     errorBlock(editConfig());
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

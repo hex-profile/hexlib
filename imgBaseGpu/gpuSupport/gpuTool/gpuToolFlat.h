@@ -46,7 +46,7 @@
     \
     hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         const Point<Space>& groupCount, \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
@@ -57,13 +57,13 @@
         stdScopedBegin; \
         \
         if_not (kit.dataProcessing) \
-            returnTrue; \
+            return; \
         \
         uint32 elemCount = areaOf(groupCount) * (groupSizeX) * (groupSizeY); \
         stdEnterElemCount(elemCount); \
         \
         if_not (groupCount.X > 0 && groupCount.Y > 0) \
-            returnTrue; \
+            return; \
         \
         GPT_FOREACH_SAMPLER(samplerList, GPT_BIND_SAMPLER, prefix) \
         \
@@ -71,18 +71,15 @@
         GPT_FOREACH_SAMPLER(samplerList, GPT_SET_SAMPLER_FIELD, o) \
         GPT_FOREACH(paramList, GPT_SET_PARAM_FIELD) \
         \
-        require \
+        kit.gpuKernelCalling.callKernel \
         ( \
-            kit.gpuKernelCalling.callKernel \
-            ( \
-                groupCount, \
-                point((groupSizeX), (groupSizeY)), \
-                elemCount, \
-                prefix##Kernel, \
-                kernelParams, \
-                kit.gpuCurrentStream, \
-                stdPassLocationMsg("Kernel") \
-            ) \
+            groupCount, \
+            point((groupSizeX), (groupSizeY)), \
+            elemCount, \
+            prefix##Kernel, \
+            kernelParams, \
+            kit.gpuCurrentStream, \
+            stdPassLocationMsg("Kernel") \
         ); \
         \
         stdScopedEnd; \
@@ -96,7 +93,7 @@
 
 #define GPT_FLAT_CALLER_PROTO(prefix, samplerList, paramList) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         const Point<Space>& groupCount, \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \

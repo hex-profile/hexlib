@@ -45,7 +45,7 @@ using EngineProcessKit = KitCombine<GpuModuleProcessKit, GpuMemoryAllocationKit>
 struct EngineModuleRealloc
 {
     virtual bool reallocValid() const =0;
-    virtual stdbool realloc(stdPars(EngineReallocKit)) =0;
+    virtual void realloc(stdPars(EngineReallocKit)) =0;
 };
 
 //================================================================
@@ -56,7 +56,7 @@ struct EngineModuleRealloc
 
 struct EngineModule : public EngineModuleRealloc
 {
-    virtual stdbool process(stdPars(EngineProcessKit)) =0;
+    virtual void process(stdPars(EngineProcessKit)) =0;
 };
 
 //----------------------------------------------------------------
@@ -67,9 +67,9 @@ LAMBDA_THUNK3
     EngineModule,
     bool reallocValid() const,
     lambda0(),
-    stdbool realloc(stdPars(EngineReallocKit)),
+    void realloc(stdPars(EngineReallocKit)),
     lambda1(stdPassThru),
-    stdbool process(stdPars(EngineProcessKit)),
+    void process(stdPars(EngineProcessKit)),
     lambda2(stdPassThru)
 )
 

@@ -84,7 +84,7 @@ class MinimalShellImpl : public MinimalShell, public Settings
     //
     //----------------------------------------------------------------
 
-    stdbool init(stdPars(InitKit));
+    void init(stdPars(InitKit));
 
     //----------------------------------------------------------------
     //
@@ -92,7 +92,7 @@ class MinimalShellImpl : public MinimalShell, public Settings
     //
     //----------------------------------------------------------------
 
-    stdbool process(const ProcessArgs& args, stdPars(ProcessKit));
+    void process(const ProcessArgs& args, stdPars(ProcessKit));
 
     //----------------------------------------------------------------
     //
@@ -105,13 +105,13 @@ class MinimalShellImpl : public MinimalShell, public Settings
         return profilerShell.profilingActive();
     }
 
-    stdbool profilingReport(const GpuExternalContext* externalContext, stdPars(ReportKit))
+    void profilingReport(const GpuExternalContext* externalContext, stdPars(ReportKit))
     {
         REQUIRE(level >= Level::InitExternal);
 
         auto& gpuProperties = (level == Level::InitInternal) ? gpuPropertiesInternal : externalContext->gpuProperties;
 
-        return profilerShell.makeReport(gpuProperties.totalThroughput, stdPass);
+        profilerShell.makeReport(gpuProperties.totalThroughput, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -124,19 +124,19 @@ private:
 
     using ProcessWithProfilerKit = KitCombine<ProcessKit, ProfilerKit>;
 
-    stdbool processWithProfiler(const ProcessArgs& args, stdPars(ProcessWithProfilerKit));
+    void processWithProfiler(const ProcessArgs& args, stdPars(ProcessWithProfilerKit));
 
     ////
 
     using ProcessWithGpuKit = KitCombine<ProcessWithProfilerKit, GpuShellKit>;
 
-    stdbool processWithGpu(const ProcessArgs& args, stdPars(ProcessWithGpuKit));
+    void processWithGpu(const ProcessArgs& args, stdPars(ProcessWithGpuKit));
 
     ////
 
     using ProcessWithAllocatorsKit = KitCombine<ProcessWithGpuKit, memController::FastAllocToolkit, PipeControlKit>;
 
-    stdbool processWithAllocators(const ProcessArgs& args, stdPars(ProcessWithAllocatorsKit));
+    void processWithAllocators(const ProcessArgs& args, stdPars(ProcessWithAllocatorsKit));
 
     //----------------------------------------------------------------
     //
@@ -256,7 +256,7 @@ void MinimalShellImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool MinimalShellImpl::init(stdPars(InitKit))
+void MinimalShellImpl::init(stdPars(InitKit))
 {
 
     //----------------------------------------------------------------
@@ -265,7 +265,7 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
     //
     //----------------------------------------------------------------
 
-    require(profilerShell.init(stdPass));
+    profilerShell.init(stdPass);
     REMEMBER_CLEANUP_EX(profilerCleanup, profilerShell.deinit());
 
     //----------------------------------------------------------------
@@ -277,17 +277,17 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
     if (gpuContextMaintainer)
     {
         GpuInitApiImpl gpuInitApi(kit);
-        require(gpuInitApi.initialize(stdPass));
+        gpuInitApi.initialize(stdPass);
         GpuInitKit gpuInitKit = gpuInitApi.getKit();
 
         ////
 
-        require(gpuContextHelper.createContext(gpuPropertiesInternal, gpuContextInternal, stdPassKit(kitCombine(kit, gpuInitKit))));
+        gpuContextHelper.createContext(gpuPropertiesInternal, gpuContextInternal, stdPassKit(kitCombine(kit, gpuInitKit)));
         REMEMBER_CLEANUP_EX(gpuContextCleanup, gpuContextInternal.clear(););
 
         ////
 
-        require(gpuInitKit.gpuStreamCreation.createStream(gpuContextInternal, true, gpuStreamInternal, stdPass));
+        gpuInitKit.gpuStreamCreation.createStream(gpuContextInternal, true, gpuStreamInternal, stdPass);
 
         gpuContextCleanup.cancel();
     }
@@ -301,8 +301,6 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
     profilerCleanup.cancel();
 
     level = gpuContextMaintainer ? Level::InitInternal : Level::InitExternal;
-
-    returnTrue;
 }
 
 //================================================================
@@ -311,7 +309,7 @@ stdbool MinimalShellImpl::init(stdPars(InitKit))
 //
 //================================================================
 
-stdbool MinimalShellImpl::process(const ProcessArgs& args, stdPars(ProcessKit))
+void MinimalShellImpl::process(const ProcessArgs& args, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -345,7 +343,7 @@ stdbool MinimalShellImpl::process(const ProcessArgs& args, stdPars(ProcessKit))
 
     auto profilerTarget = ProfilerTarget::O | [&] (stdPars(ProfilerKit))
     {
-        return processWithProfiler(args, stdPassThruKit(kitCombine(oldKit, kit)));
+        processWithProfiler(args, stdPassThruKit(kitCombine(oldKit, kit)));
     };
 
     ////
@@ -353,7 +351,7 @@ stdbool MinimalShellImpl::process(const ProcessArgs& args, stdPars(ProcessKit))
     auto& gpuProperties = (level == Level::InitInternal) ?
         gpuPropertiesInternal : args.externalContext->gpuProperties;
 
-    require(profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass));
+    profilerShell.process(profilerTarget, gpuProperties.totalThroughput, stdPass);
 
     ////
 
@@ -366,7 +364,7 @@ stdbool MinimalShellImpl::process(const ProcessArgs& args, stdPars(ProcessKit))
 //
 //================================================================
 
-stdbool MinimalShellImpl::processWithProfiler(const ProcessArgs& args, stdPars(ProcessWithProfilerKit))
+void MinimalShellImpl::processWithProfiler(const ProcessArgs& args, stdPars(ProcessWithProfilerKit))
 {
 
     //----------------------------------------------------------------
@@ -413,12 +411,10 @@ stdbool MinimalShellImpl::processWithProfiler(const ProcessArgs& args, stdPars(P
 
     auto gpuShellTarget = GpuShellTarget::O | [&] (stdPars(GpuShellKit))
     {
-        return processWithGpu(args, stdPassThruKit(kitCombine(baseKit, kit)));
+        processWithGpu(args, stdPassThruKit(kitCombine(baseKit, kit)));
     };
 
-    require(gpuShell.execCyclicShell(gpuShellTarget, stdPassKit(kitEx)));
-
-    returnTrue;
+    gpuShell.execCyclicShell(gpuShellTarget, stdPassKit(kitEx));
 }
 
 //================================================================
@@ -427,7 +423,7 @@ stdbool MinimalShellImpl::processWithProfiler(const ProcessArgs& args, stdPars(P
 //
 //================================================================
 
-stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(ProcessWithGpuKit))
+void MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(ProcessWithGpuKit))
 {
 
     args.sysAllocHappened = false;
@@ -466,14 +462,14 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
         auto realloc = [&] (stdPars(auto))
         {
             auto joinKit = kit.dataProcessing ? execKit : countKit;
-            return args.engineModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
+            args.engineModule.realloc(stdPassThruKit(kitCombine(kit, joinKit)));
         };
 
         ////
 
         auto reallocTarget = memControllerReallocThunk(reallocValid, realloc);
 
-        require(args.engineMemory.handleStateRealloc(reallocTarget, kit, engineStateUsage, engineStateActivity, stdPass));
+        args.engineMemory.handleStateRealloc(reallocTarget, kit, engineStateUsage, engineStateActivity, stdPass);
     }
 
     ////
@@ -512,10 +508,10 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
 
         auto processThunk = memControllerProcessThunk | [&] (stdPars(auto))
         {
-            return processWithAllocators(args, stdPassThruKit(kitCombine(countKit, kit)));
+            processWithAllocators(args, stdPassThruKit(kitCombine(countKit, kit)));
         };
 
-        require(args.engineMemory.processCountTemp(processThunk, engineTempUsage, engineTempActivity, stdPassKit(kitEx)));
+        args.engineMemory.processCountTemp(processThunk, engineTempUsage, engineTempActivity, stdPassKit(kitEx));
     }
 
     //----------------------------------------------------------------
@@ -524,7 +520,7 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
     //
     //----------------------------------------------------------------
 
-    require(args.engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass));
+    args.engineMemory.handleTempRealloc(engineTempUsage, kit, engineTempActivity, stdPass);
 
     REQUIRE(engineTempActivity.fastAllocCount <= 1);
     REQUIRE(engineTempActivity.sysAllocCount <= 1);
@@ -546,7 +542,7 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
     //----------------------------------------------------------------
 
     if_not (args.runExecutionPhase)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -566,21 +562,17 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
 
         auto processTarget = memControllerProcessThunk | [&] (stdPars(auto))
         {
-            return processWithAllocators(args, stdPassThruKit(kitCombine(kit, kitEx)));
+            processWithAllocators(args, stdPassThruKit(kitCombine(kit, kitEx)));
         };
 
         ////
 
         MemoryUsage actualEngineTempUsage;
 
-        require(args.engineMemory.processAllocTemp(processTarget, kitEx, actualEngineTempUsage, stdPass));
+        args.engineMemory.processAllocTemp(processTarget, kitEx, actualEngineTempUsage, stdPass);
 
         CHECK(actualEngineTempUsage == engineTempUsage);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -589,7 +581,7 @@ stdbool MinimalShellImpl::processWithGpu(const ProcessArgs& args, stdPars(Proces
 //
 //================================================================
 
-stdbool MinimalShellImpl::processWithAllocators(const ProcessArgs& args, stdPars(ProcessWithAllocatorsKit))
+void MinimalShellImpl::processWithAllocators(const ProcessArgs& args, stdPars(ProcessWithAllocatorsKit))
 {
     stdScopedBegin;
 
@@ -727,7 +719,7 @@ stdbool MinimalShellImpl::processWithAllocators(const ProcessArgs& args, stdPars
 
     ////
 
-    require(args.engineModule.process(stdPassKit(kitEx)));
+    args.engineModule.process(stdPassKit(kitEx));
 
     ////
 

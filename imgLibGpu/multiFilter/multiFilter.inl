@@ -223,7 +223,7 @@ struct FinalParams
 //----------------------------------------------------------------
 
 template <typename Src, typename Interm, typename Dst>
-stdbool FUNCNAME
+void FUNCNAME
 (
     PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, (Src, Interm, Dst))
     LINEAR_ONLY_COMMA(const float32* filterMixCoeffs)
@@ -234,7 +234,7 @@ stdbool FUNCNAME
 //----------------------------------------------------------------
 
 template <>
-stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
+void FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
 (
     PREP_FOR1(TASK_COUNT, FUNC_PARAMETERS, (SRC_TYPE, INTERM_TYPE, DST_TYPE))
     LINEAR_ONLY_COMMA(const float32* filterMixCoeffs)
@@ -273,7 +273,7 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
     ////
 
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -291,8 +291,8 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
         { \
             const GpuSamplerLink* srcSampler = &PREP_PASTE3(SIGNATURE, srcSampler, t); \
             \
-            require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src##t, borderMode, \
-                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
+            kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src##t, borderMode, \
+                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass); \
         }
 
     PREP_FOR(TASK_COUNT, TMP_MACRO, _)
@@ -319,18 +319,15 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
     Point<Space> intermThreadCount = DIR(horThreadCount(), verThreadCount());
     Point<Space> intermGroupCount = divUpNonneg(intermLaunchSize, intermThreadCount);
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            point3D(intermGroupCount.X, intermGroupCount.Y, TASK_COUNT),
-            intermThreadCount,
-            areaOf(intermSize),
-            PREP_PASTE3(SIGNATURE, Interm, DIR(Hor, Ver)),
-            intermParams,
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        point3D(intermGroupCount.X, intermGroupCount.Y, TASK_COUNT),
+        intermThreadCount,
+        areaOf(intermSize),
+        PREP_PASTE3(SIGNATURE, Interm, DIR(Hor, Ver)),
+        intermParams,
+        kit.gpuCurrentStream,
+        stdPass
     );
 
     //----------------------------------------------------------------
@@ -343,8 +340,8 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
         { \
             const GpuSamplerLink* sampler = &PREP_PASTE4(SIGNATURE, intermSampler, k, t); \
             \
-            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k + t * FILTER_COUNT)), borderMode, \
-                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
+            kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k + t * FILTER_COUNT)), borderMode, \
+                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass); \
         }
 
     PREP_FOR_2D(TASK_COUNT, FILTER_COUNT, TMP_MACRO, _)
@@ -393,23 +390,16 @@ stdbool FUNCNAME<SRC_TYPE, INTERM_TYPE, DST_TYPE>
 
     ////
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            point3D(finalGroupCount.X, finalGroupCount.Y, TASK_COUNT),
-            finalThreadCount,
-            areaOf(dstSize),
-            PREP_PASTE3(SIGNATURE, Final, DIR(Ver, Hor)),
-            finalParams,
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        point3D(finalGroupCount.X, finalGroupCount.Y, TASK_COUNT),
+        finalThreadCount,
+        areaOf(dstSize),
+        PREP_PASTE3(SIGNATURE, Final, DIR(Ver, Hor)),
+        finalParams,
+        kit.gpuCurrentStream,
+        stdPass
     );
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

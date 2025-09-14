@@ -13,7 +13,7 @@
 //
 //================================================================
 
-stdbool setDpiAwareness(stdPars(DiagnosticKit))
+void setDpiAwareness(stdPars(DiagnosticKit))
 {
 
 #if defined(_WIN32)
@@ -22,6 +22,4 @@ stdbool setDpiAwareness(stdPars(DiagnosticKit))
         STR("Setting DPI Awareness failed: %0"), ErrorWin32(GetLastError()));
 
 #endif
-
-    returnTrue;
 }

@@ -49,8 +49,8 @@ public:
 
 public:
 
-    stdbool init(const CharType* const configName, SerializeTarget& target, stdPars(StarterDebugKit));
-    stdbool finalize(SerializeTarget& target, stdPars(StarterDebugKit));
+    void init(const CharType* const configName, SerializeTarget& target, stdPars(StarterDebugKit));
+    void finalize(SerializeTarget& target, stdPars(StarterDebugKit));
 
     //----------------------------------------------------------------
     //
@@ -60,7 +60,7 @@ public:
 
 public:
 
-    stdbool process(ProcessTarget& target, bool warmup, stdPars(StarterDebugKit));
+    void process(ProcessTarget& target, bool warmup, stdPars(StarterDebugKit));
 
     //----------------------------------------------------------------
     //
@@ -141,7 +141,7 @@ void PackageKeeperImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarget& target, stdPars(StarterDebugKit))
+void PackageKeeperImpl::init(const CharType* const configName, SerializeTarget& target, stdPars(StarterDebugKit))
 {
 
     REQUIRE(!initialized);
@@ -169,20 +169,18 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
 
             ////
 
-            require(configFile.loadFile(SimpleString{configName}, stdPass));
-            require(configFile.loadVars(serialization, true, stdPass));
+            configFile.loadFile(SimpleString{configName}, stdPass);
+            configFile.loadVars(serialization, true, stdPass);
 
             ////
 
-            require(configFile.saveVars(serialization, true, stdPass));
-            require(configFile.updateFile(true, stdPass));
+            configFile.saveVars(serialization, true, stdPass);
+            configFile.updateFile(true, stdPass);
 
             ////
 
             if_not (configFound)
                 printMsg(kit.msgLog, STR("Created config file %"), configName, msgWarn);
-
-            returnTrue;
         };
 
         errorBlock(action());
@@ -210,7 +208,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
     ////
 
     int32 signalCount{};
-    require(signalImpl::registerSignals(serialization, actionSetup, signalCount, stdPass));
+    signalImpl::registerSignals(serialization, actionSetup, signalCount, stdPass);
 
     ////
 
@@ -218,7 +216,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
 
     ////
 
-    require(signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+    signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -226,7 +224,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
     //
     //----------------------------------------------------------------
 
-    require(shell->init(stdPass));
+    shell->init(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -237,8 +235,6 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
     initialized = true;
 
     signalsCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -247,7 +243,7 @@ stdbool PackageKeeperImpl::init(const CharType* const configName, SerializeTarge
 //
 //================================================================
 
-stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebugKit))
+void PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebugKit))
 {
     REQUIRE(initialized);
 
@@ -274,8 +270,6 @@ stdbool PackageKeeperImpl::finalize(SerializeTarget& target, stdPars(StarterDebu
 
     if (shell->profilingActive())
         errorBlock(shell->profilingReport(nullptr, stdPassNc));
-
-    returnTrue;
 }
 
 //================================================================
@@ -300,12 +294,12 @@ public:
     virtual bool reallocValid() const
         {return base.reallocValid();}
 
-    virtual stdbool realloc(stdPars(EngineReallocKit))
-        {return base.realloc(stdPassThru);}
+    virtual void realloc(stdPars(EngineReallocKit))
+        {base.realloc(stdPassThru);}
 
 public:
 
-    virtual stdbool process(stdPars(EngineProcessKit))
+    virtual void process(stdPars(EngineProcessKit))
     {
         auto modifiedKits = kitCombine
         (
@@ -313,7 +307,7 @@ public:
             VerbosityKit(!warmup ? kit.verbosity : Verbosity::Off)
         );
 
-        return base.process(stdPassThruKit(kitReplace(kit, modifiedKits)));
+        base.process(stdPassThruKit(kitReplace(kit, modifiedKits)));
     }
 
 private:
@@ -329,7 +323,7 @@ private:
 //
 //================================================================
 
-stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(StarterDebugKit))
+void PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(StarterDebugKit))
 {
     REQUIRE(initialized);
 
@@ -385,7 +379,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
         ////
 
         int32 signalCount{};
-        require(signalImpl::registerSignals(serialization, actionSetup, signalCount, stdPass));
+        signalImpl::registerSignals(serialization, actionSetup, signalCount, stdPass);
 
         ////
 
@@ -393,7 +387,7 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         ////
 
-        require(signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+        signalHist.realloc(signalCount, cpuBaseByteAlignment, kit.malloc, stdPass);
 
         ////
 
@@ -419,10 +413,9 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
         {
             auto action = [&] ()
             {
-                require(configFile.loadFromString(charArray(config.ptr, config.size), stdPass));
-                require(configFile.loadVars(serialization, true, stdPass));
-                require(configFile.updateFile(true, stdPass));
-                returnTrue;
+                configFile.loadFromString(charArray(config.ptr, config.size), stdPass);
+                configFile.loadVars(serialization, true, stdPass);
+                configFile.updateFile(true, stdPass);
             };
 
             if_not (errorBlock(action()))
@@ -439,9 +432,8 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
         auto configUpdateVars = [&] (stdPars(auto))
         {
-            require(configFile.saveVars(serialization, false, stdPass));
-            require(configFile.updateFile(false, stdPass));
-            returnTrue;
+            configFile.saveVars(serialization, false, stdPass);
+            configFile.updateFile(false, stdPass);
         };
 
         //
@@ -459,9 +451,9 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
             ////
 
-            require(configUpdateVars(stdPass));
+            configUpdateVars(stdPass);
 
-            require(configFile.saveToString(configSaver, stdPass));
+            configFile.saveToString(configSaver, stdPass);
         }
 
         //
@@ -488,9 +480,9 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
             ////
 
-            require(configUpdateVars(stdPass));
+            configUpdateVars(stdPass);
 
-            require(configFile.saveToString(configEditor, stdPass));
+            configFile.saveToString(configEditor, stdPass);
         }
     }
 
@@ -558,14 +550,10 @@ stdbool PackageKeeperImpl::process(ProcessTarget& target, bool warmup, stdPars(S
 
     WarmupKitDisabler targetEx{target, warmup};
 
-    require(shell->process({nullptr, targetEx, engineMemory, true, sysAllocHappened}, stdPassKit(kitEx)));
+    shell->process({nullptr, targetEx, engineMemory, true, sysAllocHappened}, stdPassKit(kitEx));
 
     if (sysAllocHappened && !warmup)
         printMsgL(kit, STR("WARNING: System realloc."), msgWarn);
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

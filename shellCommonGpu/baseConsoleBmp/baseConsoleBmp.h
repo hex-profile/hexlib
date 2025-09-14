@@ -65,8 +65,8 @@ struct BaseConsoleBmp
 
     ////
 
-    virtual stdbool saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
-    virtual stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
+    virtual void saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
+    virtual void saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit)) =0;
 
 };
 
@@ -88,47 +88,43 @@ public:
 
 public:
 
-    stdbool addImage(const MatrixAP<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
+    void addImage(const MatrixAP<const Pixel>& img, const ImgOutputHint& hint, bool dataProcessing, stdParsNull)
     {
-        require(baseConsole.addImage(img, hint, dataProcessing, stdPass));
-        require(saver.saveImage(img, hint.desc, hint.id, stdPass));
-        returnTrue;
+        baseConsole.addImage(img, hint, dataProcessing, stdPass);
+        saver.saveImage(img, hint.desc, hint.id, stdPass);
     }
 
-    stdbool clear(stdParsNull)
+    void clear(stdParsNull)
     {
-        require(baseConsole.clear(stdPassThru));
-        returnTrue;
+        baseConsole.clear(stdPassThru);
     }
 
-    stdbool update(stdParsNull)
+    void update(stdParsNull)
     {
-        require(baseConsole.update(stdPassThru));
-        returnTrue;
+        baseConsole.update(stdPassThru);
     }
 
 public:
 
-    stdbool overlayClear(stdParsNull)
+    void overlayClear(stdParsNull)
     {
-        return baseOverlay.overlayClear(stdPassThru);
+        baseOverlay.overlayClear(stdPassThru);
     }
 
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
+    void overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
     {
-        require(baseOverlay.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass));
-        require(saver.saveImage(size, imageProvider, desc, id, stdPass));
-        returnTrue;
+        baseOverlay.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPass);
+        saver.saveImage(size, imageProvider, desc, id, stdPass);
     }
 
-    stdbool overlaySetFake(stdParsNull)
+    void overlaySetFake(stdParsNull)
     {
-        return baseOverlay.overlaySetFake(stdPassThru);
+        baseOverlay.overlaySetFake(stdPassThru);
     }
 
-    stdbool overlayUpdate(stdParsNull)
+    void overlayUpdate(stdParsNull)
     {
-        return baseOverlay.overlayUpdate(stdPassThru);
+        baseOverlay.overlayUpdate(stdPassThru);
     }
 
 private:

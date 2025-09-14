@@ -12,7 +12,7 @@
 
 struct DisplayDelayer
 {
-    virtual stdbool waitForDisplayTime(stdParsNull) =0;
+    virtual void waitForDisplayTime(stdParsNull) =0;
 };
 
 //----------------------------------------------------------------
@@ -36,7 +36,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
 
-    stdbool waitForDisplayTime(stdPars(Kit));
+    void waitForDisplayTime(stdPars(Kit));
 
 private:
 
@@ -61,8 +61,8 @@ class DisplayDelayerThunk : public DisplayDelayer
 
 public:
 
-    stdbool waitForDisplayTime(stdParsNull)
-        {return impl.waitForDisplayTime(stdPassThru);}
+    void waitForDisplayTime(stdParsNull)
+        {impl.waitForDisplayTime(stdPassThru);}
 
     using Kit = DisplayWaitController::Kit;
 

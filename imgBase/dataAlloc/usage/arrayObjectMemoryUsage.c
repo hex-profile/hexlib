@@ -40,14 +40,14 @@ using TestKit = KitCombine<CpuFastAllocKit, ErrorLogKit, DataProcessingKit>;
 //
 //================================================================
 
-stdbool arrayObjectMemoryUsage(stdPars(TestKit))
+void arrayObjectMemoryUsage(stdPars(TestKit))
 {
     // Construct empty array; no memory allocation performed.
     ArrayObjectMemory<MyClass> m0;
 
     // Allocate array, call default constructors of elements and check error.
     // If reallocation fails, array has zero size.
-    // require(m0.realloc(33, stdPass));
+    // m0.realloc(33, stdPass);
 
     // Call element destructors and deallocate memory.
     // The container's destructor will call element destructors and deallocate memory automatically.
@@ -60,6 +60,4 @@ stdbool arrayObjectMemoryUsage(stdPars(TestKit))
 
     // Get current allocated size.
     REQUIRE(m0.maxSize() == 33);
-
-    returnTrue;
 }

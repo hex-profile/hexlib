@@ -42,10 +42,10 @@ public:
 
 public:
 
-    stdbool init(const TestModuleFactory& engineFactory, stdPars(InitKit));
-    stdbool finalize(stdPars(InitKit));
+    void init(const TestModuleFactory& engineFactory, stdPars(InitKit));
+    void finalize(stdPars(InitKit));
 
-    stdbool process(stdPars(ProcessKit));
+    void process(stdPars(ProcessKit));
 
 private:
 

@@ -69,7 +69,7 @@ struct WorkerImpl : public Worker
     //
     //----------------------------------------------------------------
 
-    virtual stdbool init(const InitArgs& args, stdPars(InitKit));
+    virtual void init(const InitArgs& args, stdPars(InitKit));
 
     //----------------------------------------------------------------
     //
@@ -102,7 +102,7 @@ struct WorkerImpl : public Worker
 
     using CycleDiagKit = KitCombine<DiagnosticKit, LocalLogKit, LocalLogAuxKit, TimerKit, MallocKit>;
 
-    stdbool processDiag(const RunArgsEx& args, stdPars(CycleDiagKit));
+    void processDiag(const RunArgsEx& args, stdPars(CycleDiagKit));
 
     //----------------------------------------------------------------
     //
@@ -277,9 +277,9 @@ void WorkerImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
+void WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
 {
-    require(formatterArray.realloc(65536, stdPass));
+    formatterArray.realloc(65536, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -289,7 +289,7 @@ stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
 
     glContext = &args.glContext;
 
-    require(glContext->bind(stdPass));
+    glContext->bind(stdPass);
     REMEMBER_CLEANUP_ERROR_BLOCK(glContext->unbind(stdPassNc));
 
     //----------------------------------------------------------------
@@ -298,7 +298,7 @@ stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
     //
     //----------------------------------------------------------------
 
-    require(minimalShell->init(stdPass));
+    minimalShell->init(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -336,14 +336,14 @@ stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
 
         auto serialization = cfgSerializationThunk | [&] (auto& kit) {serialize(kit);};
 
-        require(signalTools::gatherActionSet(serialization, receiver, signalCount, stdPass));
+        signalTools::gatherActionSet(serialization, receiver, signalCount, stdPass);
 
         REQUIRE(actionsAddOk);
     }
 
     ////
 
-    require(actionHist.reallocInHeap(Space(signalCount), stdPass));
+    actionHist.reallocInHeap(Space(signalCount), stdPass);
 
     ////
 
@@ -357,8 +357,6 @@ stdbool WorkerImpl::init(const InitArgs& args, stdPars(InitKit))
 
     updateActionsErrMsg.cancel();
     initialized = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -584,7 +582,7 @@ void WorkerImpl::processingCycle(const RunArgsEx& args)
 //
 //================================================================
 
-stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
+void WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
 {
     stdScopedBegin;
 
@@ -598,7 +596,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
 
     if_not (args.glContextBound)
     {
-        require(glContext->bind(stdPass));
+        glContext->bind(stdPass);
         args.glContextBound = true;
     }
 
@@ -655,12 +653,10 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
     {
         using namespace cfgSerializeImpl;
 
-        require(saveVarsToTree({serialization, *configOutputBuffer, configTemp, true, true, false}, stdPass));
+        saveVarsToTree({serialization, *configOutputBuffer, configTemp, true, true, false}, stdPass);
 
         if (configOutputBuffer->hasUpdates())
             REQUIRE(args.configService.addConfigUpdate(*configOutputBuffer));
-
-        returnTrue;
     };
 
     REMEMBER_CLEANUP(errorBlock(updateConfigVars()));
@@ -710,7 +706,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
         GpuCurrentStreamKit{args.externalContext.gpuStream}
     );
 
-    require(kit.gpuContextSetting.threadContextSet(kit.gpuCurrentContext, stdPass));
+    kit.gpuContextSetting.threadContextSet(kit.gpuCurrentContext, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -721,7 +717,6 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
     auto overlayUpdater = gpuBaseConsoleThunk::OverlayUpdater::O | [&] (stdParsNull)
     {
         REQUIRE(args.guiService.addOverlayUpdate(outputBuffers.overlayUpdate));
-        returnTrue;
     };
 
     GpuBaseConsoleThunk gpuBaseConsole{{true, outputBuffers.overlayUpdate, overlayUpdater, kit}};
@@ -790,10 +785,10 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
 
         auto processApi = testShell::Process::O | [&] (stdParsNull)
         {
-            return testModule->process(stdPass);
+            testModule->process(stdPass);
         };
 
-        require(testShell->process(processApi, stdPass));
+        testShell->process(processApi, stdPass);
 
         ////
 
@@ -805,7 +800,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
     auto moduleThunk = ms::engineModuleThunk
     (
         [&] () {return testModule->reallocValid();},
-        [&] (stdPars(auto)) {return testModule->realloc(stdPassKit(kitCombine(kit, gpuAppAllocKit)));},
+        [&] (stdPars(auto)) {testModule->realloc(stdPassKit(kitCombine(kit, gpuAppAllocKit)));},
         gpuProcess
     );
 
@@ -820,7 +815,7 @@ stdbool WorkerImpl::processDiag(const RunArgsEx& args, stdPars(CycleDiagKit))
     );
 
     bool sysAllocHappened{};
-    require(minimalShell->process({&args.externalContext, moduleThunk, testModuleMemory, true, sysAllocHappened}, stdPassKit(msKit)));
+    minimalShell->process({&args.externalContext, moduleThunk, testModuleMemory, true, sysAllocHappened}, stdPassKit(msKit));
 
     ////
 

@@ -14,10 +14,10 @@ namespace yuvLayoutConvert {
 //================================================================
 
 template <typename RawPixel>
-stdbool convertRawToYuv420(const GpuArray<const RawPixel>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit));
+void convertRawToYuv420(const GpuArray<const RawPixel>& src, const GpuPackedYuv<Luma>& dst, stdPars(GpuProcessKit));
 
 template <typename RawPixel>
-stdbool convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<RawPixel>& dst, stdPars(GpuProcessKit));
+void convertYuv420ToRaw(const GpuPackedYuv<const Luma>& src, const GpuArray<RawPixel>& dst, stdPars(GpuProcessKit));
 
 //----------------------------------------------------------------
 

@@ -106,7 +106,7 @@ class WinSockLib
 
 public:
 
-    stdbool open(stdPars(Kit));
+    void open(stdPars(Kit));
     void close();
 
 private:
@@ -126,7 +126,7 @@ private:
 //
 //================================================================
 
-stdbool WinSockLib::open(stdPars(Kit))
+void WinSockLib::open(stdPars(Kit))
 {
 
 #ifdef _WIN32
@@ -138,7 +138,7 @@ stdbool WinSockLib::open(stdPars(Kit))
     if (refCount != 0)
     {
         ++refCount;
-        returnTrue;
+        return;
     }
 
     ////
@@ -156,8 +156,6 @@ stdbool WinSockLib::open(stdPars(Kit))
     ++refCount;
 
 #endif
-
-    returnTrue;
 }
 
 //================================================================
@@ -222,7 +220,7 @@ State ConnectionImpl::state() const
 //
 //================================================================
 
-stdbool ConnectionImpl::reopen(const Address& address, stdPars(Kit))
+void ConnectionImpl::reopen(const Address& address, stdPars(Kit))
 {
     //----------------------------------------------------------------
     //
@@ -240,7 +238,7 @@ stdbool ConnectionImpl::reopen(const Address& address, stdPars(Kit))
 
     if (theStatus == Status::None)
     {
-        require(winSockLib.open(stdPass));
+        winSockLib.open(stdPass);
         theStatus = Status::LibUsed;
     }
 
@@ -292,8 +290,6 @@ stdbool ConnectionImpl::reopen(const Address& address, stdPars(Kit))
     theAddrInfo = ai;
     theStatus = Status::Resolved;
     cleanInfo.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -333,7 +329,7 @@ void ConnectionImpl::close()
 //
 //================================================================
 
-stdbool ConnectionImpl::reconnect(stdPars(Kit))
+void ConnectionImpl::reconnect(stdPars(Kit))
 {
     REQUIRE(theStatus >= Status::Resolved);
 
@@ -379,8 +375,6 @@ stdbool ConnectionImpl::reconnect(stdPars(Kit))
 
     closeSocketCleanup.cancel();
     theStatus = Status::Connected;
-
-    returnTrue;
 }
 
 //================================================================
@@ -425,7 +419,7 @@ ConnectionImpl::~ConnectionImpl()
 //
 //================================================================
 
-stdbool ConnectionImpl::send(const void* dataPtr, size_t dataSize, stdPars(Kit))
+void ConnectionImpl::send(const void* dataPtr, size_t dataSize, stdPars(Kit))
 {
     REQUIRE(theStatus == Status::Connected);
 
@@ -452,8 +446,6 @@ stdbool ConnectionImpl::send(const void* dataPtr, size_t dataSize, stdPars(Kit))
         currentSize -= size_t(actualSize);
         currentPtr += size_t(actualSize);
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -462,7 +454,7 @@ stdbool ConnectionImpl::send(const void* dataPtr, size_t dataSize, stdPars(Kit))
 //
 //================================================================
 
-stdbool ConnectionImpl::receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit))
+void ConnectionImpl::receive(void* dataPtr, size_t dataSize, size_t& receivedSize, stdPars(Kit))
 {
     REQUIRE(theStatus == Status::Connected);
 
@@ -471,7 +463,6 @@ stdbool ConnectionImpl::receive(void* dataPtr, size_t dataSize, size_t& received
     REQUIRE_TRACE1(actualSize >= 0, STR("Connection: Cannot receive data. %0"), getSocketError());
 
     receivedSize = size_t(actualSize);
-    returnTrue;
 }
 
 //----------------------------------------------------------------

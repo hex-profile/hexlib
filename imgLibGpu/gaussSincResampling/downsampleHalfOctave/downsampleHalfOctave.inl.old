@@ -247,7 +247,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool DownsampleHalfOctaveConservative::process(const GpuMatrix<const PIXEL>& src, const GpuMatrix<PIXEL>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit))
+void DownsampleHalfOctaveConservative::process(const GpuMatrix<const PIXEL>& src, const GpuMatrix<PIXEL>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit))
 {
     REQUIRE(allocated);
 
@@ -255,16 +255,14 @@ stdbool DownsampleHalfOctaveConservative::process(const GpuMatrix<const PIXEL>& 
 
     if_not (testMode)
     {
-        require(PREP_PASTE(dhoHorizontalOptimized, PIXEL)(src, coeffs, tmp, stdPass));
-        require(PREP_PASTE(dhoVerticalOptimized, PIXEL)(tmp, coeffs, dst, dstFactor, stdPass));
+        PREP_PASTE(dhoHorizontalOptimized, PIXEL)(src, coeffs, tmp, stdPass);
+        PREP_PASTE(dhoVerticalOptimized, PIXEL)(tmp, coeffs, dst, dstFactor, stdPass);
     }
     else
     {
-        require(PREP_PASTE(downsampleHalfOctaveModelHorizontal, PIXEL)(src, tmp, stdPass));
-        require(PREP_PASTE(downsampleHalfOctaveModelVertical, PIXEL)(tmp, dst, stdPass));
+        PREP_PASTE(downsampleHalfOctaveModelHorizontal, PIXEL)(src, tmp, stdPass);
+        PREP_PASTE(downsampleHalfOctaveModelVertical, PIXEL)(tmp, dst, stdPass);
     }
-
-    returnTrue;
 }
 
 #endif

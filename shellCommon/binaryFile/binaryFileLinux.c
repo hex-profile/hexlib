@@ -64,7 +64,7 @@ void BinaryFileLinux::close()
 //
 //================================================================
 
-stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
+void BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool createIfNotExists, stdPars(FileDiagKit))
 {
     close();
 
@@ -109,8 +109,6 @@ stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool 
     exchange(currentFilename, newFilename);
     currentSize = newSize;
     currentPosition = 0;
-
-    returnTrue;
 }
 
 //================================================================
@@ -119,7 +117,7 @@ stdbool BinaryFileLinux::open(const CharArray& filename, bool writeAccess, bool 
 //
 //================================================================
 
-stdbool BinaryFileLinux::truncate(stdPars(FileDiagKit))
+void BinaryFileLinux::truncate(stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != -1);
 
@@ -127,8 +125,6 @@ stdbool BinaryFileLinux::truncate(stdPars(FileDiagKit))
     REQUIRE_TRACE3(result == 0, STR("Cannot truncate file %0 at offset %1: %2"), currentFilename, currentPosition, getLastError());
 
     currentSize = currentPosition;
-
-    returnTrue;
 }
 
 //================================================================
@@ -137,7 +133,7 @@ stdbool BinaryFileLinux::truncate(stdPars(FileDiagKit))
 //
 //================================================================
 
-stdbool BinaryFileLinux::setPosition(uint64 pos, stdPars(FileDiagKit))
+void BinaryFileLinux::setPosition(uint64 pos, stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != -1);
     REQUIRE(pos <= currentSize);
@@ -152,8 +148,6 @@ stdbool BinaryFileLinux::setPosition(uint64 pos, stdPars(FileDiagKit))
     ////
 
     currentPosition = pos;
-
-    returnTrue;
 }
 
 //================================================================
@@ -162,7 +156,7 @@ stdbool BinaryFileLinux::setPosition(uint64 pos, stdPars(FileDiagKit))
 //
 //================================================================
 
-stdbool BinaryFileLinux::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+void BinaryFileLinux::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != -1);
 
@@ -196,8 +190,6 @@ stdbool BinaryFileLinux::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
     restorePositionCleanup.cancel();
 
     currentPosition += dataSize;
-
-    returnTrue;
 }
 
 //================================================================
@@ -206,7 +198,7 @@ stdbool BinaryFileLinux::read(void* dataPtr, CpuAddrU dataSize, stdPars(FileDiag
 //
 //================================================================
 
-stdbool BinaryFileLinux::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
+void BinaryFileLinux::write(const void* dataPtr, CpuAddrU dataSize, stdPars(FileDiagKit))
 {
     REQUIRE(currentHandle != -1);
 
@@ -239,8 +231,6 @@ stdbool BinaryFileLinux::write(const void* dataPtr, CpuAddrU dataSize, stdPars(F
 
     currentPosition += dataSize;
     currentSize = maxv(currentSize, currentPosition);
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

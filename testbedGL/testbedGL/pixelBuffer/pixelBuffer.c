@@ -72,7 +72,7 @@ void PixelBuffer::dealloc()
 //
 //================================================================
 
-stdbool PixelBuffer::reallocBase(Space elemSize, const Point<Space>& size, Space rowByteAlignment, stdPars(ReportKit))
+void PixelBuffer::reallocBase(Space elemSize, const Point<Space>& size, Space rowByteAlignment, stdPars(ReportKit))
 {
     REQUIRE(level == Level::None || level == Level::Allocated);
 
@@ -87,7 +87,7 @@ stdbool PixelBuffer::reallocBase(Space elemSize, const Point<Space>& size, Space
     ////
 
     Space pitch{};
-    require(getAlignedBufferPitch(elemSize, size.X, rowByteAlignment, pitch, stdPass));
+    getAlignedBufferPitch(elemSize, size.X, rowByteAlignment, pitch, stdPass);
 
     ////
 
@@ -114,7 +114,7 @@ stdbool PixelBuffer::reallocBase(Space elemSize, const Point<Space>& size, Space
         currentSize = size;
         currentPitch = pitch;
 
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -196,8 +196,6 @@ stdbool PixelBuffer::reallocBase(Space elemSize, const Point<Space>& size, Space
     currentPitch = pitch;
 
     level = Level::Allocated;
-
-    returnTrue;
 }
 
 //================================================================
@@ -206,7 +204,7 @@ stdbool PixelBuffer::reallocBase(Space elemSize, const Point<Space>& size, Space
 //
 //================================================================
 
-stdbool PixelBuffer::lock(void* stream, stdPars(ReportKit))
+void PixelBuffer::lock(void* stream, stdPars(ReportKit))
 {
     REQUIRE(level == Level::Allocated);
 
@@ -264,8 +262,6 @@ stdbool PixelBuffer::lock(void* stream, stdPars(ReportKit))
     lockCleanup.cancel();
 
     level = Level::ComputeLocked;
-
-    returnTrue;
 }
 
 //================================================================
@@ -274,7 +270,7 @@ stdbool PixelBuffer::lock(void* stream, stdPars(ReportKit))
 //
 //================================================================
 
-stdbool PixelBuffer::unlock(void* stream, stdPars(ReportKit))
+void PixelBuffer::unlock(void* stream, stdPars(ReportKit))
 {
     REQUIRE(level == Level::ComputeLocked);
 
@@ -328,8 +324,4 @@ stdbool PixelBuffer::unlock(void* stream, stdPars(ReportKit))
     handleFailure.cancel();
 
 #endif
-
-    ////
-
-    returnTrue;
 }

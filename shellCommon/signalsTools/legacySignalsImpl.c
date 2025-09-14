@@ -24,7 +24,7 @@ using StringStorage = StringStorageEx<CharType>;
 //
 //================================================================
 
-stdbool registerSignals(CfgSerialization& serialization, BaseActionSetup& registration, int32& signalCount, stdPars(Kit))
+void registerSignals(CfgSerialization& serialization, BaseActionSetup& registration, int32& signalCount, stdPars(Kit))
 {
     stdExceptBegin;
 

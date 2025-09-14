@@ -102,10 +102,10 @@ GPUTOOL_1D
 //
 //================================================================
 
-stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst, stdPars(CpuFuncKit))
+void packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -121,10 +121,6 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
     {
         dstPtr[i] = packFloat16(srcPtr[i]);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -133,10 +129,10 @@ stdbool packToHalfCpu(const Array<const float32>& src, const Array<float16>& dst
 //
 //================================================================
 
-stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& dst, stdPars(CpuFuncKit))
+void unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& dst, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -152,10 +148,6 @@ stdbool unpackToHalfCpu(const Array<const float16>& src, const Array<uint32>& ds
     {
         (float32&) dstPtr[i] = unpackFloat16(srcPtr[i]);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -176,10 +168,10 @@ sysinline bool operator ==(const float16& A, const float16& B)
 //================================================================
 
 template <typename Type>
-stdbool checkEqualResults(const Array<const Type>& ref, const Array<const Type>& tst, Space& badIndex, stdPars(CpuFuncKit))
+void checkEqualResults(const Array<const Type>& ref, const Array<const Type>& tst, Space& badIndex, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -196,7 +188,7 @@ stdbool checkEqualResults(const Array<const Type>& ref, const Array<const Type>&
     bool allOk = memcmp(unsafePtr(refPtr, size), unsafePtr(tstPtr, size), sizeof(float16) * size) == 0;
 
     if (allOk)
-        returnTrue;
+        return;
 
     ////
 
@@ -232,12 +224,12 @@ class HalfFloatTestImpl
 public:
 
     void serialize(const ModuleSerializeKit& kit) {}
-    stdbool process(const Process& o, stdPars(ProcessKit));
+    void process(const Process& o, stdPars(ProcessKit));
 
 private:
 
-    stdbool testPacking(stdPars(ProcessKit));
-    stdbool testUnpacking(stdPars(ProcessKit));
+    void testPacking(stdPars(ProcessKit));
+    void testUnpacking(stdPars(ProcessKit));
 
 private:
 
@@ -256,7 +248,7 @@ private:
 //
 //================================================================
 
-stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
+void HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 {
     //----------------------------------------------------------------
     //
@@ -271,19 +263,19 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
     static const Space packTestSize = 1 << 16;
 
     GpuArrayMemory<float32> src;
-    require(src.realloc(packTestSize, stdPass));
-    require(genSequentialPackTestFloats(src, packTestPass, stdPass));
+    src.realloc(packTestSize, stdPass);
+    genSequentialPackTestFloats(src, packTestPass, stdPass);
 
     //
     // Copy src to CPU
     //
 
     ArrayMemory<float32> srcCopy;
-    require(srcCopy.reallocForGpuExch(packTestSize, stdPass));
+    srcCopy.reallocForGpuExch(packTestSize, stdPass);
 
     {
         GpuCopyThunk gpuCopy;
-        require(gpuCopy(src, srcCopy, stdPass));
+        gpuCopy(src, srcCopy, stdPass);
     }
 
     //
@@ -291,19 +283,19 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
     //
 
     GpuArrayMemory<float16> gpuResult;
-    require(gpuResult.realloc(packTestSize, stdPass));
-    require(packToHalfGpu(src, gpuResult, stdPass));
+    gpuResult.realloc(packTestSize, stdPass);
+    packToHalfGpu(src, gpuResult, stdPass);
 
     //
     // Copy GPU result to CPU
     //
 
     ArrayMemory<float16> gpuResultCopy;
-    require(gpuResultCopy.reallocForGpuExch(packTestSize, stdPass));
+    gpuResultCopy.reallocForGpuExch(packTestSize, stdPass);
 
     {
         GpuCopyThunk gpuCopy;
-        require(gpuCopy(gpuResult, gpuResultCopy, stdPass));
+        gpuCopy(gpuResult, gpuResultCopy, stdPass);
     }
 
     //
@@ -311,9 +303,9 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
     //
 
     ArrayMemory<float16> cpuResult;
-    require(cpuResult.reallocForGpuExch(packTestSize, stdPass));
+    cpuResult.reallocForGpuExch(packTestSize, stdPass);
 
-    require(packToHalfCpu(srcCopy, cpuResult, stdPass));
+    packToHalfCpu(srcCopy, cpuResult, stdPass);
 
     //
     // Compare results
@@ -357,10 +349,6 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
             }
         }
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -369,7 +357,7 @@ stdbool HalfFloatTestImpl::testPacking(stdPars(ProcessKit))
 //
 //================================================================
 
-stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
+void HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 {
     const Space testSize = 1 << 16;
 
@@ -380,19 +368,19 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
     //----------------------------------------------------------------
 
     GpuArrayMemory<float16> src;
-    require(src.realloc(testSize, stdPass));
-    require(genSequentialUnpackTestFloats(src, stdPass));
+    src.realloc(testSize, stdPass);
+    genSequentialUnpackTestFloats(src, stdPass);
 
     //
     // Copy src to CPU
     //
 
     ArrayMemory<float16> srcCopy;
-    require(srcCopy.reallocForGpuExch(testSize, stdPass));
+    srcCopy.reallocForGpuExch(testSize, stdPass);
 
     {
         GpuCopyThunk gpuCopy;
-        require(gpuCopy(src, srcCopy, stdPass));
+        gpuCopy(src, srcCopy, stdPass);
     }
 
     //
@@ -400,19 +388,19 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
     //
 
     GpuArrayMemory<uint32> gpuResult;
-    require(gpuResult.realloc(testSize, stdPass));
-    require(unpackHalfGpu(src, gpuResult, stdPass));
+    gpuResult.realloc(testSize, stdPass);
+    unpackHalfGpu(src, gpuResult, stdPass);
 
     //
     // Copy GPU result to CPU
     //
 
     ArrayMemory<uint32> gpuResultCopy;
-    require(gpuResultCopy.reallocForGpuExch(testSize, stdPass));
+    gpuResultCopy.reallocForGpuExch(testSize, stdPass);
 
     {
         GpuCopyThunk gpuCopy;
-        require(gpuCopy(gpuResult, gpuResultCopy, stdPass));
+        gpuCopy(gpuResult, gpuResultCopy, stdPass);
     }
 
     //
@@ -420,9 +408,9 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
     //
 
     ArrayMemory<uint32> cpuResult;
-    require(cpuResult.reallocForGpuExch(testSize, stdPass));
+    cpuResult.reallocForGpuExch(testSize, stdPass);
 
-    require(unpackToHalfCpu(srcCopy, cpuResult, stdPass));
+    unpackToHalfCpu(srcCopy, cpuResult, stdPass);
 
     //
     // Compare results
@@ -447,8 +435,6 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 
         returnFalse;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -457,7 +443,7 @@ stdbool HalfFloatTestImpl::testUnpacking(stdPars(ProcessKit))
 //
 //================================================================
 
-stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
+void HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
 {
 
     //----------------------------------------------------------------
@@ -470,12 +456,12 @@ stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
         printMsgL(kit, STR("Half-float unpack test: PASSED"), msgInfo);
     else
     {
-        require(testUnpacking(stdPass));
+        testUnpacking(stdPass);
 
         if (kit.dataProcessing)
             unpackTestFinished = true;
 
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -491,12 +477,10 @@ stdbool HalfFloatTestImpl::process(const Process& o, stdPars(ProcessKit))
     else
     {
         for_count (k, 16)
-            require(testPacking(stdPass));
+            {testPacking(stdPass);}
 
         printMsgL(kit, '$', STR("Half-float pack test: $%"), fltf(float32(packTestPass) / float32(0x10000) * 100, 1), msgInfo);
     }
-
-    returnTrue;
 }
 
 //================================================================

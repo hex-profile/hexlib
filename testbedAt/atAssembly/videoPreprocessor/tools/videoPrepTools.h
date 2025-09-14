@@ -9,7 +9,7 @@
 //
 //================================================================
 
-stdbool copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrixAP<uint8_x4>& dst, stdPars(GpuProcessKit));
+void copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>& ofs, const GpuMatrixAP<uint8_x4>& dst, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -17,7 +17,7 @@ stdbool copyImageRect(const GpuMatrixAP<const uint8_x4>& src, const Point<Space>
 //
 //================================================================
 
-stdbool generateGrating
+void generateGrating
 (
     const GpuMatrix<uint8_x4>& dst,
     const float32& period,
@@ -33,7 +33,7 @@ stdbool generateGrating
 //
 //================================================================
 
-stdbool generateEdge
+void generateEdge
 (
     const GpuMatrix<uint8_x4>& dst,
     const Point<float32>& transMul,
@@ -49,7 +49,7 @@ stdbool generateEdge
 //
 //================================================================
 
-stdbool generatePulse(const GpuMatrix<uint8_x4>& dst, const Point<Space>& ofs, const Space& period, stdPars(GpuProcessKit));
+void generatePulse(const GpuMatrix<uint8_x4>& dst, const Point<Space>& ofs, const Space& period, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -57,7 +57,7 @@ stdbool generatePulse(const GpuMatrix<uint8_x4>& dst, const Point<Space>& ofs, c
 //
 //================================================================
 
-stdbool generateRandom(const GpuMatrix<uint8_x4>& dst, const GpuMatrix<RndgenState>& rndgenMatrix, stdPars(GpuProcessKit));
+void generateRandom(const GpuMatrix<uint8_x4>& dst, const GpuMatrix<RndgenState>& rndgenMatrix, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -65,7 +65,7 @@ stdbool generateRandom(const GpuMatrix<uint8_x4>& dst, const GpuMatrix<RndgenSta
 //
 //================================================================
 
-stdbool generateAdditionalGaussNoise
+void generateAdditionalGaussNoise
 (
     const GpuMatrix<const uint8_x4>& src,
     const GpuMatrix<uint8_x4>& dst,

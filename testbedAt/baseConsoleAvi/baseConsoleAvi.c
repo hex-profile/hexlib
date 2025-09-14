@@ -89,7 +89,7 @@ using String = basic_string<CharType>;
 //
 //================================================================
 
-stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst, stdPars(Kit))
+void fixFilename(const Array<const CharType>& src, const Array<CharType>& dst, stdPars(Kit))
 {
     REQUIRE(equalSize(src, dst));
     ARRAY_EXPOSE(src);
@@ -112,8 +112,6 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 
         dstPtr[i] = c;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -122,7 +120,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 //
 //================================================================
 
-stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
+void formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
     ARRAY_EXPOSE_UNSAFE(result);
     MessageFormatterImpl formatter{result};
@@ -132,8 +130,6 @@ stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& res
 
     REQUIRE(formatter.size() <= size_t{spaceMax});
     result.resize(Space(formatter.size()));
-
-    returnTrue;
 }
 
 //================================================================
@@ -150,7 +146,7 @@ static const size_t bmpAlignmentMask = 3;
 //
 //================================================================
 
-stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
+void getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 {
     REQUIRE(sizeX >= 0);
 
@@ -164,8 +160,6 @@ stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
     REQUIRE(bufSizeX * Space(sizeof(Pixel)) == rowAlignedSize);
 
     pitch = bufSizeX;
-
-    returnTrue;
 }
 
 //================================================================
@@ -186,7 +180,7 @@ struct BitmapinfoPalette : public BITMAPINFO
 //================================================================
 
 template <typename Pixel>
-stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, stdPars(ErrorLogKit))
+void makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, stdPars(ErrorLogKit))
 {
     BITMAPINFOHEADER& bmi = result.bmiHeader;
 
@@ -199,7 +193,7 @@ stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, st
     //
 
     Space alignedPitch = 0;
-    require(getAlignedPitch(size.X, alignedPitch, stdPass));
+    getAlignedPitch(size.X, alignedPitch, stdPass);
 
     //
     // fill the structure
@@ -228,10 +222,6 @@ stdbool makeBitmapHeader(const Point<Space>& size, BitmapinfoPalette& result, st
         result.bmiColors[i].rgbBlue = i;
         result.bmiColors[i].rgbReserved = 0;
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -367,7 +357,7 @@ public:
     {
     }
 
-    stdbool writeImage
+    void writeImage
     (
         const CharType* basename,
         uint32 id,
@@ -383,7 +373,7 @@ public:
 
 private:
 
-    stdbool open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit));
+    void open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit));
 
 private:
 
@@ -435,7 +425,7 @@ private:
 //
 //================================================================
 
-stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit))
+void AviWriter::open(const CharType* filename, const Point<Space>& size, FPS fps, Codec codec, stdPars(Kit))
 {
     //
     // close
@@ -475,7 +465,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
 
     BitmapinfoPalette format;
     memset(&format, 0, sizeof(format));
-    require(makeBitmapHeader<Pixel>(size, format, stdPass));
+    makeBitmapHeader<Pixel>(size, format, stdPass);
 
     ////
 
@@ -510,10 +500,6 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
 
     aviFileClose.cancel();
     aviStreamBaseClose.cancel();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -522,7 +508,7 @@ stdbool AviWriter::open(const CharType* filename, const Point<Space>& size, FPS 
 //
 //================================================================
 
-stdbool AviWriter::writeImage
+void AviWriter::writeImage
 (
     const CharType* basename,
     uint32 id,
@@ -600,7 +586,7 @@ stdbool AviWriter::writeImage
         ss << CT(".avi");
 
         auto str = ss.str();
-        require(open(str.c_str(), imageSize, fps, codec, stdPass));
+        open(str.c_str(), imageSize, fps, codec, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -610,7 +596,7 @@ stdbool AviWriter::writeImage
     //----------------------------------------------------------------
 
     REQUIRE(kit.dataProcessing);
-    require(imageProvider.saveBgr32(flipMatrix(bufferImage), stdPass));
+    imageProvider.saveBgr32(flipMatrix(bufferImage), stdPass);
 
     //----------------------------------------------------------------
     //
@@ -643,8 +629,6 @@ stdbool AviWriter::writeImage
     ++currentPosition;
 
     lastResult = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -685,13 +669,13 @@ public:
 
     BaseConsoleAviImpl() {CoInitialize(0);} // for VFW
 
-    stdbool saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    void saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    void saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
-    stdbool setOutputDir(const CharType* outputDir, stdPars(Kit));
-    stdbool setFps(FPS fps, stdPars(Kit));
-    stdbool setCodec(Codec codec, stdPars(Kit)) {currentCodec = codec; returnTrue;}
-    stdbool setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit)) {currentMaxSegmentFrames = maxSegmentFrames; returnTrue;}
+    void setOutputDir(const CharType* outputDir, stdPars(Kit));
+    void setFps(FPS fps, stdPars(Kit));
+    void setCodec(Codec codec, stdPars(Kit)) {currentCodec = codec;}
+    void setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit)) {currentMaxSegmentFrames = maxSegmentFrames;}
 
 private:
 
@@ -719,25 +703,25 @@ BaseConsoleAvi::~BaseConsoleAvi()
 
 ////
 
-stdbool BaseConsoleAvi::saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return instance->saveImage(img, desc, id, stdPassThru);}
+void BaseConsoleAvi::saveImage(const MatrixAP<const Pixel>& img, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+    {instance->saveImage(img, desc, id, stdPassThru);}
 
-stdbool BaseConsoleAvi::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
-    {return instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
+void BaseConsoleAvi::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+    {instance->saveImage(imageSize, imageProvider, desc, id, stdPassThru);}
 
 ////
 
-stdbool BaseConsoleAvi::setOutputDir(const CharType* outputDir, stdPars(Kit))
-    {return instance->setOutputDir(outputDir, stdPassThru);}
+void BaseConsoleAvi::setOutputDir(const CharType* outputDir, stdPars(Kit))
+    {instance->setOutputDir(outputDir, stdPassThru);}
 
-stdbool BaseConsoleAvi::setFps(const FPS& fps, stdPars(Kit))
-    {return instance->setFps(fps, stdPassThru);}
+void BaseConsoleAvi::setFps(const FPS& fps, stdPars(Kit))
+    {instance->setFps(fps, stdPassThru);}
 
-stdbool BaseConsoleAvi::setCodec(const Codec& codec, stdPars(Kit))
-    {return instance->setCodec(codec, stdPassThru);}
+void BaseConsoleAvi::setCodec(const Codec& codec, stdPars(Kit))
+    {instance->setCodec(codec, stdPassThru);}
 
-stdbool BaseConsoleAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
-    {return instance->setMaxSegmentFrames(maxSegmentFrames, stdPassThru);}
+void BaseConsoleAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit))
+    {instance->setMaxSegmentFrames(maxSegmentFrames, stdPassThru);}
 
 //================================================================
 //
@@ -745,7 +729,7 @@ stdbool BaseConsoleAvi::setMaxSegmentFrames(int32 maxSegmentFrames, stdPars(Kit)
 //
 //================================================================
 
-stdbool BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
+void BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit))
 {
     try
     {
@@ -761,8 +745,6 @@ stdbool BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
         printMsg(kit.msgLog, STR("BaseConsoleAvi: STL exception: %0"), e.what(), msgErr);
         returnFalse;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -771,12 +753,10 @@ stdbool BaseConsoleAviImpl::setOutputDir(const CharType* outputDir, stdPars(Kit)
 //
 //================================================================
 
-stdbool BaseConsoleAviImpl::setFps(FPS fps, stdPars(Kit))
+void BaseConsoleAviImpl::setFps(FPS fps, stdPars(Kit))
 {
     REQUIRE(fps >= 1 && fps <= 1024);
     currentFps = fps;
-
-    returnTrue;
 }
 
 //================================================================
@@ -785,7 +765,7 @@ stdbool BaseConsoleAviImpl::setFps(FPS fps, stdPars(Kit))
 //
 //================================================================
 
-stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+void BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     try
     {
@@ -805,13 +785,13 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
         //----------------------------------------------------------------
 
         Space alignedPitch = 0;
-        require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
+        getAlignedPitch(imageSize.X, alignedPitch, stdPass);
 
         Space sizeInPixels = 0;
         REQUIRE(safeMul(alignedPitch, imageSize.Y, sizeInPixels));
 
         ArrayMemory<Pixel> bufferArray;
-        require(bufferArray.realloc(sizeInPixels, imageProvider.desiredBaseByteAlignment(), stdPass));
+        bufferArray.realloc(sizeInPixels, imageProvider.desiredBaseByteAlignment(), stdPass);
 
         ARRAY_EXPOSE(bufferArray);
 
@@ -825,7 +805,7 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
         //----------------------------------------------------------------
 
         if_not (kit.dataProcessing)
-            returnTrue;
+            return;
 
         //----------------------------------------------------------------
         //
@@ -833,9 +813,9 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
         //
         //----------------------------------------------------------------
 
-        require(formatAtomToBuffer(desc, descArray, stdPass));
+        formatAtomToBuffer(desc, descArray, stdPass);
 
-        require(fixFilename(descArray, descArray, stdPass));
+        fixFilename(descArray, descArray, stdPass);
 
         //----------------------------------------------------------------
         //
@@ -843,7 +823,7 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
         //
         //----------------------------------------------------------------
 
-        require(formatAtomToBuffer(paramMsg(STR("%/%"), currentOutputDir.c_str(), descArray()), basenameArray, stdPass));
+        formatAtomToBuffer(paramMsg(STR("%/%"), currentOutputDir.c_str(), descArray()), basenameArray, stdPass);
 
         ARRAY_EXPOSE_UNSAFE(basenameArray);
         String basenameStr(basenameArrayPtr, basenameArraySize);
@@ -852,15 +832,13 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
         auto f = writers.insert(make_pair(FileId(basenameStr, id), AviWriter{}));
         AviWriter& writer = f.first->second;
-        require(writer.writeImage(basenameStr.c_str(), id, imageSize, imageProvider, currentFps, currentCodec, currentMaxSegmentFrames, bufferImage, bufferArray, stdPass));
+        writer.writeImage(basenameStr.c_str(), id, imageSize, imageProvider, currentFps, currentCodec, currentMaxSegmentFrames, bufferImage, bufferArray, stdPass);
     }
     catch (const std::exception& e)
     {
         printMsg(kit.msgLog, STR("BaseConsoleAvi: STL exception: %0"), e.what(), msgErr);
         returnFalse;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -869,10 +847,10 @@ stdbool BaseConsoleAviImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 //
 //================================================================
 
-stdbool BaseConsoleAviImpl::saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+void BaseConsoleAviImpl::saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
     ImageProviderMemcpy imageProvider(image, kit);
-    return saveImage(image.size(), imageProvider, desc, id, stdPassThru);
+    saveImage(image.size(), imageProvider, desc, id, stdPassThru);
 }
 
 //----------------------------------------------------------------

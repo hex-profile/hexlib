@@ -30,7 +30,7 @@ using namespace std;
 //
 //================================================================
 
-stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst, stdPars(Kit))
+void fixFilename(const Array<const CharType>& src, const Array<CharType>& dst, stdPars(Kit))
 {
     REQUIRE(equalSize(src, dst));
     ARRAY_EXPOSE(src);
@@ -56,8 +56,6 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 
         dstPtr[i] = c;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -66,7 +64,7 @@ stdbool fixFilename(const Array<const CharType>& src, const Array<CharType>& dst
 //
 //================================================================
 
-stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
+void formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& result, stdPars(ErrorLogKit))
 {
     ARRAY_EXPOSE_UNSAFE(result);
     MessageFormatterImpl formatter{result};
@@ -76,8 +74,6 @@ stdbool formatAtomToBuffer(const FormatOutputAtom& v, ArrayMemory<CharType>& res
 
     REQUIRE(formatter.size() <= size_t{spaceMax});
     result.resize(Space(formatter.size()));
-
-    returnTrue;
 }
 
 //================================================================
@@ -94,7 +90,7 @@ static const Space bmpAlignmentMask = 3;
 //
 //================================================================
 
-stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
+void getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 {
     REQUIRE(sizeX >= 0);
 
@@ -108,8 +104,6 @@ stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
     REQUIRE(bufSizeX * Space(sizeof(Pixel)) == rowAlignedSize);
 
     pitch = bufSizeX;
-
-    returnTrue;
 }
 
 //================================================================
@@ -118,7 +112,7 @@ stdbool getAlignedPitch(Space sizeX, Space& pitch, stdPars(ErrorLogKit))
 //
 //================================================================
 
-stdbool writeImage
+void writeImage
 (
     const CharArray& filename,
     uint32 id,
@@ -137,7 +131,7 @@ stdbool writeImage
 
     REQUIRE(kit.dataProcessing);
 
-    require(imageProvider.saveBgr32(flipMatrix(bufferImage), stdPass));
+    imageProvider.saveBgr32(flipMatrix(bufferImage), stdPass);
 
     //----------------------------------------------------------------
     //
@@ -188,12 +182,10 @@ stdbool writeImage
     //----------------------------------------------------------------
 
     BinaryFileImpl file;
-    require(file.open(filename, true, true, stdPass));
+    file.open(filename, true, true, stdPass);
 
-    require(file.write(&header, headerSize, stdPass));
-    require(file.write(bufferArrayPtr, dataSizeInBytes, stdPass));
-
-    returnTrue;
+    file.write(&header, headerSize, stdPass);
+    file.write(bufferArrayPtr, dataSizeInBytes, stdPass);
 }
 
 //================================================================
@@ -272,8 +264,8 @@ class BaseConsoleBmpImpl : public BaseConsoleBmp
 
     ////
 
-    stdbool saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
-    stdbool saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    void saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
+    void saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit));
 
     ////
 
@@ -299,7 +291,7 @@ class BaseConsoleBmpImpl : public BaseConsoleBmp
 
     ////
 
-    stdbool mdCheck(stdPars(Kit));
+    void mdCheck(stdPars(Kit));
 
     SimpleString mdCurrentDir = nanOf<SimpleString>();
 
@@ -343,7 +335,7 @@ void BaseConsoleBmpImpl::setLockstepCounter(Counter counter)
 //
 //================================================================
 
-stdbool BaseConsoleBmpImpl::mdCheck(stdPars(Kit))
+void BaseConsoleBmpImpl::mdCheck(stdPars(Kit))
 {
     auto& dir = outputDir();
     REQUIRE(def(dir));
@@ -355,8 +347,6 @@ stdbool BaseConsoleBmpImpl::mdCheck(stdPars(Kit))
 
         fileTools::makeDirectory(mdCurrentDir.cstr()); // don't check for error
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -365,9 +355,9 @@ stdbool BaseConsoleBmpImpl::mdCheck(stdPars(Kit))
 //
 //================================================================
 
-stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+void BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
-    require(mdCheck(stdPass));
+    mdCheck(stdPass);
 
     //----------------------------------------------------------------
     //
@@ -385,13 +375,13 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     //----------------------------------------------------------------
 
     Space alignedPitch = 0;
-    require(getAlignedPitch(imageSize.X, alignedPitch, stdPass));
+    getAlignedPitch(imageSize.X, alignedPitch, stdPass);
 
     Space sizeInPixels = 0;
     REQUIRE(safeMul(alignedPitch, imageSize.Y, sizeInPixels));
 
     ArrayMemory<Pixel> bufferArray;
-    require(bufferArray.realloc(sizeInPixels, imageProvider.desiredBaseByteAlignment(), stdPass));
+    bufferArray.realloc(sizeInPixels, imageProvider.desiredBaseByteAlignment(), stdPass);
 
     ARRAY_EXPOSE(bufferArray);
 
@@ -405,7 +395,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     //----------------------------------------------------------------
 
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -415,9 +405,9 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 
     auto descWithID = (id == 0) ? desc : paramMsg(STR("%-%"), desc, hex(id, 8));
 
-    require(formatAtomToBuffer(descWithID, descArray, stdPass));
+    formatAtomToBuffer(descWithID, descArray, stdPass);
 
-    require(fixFilename(descArray, descArray, stdPass));
+    fixFilename(descArray, descArray, stdPass);
 
     ARRAY_EXPOSE_UNSAFE(descArray);
     CharArray descStr(descArrayPtr, descArraySize);
@@ -447,7 +437,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     //
     //----------------------------------------------------------------
 
-    require(formatAtomToBuffer(paramMsg(STR("%/%--%.bmp"), outputDir(), dec(frameIndex, 8), descArray()), filenameArray, stdPass));
+    formatAtomToBuffer(paramMsg(STR("%/%--%.bmp"), outputDir(), dec(frameIndex, 8), descArray()), filenameArray, stdPass);
 
     ARRAY_EXPOSE_UNSAFE(filenameArray);
     CharArray filenameStr(filenameArrayPtr, filenameArraySize);
@@ -458,9 +448,7 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
     //
     //----------------------------------------------------------------
 
-    require(writeImage(filenameStr, id, imageSize, imageProvider, bufferImage, bufferArray, stdPass));
-
-    returnTrue;
+    writeImage(filenameStr, id, imageSize, imageProvider, bufferImage, bufferArray, stdPass);
 }
 
 //================================================================
@@ -469,12 +457,12 @@ stdbool BaseConsoleBmpImpl::saveImage(const Point<Space>& imageSize, BaseImagePr
 //
 //================================================================
 
-stdbool BaseConsoleBmpImpl::saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
+void BaseConsoleBmpImpl::saveImage(const MatrixAP<const Pixel>& image, const FormatOutputAtom& desc, uint32 id, stdPars(Kit))
 {
-    require(mdCheck(stdPass));
+    mdCheck(stdPass);
 
     ImageProviderMemcpy imageProvider(image, kit);
-    return saveImage(image.size(), imageProvider, desc, id, stdPassThru);
+    saveImage(image.size(), imageProvider, desc, id, stdPassThru);
 }
 
 //----------------------------------------------------------------

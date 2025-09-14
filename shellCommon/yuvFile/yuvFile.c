@@ -14,7 +14,7 @@ namespace yuvFile {
 //================================================================
 
 template <typename RawPixel>
-stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit))
+void YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStream* outputStream, FilePositioning* filePositioning, const Point<Space>& frameSize, stdPars(DiagnosticKit))
 {
     REQUIRE_TRACE(yuv420SizeValid(frameSize), STR("YUV video frame size is not valid"));
     Space frameBytes = sizeof(RawPixel) * yuv420TotalArea(frameSize);
@@ -57,8 +57,6 @@ stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStr
 
     theFrameCount = frameCount;
     theFrameIndex = frameIndex;
-
-    returnTrue;
 }
 
 //================================================================
@@ -68,18 +66,16 @@ stdbool YuvFile<RawPixel>::setup(BinaryInputStream* inputStream, BinaryOutputStr
 //================================================================
 
 template <typename RawPixel>
-stdbool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
+void YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
 {
     REQUIRE(frameIndex >= 0 && frameIndex <= theFrameCount);
 
     REQUIRE(theFilePositioning);
 
     if (frameIndex != theFrameIndex)
-        require(theFilePositioning->setPosition(uint64(frameIndex) * uint64(theFrameBytes), stdPass));
+        theFilePositioning->setPosition(uint64(frameIndex) * uint64(theFrameBytes), stdPass);
 
     theFrameIndex = frameIndex;
-
-    returnTrue;
 }
 
 //================================================================
@@ -89,7 +85,7 @@ stdbool YuvFile<RawPixel>::setPosition(int32 frameIndex, stdPars(DiagnosticKit))
 //================================================================
 
 template <typename RawPixel>
-stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(DiagnosticKit))
+void YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(DiagnosticKit))
 {
     REQUIRE(frame.size() == yuv420TotalArea(theFrameSize));
 
@@ -98,10 +94,8 @@ stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(Diagn
     ARRAY_EXPOSE_UNSAFE(frame);
 
     REQUIRE(theInputStream);
-    require(theInputStream->read(framePtr, sizeof(RawPixel) * frameSize, stdPass));
+    theInputStream->read(framePtr, sizeof(RawPixel) * frameSize, stdPass);
     ++theFrameIndex;
-
-    returnTrue;
 }
 
 //================================================================
@@ -111,7 +105,7 @@ stdbool YuvFile<RawPixel>::readFrame(const Array<RawPixel>& frame, stdPars(Diagn
 //================================================================
 
 template <typename RawPixel>
-stdbool YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPars(DiagnosticKit))
+void YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPars(DiagnosticKit))
 {
     REQUIRE(frame.size() == yuv420TotalArea(theFrameSize));
 
@@ -120,12 +114,10 @@ stdbool YuvFile<RawPixel>::writeFrame(const Array<const RawPixel>& frame, stdPar
     ARRAY_EXPOSE_UNSAFE(frame);
 
     REQUIRE(theOutputStream);
-    require(theOutputStream->write(framePtr, sizeof(RawPixel) * frameSize, stdPass));
+    theOutputStream->write(framePtr, sizeof(RawPixel) * frameSize, stdPass);
     ++theFrameIndex;
 
     theFrameCount = maxv(theFrameCount, theFrameIndex);
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -76,6 +76,10 @@ Type fastRecip(const Type& value);
     sysinline float32 fastRecip(const float32& value)
         {return __fdividef(1, value);} // 6 instructions on Kepler, do not change to __frcp_rn, it is much slower!
 
+    template <>
+    sysinline float64 fastRecip(const float64& value)
+        {return fdivide(1, value);}
+
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
 
     template <>
@@ -148,11 +152,11 @@ Type fastDivide(const Type& A, const Type& B);
 //
 // fastSqrt
 // Should give ALMOST full precision.
-// Generates 7 instructions on Pascal.
+// Generates 7 instructions on Pascal for FP32.
 //
 // recipSqrt
 // Should give ALMOST full precision.
-// Generates 4 instructions on Pascal.
+// Generates 4 instructions on Pascal for FP32.
 //
 //================================================================
 
@@ -160,18 +164,22 @@ Type fastDivide(const Type& A, const Type& B);
 
     template <>
     sysinline float32 recipSqrt(const float32& value)
-    {
-        return rsqrtf(value); // Do not change to __frsqrt_rn, it is much slower!
-    }
+        {return rsqrtf(value);} // Do not change to __frsqrt_rn, it is much slower!
 
     template <>
-    sysinline float32 fastSqrt(const float32& value)
+    sysinline float64 recipSqrt(const float64& value)
+        {return rsqrt(value);}
+
+    ////
+
+    template <typename Float>
+    sysinline Float fastSqrt(const Float& value)
     {
-        // Do not change to "sqrtf", it is much slower!
-        float32 result = value * rsqrtf(value);
+        auto result = value * recipSqrt(value); // Do not change to "sqrtf", it is much slower!
         if (value == 0) result = 0;
         return result;
     }
+
 
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
 
@@ -219,6 +227,10 @@ sysinline Type fastLog2(const Type& value);
     sysinline float32 fastLog2(const float32& value)
         {return __log2f(value);}
 
+    template <>
+    sysinline float64 fastLog2(const float64& value)
+        {return log2(value);}
+
 #elif defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
 
     template <>
@@ -255,11 +267,19 @@ sysinline Type fastPow2(const Type& value);
     sysinline float32 fastPow2(const float32& value)
         {return exp2f(value);}
 
+    template <>
+    sysinline float64 fastPow2(const float64& value)
+        {return exp2(value);}
+
 #else
 
     template <>
     sysinline float32 fastPow2(const float32& value)
         {return expf(0.6931471805599453f * value);}
+
+    template <>
+    sysinline float64 fastPow2(const float64& value)
+        {return exp(0.6931471805599453 * value);}
 
 #endif
 

@@ -24,7 +24,7 @@ public:
 public:
 
     using InitKit = KitCombine<MallocKit, DiagnosticKit>;
-    stdbool initSignals(CfgSerialization& serialization, stdPars(InitKit));
+    void initSignals(CfgSerialization& serialization, stdPars(InitKit));
 
 public:
 

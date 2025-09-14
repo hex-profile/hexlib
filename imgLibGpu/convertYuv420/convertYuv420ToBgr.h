@@ -12,7 +12,7 @@
 //================================================================
 
 template <typename SrcPixel, typename SrcPixel2, typename DstPixel>
-stdbool convertYuv420ToBgr
+void convertYuv420ToBgr
 (
     const GpuMatrix<const SrcPixel>& srcLuma,
     const GpuMatrix<const SrcPixel2>& srcChromaPacked,

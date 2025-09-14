@@ -18,4 +18,4 @@ using RunProcessKit = KitCombine<ErrorLogKit, MsgLogKit, MsgLogExKit>;
 //
 //================================================================
 
-stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit));
+void runProcess(const StlString& cmdLine, stdPars(RunProcessKit));

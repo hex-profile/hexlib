@@ -89,12 +89,12 @@ public:
     ////
 
     template <typename Element>
-    stdbool realloc(const Point<Space>& size, Space rowByteAlignment, stdPars(ReportKit))
-        {return reallocBase(sizeof(Element), size, rowByteAlignment, stdPassThru);}
+    void realloc(const Point<Space>& size, Space rowByteAlignment, stdPars(ReportKit))
+        {reallocBase(sizeof(Element), size, rowByteAlignment, stdPassThru);}
 
     ////
 
-    stdbool reallocBase(Space elemSize, const Point<Space>& size, Space rowByteAlignment, stdPars(ReportKit));
+    void reallocBase(Space elemSize, const Point<Space>& size, Space rowByteAlignment, stdPars(ReportKit));
 
     //----------------------------------------------------------------
     //
@@ -102,9 +102,9 @@ public:
     //
     //----------------------------------------------------------------
 
-    stdbool lock(void* stream, stdPars(ReportKit));
+    void lock(void* stream, stdPars(ReportKit));
 
-    stdbool unlock(void* stream, stdPars(ReportKit));
+    void unlock(void* stream, stdPars(ReportKit));
 
     //----------------------------------------------------------------
     //
@@ -113,7 +113,7 @@ public:
     //----------------------------------------------------------------
 
     template <typename Element, typename Kit>
-    inline stdbool getComputeBuffer(GpuMatrix<Element>& result, stdPars(Kit)) const
+    inline void getComputeBuffer(GpuMatrix<Element>& result, stdPars(Kit)) const
     {
         REQUIRE(level == Level::ComputeLocked);
 
@@ -121,8 +121,6 @@ public:
 
         using GpuElementPtr = GpuPtr(Element);
         REQUIRE(result.assignValidated(GpuElementPtr(computeAddress), currentPitch, currentSize.X, currentSize.Y));
-
-        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -132,13 +130,12 @@ public:
     //----------------------------------------------------------------
 
     template <typename Kit>
-    stdbool getGraphicsBuffer(GLuint64EXT& memPtr, Space& memPitch, stdPars(Kit)) const
+    void getGraphicsBuffer(GLuint64EXT& memPtr, Space& memPitch, stdPars(Kit)) const
     {
         REQUIRE(level == Level::Allocated);
 
         memPtr = glAddress;
         memPitch = currentPitch;
-        returnTrue;
     }
 
     //----------------------------------------------------------------

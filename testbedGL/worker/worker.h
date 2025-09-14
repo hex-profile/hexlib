@@ -26,8 +26,8 @@ using minimalShell::GpuExternalContext;
 
 struct ContextBinderGL
 {
-    virtual stdbool bind(stdParsNull) =0;
-    virtual stdbool unbind(stdParsNull) =0;
+    virtual void bind(stdParsNull) =0;
+    virtual void unbind(stdParsNull) =0;
 };
 
 //================================================================
@@ -72,7 +72,7 @@ struct Worker
 
     using InitKit = KitCombine<DiagnosticKit, MallocKit>;
 
-    virtual stdbool init(const InitArgs& args, stdPars(InitKit)) =0;
+    virtual void init(const InitArgs& args, stdPars(InitKit)) =0;
 
     //----------------------------------------------------------------
     //

@@ -30,10 +30,9 @@ const bool MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY = false;
 
 class GpuTextureAllocIgnore : public GpuTextureAllocator
 {
-    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
+    void createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
     {
         result.clear();
-        returnTrue;
     }
 };
 
@@ -48,10 +47,10 @@ class GpuTextureAllocFail : public GpuTextureAllocator
 
 public:
 
-    stdbool createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
+    void createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
     {
         result.clear();
-        require(printMsgTrace(STR("Texture allocation is too slow for temporary memory."), msgErr, stdPassThru));
+        printMsgTrace(STR("Texture allocation is too slow for temporary memory."), msgErr, stdPassThru);
         returnFalse;
     }
 
@@ -129,7 +128,7 @@ void MemController::dealloc()
 //
 //================================================================
 
-stdbool MemController::curveReallocBuffers(ReallocActivity& activity, stdPars(ProcessKit))
+void MemController::curveReallocBuffers(ReallocActivity& activity, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -142,13 +141,13 @@ stdbool MemController::curveReallocBuffers(ReallocActivity& activity, stdPars(Pr
     if_not (cpuCurveBuffer.maxSize() == curveCapacity)
     {
         ++activity.curveAllocCount;
-        require(cpuCurveBuffer.reallocInHeap(curveCapacity, stdPass));
+        cpuCurveBuffer.reallocInHeap(curveCapacity, stdPass);
     }
 
     if_not (gpuCurveBuffer.maxSize() == curveCapacity)
     {
         ++activity.curveAllocCount;
-        require(gpuCurveBuffer.reallocInHeap(curveCapacity, stdPass));
+        gpuCurveBuffer.reallocInHeap(curveCapacity, stdPass);
     }
 
     ////
@@ -169,7 +168,7 @@ stdbool MemController::curveReallocBuffers(ReallocActivity& activity, stdPars(Pr
 //
 //================================================================
 
-stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit))
+void MemController::handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit))
 {
     //----------------------------------------------------------------
     //
@@ -183,7 +182,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
         stateUsage.gpuMemSize = gpuState.memory.size();
         stateUsage.cpuAlignment = cpuState.alignment;
         stateUsage.gpuAlignment = gpuState.alignment;
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -235,7 +234,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 
         ////
 
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -244,7 +243,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     //
     //----------------------------------------------------------------
 
-    require(curveReallocBuffers(stateActivity, stdPass));
+    curveReallocBuffers(stateActivity, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -272,7 +271,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
             GpuTextureAllocKit(gpuTextureCounter)
         );
 
-        require(target.realloc(stdPassKit(reallocKit)));
+        target.realloc(stdPassKit(reallocKit));
     }
 
     ////
@@ -378,7 +377,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
             GpuTextureAllocKit(alloc.gpuSystemTextureAllocator)
         );
 
-        require(target.realloc(stdPassKit(reallocKit)));
+        target.realloc(stdPassKit(reallocKit));
     }
 
     ////
@@ -405,10 +404,6 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
     stateUsage.gpuMemSize = gpuMemSize;
     stateUsage.cpuAlignment = cpuState.alignment;
     stateUsage.gpuAlignment = gpuState.alignment;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -417,7 +412,7 @@ stdbool MemController::handleStateRealloc(MemControllerReallocTarget& target, co
 //
 //================================================================
 
-stdbool MemController::processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, ReallocActivity& tempActivity, stdPars(ProcessKit))
+void MemController::processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, ReallocActivity& tempActivity, stdPars(ProcessKit))
 {
     //----------------------------------------------------------------
     //
@@ -426,7 +421,7 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
     //----------------------------------------------------------------
 
     if (MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -434,7 +429,7 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
     //
     //----------------------------------------------------------------
 
-    require(curveReallocBuffers(tempActivity, stdPass));
+    curveReallocBuffers(tempActivity, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -459,7 +454,7 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
         GpuTextureAllocKit(gpuTextureCounter)
     );
 
-    require(target.process(stdPassKit(processKit)));
+    target.process(stdPassKit(processKit));
 
     ////
 
@@ -490,10 +485,6 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 
     tempUsage.gpuMemSize = gpuCounter.maxAllocatedSpace();
     tempUsage.gpuAlignment = gpuCounter.maxAlign();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -502,12 +493,12 @@ stdbool MemController::processCountTemp(MemControllerProcessTarget& target, Memo
 //
 //================================================================
 
-stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit))
+void MemController::handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit))
 {
     if (MODULE_USES_SYSTEM_ALLOCATOR_DIRECTLY)
     {
         tempActivity.sysAllocCount++;
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -584,10 +575,6 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
     ////
 
     require(cpuAllocOk && gpuAllocOk);
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -596,7 +583,7 @@ stdbool MemController::handleTempRealloc(const MemoryUsage& tempUsage, const Bas
 //
 //================================================================
 
-stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit))
+void MemController::processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit))
 {
     //----------------------------------------------------------------
     //
@@ -620,9 +607,9 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
             GpuTextureAllocKit(gpuTextureAllocator)
         );
 
-        require(target.process(stdPassKit(processKit)));
+        target.process(stdPassKit(processKit));
 
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -652,7 +639,7 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
         GpuTextureAllocKit(gpuTextureAllocator)
     );
 
-    require(target.process(stdPassKit(processKit)));
+    target.process(stdPassKit(processKit));
 
     //----------------------------------------------------------------
     //
@@ -671,10 +658,6 @@ stdbool MemController::processAllocTemp(MemControllerProcessTarget& target, cons
     REQUIRE(gpuDistributor.curveSize() == gpuCurveBuffer.size() || gpuDistributor.curveIsReported());
     tempUsage.gpuMemSize = gpuDistributor.maxAllocatedSpace();
     tempUsage.gpuAlignment = gpuDistributor.maxAlign();
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

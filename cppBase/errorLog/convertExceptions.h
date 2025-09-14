@@ -61,4 +61,4 @@ void printExternalExceptions(stdPars(MsgLogExKit)) noexcept;
 
 #define stdExceptEnd \
     convertExceptionsEnd \
-    returnTrue
+    return

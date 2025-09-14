@@ -77,7 +77,7 @@ namespace layeredVisualization {
 //
 //================================================================
 
-stdbool displayVectorSet
+void displayVectorSet
 (
     const GpuLayeredMatrix<const VectorType>& vectors,
     const GpuLayeredMatrix<const PresenceType>& presences,
@@ -102,7 +102,7 @@ stdbool displayVectorSet
 
         #define TMP_MACRO_EX(n) \
             case n: \
-            require(PREP_PASTE_UNDER4(renderVectorSet, n, VectorType, PresenceType)(GPU_LAYERED_MATRIX_PASS(n, vectors), GPU_LAYERED_MATRIX_PASS(n, presences), tmp, independentPresenceMode, pos, vectorFactor, thickness, stdPass)); \
+            PREP_PASTE_UNDER4(renderVectorSet, n, VectorType, PresenceType)(GPU_LAYERED_MATRIX_PASS(n, vectors), GPU_LAYERED_MATRIX_PASS(n, presences), tmp, independentPresenceMode, pos, vectorFactor, thickness, stdPass); \
             break;
 
         PREP_FOR1(VISUALIZATION_MAX_LAYERS, TMP_MACRO, _)
@@ -116,9 +116,7 @@ stdbool displayVectorSet
 
     ////
 
-    require(kit.gpuImageConsole.addImageBgr(tmp, ImgOutputHint(hint).setTargetConsole().setDesc(paramMsg(STR("%0 Set"), hint.desc)).setID(hint.id ^ 0xCD4B3287), stdPass));
-
-    returnTrue;
+    kit.gpuImageConsole.addImageBgr(tmp, ImgOutputHint(hint).setTargetConsole().setDesc(paramMsg(STR("%0 Set"), hint.desc)).setID(hint.id ^ 0xCD4B3287), stdPass);
 }
 
 //================================================================
@@ -127,7 +125,7 @@ stdbool displayVectorSet
 //
 //================================================================
 
-stdbool convertIndependentPresenceToAdditive
+void convertIndependentPresenceToAdditive
 (
     const GpuLayeredMatrix<const VectorType>& srcVector,
     const GpuLayeredMatrix<const PresenceType>& srcPresence,
@@ -143,16 +141,13 @@ stdbool convertIndependentPresenceToAdditive
 
     #define TMP_MACRO(n) \
         \
-        require \
+        PREP_PASTE3(convertIndependentPresenceToAdditive, n, PresenceType) \
         ( \
-            PREP_PASTE3(convertIndependentPresenceToAdditive, n, PresenceType) \
-            ( \
-                GPU_LAYERED_MATRIX_PASS(n, srcVector), \
-                GPU_LAYERED_MATRIX_PASS(n, srcPresence), \
-                GPU_LAYERED_MATRIX_PASS(n, dstPresence), \
-                square(fastRecipZero(vectorProximity)), \
-                stdPass \
-            ) \
+            GPU_LAYERED_MATRIX_PASS(n, srcVector), \
+            GPU_LAYERED_MATRIX_PASS(n, srcPresence), \
+            GPU_LAYERED_MATRIX_PASS(n, dstPresence), \
+            square(fastRecipZero(vectorProximity)), \
+            stdPass \
         ); \
 
     #define TMP_MACRO2(n, _) \
@@ -163,8 +158,6 @@ stdbool convertIndependentPresenceToAdditive
 
     #undef TMP_MACRO
     #undef TMP_MACRO2
-
-    returnTrue;
 }
 
 //================================================================
@@ -184,7 +177,7 @@ class LayeredVectorProvider<VectorType, PresenceType> : public GpuImageProviderB
 
 public:
 
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
+    void saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
 
 public:
 
@@ -224,7 +217,7 @@ private:
 //
 //================================================================
 
-stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
+void LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
 {
     REQUIRE(upsampleFactor >= 1);
     Point<float32> divUpsampleFactor = 1.f / upsampleFactor;
@@ -240,8 +233,8 @@ stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatr
     {
         #define TMP_MACRO_EX(n) \
             case n: \
-            require(PREP_PASTE_UNDER4(upsampleVectorVisualizationFunc, n, VectorType, PresenceType) \
-                (GPU_LAYERED_MATRIX_PASS(n, vectorValue), GPU_LAYERED_MATRIX_PASS(n, vectorPresence), dest, divUpsampleFactor, divMaxVector, upsampleInterpolation, stdPass)); \
+            PREP_PASTE_UNDER4(upsampleVectorVisualizationFunc, n, VectorType, PresenceType) \
+                (GPU_LAYERED_MATRIX_PASS(n, vectorValue), GPU_LAYERED_MATRIX_PASS(n, vectorPresence), dest, divUpsampleFactor, divMaxVector, upsampleInterpolation, stdPass); \
             break;
 
         #define TMP_MACRO(idx, _) \
@@ -255,10 +248,6 @@ stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatr
         default:
             REQUIRE(false);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -268,7 +257,7 @@ stdbool LayeredVectorProvider<VectorType, PresenceType>::saveImage(const GpuMatr
 //================================================================
 
 template <>
-stdbool visualizeLayeredVector
+void visualizeLayeredVector
 (
     const GpuLayeredMatrix<const VectorType>& vectorValue,
     const GpuLayeredMatrix<const PresenceType>& vectorPresence,
@@ -303,15 +292,15 @@ stdbool visualizeLayeredVector
     if_not (independentPresenceMode)
     {
         LayeredVectorProvider<VectorType, PresenceType> provider(vectorValue, vectorPresence, maxVector, upsampleFactor, upsampleInterpolation, kit);
-        require(kit.gpuImageConsole.overlaySetImageBgr(upsampleSize, provider, hint, stdPass));
+        kit.gpuImageConsole.overlaySetImageBgr(upsampleSize, provider, hint, stdPass);
     }
     else
     {
         GPU_LAYERED_MATRIX_ALLOC(additivePresence, PresenceType, layers, size);
-        require(convertIndependentPresenceToAdditive(vectorValue, vectorPresence, additivePresence, vectorProximity, stdPass));
+        convertIndependentPresenceToAdditive(vectorValue, vectorPresence, additivePresence, vectorProximity, stdPass);
 
         LayeredVectorProvider<VectorType, PresenceType> provider(vectorValue, additivePresence, maxVector, upsampleFactor, upsampleInterpolation, kit);
-        require(kit.gpuImageConsole.overlaySetImageBgr(upsampleSize, provider, hint, stdPass));
+        kit.gpuImageConsole.overlaySetImageBgr(upsampleSize, provider, hint, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -329,7 +318,7 @@ stdbool visualizeLayeredVector
         Point<float32> userPosScreen = kit.userPoint.floatPos;
         Point<float32> userPosData = userPosScreen * (1.f / upsampleFactor);
 
-        require(displayVectorSet(vectorValue, makeConst(vectorPresence), independentPresenceMode, userPosData, 1 / maxVector, 192, 2.5f, hint, stdPass));
+        displayVectorSet(vectorValue, makeConst(vectorPresence), independentPresenceMode, userPosData, 1 / maxVector, 192, 2.5f, hint, stdPass);
 
         ////
 
@@ -345,21 +334,17 @@ stdbool visualizeLayeredVector
         {
             PresenceType presence = zeroOf<PresenceType>();
 
-            require(readGpuElement<PresenceType>(vectorPresence.getLayer(r), srcInt, presence, stdPass));
+            readGpuElement<PresenceType>(vectorPresence.getLayer(r), srcInt, presence, stdPass);
             totalPresence += convertFloat32(presence);
 
             VectorType vector = convertNearest<VectorType>(0);
-            require(readGpuElement<VectorType>(vectorValue.getLayer(r), srcInt, vector, stdPass));
+            readGpuElement<VectorType>(vectorValue.getLayer(r), srcInt, vector, stdPass);
 
             printMsgL(kit, STR("%0 of vector %1"), fltf(convertFloat32(presence), 2), fltf(hint.textFactor * convertNearest<Point<float32>>(vector), 1));
         }
 
         printMsgL(kit, STR("%0 total"), fltf(convertFloat32(totalPresence), 2));
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -371,7 +356,7 @@ stdbool visualizeLayeredVector
 #ifdef PRESENCE_ONCE
 
 template <>
-stdbool visualizeLayeredVector
+void visualizeLayeredVector
 (
     const GpuLayeredMatrix<const VectorType>& vectorValue,
     float32 maxVector,
@@ -389,11 +374,9 @@ stdbool visualizeLayeredVector
     GPU_LAYERED_MATRIX_ALLOC(vectorPresence, float16, layers, size);
 
     for_count (r, layers)
-        require(gpuMatrixSet(vectorPresence.getLayer(r), convertNearest<float16>(1.f / layers), stdPass));
+        {gpuMatrixSet(vectorPresence.getLayer(r), convertNearest<float16>(1.f / layers), stdPass);}
 
-    require((visualizeLayeredVector<VectorType, float16>)(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, upsampleInterpolation, hint, stdPass));
-
-    returnTrue;
+    visualizeLayeredVector<VectorType, float16>(vectorValue, vectorPresence, false, maxVector, upsampleFactor, upsampleSize, upsampleInterpolation, hint, stdPass);
 }
 
 #endif

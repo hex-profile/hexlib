@@ -48,14 +48,14 @@ struct TestModule
 
     using ReallocKit = GpuModuleReallocKit;
     virtual bool reallocValid() const =0;
-    virtual stdbool realloc(stdPars(ReallocKit)) =0;
+    virtual void realloc(stdPars(ReallocKit)) =0;
     virtual void dealloc() =0;
 
     ////
 
     using ProcessKit = KitCombine<GpuModuleProcessKit, GpuRgbFrameKit, GpuMemoryAllocationKit>;
     virtual void inspectProcess(ProcessInspector& inspector) =0;
-    virtual stdbool process(stdPars(ProcessKit)) =0;
+    virtual void process(stdPars(ProcessKit)) =0;
 };
 
 //================================================================

@@ -35,7 +35,7 @@ public:
 
 public:
 
-    stdbool process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
+    void process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
 
 private:
 

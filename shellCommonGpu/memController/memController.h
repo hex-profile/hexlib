@@ -81,7 +81,7 @@ inline bool uncommonActivity(const ReallocActivity& stateActivity, const Realloc
 struct MemControllerReallocTarget
 {
     virtual bool reallocValid() const =0;
-    virtual stdbool realloc(stdPars(FastAllocToolkit)) =0;
+    virtual void realloc(stdPars(FastAllocToolkit)) =0;
 };
 
 ////
@@ -92,7 +92,7 @@ LAMBDA_THUNK2
     MemControllerReallocTarget,
     bool reallocValid() const,
     lambda0(),
-    stdbool realloc(stdPars(FastAllocToolkit)),
+    void realloc(stdPars(FastAllocToolkit)),
     lambda1(stdPassThru)
 )
 
@@ -104,7 +104,7 @@ LAMBDA_THUNK2
 
 struct MemControllerProcessTarget
 {
-    virtual stdbool process(stdPars(FastAllocToolkit)) =0;
+    virtual void process(stdPars(FastAllocToolkit)) =0;
 };
 
 ////
@@ -113,7 +113,7 @@ LAMBDA_THUNK
 (
     memControllerProcessThunk,
     MemControllerProcessTarget,
-    stdbool process(stdPars(FastAllocToolkit)),
+    void process(stdPars(FastAllocToolkit)),
     lambda(stdPassThru)
 )
 
@@ -186,25 +186,25 @@ public:
     // and reallocates the module state with real memory distribution.
     //
 
-    stdbool handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit));
+    void handleStateRealloc(MemControllerReallocTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& stateUsage, ReallocActivity& stateActivity, stdPars(ProcessKit));
 
     //
     // Counts temporary memory required for processing.
     //
 
-    stdbool processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, ReallocActivity& tempActivity, stdPars(ProcessKit));
+    void processCountTemp(MemControllerProcessTarget& target, MemoryUsage& tempUsage, ReallocActivity& tempActivity, stdPars(ProcessKit));
 
     //
     // Given the required temp memory size, reallocates memory pools if necessary.
     //
 
-    stdbool handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit));
+    void handleTempRealloc(const MemoryUsage& tempUsage, const BaseAllocatorsKit& alloc, ReallocActivity& tempActivity, stdPars(ProcessKit));
 
     //
     // Calls processing with real memory distribution.
     //
 
-    stdbool processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit));
+    void processAllocTemp(MemControllerProcessTarget& target, const BaseAllocatorsKit& alloc, MemoryUsage& tempUsage, stdPars(ProcessKit));
 
     //
     // Dealloc.
@@ -216,11 +216,11 @@ public:
 
 private:
 
-    stdbool curveReallocBuffers(ReallocActivity& activity, stdPars(ProcessKit));
+    void curveReallocBuffers(ReallocActivity& activity, stdPars(ProcessKit));
 
 private:
 
-    NumericVar<Space> curveCapacity{0, spaceMax, 8192};
+    NumericVar<Space> curveCapacity{0, spaceMax, 0}; // Experimental
     ArrayObjectMemory<CpuAddrU> cpuCurveBuffer;
     ArrayObjectMemory<GpuAddrU> gpuCurveBuffer;
 

@@ -9,10 +9,10 @@
 //
 //================================================================
 
-stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& meanSquareError, stdPars(CpuFuncKit))
+void computeMeanSquareError(const Matrix<const float32>& error, float32& meanSquareError, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     MATRIX_EXPOSE(error);
 
@@ -43,10 +43,6 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
 
     float64 avgError = globSumErr2 / areaOf(error);
     meanSquareError = float32(fastSqrt(avgError));
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -55,10 +51,10 @@ stdbool computeMeanSquareError(const Matrix<const float32>& error, float32& mean
 //
 //================================================================
 
-stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanError, stdPars(CpuFuncKit))
+void computeMeanAbsError(const Matrix<const float32>& error, float32& meanError, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     MATRIX_EXPOSE(error);
 
@@ -89,10 +85,6 @@ stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanErr
 
     float64 avgError = globSumErr / areaOf(error);
     meanError = float32(avgError);
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -101,10 +93,10 @@ stdbool computeMeanAbsError(const Matrix<const float32>& error, float32& meanErr
 //
 //================================================================
 
-stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAvgValue, float32& resultAvgStdev, stdPars(CpuFuncKit))
+void computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAvgValue, float32& resultAvgStdev, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     MATRIX_EXPOSE(data);
 
@@ -148,10 +140,6 @@ stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAv
 
     resultAvgValue = float32(avgValue);
     resultAvgStdev = float32(avgStdev);
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -160,10 +148,10 @@ stdbool computeMeanAndStdev(const Matrix<const float32>& data, float32& resultAv
 //
 //================================================================
 
-stdbool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsError, stdPars(CpuFuncKit))
+void computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsError, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     MATRIX_EXPOSE(error);
 
@@ -193,8 +181,4 @@ stdbool computeMaxAbsError(const Matrix<const float32>& error, float32& maxAbsEr
     ////
 
     maxAbsError = globMaxError;
-
-    ////
-
-    returnTrue;
 }

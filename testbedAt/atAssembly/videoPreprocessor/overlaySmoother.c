@@ -75,10 +75,10 @@ public:
     Space desiredPitch() const
         {return cpuImage.memPitch();}
 
-    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull);
+    void saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull);
 
-    stdbool saveBgr24(const MatrixAP<uint8>& dest, stdParsNull)
-        {REQUIRE(false); returnTrue;}
+    void saveBgr24(const MatrixAP<uint8>& dest, stdParsNull)
+        {REQUIRE(false);}
 
 private:
 
@@ -93,7 +93,7 @@ private:
 //
 //================================================================
 
-stdbool AtProviderFromCpuImage::saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull)
+void AtProviderFromCpuImage::saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull)
 {
     auto src = cpuImage;
     auto dst = dest;
@@ -116,10 +116,10 @@ stdbool AtProviderFromCpuImage::saveBgr32(const MatrixAP<ColorPixel>& dest, stdP
     ////
 
     Array<const ColorPixel> srcArray;
-    require(getMatrixMemoryRangeAsArray(src, srcArray, stdPass));
+    getMatrixMemoryRangeAsArray(src, srcArray, stdPass);
 
     Array<ColorPixel> dstArray;
-    require(getMatrixMemoryRangeAsArray(dst, dstArray, stdPass));
+    getMatrixMemoryRangeAsArray(dst, dstArray, stdPass);
 
     ////
 
@@ -128,10 +128,6 @@ stdbool AtProviderFromCpuImage::saveBgr32(const MatrixAP<ColorPixel>& dest, stdP
 
     REQUIRE(srcSize == dstSize);
     memcpy(dstPtr, srcPtr, dstSize * sizeof(ColorPixel));
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -161,7 +157,7 @@ inline void exchange(QueueImage& a, QueueImage& b)
 //================================================================
 
 template <typename Kit>
-stdbool saveImageToQueue(const Point<Space>& size, BaseImageProvider& provider, QueueImage& dst, stdPars(Kit))
+void saveImageToQueue(const Point<Space>& size, BaseImageProvider& provider, QueueImage& dst, stdPars(Kit))
 {
     Space desiredPitch = provider.desiredPitch();
     Space memPitch = absv(desiredPitch);
@@ -175,7 +171,7 @@ stdbool saveImageToQueue(const Point<Space>& size, BaseImageProvider& provider, 
     ////
 
     if_not (memSize <= dst.memory.size())
-        require(dst.memory.realloc(memSize, provider.desiredBaseByteAlignment(), kit.malloc, stdPass));
+        dst.memory.realloc(memSize, provider.desiredBaseByteAlignment(), kit.malloc, stdPass);
 
     ////
 
@@ -194,12 +190,8 @@ stdbool saveImageToQueue(const Point<Space>& size, BaseImageProvider& provider, 
     ////
 
     REQUIRE(kit.dataProcessing);
-    require(provider.saveBgr32(dstMatrix, stdPass));
+    provider.saveBgr32(dstMatrix, stdPass);
     dst.matrix = dstMatrix;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -308,10 +300,10 @@ struct SharedStruct
     //
     //----------------------------------------------------------------
 
-    stdbool init(stdPars(InitKit))
+    void init(stdPars(InitKit))
     {
         if (initialized)
-            returnTrue;
+            return;
 
         ////
 
@@ -320,18 +312,18 @@ struct SharedStruct
 
         ////
 
-        require(mutexCreate(varLock, stdPass));
-        require(mutexCreate(queueLock, stdPass));
-        require(mutexCreate(outputLock, stdPass));
+        mutexCreate(varLock, stdPass);
+        mutexCreate(queueLock, stdPass);
+        mutexCreate(outputLock, stdPass);
 
         ////
 
-        require(eventCreate(serverWake, stdPass));
-        require(eventCreate(clientWake, stdPass));
+        eventCreate(serverWake, stdPass);
+        eventCreate(clientWake, stdPass);
 
         ////
 
-        require(queue.realloc(queueCapacity, stdPass));
+        queue.realloc(queueCapacity, stdPass);
         queue.clear();
 
         ////
@@ -351,8 +343,6 @@ struct SharedStruct
 
         totalCleanup.cancel();
         initialized = true;
-
-        returnTrue;
     }
 
 };
@@ -381,7 +371,7 @@ public:
 //
 //================================================================
 
-stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeMoment& lastOutput, Timer& timer, float32& resultWaitTime, uint32 outputFrameCount, stdPars(ErrorLogKit))
+void tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeMoment& lastOutput, Timer& timer, float32& resultWaitTime, uint32 outputFrameCount, stdPars(ErrorLogKit))
 {
     //----------------------------------------------------------------
     //
@@ -410,7 +400,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
         float32 timeToWait = clampMin(targetDelay - elapsedTime, 0.f);
 
         if (targetSmoothing && timeToWait > 0)
-            {resultWaitTime = timeToWait; returnTrue;}
+            {resultWaitTime = timeToWait; return;}
     }
 
     //----------------------------------------------------------------
@@ -429,7 +419,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
             queueSize >= 1 && shared.outputInterface != 0;
 
         if_not (everythingIsReady)
-            {resultWaitTime = float32Nan(); returnTrue;}
+            {resultWaitTime = float32Nan(); return;}
 
         ////
 
@@ -441,7 +431,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
         AtProviderFromCpuImage provider(image->matrix, kit);
 
         TimeMoment renderBegin = timer.moment();
-        require(shared.outputInterface->setImage(image->matrix.size(), provider, stdPass));
+        shared.outputInterface->setImage(image->matrix.size(), provider, stdPass);
         TimeMoment renderEnd = timer.moment();
 
         ////
@@ -472,7 +462,6 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
     ////
 
     resultWaitTime = 0;
-    returnTrue;
 }
 
 //================================================================
@@ -481,7 +470,7 @@ stdbool tryToOutputOneFrame(SharedStruct& shared, bool& lastOutputDefined, TimeM
 //
 //================================================================
 
-stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
+void serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
 {
     TimerImpl timer;
 
@@ -505,7 +494,7 @@ stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
         ////
 
         float32 resultWaitTime = 0;
-        require(tryToOutputOneFrame(shared, lastOutputDefined, lastOutput, timer, resultWaitTime, outputFrameCount, stdPass));
+        tryToOutputOneFrame(shared, lastOutputDefined, lastOutput, timer, resultWaitTime, outputFrameCount, stdPass);
 
         if (resultWaitTime == 0.f)
         {
@@ -529,8 +518,6 @@ stdbool serverFuncCore(SharedStruct& shared, stdPars(ErrorLogKit))
         }
 
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -602,7 +589,7 @@ public:
 
 public:
 
-    stdbool init(stdPars(InitKit));
+    void init(stdPars(InitKit));
     void deinit();
 
 public:
@@ -611,11 +598,11 @@ public:
 
 public:
 
-    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
-    virtual stdbool updateImage(stdPars(ProcessKit));
-    virtual stdbool clearQueue(stdPars(ProcessKit));
-    virtual stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));
-    virtual stdbool flushSmoothly(stdPars(ProcessKit));
+    virtual void setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
+    virtual void updateImage(stdPars(ProcessKit));
+    virtual void clearQueue(stdPars(ProcessKit));
+    virtual void setSmoothing(bool smoothing, stdPars(ProcessKit));
+    virtual void flushSmoothly(stdPars(ProcessKit));
 
 private:
 
@@ -726,7 +713,7 @@ void OverlaySmootherImpl::deinit()
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::init(stdPars(InitKit))
+void OverlaySmootherImpl::init(stdPars(InitKit))
 {
     deinit();
 
@@ -734,7 +721,7 @@ stdbool OverlaySmootherImpl::init(stdPars(InitKit))
     // Shared struct
     //
 
-    require(shared.init(stdPass));
+    shared.init(stdPass);
     REMEMBER_CLEANUP_EX(sharedCleanup, shared.deinit());
 
     shared.varSmoothing = true;
@@ -744,7 +731,7 @@ stdbool OverlaySmootherImpl::init(stdPars(InitKit))
     // Launch thread (should be the last)
     //
 
-    require(threadCreate(serverFunc, &shared, 65536, workerThread, stdPass));
+    threadCreate(serverFunc, &shared, 65536, workerThread, stdPass);
     REQUIRE(workerThread->setPriority(ThreadPriorityPlus1));
 
     ////
@@ -756,8 +743,6 @@ stdbool OverlaySmootherImpl::init(stdPars(InitKit))
     queueOccupancyFilter.initialize(0.f);
 
     initialized = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -798,7 +783,7 @@ void OverlaySmootherImpl::setOutputInterface(AtAsyncOverlay* output)
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
+void OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit))
 {
     require(initialized && shared.running());
 
@@ -813,7 +798,7 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     //
     //----------------------------------------------------------------
 
-    require(saveImageToQueue(size, imageProvider, temporaryBuffer, stdPass));
+    saveImageToQueue(size, imageProvider, temporaryBuffer, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -1010,10 +995,6 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
     //----------------------------------------------------------------
 
     shared.serverWake.set();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1022,9 +1003,8 @@ stdbool OverlaySmootherImpl::setImage(const Point<Space>& size, BaseImageProvide
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
+void OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
 {
-    returnTrue;
 }
 
 //================================================================
@@ -1033,7 +1013,7 @@ stdbool OverlaySmootherImpl::updateImage(stdPars(ProcessKit))
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
+void OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
 {
     require(initialized && shared.running());
 
@@ -1041,8 +1021,6 @@ stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
         MUTEX_GUARD(shared.queueLock);
         shared.queue.clear();
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -1051,7 +1029,7 @@ stdbool OverlaySmootherImpl::clearQueue(stdPars(ProcessKit))
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
+void OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
 {
     require(initialized && shared.running());
 
@@ -1067,8 +1045,6 @@ stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
         if_not (smoothing)
             shared.queue.clear();
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -1077,7 +1053,7 @@ stdbool OverlaySmootherImpl::setSmoothing(bool smoothing, stdPars(ProcessKit))
 //
 //================================================================
 
-stdbool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
+void OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
 {
     require(initialized && shared.running());
 
@@ -1100,10 +1076,6 @@ stdbool OverlaySmootherImpl::flushSmoothly(stdPars(ProcessKit))
 
         require(shared.running() != 0); // if worker aborted, return fail
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

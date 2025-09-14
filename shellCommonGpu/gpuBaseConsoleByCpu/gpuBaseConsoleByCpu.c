@@ -29,7 +29,7 @@
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& image, stdParsNull)
+void GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& image, stdParsNull)
 {
     Space absPitch = absv(image.memPitch());
     REQUIRE(image.sizeX() <= absPitch);
@@ -46,10 +46,8 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& imag
 
     ////
 
-    require(buffer.realloc(absPitch * image.sizeY(), stdPass));
+    buffer.realloc(absPitch * image.sizeY(), stdPass);
     gpuImage = image;
-
-    returnTrue;
 }
 
 //================================================================
@@ -66,7 +64,7 @@ stdbool GpuBaseImageProvider::setImage(const GpuMatrixAP<const ColorPixel>& imag
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull)
+void GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull)
 {
     auto src = gpuImage;
     auto dst = dest;
@@ -80,7 +78,7 @@ stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdPar
     if (src.memPitch() == dst.memPitch())
     {
 
-        require(copyMatrixAsArray(src, dst, gpuCopy, stdPass));
+        copyMatrixAsArray(src, dst, gpuCopy, stdPass);
 
     }
     else
@@ -108,14 +106,12 @@ stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdPar
         // much faster than any manipulation on CPU.
         //
 
-        require(gpuMatrixCopy(src, srcProper, stdPass));
+        gpuMatrixCopy(src, srcProper, stdPass);
 
         ////
 
-        require(copyMatrixAsArray(srcProper, dst, gpuCopy, stdPass));
+        copyMatrixAsArray(srcProper, dst, gpuCopy, stdPass);
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -124,7 +120,7 @@ stdbool GpuBaseImageProvider::saveBgr32(const MatrixAP<ColorPixel>& dest, stdPar
 //
 //================================================================
 
-stdbool GpuBaseImageProvider::saveBgr24(const MatrixAP<MonoPixel>& dest, stdParsNull)
+void GpuBaseImageProvider::saveBgr24(const MatrixAP<MonoPixel>& dest, stdParsNull)
 {
     auto src = gpuImage;
     auto dst = dest;
@@ -168,15 +164,11 @@ stdbool GpuBaseImageProvider::saveBgr24(const MatrixAP<MonoPixel>& dest, stdPars
     // much faster than any manipulation on CPU.
     //
 
-    require(convertBgr32ToBgr24(src, srcProper, stdPass));
+    convertBgr32ToBgr24(src, srcProper, stdPass);
 
     ////
 
-    require(copyMatrixAsArray(srcProper, dst, gpuCopy, stdPass));
-
-    ////
-
-    returnTrue;
+    copyMatrixAsArray(srcProper, dst, gpuCopy, stdPass);
 }
 
 //================================================================
@@ -186,14 +178,14 @@ stdbool GpuBaseImageProvider::saveBgr24(const MatrixAP<MonoPixel>& dest, stdPars
 //================================================================
 
 template <typename Type>
-stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrixAP<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit))
+void GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrixAP<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit))
 {
     if (hint.target == ImgOutputOverlay)
     {
         GpuBaseImageProvider imageProvider(kit);
-        require(imageProvider.setImage(gpuMatrix, stdPass));
+        imageProvider.setImage(gpuMatrix, stdPass);
 
-        require(baseVideoOverlay.overlaySet(gpuMatrix.size(), kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
+        baseVideoOverlay.overlaySet(gpuMatrix.size(), kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass);
     }
     else
     {
@@ -213,11 +205,11 @@ stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrixAP<const Type>
 
             if (gpuMatrix.memPitch() >= 0)
             {
-                require(copyMatrixAsArray(gpuMatrix, cpuMatrixMemory, gpuCopy, stdPass));
+                copyMatrixAsArray(gpuMatrix, cpuMatrixMemory, gpuCopy, stdPass);
             }
             else
             {
-                require(copyMatrixAsArray(flipMatrix(gpuMatrix), cpuMatrixMemory, gpuCopy, stdPass));
+                copyMatrixAsArray(flipMatrix(gpuMatrix), cpuMatrixMemory, gpuCopy, stdPass);
                 cpuMatrix = flipMatrix(cpuMatrixMemory());
             }
         }
@@ -228,11 +220,9 @@ stdbool GpuBaseConsoleByCpuThunk::addImageCopyImpl(const GpuMatrixAP<const Type>
 
         {
             stdEnter;
-            require(baseImageConsole.addImage(cpuMatrix, hint, kit.dataProcessing, stdPass));
+            baseImageConsole.addImage(cpuMatrix, hint, kit.dataProcessing, stdPass);
         }
     }
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -245,20 +235,16 @@ INSTANTIATE_FUNC(GpuBaseConsoleByCpuThunk::addImageCopyImpl<uint8_x4>)
 //
 //================================================================
 
-stdbool GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
+void GpuBaseConsoleByCpuThunk::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
 {
     GPU_MATRIX_ALLOC(gpuImageMemory, uint8_x4, size);
     auto gpuImage = flipMatrix(gpuImageMemory);
-    require(img.saveImage(gpuImage, stdPass));
+    img.saveImage(gpuImage, stdPass);
 
     ////
 
     GpuBaseImageProvider imageProvider(kit);
-    require(imageProvider.setImage(gpuImage, stdPass));
+    imageProvider.setImage(gpuImage, stdPass);
 
-    require(baseVideoOverlay.overlaySet(size, kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass));
-
-    ////
-
-    returnTrue;
+    baseVideoOverlay.overlaySet(size, kit.dataProcessing, imageProvider, hint.desc, hint.id, textEnabled, stdPass);
 }

@@ -100,7 +100,7 @@
     \
     hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         PREP_IF(superTaskSupport, Space superTaskCount) PREP_IF_COMMA(superTaskSupport) \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
@@ -110,7 +110,7 @@
     ) \
     { \
         if_not (kit.dataProcessing) \
-            returnTrue; \
+            return; \
         \
         auto globSize = Space{0}; \
         GPT_FOREACH(arrayList, GPT_GET_ARRAY_SIZE) \
@@ -123,7 +123,7 @@
         REQUIRE(superTaskCount >= 1); \
         \
         if_not (groupCount && superTaskCount) \
-            returnTrue; \
+            return; \
         \
         GPT_FOREACH_SAMPLER(samplerList, GPT_BIND_SAMPLER, prefix) \
         \
@@ -133,21 +133,16 @@
         kernelParams.globSize = globSize; \
         GPT_FOREACH(paramList, GPT_SET_PARAM_FIELD) \
         \
-        require \
+        kit.gpuKernelCalling.callKernel \
         ( \
-            kit.gpuKernelCalling.callKernel \
-            ( \
-                point3D(groupCount, 1, superTaskCount), \
-                point(tileSize, 1), \
-                globSize, \
-                prefix##Kernel, \
-                kernelParams, \
-                kit.gpuCurrentStream, \
-                stdPassLocationMsg("Kernel") \
-            ) \
+            point3D(groupCount, 1, superTaskCount), \
+            point(tileSize, 1), \
+            globSize, \
+            prefix##Kernel, \
+            kernelParams, \
+            kit.gpuCurrentStream, \
+            stdPassLocationMsg("Kernel") \
         ); \
-        \
-        returnTrue; \
     }
 
 //================================================================
@@ -158,7 +153,7 @@
 
 #define GPT_CALLER_1D_PROTO(prefix, samplerList, arrayList, paramList) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
         GPT_FOREACH(arrayList, GPT_DECLARE_ARRAY_ARG) \

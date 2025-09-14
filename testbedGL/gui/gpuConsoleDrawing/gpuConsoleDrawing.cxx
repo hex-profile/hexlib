@@ -190,7 +190,7 @@ GpuFontMonoMemory::~GpuFontMonoMemory()
 //
 //================================================================
 
-stdbool GpuFontMonoMemory::realloc(const CpuFontMono& font, stdPars(GpuModuleReallocKit))
+void GpuFontMonoMemory::realloc(const CpuFontMono& font, stdPars(GpuModuleReallocKit))
 {
     REQUIRE(fontValid(font));
 
@@ -199,12 +199,12 @@ stdbool GpuFontMonoMemory::realloc(const CpuFontMono& font, stdPars(GpuModuleRea
 
     ////
 
-    require(gpuFontData.realloc(font.data.size(), stdPass));
+    gpuFontData.realloc(font.data.size(), stdPass);
 
     ////
 
     GpuCopyThunk gpuCopy; // wait on function exit
-    require(gpuCopy(font.data, gpuFontData, stdPass));
+    gpuCopy(font.data, gpuFontData, stdPass);
 
     ////
 
@@ -212,8 +212,6 @@ stdbool GpuFontMonoMemory::realloc(const CpuFontMono& font, stdPars(GpuModuleRea
     REQUIRE(fontValid(allocFont));
 
     allocated = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -248,7 +246,7 @@ void GpuConsoleDrawer::dealloc()
 //
 //================================================================
 
-stdbool GpuConsoleDrawer::realloc(const Point<Space>& textBufferSize, stdPars(ReallocKit))
+void GpuConsoleDrawer::realloc(const Point<Space>& textBufferSize, stdPars(ReallocKit))
 {
     REQUIRE(textBufferSize >= 0);
 
@@ -258,7 +256,7 @@ stdbool GpuConsoleDrawer::realloc(const Point<Space>& textBufferSize, stdPars(Re
 
     ////
 
-    require(copyQueue.realloc(copyQueueMaxSize, stdPass));
+    copyQueue.realloc(copyQueueMaxSize, stdPass);
 
     ////
 
@@ -267,19 +265,17 @@ stdbool GpuConsoleDrawer::realloc(const Point<Space>& textBufferSize, stdPars(Re
         CopyQueueSnapshot* s = copyQueue.add();
         REQUIRE(s != 0);
 
-        require(s->cpuTextBuffer.realloc(textBufferSize, kit.gpuProperties.samplerAndFastTransferBaseAlignment, 1, kit.cpuFastAlloc, stdPass));
-        require(s->gpuTextBuffer.reallocEx(textBufferSize, kit.gpuProperties.samplerAndFastTransferBaseAlignment, 1, kit.gpuFastAlloc, stdPass));
+        s->cpuTextBuffer.realloc(textBufferSize, kit.gpuProperties.samplerAndFastTransferBaseAlignment, 1, kit.cpuFastAlloc, stdPass);
+        s->gpuTextBuffer.reallocEx(textBufferSize, kit.gpuProperties.samplerAndFastTransferBaseAlignment, 1, kit.gpuFastAlloc, stdPass);
 
         if (kit.dataProcessing)
-            require(kit.gpuEventAlloc.eventCreate(kit.gpuCurrentContext, false, s->copyFinishEvent, stdPass));
+            kit.gpuEventAlloc.eventCreate(kit.gpuCurrentContext, false, s->copyFinishEvent, stdPass);
     }
 
     ////
 
     allocTextBufferSize = textBufferSize;
     allocated = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -372,7 +368,7 @@ private:
 //
 //================================================================
 
-stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
+void GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -411,7 +407,7 @@ stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
     auto renderEnd = args.renderEnd - border;
 
     if_not (renderOrg < renderEnd)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -439,7 +435,7 @@ stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
     bool realWait = false;
 
     if (kit.dataProcessing)
-        require(kit.gpuEventWaiting.waitEvent(s.copyFinishEvent, realWait, stdPass));
+        kit.gpuEventWaiting.waitEvent(s.copyFinishEvent, realWait, stdPass);
 
     if (realWait && 1)
         printMsgL(kit, STR("GPU text drawer: Real wait happened!"), msgWarn);
@@ -482,7 +478,7 @@ stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
     if (kit.dataProcessing)
     {
         ReceiveToCpuBuffer receiver{s.cpuTextBuffer};
-        require(buffer(usedBufferSize.Y, receiver, stdPass));
+        buffer(usedBufferSize.Y, receiver, stdPass);
         receiver.finish();
         actualRowCount = receiver.actualRowCount();
     }
@@ -503,10 +499,10 @@ stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
 
     GpuCopyThunk textCopier;
 
-    require(copyMatrixAsArray(cpuActualBuffer, gpuActualBuffer, textCopier, stdPass));
+    copyMatrixAsArray(cpuActualBuffer, gpuActualBuffer, textCopier, stdPass);
 
     if (kit.dataProcessing)
-        require(kit.gpuEventRecording.recordEvent(s.copyFinishEvent, kit.gpuCurrentStream, stdPass));
+        kit.gpuEventRecording.recordEvent(s.copyFinishEvent, kit.gpuCurrentStream, stdPass);
 
     textCopier.cancelSync(); // Don't flush pipeline on exit!
 
@@ -544,11 +540,11 @@ stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
 
         if (args.padOpacity == 1)
         {
-            require(gpuMatrixSet(padArea, convertNormClamp<uint8_x4>(color), stdPass));
+            gpuMatrixSet(padArea, convertNormClamp<uint8_x4>(color), stdPass);
         }
         else
         {
-            require(overlayPad(padArea, color, args.padOpacity, stdPass));
+            overlayPad(padArea, color, args.padOpacity, stdPass);
         }
     }
 
@@ -563,8 +559,8 @@ stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
 
     ////
 
-    require(renderText(recastElement<uint32>(tmpMatrix), gpuActualBuffer, font,
-        1 / convertFloat32(fontCharSize), args.fontUpscalingFactor, stdPass));
+    renderText(recastElement<uint32>(tmpMatrix), gpuActualBuffer, font,
+        1 / convertFloat32(fontCharSize), args.fontUpscalingFactor, stdPass);
 
     ////
 
@@ -582,7 +578,7 @@ stdbool GpuConsoleDrawer::drawText(const DrawText& args, stdPars(ProcessKit))
     {
         auto outlineColor = convertNearest<float32_x4>(args.outlineColor);
 
-        require(textDilateBorder(tmpMatrix, dstMatrix, convertFloat32(targetOrg - consoleOrg), convertNormClamp<uint8_x4>(outlineColor), stdPass));
+        textDilateBorder(tmpMatrix, dstMatrix, convertFloat32(targetOrg - consoleOrg), convertNormClamp<uint8_x4>(outlineColor), stdPass);
     }
 
     ////

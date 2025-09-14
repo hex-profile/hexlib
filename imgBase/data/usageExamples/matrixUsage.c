@@ -8,7 +8,7 @@
 //
 //================================================================
 
-stdbool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
+void matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
 {
     MATRIX_EXPOSE(src);
     const uint8* srcMemPtrUnsafe = unsafePtr(srcMemPtr, srcSizeX, srcSizeY);
@@ -75,6 +75,4 @@ stdbool matrixUsage(const Matrix<const uint8>& src, stdPars(ErrorLogKit))
     // Check that a matrix has non-zero size
     REQUIRE(hasData(example));
     REQUIRE(hasData(example.size()));
-
-    returnTrue;
 }

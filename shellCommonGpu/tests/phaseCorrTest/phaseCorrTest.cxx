@@ -186,7 +186,7 @@ GPUTOOL_2D
 
 #if HOSTCODE
 
-stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const GpuMatrix<float32_x2>& dst, int dataWeightType, stdPars(GpuProcessKit))
+void subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const GpuMatrix<float32_x2>& dst, int dataWeightType, stdPars(GpuProcessKit))
 {
     GpuCopyThunk gpuCopy;
 
@@ -194,7 +194,7 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
     Point<Space> size = src.size();
 
     MATRIX_ALLOC_FOR_GPU_EXCH(img, float32_x2, size);
-    require(gpuCopy(src, img, stdPass));
+    gpuCopy(src, img, stdPass);
     gpuCopy.waitClear();
 
     ////
@@ -205,7 +205,7 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
     ////
 
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     //----------------------------------------------------------------
     //
@@ -287,12 +287,8 @@ stdbool subtractWeightedAverage(const GpuMatrix<const float32_x2>& src, const Gp
     //
     //----------------------------------------------------------------
 
-    require(gpuCopy(img, dst, stdPass));
+    gpuCopy(img, dst, stdPass);
     gpuCopy.waitClear();
-
-    ////
-
-    returnTrue;
 }
 
 #endif
@@ -353,10 +349,10 @@ GPUTOOL_2D
 
 #if HOSTCODE
 
-stdbool findMax(const Matrix<const float32>& src, float32& maxValue, stdPars(CpuFuncKit))
+void findMax(const Matrix<const float32>& src, float32& maxValue, stdPars(CpuFuncKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -386,10 +382,6 @@ stdbool findMax(const Matrix<const float32>& src, float32& maxValue, stdPars(Cpu
     ////
 
     maxValue = currentMax;
-
-    ////
-
-    returnTrue;
 }
 
 #endif
@@ -402,7 +394,7 @@ stdbool findMax(const Matrix<const float32>& src, float32& maxValue, stdPars(Cpu
 
 #if HOSTCODE
 
-stdbool processFreqProd
+void processFreqProd
 (
     const Matrix<float32_x2>& oldFourier,
     const Matrix<float32_x2>& newFourier,
@@ -414,7 +406,7 @@ stdbool processFreqProd
 )
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -613,10 +605,6 @@ stdbool processFreqProd
     ////
 
     nccCoeff = xScalarProd;
-
-    ////
-
-    returnTrue;
 }
 
 #endif
@@ -652,7 +640,7 @@ public:
 
     PhaseCorrTestImpl();
     void serialize(const ModuleSerializeKit& kit);
-    stdbool process(const Process& o, stdPars(ProcessKit));
+    void process(const Process& o, stdPars(ProcessKit));
     bool isActive() const {return displaySwitch != DisplayNothing;}
 
 private:
@@ -725,7 +713,7 @@ void PhaseCorrTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
+void PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
 {
     DisplayType displayType = kit.verbosity >= Verbosity::On ? displaySwitch : DisplayNothing;
 
@@ -734,7 +722,7 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
     //
 
     CircleTableHolder circleTable;
-    require(circleTable.realloc(256, stdPass));
+    circleTable.realloc(256, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -760,8 +748,8 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
 
     {
         GPU_MATRIX_ALLOC(oldImageRaw, float32_x2, testSize);
-        require(extractImageToComplex(o.oldImage, oldImageRaw, o.userPoint - 0.5f * convertFloat32(testSize), stdPass));
-        require(subtractWeightedAverage(oldImageRaw, oldImage, dataWeightType, stdPass));
+        extractImageToComplex(o.oldImage, oldImageRaw, o.userPoint - 0.5f * convertFloat32(testSize), stdPass);
+        subtractWeightedAverage(oldImageRaw, oldImage, dataWeightType, stdPass);
     }
 
     ////
@@ -770,32 +758,29 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
 
     {
         GPU_MATRIX_ALLOC(newImageRaw, float32_x2, testSize);
-        require(extractImageToComplex(o.newImage, newImageRaw, o.userPoint - 0.5f * convertFloat32(testSize) + o.baseVector, stdPass));
-        require(subtractWeightedAverage(newImageRaw, newImage, dataWeightType, stdPass));
+        extractImageToComplex(o.newImage, newImageRaw, o.userPoint - 0.5f * convertFloat32(testSize) + o.baseVector, stdPass);
+        subtractWeightedAverage(newImageRaw, newImage, dataWeightType, stdPass);
     }
 
     ////
 
     float32 imgMax = 1/32.f * kit.display.factor;
 
-    require
+    kit.gpuImageConsole.addMatrixChan
     (
-        kit.gpuImageConsole.addMatrixChan
-        (
-            !displaySide(kit) ? oldImage : newImage, 0, -imgMax, +imgMax,
-            convertFloat32(phaseDisplayUpsample), INTERP_NONE, oldImage.size() * phaseDisplayUpsample, BORDER_ZERO,
-            ImgOutputHint(!displaySide(kit) ? STR("oldImage") : STR("newImage")).setTargetConsole(),
-            stdPass
-        )
+        !displaySide(kit) ? oldImage : newImage, 0, -imgMax, +imgMax,
+        convertFloat32(phaseDisplayUpsample), INTERP_NONE, oldImage.size() * phaseDisplayUpsample, BORDER_ZERO,
+        ImgOutputHint(!displaySide(kit) ? STR("oldImage") : STR("newImage")).setTargetConsole(),
+        stdPass
     );
 
     ////
 
     GPU_MATRIX_ALLOC(oldFourier, float32_x2, freqSize);
-    require(fourierSeparable(oldImage, oldFourier, point(minPeriod), circleTable(), stdPass));
+    fourierSeparable(oldImage, oldFourier, point(minPeriod), circleTable(), stdPass);
 
     GPU_MATRIX_ALLOC(newFourier, float32_x2, freqSize);
-    require(fourierSeparable(newImage, newFourier, point(minPeriod), circleTable(), stdPass));
+    fourierSeparable(newImage, newFourier, point(minPeriod), circleTable(), stdPass);
 
     ////
 
@@ -814,12 +799,12 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
         MATRIX_ALLOC_FOR_GPU_EXCH(prodCpu, float32_x2, freqSize);
 
         GpuCopyThunk gpuCopy;
-        require(gpuCopy(oldFourier, oldFourierCpu, stdPass));
-        require(gpuCopy(newFourier, newFourierCpu, stdPass));
+        gpuCopy(oldFourier, oldFourierCpu, stdPass);
+        gpuCopy(newFourier, newFourierCpu, stdPass);
         gpuCopy.waitClear();
 
-        require(processFreqProd(oldFourierCpu, newFourierCpu, prodCpu, useMagnitude, freqWeightType, freqNcc, stdPass));
-        require(gpuCopy(prodCpu, phaseProdFreq, stdPass));
+        processFreqProd(oldFourierCpu, newFourierCpu, prodCpu, useMagnitude, freqWeightType, freqNcc, stdPass);
+        gpuCopy(prodCpu, phaseProdFreq, stdPass);
         gpuCopy.waitClear();
     }
 
@@ -834,7 +819,7 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
     ////
 
     GPU_MATRIX_ALLOC(phaseProdSpace, float32_x2, testSize);
-    require(invFourierSeparable(phaseProdFreq, phaseProdSpace, point(minPeriod), circleTable(), false, stdPass));
+    invFourierSeparable(phaseProdFreq, phaseProdSpace, point(minPeriod), circleTable(), false, stdPass);
 
     {
         Point<Space> copySize = freqSize + point(1);
@@ -842,38 +827,31 @@ stdbool PhaseCorrTestImpl::process(const Process& o, stdPars(ProcessKit))
         float32 correlationMultiplier = 1.f;
 
         GPU_MATRIX_ALLOC(tmp, float32, copySize);
-        require(postprocessCorrelation(phaseProdSpace, tmp, (testSize - copySize)/2, correlationMultiplier, 1.f, stdPass));
+        postprocessCorrelation(phaseProdSpace, tmp, (testSize - copySize)/2, correlationMultiplier, 1.f, stdPass);
 
         MATRIX_ALLOC_FOR_GPU_EXCH(tmpCpu, float32, copySize);
 
         {
             GpuCopyThunk gpuCopy;
-            require(gpuCopy(tmp, tmpCpu, stdPass));
+            gpuCopy(tmp, tmpCpu, stdPass);
         }
 
         float32 maxValue = 0;
-        require(findMax(tmpCpu, maxValue, stdPass));
+        findMax(tmpCpu, maxValue, stdPass);
         maxValue = clampMin(maxValue, 0.f);
 
         printMsgL(kit, STR("PhaseCorrTest: Max Value = %0"), fltf(maxValue, 3));
 
         float32 displayedMax = (corrDisplayedHardMax() != 0) ? clampMin(maxValue, corrDisplayedHardMax()) : maxValue * 1.1f;
 
-        require
+        kit.gpuImageConsole.addMatrixEx
         (
-            kit.gpuImageConsole.addMatrixEx
-            (
-                tmp, 0, +displayedMax, convertFloat32(phaseDisplayUpsample),
-                INTERP_NEAREST, phaseDisplayUpsample*copySize, BORDER_ZERO,
-                ImgOutputHint(STR("Correlation Matrix")).setTargetConsole().setNewLine(),
-                stdPass
-            )
+            tmp, 0, +displayedMax, convertFloat32(phaseDisplayUpsample),
+            INTERP_NEAREST, phaseDisplayUpsample*copySize, BORDER_ZERO,
+            ImgOutputHint(STR("Correlation Matrix")).setTargetConsole().setNewLine(),
+            stdPass
         );
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

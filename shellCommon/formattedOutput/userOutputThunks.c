@@ -71,7 +71,7 @@ void ErrorLogByMsgLog::addErrorTrace(const CharType* message, TRACE_PARAMS(trace
 //
 //================================================================
 
-stdbool MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull)
+void MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull)
 {
     const TraceScope* p = &trace;
 
@@ -97,6 +97,4 @@ stdbool MsgLogExByMsgLog::addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind
             }
         }
     }
-
-    returnTrue;
 }

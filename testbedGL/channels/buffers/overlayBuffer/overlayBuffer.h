@@ -22,7 +22,7 @@ using Type = uint8_x4;
 //
 //================================================================
 
-using ImageUser = Callable<stdbool (bool valid, const GpuMatrix<const Type>& image, stdParsNull)>;
+using ImageUser = Callable<void (bool valid, const GpuMatrix<const Type>& image, stdParsNull)>;
 
 //================================================================
 //
@@ -47,12 +47,12 @@ struct OverlayBuffer
     virtual void clearImage() =0;
 
     using SetImageKit = KitCombine<GpuProcessKit, GpuEventAllocKit, GpuMemoryAllocationKit>; // to allocate events
-    virtual stdbool setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(SetImageKit)) =0;
+    virtual void setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(SetImageKit)) =0;
 
     ////
 
     using UseImageKit = GpuProcessKit;
-    virtual stdbool useImage(ImageUser& imageUser, stdPars(UseImageKit)) =0;
+    virtual void useImage(ImageUser& imageUser, stdPars(UseImageKit)) =0;
 
     //----------------------------------------------------------------
     //

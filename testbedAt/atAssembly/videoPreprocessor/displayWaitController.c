@@ -21,7 +21,7 @@ void DisplayWaitController::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
+void DisplayWaitController::waitForDisplayTime(stdPars(Kit))
 {
     float32 targetDelay = targetDelayMs * 1e-3f;
 
@@ -38,7 +38,7 @@ stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
     {
         lastOutput = kit.timer.moment();
         lastOutputInit = true;
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -92,6 +92,4 @@ stdbool DisplayWaitController::waitForDisplayTime(stdPars(Kit))
     ////
 
     lastOutput = outputMoment;
-
-    returnTrue;
 }

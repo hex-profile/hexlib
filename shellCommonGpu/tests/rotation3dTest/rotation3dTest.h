@@ -25,7 +25,7 @@ public:
 
 public:
 
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 

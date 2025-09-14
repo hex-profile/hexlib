@@ -359,7 +359,7 @@ bool saveVarToNode
 //
 //================================================================
 
-stdbool saveAllVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
+void saveAllVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 {
     stdExceptBegin;
 
@@ -439,7 +439,7 @@ stdbool saveAllVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 //
 //================================================================
 
-stdbool saveUnsyncedVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
+void saveUnsyncedVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 {
     stdExceptBegin;
 
@@ -565,11 +565,11 @@ stdbool saveUnsyncedVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 //
 //================================================================
 
-stdbool saveVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
+void saveVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 {
     auto func = args.saveOnlyUnsyncedVars ? saveUnsyncedVarsToTree : saveAllVarsToTree;
 
-    return func(args, stdPass);
+    func(args, stdPass);
 }
 
 //================================================================
@@ -578,7 +578,7 @@ stdbool saveVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit))
 //
 //================================================================
 
-stdbool loadVarsFromTree(const LoadVarsFromTreeArgs& args, stdPars(Kit))
+void loadVarsFromTree(const LoadVarsFromTreeArgs& args, stdPars(Kit))
 {
     stdExceptBegin;
 

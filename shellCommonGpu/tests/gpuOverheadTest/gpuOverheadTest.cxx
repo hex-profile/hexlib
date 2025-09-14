@@ -114,10 +114,10 @@ void GpuOverheadTest::serialize(const ModuleSerializeKit& kit)
 
 #if HOSTCODE
 
-stdbool GpuOverheadTest::process(stdPars(ProcessKit))
+void GpuOverheadTest::process(stdPars(ProcessKit))
 {
     if_not (active)
-        returnTrue;
+        return;
 
 #if 0 && HEXLIB_PLATFORM == 1 // After stream implementation was changed, the test is broken
 
@@ -129,10 +129,10 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
     ////
 
-    require(gpuSyncCurrentStream(stdPass));
+    gpuSyncCurrentStream(stdPass);
 
     const GpuStream& stream = kit.gpuCurrentStream;
-    require(kit.gpuStreamWaiting.waitStream(stream, stdPass));
+    kit.gpuStreamWaiting.waitStream(stream, stdPass);
 
     ////
 
@@ -267,7 +267,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
             for_count (k, reliabilityFactor)
             {
                 const GpuKernelLink* emptyKernel = emptyKernelArray[rndgen16(r) % KERNEL_COUNT];
-                require(kit.gpuKernelCalling.callKernel(groupCountPtr[i], groupSizePtr[i], 0, *emptyKernel, EmptyKernelParams(), kit.gpuCurrentStream, stdPass));
+                kit.gpuKernelCalling.callKernel(groupCountPtr[i], groupSizePtr[i], 0, *emptyKernel, EmptyKernelParams(), kit.gpuCurrentStream, stdPass);
             }
 
             REQUIRE(cuEventRecord(cuStopEvent, stream) == CUDA_SUCCESS);
@@ -325,7 +325,7 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
 
                     REQUIRE(cuEventRecord(cuStartEvent, stream) == CUDA_SUCCESS);
 
-                    require(kit.gpuKernelCalling.callKernel(groupCountPtr[i], groupSizePtr[i], 0, *emptyKernel, EmptyKernelParams(), kit.gpuCurrentStream, stdPass));
+                    kit.gpuKernelCalling.callKernel(groupCountPtr[i], groupSizePtr[i], 0, *emptyKernel, EmptyKernelParams(), kit.gpuCurrentStream, stdPass);
 
                     REQUIRE(cuEventRecord(cuStopEvent, stream) == CUDA_SUCCESS);
                     REQUIRE(cuEventSynchronize(cuStopEvent) == CUDA_SUCCESS);
@@ -399,8 +399,6 @@ stdbool GpuOverheadTest::process(stdPars(ProcessKit))
     ////
 
 #endif
-
-    returnTrue;
 }
 
 #endif

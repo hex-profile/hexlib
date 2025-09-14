@@ -232,7 +232,7 @@ GPU_TEMPLATE_KERNEL_INST(((typename, Dst)), PREP_PASTE(FUNCNAME, FinalVer2), Fin
 #if HOSTCODE
 
 template <typename Src, typename Dst>
-stdbool FUNCNAME
+void FUNCNAME
 (
     const GpuMatrix<const Src>& src,
 
@@ -270,7 +270,7 @@ stdbool FUNCNAME
     ////
 
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -283,7 +283,7 @@ stdbool FUNCNAME
     //----------------------------------------------------------------
 
     const GpuSamplerLink* srcSampler = (srcRank == 1) ? soft_cast<const GpuSamplerLink*>(&PREP_PASTE(FUNCNAME, srcSampler_x1)) : &PREP_PASTE(FUNCNAME, srcSampler_x2);
-    require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, borderMode, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
+    kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, borderMode, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass);
 
     ////
 
@@ -303,18 +303,15 @@ stdbool FUNCNAME
 
     ////
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            divUpNonneg(intermLaunchSize, intermThreadCount),
-            intermThreadCount,
-            areaOf(intermSize),
-            PREP_PASTE3(FUNCNAME, Interm, DIR(HorLink, VerLink))<Dst>(),
-            intermParams,
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        divUpNonneg(intermLaunchSize, intermThreadCount),
+        intermThreadCount,
+        areaOf(intermSize),
+        PREP_PASTE3(FUNCNAME, Interm, DIR(HorLink, VerLink))<Dst>(),
+        intermParams,
+        kit.gpuCurrentStream,
+        stdPass
     );
 
     //----------------------------------------------------------------
@@ -329,8 +326,8 @@ stdbool FUNCNAME
             if (srcRank == 1) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##_x1); \
             if (srcRank == 2) sampler = &PREP_PASTE(FUNCNAME, intermSampler##k##_x2); \
             REQUIRE(sampler != 0); \
-            require(kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k)), borderMode, \
-                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass)); \
+            kit.gpuSamplerSetting.setSamplerImage(*sampler, makeConst(interm.getLayer(k)), borderMode, \
+                LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass); \
         }
 
     PREP_FOR(FILTER_COUNT, TMP_MACRO, _)
@@ -373,23 +370,16 @@ stdbool FUNCNAME
 
     ////
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            divUpNonneg(finalLaunchSize, finalThreadCount),
-            finalThreadCount,
-            areaOf(dstSize),
-            PREP_PASTE3(FUNCNAME, Final, DIR(VerLink, HorLink))<Dst>(),
-            finalParams,
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        divUpNonneg(finalLaunchSize, finalThreadCount),
+        finalThreadCount,
+        areaOf(dstSize),
+        PREP_PASTE3(FUNCNAME, Final, DIR(VerLink, HorLink))<Dst>(),
+        finalParams,
+        kit.gpuCurrentStream,
+        stdPass
     );
-
-    ////
-
-    returnTrue;
 }
 
 #endif

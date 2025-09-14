@@ -24,7 +24,7 @@ ArrayMemory<int> m0;
 
 // Allocate array; check allocation error.
 // If reallocation fails, array will have zero size.
-require(m0.realloc(33, stdPass));
+m0.realloc(33, stdPass);
 
 // Deallocate memory. Destructor deallocates memory automatically.
 m0.dealloc();
@@ -97,7 +97,7 @@ public:
 
 public:
 
-    stdbool realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
+    void realloc(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////
 
@@ -193,26 +193,26 @@ public:
     using Base::realloc;
 
     template <typename Kit>
-    sysinline stdbool realloc(Space size, Space byteAlignment, stdPars(Kit))
-        {return Base::realloc(size, byteAlignment, kit.cpuFastAlloc, stdPassThru);}
+    sysinline void realloc(Space size, Space byteAlignment, stdPars(Kit))
+        {Base::realloc(size, byteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     ////
 
     template <typename Kit>
-    sysinline stdbool reallocForCpu(Space size, stdPars(Kit))
-        {return Base::realloc(size, cpuBaseByteAlignment, kit.cpuFastAlloc, stdPassThru);}
+    sysinline void reallocForCpu(Space size, stdPars(Kit))
+        {Base::realloc(size, cpuBaseByteAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     ////
 
     template <typename Kit>
-    sysinline stdbool reallocForGpuExch(Space size, stdPars(Kit))
-        {return Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.cpuFastAlloc, stdPassThru);}
+    sysinline void reallocForGpuExch(Space size, stdPars(Kit))
+        {Base::realloc(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.cpuFastAlloc, stdPassThru);}
 
     ////
 
     template <typename Kit>
-    sysinline stdbool reallocInHeap(Space size, stdPars(Kit))
-        {return Base::realloc(size, maxNaturalAlignment, kit.malloc, stdPassThru);}
+    sysinline void reallocInHeap(Space size, stdPars(Kit))
+        {Base::realloc(size, maxNaturalAlignment, kit.malloc, stdPassThru);}
 
     //
     // Cast to Array
@@ -254,8 +254,8 @@ public:
 
 #define ARRAY_ALLOC(name, Type, size) \
     ArrayMemory<Type> name; \
-    require(name.reallocForCpu(size, stdPass));
+    name.reallocForCpu(size, stdPass);
 
 #define ARRAY_ALLOC_FOR_GPU_EXCH(name, Type, size) \
     ArrayMemory<Type> name; \
-    require(name.reallocForGpuExch(size, stdPass));
+    name.reallocForGpuExch(size, stdPass);

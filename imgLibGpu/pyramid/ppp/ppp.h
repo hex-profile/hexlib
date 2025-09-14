@@ -16,7 +16,7 @@ namespace ppp {
 //
 //================================================================
 
-stdbool getTotalPyramidTileCount
+void getTotalPyramidTileCount
 (
     const PyramidStructure& pyramid,
     const Point<Space>& tileSize,
@@ -31,7 +31,7 @@ stdbool getTotalPyramidTileCount
 //
 //================================================================
 
-stdbool prepareGuidingArray
+void prepareGuidingArray
 (
     const PyramidStructure& pyramid,
     const Point<Space>& tileSize,
@@ -41,7 +41,7 @@ stdbool prepareGuidingArray
 
 //----------------------------------------------------------------
 
-stdbool checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& guide, stdPars(ErrorLogKit));
+void checkPyramidGuide(const GpuPyramidLayout& layout, const PyramidGuide& guide, stdPars(ErrorLogKit));
 
 //================================================================
 //
@@ -69,7 +69,7 @@ public:
         theTileSize = point(0);
     }
 
-    stdbool realloc(const PyramidStructure& pyramid, const Point<Space>& tileSize, stdPars(GpuProcessKit));
+    void realloc(const PyramidStructure& pyramid, const Point<Space>& tileSize, stdPars(GpuProcessKit));
 
 public:
 

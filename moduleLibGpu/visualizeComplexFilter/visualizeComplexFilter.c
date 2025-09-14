@@ -17,7 +17,7 @@ namespace visualizeComplex {
 //
 //================================================================
 
-stdbool visualizeComplexFilter
+void visualizeComplexFilter
 (
     const GpuMatrix<const ComplexFloat>& image,
     const Point<float32>& filterFreq, // In original resolution.
@@ -50,8 +50,8 @@ stdbool visualizeComplexFilter
 
         auto preUpsampleFunc = gaussSincResampling::upsampleTwiceBalanced<ComplexFloat, ComplexFloat, ComplexFloat>;
 
-        require(preUpsampleImage.realloc(image.size() * preUpsampleFactor, stdPass));
-        require(preUpsampleFunc(image, preUpsampleImage, BORDER_MIRROR, stdPass));
+        preUpsampleImage.realloc(image.size() * preUpsampleFactor, stdPass);
+        preUpsampleFunc(image, preUpsampleImage, BORDER_MIRROR, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -69,40 +69,30 @@ stdbool visualizeComplexFilter
 
     ////
 
-    require
+    visualizeComplexFilterFunc
     (
-        visualizeComplexFilterFunc
-        (
-            preUpsampleFactor != 1 ? preUpsampleImage : image,
-            upsampledImage,
-            point(upsampingFactor / preUpsampleFactor),
-            kit.display.interpolation,
-            kit.display.modulation,
-            filterFreq / pyramidScale(fullscreen ? s : 0), // Freq in dst space.
-            stdPass
-        )
+        preUpsampleFactor != 1 ? preUpsampleImage : image,
+        upsampledImage,
+        point(upsampingFactor / preUpsampleFactor),
+        kit.display.interpolation,
+        kit.display.modulation,
+        filterFreq / pyramidScale(fullscreen ? s : 0), // Freq in dst space.
+        stdPass
     );
 
     ////
 
-    require
+    kit.gpuImageConsole.addVectorImage
     (
-        kit.gpuImageConsole.addVectorImage
-        (
-            upsampledImage,
-            displayMagnitude * kit.display.factor,
-            point(1.f), INTERP_NEAREST,
-            displayedSize,
-            BORDER_CLAMP,
-            ImgOutputHint(paramMsg(displayedOrientation == -1 ? STR("%, Scale %") : STR("%, Scale %, Orient %"), name, s, displayedOrientation))
-            .setArrowFactor(arrowFactor),
-            stdPass
-        )
+        upsampledImage,
+        displayMagnitude * kit.display.factor,
+        point(1.f), INTERP_NEAREST,
+        displayedSize,
+        BORDER_CLAMP,
+        ImgOutputHint(paramMsg(displayedOrientation == -1 ? STR("%, Scale %") : STR("%, Scale %, Orient %"), name, s, displayedOrientation))
+        .setArrowFactor(arrowFactor),
+        stdPass
     );
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

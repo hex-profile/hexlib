@@ -45,7 +45,7 @@ class MsgLogExByMsgLog : public MsgLogEx
 
 public:
 
-    stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull);
+    void addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull);
 
 public:
 

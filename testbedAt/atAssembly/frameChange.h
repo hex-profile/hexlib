@@ -47,7 +47,7 @@ public:
     using Kit = KitCombine<ErrorLogKit, MallocKit>;
 
     void reset();
-    stdbool check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit));
+    void check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit));
 
 private:
 

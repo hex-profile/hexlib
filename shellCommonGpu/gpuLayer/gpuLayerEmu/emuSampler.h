@@ -12,7 +12,7 @@
 //
 //================================================================
 
-stdbool emuSetSamplerArray
+void emuSetSamplerArray
 (
     const GpuSamplerLink& sampler,
     GpuAddrU arrayAddr,
@@ -32,7 +32,7 @@ stdbool emuSetSamplerArray
 //
 //================================================================
 
-stdbool emuSetSamplerImage
+void emuSetSamplerImage
 (
     const GpuSamplerLink& sampler,
     GpuAddrU imageBaseAddr,

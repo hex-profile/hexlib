@@ -135,7 +135,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != Display::Nothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -180,15 +180,15 @@ void ExceptionTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
+void ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     Display displayType = kit.verbosity >= Verbosity::On ? displaySwitch : Display::Nothing;
 
     if (displayType == Display::Nothing)
-        returnTrue;
+        return;
 
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     ////
 
@@ -239,8 +239,6 @@ stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
 
         auto correctionFactor = chunkCount / 4.f;
         chunkSize = clampMin(convertNearest<int32>(chunkSize * correctionFactor), 1);
-
-        returnTrue;
     };
 
     //----------------------------------------------------------------
@@ -255,8 +253,8 @@ stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
     auto retcodeIterationFail = [&] ()
         {returnCodeTest(valueFail);};
 
-    require(genericTest(STR("Retcode Success"), retcodeIterationSuccess, retcodeSuccessChunkSize, stdPass));
-    require(genericTest(STR("Retcode Fail"), retcodeIterationFail, retcodeFailChunkSize, stdPass));
+    genericTest(STR("Retcode Success"), retcodeIterationSuccess, retcodeSuccessChunkSize, stdPass);
+    genericTest(STR("Retcode Fail"), retcodeIterationFail, retcodeFailChunkSize, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -281,13 +279,9 @@ stdbool ExceptionTestImpl::process(stdPars(GpuModuleProcessKit))
         catch (...) {}
     };
 
-    require(genericTest(STR("Except Fail"), exceptionIterationFail, exceptionFailChunkSize, stdPass));
-    require(genericTest(STR("Except Success"), exceptionIterationSuccess, exceptionSuccessChunkSize, stdPass));
-    require(genericTest(STR("Except Catch"), exceptionIterationCatch, exceptionCatchChunkSize, stdPass));
-
-    ////
-
-    returnTrue;
+    genericTest(STR("Except Fail"), exceptionIterationFail, exceptionFailChunkSize, stdPass);
+    genericTest(STR("Except Success"), exceptionIterationSuccess, exceptionSuccessChunkSize, stdPass);
+    genericTest(STR("Except Catch"), exceptionIterationCatch, exceptionCatchChunkSize, stdPass);
 }
 
 //----------------------------------------------------------------

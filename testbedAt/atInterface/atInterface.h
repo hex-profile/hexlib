@@ -32,7 +32,7 @@ struct AtVideoFrame : public MatrixAP<const uint8_x4>
 
 struct AtAsyncOverlay
 {
-    virtual stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdParsNull) =0;
+    virtual void setImage(const Point<Space>& size, BaseImageProvider& imageProvider, stdParsNull) =0;
 };
 
 //================================================================

@@ -10,14 +10,14 @@
 //
 //================================================================
 
-stdbool GpuPyramidCache::realloc(stdPars(GpuProcessKit))
+void GpuPyramidCache::realloc(stdPars(GpuProcessKit))
 {
     allocated = false;
 
     ////
 
-    require(cpuHolder.realloc(1, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass));
-    require(gpuHolder.realloc(1, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass));
+    cpuHolder.realloc(1, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass);
+    gpuHolder.realloc(1, kit.gpuProperties.samplerAndFastTransferBaseAlignment, stdPass);
 
     ////
 
@@ -30,8 +30,6 @@ stdbool GpuPyramidCache::realloc(stdPars(GpuProcessKit))
     ////
 
     allocated = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -40,7 +38,7 @@ stdbool GpuPyramidCache::realloc(stdPars(GpuProcessKit))
 //
 //================================================================
 
-stdbool GpuPyramidCache::slowUpdate(const GpuPyramidLayout& layout, stdPars(GpuProcessKit))
+void GpuPyramidCache::slowUpdate(const GpuPyramidLayout& layout, stdPars(GpuProcessKit))
 {
     REQUIRE(allocated);
 
@@ -52,9 +50,5 @@ stdbool GpuPyramidCache::slowUpdate(const GpuPyramidLayout& layout, stdPars(GpuP
     ////
 
     GpuCopyThunk gpuCopy;
-    require(gpuCopy(cpuHolder, gpuHolder, stdPass));
-
-    ////
-
-    returnTrue;
+    gpuCopy(cpuHolder, gpuHolder, stdPass);
 }

@@ -17,10 +17,10 @@ class DownsampleHalfOctaveConservative
 
 public:
 
-    stdbool realloc(stdPars(GpuProcessKit));
+    void realloc(stdPars(GpuProcessKit));
 
-    stdbool process(const GpuMatrix<const float16>& src, const GpuMatrix<float16>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit));
-    stdbool process(const GpuMatrix<const float16_x2>& src, const GpuMatrix<float16_x2>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit));
+    void process(const GpuMatrix<const float16>& src, const GpuMatrix<float16>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit));
+    void process(const GpuMatrix<const float16_x2>& src, const GpuMatrix<float16_x2>& dst, float32 dstFactor, bool testMode, stdPars(GpuProcessKit));
 
 private:
 

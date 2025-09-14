@@ -47,10 +47,10 @@ sysinline bool glfwNoError()
 //================================================================
 
 template <typename Kit>
-sysinline stdbool checkGLFWHelper(const CharType* statement, stdPars(Kit))
+sysinline void checkGLFWHelper(const CharType* statement, stdPars(Kit))
 {
     if (glfwError.valid() && glfwError.size() == 0)
-        returnTrue;
+        return;
 
     ////
 
@@ -59,7 +59,7 @@ sysinline stdbool checkGLFWHelper(const CharType* statement, stdPars(Kit))
     if (glfwError.valid())
         msg = glfwError.cstr();
 
-    require(printMsgTrace(STR("GLFW library: %0 returned error \"%1\"."), statement, msg, msgErr, stdPassThru));
+    printMsgTrace(STR("GLFW library: %0 returned error \"%1\"."), statement, msg, msgErr, stdPassThru);
 
     ////
 
@@ -73,7 +73,7 @@ sysinline stdbool checkGLFWHelper(const CharType* statement, stdPars(Kit))
 #define REQUIRE_GLFW(statement) \
     do { \
         {statement;} \
-        require(checkGLFWHelper(PREP_STRINGIZE(statement), stdPass)); \
+        checkGLFWHelper(PREP_STRINGIZE(statement), stdPass); \
     } while (0)
 
 //================================================================
@@ -82,12 +82,12 @@ sysinline stdbool checkGLFWHelper(const CharType* statement, stdPars(Kit))
 //
 //================================================================
 
-using RefreshHandler = Callable<stdbool ()>;
-using KeyHandler = Callable<stdbool (const KeyEvent& event)>;
-using MouseMoveHandler = Callable<stdbool (const MouseMoveEvent& event)>;
-using MouseButtonHandler = Callable<stdbool (const MouseButtonEvent& event)>;
-using ScrollHandler = Callable<stdbool (const ScrollEvent& event)>;
-using ResizeHandler = Callable<stdbool (const ResizeEvent& event)>;
+using RefreshHandler = Callable<void ()>;
+using KeyHandler = Callable<void (const KeyEvent& event)>;
+using MouseMoveHandler = Callable<void (const MouseMoveEvent& event)>;
+using MouseButtonHandler = Callable<void (const MouseButtonEvent& event)>;
+using ScrollHandler = Callable<void (const ScrollEvent& event)>;
+using ResizeHandler = Callable<void (const ResizeEvent& event)>;
 
 //================================================================
 //
@@ -108,7 +108,7 @@ public:
 
     ~WindowGLFW() {close();}
 
-    stdbool open(const WindowCreationArgs& args, stdPars(WindowManager::Kit));
+    void open(const WindowCreationArgs& args, stdPars(WindowManager::Kit));
 
     void close()
     {
@@ -127,14 +127,13 @@ public:
     //
     //----------------------------------------------------------------
 
-    stdbool setThreadDrawingContext(stdPars(Kit))
+    void setThreadDrawingContext(stdPars(Kit))
     {
         REQUIRE(baseWindow);
         REQUIRE_GLFW(glfwMakeContextCurrent(baseWindow));
-        returnTrue;
     }
 
-    stdbool setVisible(bool visible, stdPars(Kit))
+    void setVisible(bool visible, stdPars(Kit))
     {
         REQUIRE(baseWindow);
 
@@ -142,40 +141,35 @@ public:
             REQUIRE_GLFW(glfwShowWindow(baseWindow));
         else
             REQUIRE_GLFW(glfwHideWindow(baseWindow));
-
-        returnTrue;
     }
 
     template <typename Lambda>
-    stdbool callbackShell(const EventReceivers& receivers, const Lambda& lambda, stdPars(Kit));
+    void callbackShell(const EventReceivers& receivers, const Lambda& lambda, stdPars(Kit));
 
-    stdbool getEvents(bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdPars(Kit));
+    void getEvents(bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdPars(Kit));
 
-    stdbool shouldContinue(stdPars(Kit))
+    void shouldContinue(stdPars(Kit))
     {
         REQUIRE(baseWindow);
         int result = glfwWindowShouldClose(baseWindow);
         REQUIRE_GLFW("glfwWindowShouldClose");
         require(result == GL_FALSE);
-        returnTrue;
     }
 
-    stdbool swapBuffers(stdPars(Kit))
+    void swapBuffers(stdPars(Kit))
     {
         REQUIRE(baseWindow);
         REQUIRE_GLFW(glfwSwapBuffers(baseWindow));
-        returnTrue;
     }
 
-    stdbool getWindowLocation(WindowLocation& location, stdPars(Kit));
+    void getWindowLocation(WindowLocation& location, stdPars(Kit));
 
-    stdbool setWindowLocation(const WindowLocation& location, stdPars(Kit));
+    void setWindowLocation(const WindowLocation& location, stdPars(Kit));
 
-    stdbool getImageSize(Point<Space>& size, stdPars(Kit))
+    void getImageSize(Point<Space>& size, stdPars(Kit))
     {
         REQUIRE(baseWindow);
         REQUIRE_GLFW(glfwGetFramebufferSize(baseWindow, &size.X, &size.Y));
-        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -583,7 +577,7 @@ void glfwFramebufferSizeCallback(GLFWwindow* window, int width, int height)
 //
 //================================================================
 
-stdbool WindowGLFW::open(const WindowCreationArgs& arg, stdPars(WindowManager::Kit))
+void WindowGLFW::open(const WindowCreationArgs& arg, stdPars(WindowManager::Kit))
 {
     //----------------------------------------------------------------
     //
@@ -727,8 +721,6 @@ stdbool WindowGLFW::open(const WindowCreationArgs& arg, stdPars(WindowManager::K
 
     cleanWindow.cancel();
     baseWindow = w;
-
-    returnTrue;
 }
 
 //================================================================
@@ -738,7 +730,7 @@ stdbool WindowGLFW::open(const WindowCreationArgs& arg, stdPars(WindowManager::K
 //================================================================
 
 template <typename Lambda>
-stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda& lambda, stdPars(Kit))
+void WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda& lambda, stdPars(Kit))
 {
     //----------------------------------------------------------------
     //
@@ -842,11 +834,7 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
     //
     //----------------------------------------------------------------
 
-    require(lambda(stdPass));
-
-    ////
-
-    returnTrue;
+    lambda(stdPass);
 }
 
 //================================================================
@@ -855,14 +843,14 @@ stdbool WindowGLFW::callbackShell(const EventReceivers& receivers, const Lambda&
 //
 //================================================================
 
-stdbool WindowGLFW::getEvents(bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdPars(Kit))
+void WindowGLFW::getEvents(bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdPars(Kit))
 {
     auto action = [&] (stdPars(auto))
     {
         if_not (waitEvents)
         {
             REQUIRE_GLFW(glfwPollEvents());
-            returnTrue;
+            return;
         }
 
         ////
@@ -878,17 +866,11 @@ stdbool WindowGLFW::getEvents(bool waitEvents, const OptionalObject<uint32>& wai
         REMEMBER_CLEANUP(if (waitTimeoutMs) timeoutHelper->cancelTask());
 
         REQUIRE_GLFW(glfwWaitEvents());
-
-        ////
-
-        returnTrue;
     };
 
     ////
 
-    require(callbackShell(receivers, action, stdPass));
-
-    returnTrue;
+    callbackShell(receivers, action, stdPass);
 }
 
 //================================================================
@@ -897,7 +879,7 @@ stdbool WindowGLFW::getEvents(bool waitEvents, const OptionalObject<uint32>& wai
 //
 //================================================================
 
-stdbool WindowGLFW::getWindowLocation(WindowLocation& location, stdPars(Kit))
+void WindowGLFW::getWindowLocation(WindowLocation& location, stdPars(Kit))
 {
     REQUIRE(baseWindow);
 
@@ -926,10 +908,6 @@ stdbool WindowGLFW::getWindowLocation(WindowLocation& location, stdPars(Kit))
 
     REQUIRE_GLFW(glfwGetWindowPos(baseWindow, &location.pos.X, &location.pos.Y));
     REQUIRE_GLFW(glfwGetWindowSize(baseWindow, &location.size.X, &location.size.Y));
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -938,14 +916,14 @@ stdbool WindowGLFW::getWindowLocation(WindowLocation& location, stdPars(Kit))
 //
 //================================================================
 
-stdbool WindowGLFW::setWindowLocation(const WindowLocation& location, stdPars(Kit))
+void WindowGLFW::setWindowLocation(const WindowLocation& location, stdPars(Kit))
 {
     REQUIRE(baseWindow);
 
     ////
 
     WindowLocation current;
-    require(getWindowLocation(current, stdPass));
+    getWindowLocation(current, stdPass);
 
     ////
 
@@ -997,10 +975,6 @@ stdbool WindowGLFW::setWindowLocation(const WindowLocation& location, stdPars(Ki
     ////
 
     REQUIRE_GLFW(glfwSwapInterval(location.verticalSync ? 1 : 0));
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1009,7 +983,7 @@ stdbool WindowGLFW::setWindowLocation(const WindowLocation& location, stdPars(Ki
 //
 //================================================================
 
-stdbool WindowManagerGLFW::init(stdPars(Kit))
+void WindowManagerGLFW::init(stdPars(Kit))
 {
     if_not (initialized)
     {
@@ -1021,8 +995,6 @@ stdbool WindowManagerGLFW::init(stdPars(Kit))
 
         initialized = true;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -1058,7 +1030,7 @@ void WindowManagerGLFW::postEmptyEvent()
 //
 //================================================================
 
-stdbool WindowManagerGLFW::getCurrentDisplayResolution(Point<Space>& result, stdPars(Kit))
+void WindowManagerGLFW::getCurrentDisplayResolution(Point<Space>& result, stdPars(Kit))
 {
     auto primaryMonitor = glfwGetPrimaryMonitor();
     REQUIRE_GLFW("glfwGetPrimaryMonitor");
@@ -1070,8 +1042,6 @@ stdbool WindowManagerGLFW::getCurrentDisplayResolution(Point<Space>& result, std
 
     result = point(primaryMode->width, primaryMode->height);
     REQUIRE(result >= 0);
-
-    returnTrue;
 }
 
 //================================================================
@@ -1080,7 +1050,7 @@ stdbool WindowManagerGLFW::getCurrentDisplayResolution(Point<Space>& result, std
 //
 //================================================================
 
-stdbool WindowManagerGLFW::createWindow(UniquePtr<Window>& window, const WindowCreationArgs& par, stdPars(Kit))
+void WindowManagerGLFW::createWindow(UniquePtr<Window>& window, const WindowCreationArgs& par, stdPars(Kit))
 {
     REQUIRE(initialized);
 
@@ -1093,16 +1063,12 @@ stdbool WindowManagerGLFW::createWindow(UniquePtr<Window>& window, const WindowC
 
     ////
 
-    require(newWindow->open(par, stdPass));
+    newWindow->open(par, stdPass);
 
     ////
 
     window = move(newWindow);
     cleanup.cancel();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1113,18 +1079,16 @@ stdbool WindowManagerGLFW::createWindow(UniquePtr<Window>& window, const WindowC
 
 struct ContextBinderGLFW : public ContextBinder
 {
-    virtual stdbool bind(stdPars(Kit))
+    virtual void bind(stdPars(Kit))
     {
         REQUIRE(window);
         REQUIRE(glfwGetCurrentContext() == nullptr);
         REQUIRE_GLFW(glfwMakeContextCurrent(window));
-        returnTrue;
     }
 
-    virtual stdbool unbind(stdPars(Kit))
+    virtual void unbind(stdPars(Kit))
     {
         REQUIRE_GLFW(glfwMakeContextCurrent(nullptr));
-        returnTrue;
     }
 
     GLFWwindow* window = nullptr;
@@ -1136,7 +1100,7 @@ struct ContextBinderGLFW : public ContextBinder
 //
 //================================================================
 
-stdbool WindowManagerGLFW::createOffscreenGLContext(UniquePtr<ContextBinder>& context, stdPars(Kit))
+void WindowManagerGLFW::createOffscreenGLContext(UniquePtr<ContextBinder>& context, stdPars(Kit))
 {
     REQUIRE_GLFW(glfwDefaultWindowHints());
     REQUIRE_GLFW(glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE));
@@ -1157,5 +1121,4 @@ stdbool WindowManagerGLFW::createOffscreenGLContext(UniquePtr<ContextBinder>& co
     ////
 
     windowCleanup.cancel();
-    returnTrue;
 }

@@ -9,13 +9,13 @@
 //================================================================
 
 template <typename Type>
-stdbool gpuMatrixCopyImpl(const GpuMatrixAP<const Type>& src, const GpuMatrixAP<Type>& dst, stdPars(GpuProcessKit));
+void gpuMatrixCopyImpl(const GpuMatrixAP<const Type>& src, const GpuMatrixAP<Type>& dst, stdPars(GpuProcessKit));
 
 ////
 
 template <typename SrcType, typename SrcPitch, typename DstType, typename DstPitch>
-sysinline stdbool gpuMatrixCopy(const GpuMatrix<SrcType, SrcPitch>& src, const GpuMatrix<DstType, DstPitch>& dst, stdPars(GpuProcessKit))
-    {return gpuMatrixCopyImpl<DstType>(src, dst, stdPassThru);}
+sysinline void gpuMatrixCopy(const GpuMatrix<SrcType, SrcPitch>& src, const GpuMatrix<DstType, DstPitch>& dst, stdPars(GpuProcessKit))
+    {gpuMatrixCopyImpl<DstType>(src, dst, stdPassThru);}
 
 //================================================================
 //
@@ -24,4 +24,4 @@ sysinline stdbool gpuMatrixCopy(const GpuMatrix<SrcType, SrcPitch>& src, const G
 //================================================================
 
 template <typename Type>
-stdbool gpuArrayCopy(const GpuArray<const Type>& src, const GpuArray<Type>& dst, stdPars(GpuProcessKit));
+void gpuArrayCopy(const GpuArray<const Type>& src, const GpuArray<Type>& dst, stdPars(GpuProcessKit));

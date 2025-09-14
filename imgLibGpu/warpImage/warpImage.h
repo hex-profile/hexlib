@@ -15,7 +15,7 @@
 //================================================================
 
 template <typename SrcPixel, typename DstPixel>
-stdbool warpImage
+void warpImage
 (
     const GpuMatrix<const SrcPixel>& src,
     const LinearTransform<Point<float32>>& srcTransform,

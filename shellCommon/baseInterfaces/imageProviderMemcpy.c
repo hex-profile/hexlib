@@ -8,7 +8,7 @@
 //
 //================================================================
 
-stdbool ImageProviderMemcpy::saveBgr32(const MatrixAP<Pixel>& dest, stdParsNull)
+void ImageProviderMemcpy::saveBgr32(const MatrixAP<Pixel>& dest, stdParsNull)
 {
     REQUIRE(source.size() == dest.size());
 
@@ -24,6 +24,4 @@ stdbool ImageProviderMemcpy::saveBgr32(const MatrixAP<Pixel>& dest, stdParsNull)
         destRow += destMemPitch;
         sourceRow += sourceMemPitch;
     }
-
-    returnTrue;
 }

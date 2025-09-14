@@ -180,7 +180,7 @@ public:
     inline ~ServerKeeper()
         {destroy();}
 
-    stdbool create(stdPars(CreateKit));
+    void create(stdPars(CreateKit));
     void destroy();
     bool created() {return threadControl.created();}
 
@@ -208,7 +208,7 @@ private:
 //
 //================================================================
 
-stdbool ServerKeeper::create(stdPars(CreateKit))
+void ServerKeeper::create(stdPars(CreateKit))
 {
     //
     // Deallocate and set to zero
@@ -220,17 +220,17 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     // Create core emulator
     //
 
-    require(coreEmulator.create(stdPass));
+    coreEmulator.create(stdPass);
     REMEMBER_CLEANUP_EX(coreEmulatorCleanup, coreEmulator.destroy());
 
     //
     // Allocate events
     //
 
-    require(eventCreate(tools.startEvent, stdPass));
+    eventCreate(tools.startEvent, stdPass);
     REMEMBER_CLEANUP_EX(startEventCleanup, tools.startEvent.clear());
 
-    require(eventCreate(tools.finishEvent, stdPass));
+    eventCreate(tools.finishEvent, stdPass);
     REMEMBER_CLEANUP_EX(finishEventCleanup, tools.finishEvent.clear());
 
     tools.coreEmulator = &coreEmulator;
@@ -241,7 +241,7 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     //
 
     ServerMemory* serverMemory = this;
-    require(threadCreate(serverFunc, serverMemory, 65536, threadControl, stdPass));
+    threadCreate(serverFunc, serverMemory, 65536, threadControl, stdPass);
 
     //
     // Lower the thread priority.
@@ -257,8 +257,6 @@ stdbool ServerKeeper::create(stdPars(CreateKit))
     startEventCleanup.cancel();
     finishEventCleanup.cancel();
     emulatorPtrCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -337,7 +335,7 @@ void EmuMultiWin32::destroy()
 //
 //================================================================
 
-stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
+void EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
 {
     destroy();
 
@@ -346,7 +344,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
     // the created servers (wait thread and destroy, by element destructors).
     //
 
-    require(serverArray.reallocInHeap(streamCount, stdPass));
+    serverArray.reallocInHeap(streamCount, stdPass);
     REMEMBER_CLEANUP_EX(serverArrayCleanup, serverArray.dealloc());
 
     //
@@ -356,15 +354,13 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
     ARRAY_EXPOSE(serverArray);
 
     for_count (i, streamCount)
-        require(serverArrayPtr[i].create(stdPass));
+        {serverArrayPtr[i].create(stdPass);}
 
     //
     // Record success.
     //
 
     serverArrayCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -373,7 +369,7 @@ stdbool EmuMultiWin32::create(Space streamCount, stdPars(CreateKit))
 //
 //================================================================
 
-stdbool EmuMultiWin32::launchKernel
+void EmuMultiWin32::launchKernel
 (
     const Point3D<Space>& groupCount,
     const Point<Space>& threadCount,
@@ -392,7 +388,7 @@ stdbool EmuMultiWin32::launchKernel
     REQUIRE(groupCount >= 0);
 
     if_not (allv(groupCount >= 1))
-        returnTrue;
+        return;
 
     //
     // Give tasks to all thread servers, using uniform partition.
@@ -454,8 +450,6 @@ stdbool EmuMultiWin32::launchKernel
     ////
 
     REQUIRE_EX(recordedError == 0, kit.errorLog.addErrorTrace(recordedError, TRACE_PASSTHRU(trace)));
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -9,4 +9,4 @@
 //
 //================================================================
 
-stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit));
+void runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit));

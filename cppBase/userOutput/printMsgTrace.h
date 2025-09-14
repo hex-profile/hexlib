@@ -17,7 +17,7 @@
 
 struct MsgLogEx
 {
-    virtual stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull) =0;
+    virtual void addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull) =0;
 };
 
 //================================================================
@@ -28,8 +28,8 @@ struct MsgLogEx
 
 class MsgLogExNull : public MsgLogEx
 {
-    virtual stdbool addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull)
-        {returnTrue;}
+    virtual void addMsgTrace(const FormatOutputAtom& v, MsgKind msgKind, stdParsNull)
+        {}
 };
 
 //================================================================
@@ -50,7 +50,7 @@ class MsgLogExNull : public MsgLogEx
 #define PRINTTRACE__FUNC(n, _) \
     \
     template <PREP_ENUMERATE_INDEXED(n, typename T) typename Kit> \
-    sysinline stdbool printMsgTrace \
+    sysinline void printMsgTrace \
     ( \
         const CharArray& format, \
         PREP_ENUMERATE_INDEXED_PAIR(n, const T, &v) \
@@ -61,8 +61,7 @@ class MsgLogExNull : public MsgLogEx
         const FormatOutputAtom params[COMPILE_CLAMP_MIN(n, 1)] = {PREP_FOR(n, PRINTTRACE__STORE_PARAM, _)}; \
         \
         ParamMsg paramMsg{defaultSpecialChar, format, params, n}; \
-        require(kit.msgLogEx.addMsgTrace(paramMsg, msgKind, stdPassThru)); \
-        returnTrue; \
+        kit.msgLogEx.addMsgTrace(paramMsg, msgKind, stdPassThru); \
     }
 
 PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
@@ -80,7 +79,7 @@ PREP_FOR1(PREP_INC(PRINTTRACE__MAX_COUNT), PRINTTRACE__FUNC, _)
     do { \
         if (!allv(condition)) \
         { \
-            require(printBody); \
+            printBody; \
             returnFalse; \
         } \
     } while (0)

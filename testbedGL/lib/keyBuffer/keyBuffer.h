@@ -24,12 +24,12 @@ struct KeyBuffer
 
     ////
 
-    virtual stdbool reserve(Space capacity, stdPars(Kit)) =0;
+    virtual void reserve(Space capacity, stdPars(Kit)) =0;
     virtual void dealloc() =0;
 
     ////
 
-    virtual stdbool receiveKey(const KeyEvent& key, stdPars(Kit)) =0;
+    virtual void receiveKey(const KeyEvent& key, stdPars(Kit)) =0;
 
     ////
 

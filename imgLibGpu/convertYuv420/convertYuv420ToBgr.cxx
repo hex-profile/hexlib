@@ -127,7 +127,7 @@ devDefineSampler(chromaSamplerV, DevSampler2D, DevSamplerFloat, 1)
 #define MAKE_FUNCTION(baseFunc, SrcPixel, SrcPixel2, DstPixel, suffix) \
     \
     template <> \
-    stdbool baseFunc \
+    void baseFunc \
     ( \
         const GpuMatrix<const SrcPixel>& srcLuma, \
         const GpuMatrix<const SrcPixel2>& srcChromaPacked, \
@@ -139,7 +139,7 @@ devDefineSampler(chromaSamplerV, DevSampler2D, DevSamplerFloat, 1)
         stdPars(GpuProcessKit) \
     ) \
     { \
-        return baseFunc##suffix(srcLuma, srcChromaPacked, srcChromaU, srcChromaV, srcOffset, outerColor, dst, stdPassThru); \
+        baseFunc##suffix(srcLuma, srcChromaPacked, srcChromaU, srcChromaV, srcOffset, outerColor, dst, stdPassThru); \
     }
 
 ////

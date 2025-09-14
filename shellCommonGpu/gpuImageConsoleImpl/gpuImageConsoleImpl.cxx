@@ -166,7 +166,7 @@ VISUALIZE_SCALAR_KERNEL_ALL(visualizeScalarCubic4_3, tex2DCubic(visualizeScalarS
 #if HOSTCODE
 
 template <typename Type, typename Dst>
-stdbool visualizeScalarMatrix
+void visualizeScalarMatrix
 (
     const GpuMatrixAP<const Type>& src,
     const LinearTransform<Point<float32>>& coordBackTransform,
@@ -189,18 +189,15 @@ stdbool visualizeScalarMatrix
         if (vectorRank == 4) sampler = &visualizeScalarSampler4;
         REQUIRE(sampler != 0);
 
-        require
+        kit.gpuSamplerSetting.setSamplerImage
         (
-            kit.gpuSamplerSetting.setSamplerImage
-            (
-                *sampler,
-                src,
-                borderMode,
-                LinearInterpolation{upsampleType == INTERP_LINEAR},
-                ReadNormalizedFloat{true},
-                NormalizedCoords{true},
-                stdPass
-            )
+            *sampler,
+            src,
+            borderMode,
+            LinearInterpolation{upsampleType == INTERP_LINEAR},
+            ReadNormalizedFloat{true},
+            NormalizedCoords{true},
+            stdPass
         );
     }
 
@@ -255,22 +252,17 @@ stdbool visualizeScalarMatrix
 
         Point<float32> srcTexstep = 1.f / convertFloat32(clampMin(src.size(), 1));
 
-        require
+        kit.gpuKernelCalling.callKernel
         (
-            kit.gpuKernelCalling.callKernel
-            (
-                divUpNonneg(result.size(), point(visualizeScalarThreadCountX, 1)),
-                point(visualizeScalarThreadCountX, 1),
-                areaOf(result),
-                *kernelLink,
-                VisualizeScalar<Dst>{coordBackTransform, usedValueTransform, srcTexstep, result},
-                kit.gpuCurrentStream,
-                stdPass
-            )
+            divUpNonneg(result.size(), point(visualizeScalarThreadCountX, 1)),
+            point(visualizeScalarThreadCountX, 1),
+            areaOf(result),
+            *kernelLink,
+            VisualizeScalar<Dst>{coordBackTransform, usedValueTransform, srcTexstep, result},
+            kit.gpuCurrentStream,
+            stdPass
         );
     }
-
-    returnTrue;
 }
 
 #endif
@@ -395,7 +387,7 @@ UPCONVERT_VALUE_KERNEL_ALL(upconvertValueCubic, UPCONVERT_VALUE_READ_CUBIC)
 #if HOSTCODE
 
 template <typename Type, typename Dst>
-stdbool upconvertValueMatrix
+void upconvertValueMatrix
 (
     const GpuMatrixAP<const Type>& src,
     const LinearTransform<Point<float32>>& coordBackTransform,
@@ -417,18 +409,15 @@ stdbool upconvertValueMatrix
         if (vectorRank == 4) sampler = &upconvertValueSampler4;
         REQUIRE(sampler != 0);
 
-        require
+        kit.gpuSamplerSetting.setSamplerImage
         (
-            kit.gpuSamplerSetting.setSamplerImage
-            (
-                *sampler,
-                src,
-                borderMode,
-                LinearInterpolation{upsampleType == INTERP_LINEAR},
-                ReadNormalizedFloat{true},
-                NormalizedCoords{true},
-                stdPass
-            )
+            *sampler,
+            src,
+            borderMode,
+            LinearInterpolation{upsampleType == INTERP_LINEAR},
+            ReadNormalizedFloat{true},
+            NormalizedCoords{true},
+            stdPass
         );
     }
 
@@ -459,22 +448,17 @@ stdbool upconvertValueMatrix
 
         Point<float32> srcTexstep = 1.f / convertFloat32(clampMin(src.size(), 1));
 
-        require
+        kit.gpuKernelCalling.callKernel
         (
-            kit.gpuKernelCalling.callKernel
-            (
-                divUpNonneg(result.size(), point(upconvertValueThreadCountX, 1)),
-                point(upconvertValueThreadCountX, 1),
-                areaOf(result),
-                *kernelLink,
-                UpconvertValue<Dst>{coordBackTransform, usedValueTransform, srcTexstep, result},
-                kit.gpuCurrentStream,
-                stdPass
-            )
+            divUpNonneg(result.size(), point(upconvertValueThreadCountX, 1)),
+            point(upconvertValueThreadCountX, 1),
+            areaOf(result),
+            *kernelLink,
+            UpconvertValue<Dst>{coordBackTransform, usedValueTransform, srcTexstep, result},
+            kit.gpuCurrentStream,
+            stdPass
         );
     }
-
-    returnTrue;
 }
 
 #endif
@@ -508,7 +492,7 @@ stdbool upconvertValueMatrix
 //================================================================
 
 template <typename Type, typename Pitch, typename Kit>
-stdbool getElementAtUserPoint
+void getElementAtUserPoint
 (
     const GpuMatrix<const Type, Pitch>& image,
     const LinearTransform<Point<float32>>& transform,
@@ -525,9 +509,7 @@ stdbool getElementAtUserPoint
     srcIdx = clampRange(srcIdx, point(0), image.size() - 1);
 
     resultIdx = srcIdx;
-    require(readGpuElement(image, srcIdx, resultValue, stdPass));
-
-    returnTrue;
+    readGpuElement(image, srcIdx, resultValue, stdPass);
 }
 
 //================================================================
@@ -574,7 +556,7 @@ public:
     ScalarVisualizationProvider(const ScalarVisualizationParams<Type>& params, const GpuProcessKit& kit)
         : Base(params), kit(kit) {}
 
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
+    void saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
 
 private:
 
@@ -589,7 +571,7 @@ private:
 //================================================================
 
 template <typename Type>
-stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
+void ScalarVisualizationProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
 {
     auto newCoordBack = coordBack;
 
@@ -608,11 +590,7 @@ stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>
 
     ////
 
-    require((visualizeScalarMatrix<Type, uint8_x4>)(img, newCoordBack, channel, valueTransform, upsampleType, borderMode, dest, stdPass));
-
-    ////
-
-    returnTrue;
+    visualizeScalarMatrix<Type, uint8_x4>(img, newCoordBack, channel, valueTransform, upsampleType, borderMode, dest, stdPass);
 }
 
 //================================================================
@@ -622,7 +600,7 @@ stdbool ScalarVisualizationProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>
 //================================================================
 
 template <typename Kit>
-stdbool standardEntry
+void standardEntry
 (
     const Point<Space>& imageSize,
     DisplayMode displayMode,
@@ -677,8 +655,6 @@ stdbool standardEntry
             REQUIRE(false);
         }
     }
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -691,7 +667,7 @@ stdbool standardEntry
     auto upsampleTypeParam = upsampleSize; \
     auto upsampleSize = upsampleTypeParam; \
     \
-    require(standardEntry(image.size(), displayMode, hint.target, upsampleFactor, upsampleType, upsampleSize, borderMode, stdPass));
+    standardEntry(image.size(), displayMode, hint.target, upsampleFactor, upsampleType, upsampleSize, borderMode, stdPass);
 
 //================================================================
 //
@@ -700,7 +676,7 @@ stdbool standardEntry
 //================================================================
 
 template <typename Type>
-stdbool GpuImageConsoleThunk::addMatrixExImpl
+void GpuImageConsoleThunk::addMatrixExImpl
 (
     const GpuMatrixAP<const Type>& img,
     int channel,
@@ -740,11 +716,11 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
         ////
 
-        require((visualizeScalarMatrix<Type, uint8_x4>)(img, coordBack, channel, valueTransform, upsampleType, borderMode, gpuMatrix, stdPass));
+        visualizeScalarMatrix<Type, uint8_x4>(img, coordBack, channel, valueTransform, upsampleType, borderMode, gpuMatrix, stdPass);
 
         ////
 
-        require(baseConsole.addImageBgr(gpuMatrix, ImgOutputHint(hint).setDesc(paramMsg(STR("%0 [%1, %2]"), hint.desc, fltf(minVal, 3), fltf(maxVal, 3))), stdPass));
+        baseConsole.addImageBgr(gpuMatrix, ImgOutputHint(hint).setDesc(paramMsg(STR("%0 [%1, %2]"), hint.desc, fltf(minVal, 3), fltf(maxVal, 3))), stdPass);
 
     }
     else if (hint.target == ImgOutputOverlay)
@@ -759,7 +735,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 
         auto msg = hint.desc;
 
-        require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, msg, stdPass));
+        baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, msg, stdPass);
     }
     else
     {
@@ -774,16 +750,14 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
     //
     //----------------------------------------------------------------
 
-    auto printTextValue = [&] () -> stdbool
+    auto printTextValue = [&] () -> void
     {
         Point<Space> userIdx{};
         Type userValue{};
-        require(getElementAtUserPoint(img, coordBack, userIdx, userValue, stdPass));
+        getElementAtUserPoint(img, coordBack, userIdx, userValue, stdPass);
 
         if (getTextEnabled())
             require(printMsgL(kit, STR("Value[%0] = %1"), userIdx, fltg(convertFloat32(userValue), 6)));
-
-        returnTrue;
     };
 
     if (hint.target == ImgOutputOverlay && kit.userPoint.valid)
@@ -803,7 +777,7 @@ stdbool GpuImageConsoleThunk::addMatrixExImpl
 #define TMP_MACRO(Type, _) \
     \
     template \
-    stdbool GpuImageConsoleThunk::addMatrixExImpl<Type> \
+    void GpuImageConsoleThunk::addMatrixExImpl<Type> \
     ( \
         const GpuMatrixAP<const Type>& img, \
         int channel, \
@@ -868,7 +842,7 @@ class VectorVisualizationProvider : public GpuImageProviderBgr32, private Vector
 
 public:
 
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
+    void saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
 
     using Kit = GpuImageConsoleThunk::Kit;
 
@@ -888,7 +862,7 @@ private:
 //================================================================
 
 template <typename Vector>
-stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
+void VectorVisualizationProvider<Vector>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
 {
     Point<float32> coordBackAdd = point(0.f);
 
@@ -904,16 +878,16 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrixAP<uint8_x
 
     ////
 
-    require(visualizeVectorImage(image, dest, linearTransform(coordBackMul, coordBackAdd), valueFactor,
-        upsampleType, borderMode, grayMode, stdPass));
+    visualizeVectorImage(image, dest, linearTransform(coordBackMul, coordBackAdd), valueFactor,
+        upsampleType, borderMode, grayMode, stdPass);
 
     ////
 
-    auto drawArrow = [&] () -> stdbool
+    auto drawArrow = [&] () -> void
     {
         Vector userValue{};
         Point<Space> userIndex{};
-        require(getElementAtUserPoint(image, linearTransform(coordBackMul, coordBackAdd), userIndex, userValue, stdPass));
+        getElementAtUserPoint(image, linearTransform(coordBackMul, coordBackAdd), userIndex, userValue, stdPass);
 
         Point<float32> vectorValue = point(convertFloat32(userValue.x), convertFloat32(userValue.y));
 
@@ -925,18 +899,12 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrixAP<uint8_x
         if (allv(def(vectorValue)))
         {
             auto dstPos = kit.userPoint.floatPos;
-            require(imposeVectorArrow(dest, dstPos, (arrowFactor == 0 ? 1.f : arrowFactor) * vectorValue, arrowFactor == 0, stdPass));
+            imposeVectorArrow(dest, dstPos, (arrowFactor == 0 ? 1.f : arrowFactor) * vectorValue, arrowFactor == 0, stdPass);
         }
-
-        returnTrue;
     };
 
     if (kit.userPoint.valid)
         errorBlock(drawArrow());
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -946,7 +914,7 @@ stdbool VectorVisualizationProvider<Vector>::saveImage(const GpuMatrixAP<uint8_x
 //================================================================
 
 template <typename Vector>
-stdbool GpuImageConsoleThunk::addVectorImageGeneric
+void GpuImageConsoleThunk::addVectorImageGeneric
 (
     const GpuMatrix<const Vector>& image,
     float32 maxVector,
@@ -987,8 +955,8 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
 
     if (vectorMode == VectorMode::OnlyX || vectorMode == VectorMode::OnlyY)
     {
-        require(addMatrixChan(image, vectorMode == VectorMode::OnlyY, -maxVector, +maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPass));
-        returnTrue;
+        addMatrixChan(image, vectorMode == VectorMode::OnlyY, -maxVector, +maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPass);
+        return;
     }
 
     //
@@ -1009,7 +977,7 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
             kit
         };
 
-        require(baseConsole.overlaySetImageBgr(upsampleSize, sourceBgr, hint.desc, stdPass));
+        baseConsole.overlaySetImageBgr(upsampleSize, sourceBgr, hint.desc, stdPass);
     }
 
     //
@@ -1020,12 +988,12 @@ stdbool GpuImageConsoleThunk::addVectorImageGeneric
     {
         GPU_MATRIX_ALLOC(result, uint8_x4, upsampleSize);
 
-        require(visualizeVectorImage(image, result, linearTransform(coordBackMul, point(0.f)), valueFactor, upsampleType, borderMode,
-            vectorMode == VectorMode::Magnitude, stdPass));
+        visualizeVectorImage(image, result, linearTransform(coordBackMul, point(0.f)), valueFactor, upsampleType, borderMode,
+            vectorMode == VectorMode::Magnitude, stdPass);
 
         ////
 
-        require(baseConsole.addImageBgr(result, hint, stdPass));
+        baseConsole.addImageBgr(result, hint, stdPass);
 
     }
 
@@ -1054,11 +1022,10 @@ class Yuv420ConvertProvider : public GpuImageProviderBgr32
 
 public:
 
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
+    void saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
     {
         REQUIRE(equalSize(image.luma, dest));
-        require(convertYuv420ToBgr<Pixel>(image.luma, image.chroma, nullptr, nullptr, point(0), zeroOf<uint8_x4>(), dest, stdPass)); // 0.22 ms
-        returnTrue;
+        convertYuv420ToBgr<Pixel>(image.luma, image.chroma, nullptr, nullptr, point(0), zeroOf<uint8_x4>(), dest, stdPass); // 0.22 ms
     }
 
     Yuv420ConvertProvider(const GpuPackedYuv<const Pixel>& image, const GpuProcessKit& kit)
@@ -1078,7 +1045,7 @@ private:
 //================================================================
 
 template <typename Type>
-stdbool GpuImageConsoleThunk::addYuvImage420Func
+void GpuImageConsoleThunk::addYuvImage420Func
 (
     const GpuPackedYuv<const Type>& image,
     const ImgOutputHint& hint,
@@ -1091,7 +1058,7 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
 
     if (hint.target == ImgOutputOverlay)
     {
-        require(baseConsole.overlaySetImageBgr(image.luma.size(), Yuv420ConvertProvider<Type>(image, kit), hint, stdPass));
+        baseConsole.overlaySetImageBgr(image.luma.size(), Yuv420ConvertProvider<Type>(image, kit), hint, stdPass);
     }
 
     //
@@ -1105,14 +1072,10 @@ stdbool GpuImageConsoleThunk::addYuvImage420Func
         GPU_MATRIX_ALLOC(tmp, uint8_x4, image.luma.size());
 
         auto convertFunc = convertYuv420ToBgr<Type, Chroma, uint8_x4>;
-        require(convertFunc(image.luma, image.chroma, {}, {}, point(0), zeroOf<uint8_x4>(), tmp(), stdPass));
+        convertFunc(image.luma, image.chroma, {}, {}, point(0), zeroOf<uint8_x4>(), tmp(), stdPass);
 
-        require(baseConsole.addImageBgr(tmp, hint, stdPass));
+        baseConsole.addImageBgr(tmp, hint, stdPass);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -1150,7 +1113,7 @@ public:
     UnpackedColorConvertProvider(const ScalarVisualizationParams<Type>& params, ColorMode colorMode, const GpuProcessKit& kit)
         : Base(params), colorMode(colorMode), kit(kit) {}
 
-    stdbool saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
+    void saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const;
 
 private:
 
@@ -1193,7 +1156,7 @@ GPUTOOL_2D_END
 #if HOSTCODE
 
 template <typename Type>
-stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
+void UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4>& dest, stdParsNull) const
 {
     auto newCoordBack = coordBack;
 
@@ -1214,22 +1177,18 @@ stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4
 
     if (colorMode == ColorRgb)
     {
-        require((upconvertValueMatrix<Type, uint8_x4>)(img, newCoordBack, valueTransform, upsampleType, borderMode, dest, stdPass));
+        upconvertValueMatrix<Type, uint8_x4>(img, newCoordBack, valueTransform, upsampleType, borderMode, dest, stdPass);
     }
     else if (colorMode == ColorYuv)
     {
         GPU_MATRIX_ALLOC(tmp, float16_x4, dest.size());
-        require((upconvertValueMatrix<Type, float16_x4>)(img, newCoordBack, valueTransform, upsampleType, borderMode, tmp, stdPass));
-        require(convertPackedYuvToRgb(tmp, dest, stdPass));
+        upconvertValueMatrix<Type, float16_x4>(img, newCoordBack, valueTransform, upsampleType, borderMode, tmp, stdPass);
+        convertPackedYuvToRgb(tmp, dest, stdPass);
     }
     else
     {
         REQUIRE(false);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1239,7 +1198,7 @@ stdbool UnpackedColorConvertProvider<Type>::saveImage(const GpuMatrixAP<uint8_x4
 //================================================================
 
 template <typename Type>
-stdbool GpuImageConsoleThunk::addColorImageFunc
+void GpuImageConsoleThunk::addColorImageFunc
 (
     const GpuMatrixAP<const Type>& img,
     float32 minVal, float32 maxVal,
@@ -1280,7 +1239,7 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
             colorMode, kit
         };
 
-        require(baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, hint.desc, stdPass));
+        baseConsole.overlaySetImageBgr(upsampleSize, outputProvider, hint.desc, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -1289,11 +1248,11 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
     //
     //----------------------------------------------------------------
 
-    auto printTextValue = [&] () -> stdbool
+    auto printTextValue = [&] () -> void
     {
         Point<Space> userIdx{};
         Type userValue{};
-        require(getElementAtUserPoint(img, coordBack, userIdx, userValue, stdPass));
+        getElementAtUserPoint(img, coordBack, userIdx, userValue, stdPass);
 
         if (getTextEnabled())
         {
@@ -1303,8 +1262,6 @@ stdbool GpuImageConsoleThunk::addColorImageFunc
             require(printMsgL(kit, TYPE_IS_BUILTIN_INT(Base) ? STR("Value[%0] = %1 (hex %2)") : STR("Value[%0] = %1"),
                 userIdx, fltg(convertFloat32(userValue), 6), hex(userValue, hexDigits)));
         }
-
-        returnTrue;
     };
 
     if (hint.target == ImgOutputOverlay && kit.userPoint.valid)

@@ -11,4 +11,4 @@
 //================================================================
 
 template <typename Src, typename Dst>
-stdbool downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, const Point<Space>& srcOfs, stdPars(GpuProcessKit));
+void downsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, const Point<Space>& srcOfs, stdPars(GpuProcessKit));

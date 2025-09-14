@@ -302,7 +302,7 @@ void saveString(const StringRef& str, OutputStream& stream, bool valueString)
 //
 //================================================================
 
-stdbool loadFromStream(InputStream& stream, CfgTree& memory, const StringRef& filename, bool trackDataChange, CfgTemporary& temp, stdPars(Kit))
+void loadFromStream(InputStream& stream, CfgTree& memory, const StringRef& filename, bool trackDataChange, CfgTemporary& temp, stdPars(Kit))
 {
     using namespace cfgTree;
 
@@ -539,8 +539,6 @@ stdbool loadFromStream(InputStream& stream, CfgTree& memory, const StringRef& fi
             printMsg(kit.msgLog, STR("Config: Cannot parse line %(%)"), filename, lineIndex, msgWarn);
 
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -857,8 +855,8 @@ class CfgOperationsImpl : public CfgOperations
     //
     //----------------------------------------------------------------
 
-    stdbool loadFromFile(CfgTree& memory, const Char* filename, bool trackDataChange, stdPars(Kit));
-    stdbool saveToFile(CfgTree& memory, const Char* filename, stdPars(Kit));
+    void loadFromFile(CfgTree& memory, const Char* filename, bool trackDataChange, stdPars(Kit));
+    void saveToFile(CfgTree& memory, const Char* filename, stdPars(Kit));
 
     //----------------------------------------------------------------
     //
@@ -866,25 +864,25 @@ class CfgOperationsImpl : public CfgOperations
     //
     //----------------------------------------------------------------
 
-    stdbool loadFromString(CfgTree& memory, const StringRef& str, stdPars(Kit))
+    void loadFromString(CfgTree& memory, const StringRef& str, stdPars(Kit))
     {
         stdExceptBegin;
 
         temp.reserve();
 
         InputStream stream{str};
-        require(loadFromStream(stream, memory, STR("memoryFile"), false, temp, stdPass));
+        loadFromStream(stream, memory, STR("memoryFile"), false, temp, stdPass);
 
         stdExceptEnd;
     }
 
-    stdbool saveToString(CfgTree& memory, StringReceiver& receiver, stdPars(Kit))
+    void saveToString(CfgTree& memory, StringReceiver& receiver, stdPars(Kit))
     {
         stdExceptBegin;
 
         OutputStream stream{wholeConfigReserve};
-        require(saveToStream(memory, stream, stdPass));
-        require(receiver(charArray(stream.ptr(), stream.size()), stdPass));
+        saveToStream(memory, stream, stdPass);
+        receiver(charArray(stream.ptr(), stream.size()), stdPass);
 
         stdExceptEnd;
     }
@@ -895,28 +893,28 @@ class CfgOperationsImpl : public CfgOperations
     //
     //----------------------------------------------------------------
 
-    virtual stdbool saveVars(CfgTree& memory, CfgSerialization& serialization, const SaveVarsOptions& options, stdPars(Kit))
+    virtual void saveVars(CfgTree& memory, CfgSerialization& serialization, const SaveVarsOptions& options, stdPars(Kit))
     {
         stdExceptBegin;
 
         temp.reserve();
 
         SaveVarsToTreeArgs args{serialization, memory, temp, options.saveOnlyUnsyncedVars, options.updateSyncedFlag, false};
-        require(saveVarsToTree(args, stdPass));
+        saveVarsToTree(args, stdPass);
 
         stdExceptEnd;
     }
 
     ////
 
-    virtual stdbool loadVars(CfgTree& memory, CfgSerialization& serialization, const LoadVarsOptions& options, stdPars(Kit))
+    virtual void loadVars(CfgTree& memory, CfgSerialization& serialization, const LoadVarsOptions& options, stdPars(Kit))
     {
         stdExceptBegin;
 
         temp.reserve();
 
         LoadVarsFromTreeArgs args{serialization, memory, temp, options.loadOnlyUnsyncedVars, options.updateSyncedFlag};
-        require(loadVarsFromTree(args, stdPass));
+        loadVarsFromTree(args, stdPass);
 
         stdExceptEnd;
     }
@@ -931,7 +929,7 @@ class CfgOperationsImpl : public CfgOperations
 
 private:
 
-    stdbool saveToStream(CfgTree& memory, OutputStream& stream, stdPars(Kit))
+    void saveToStream(CfgTree& memory, OutputStream& stream, stdPars(Kit))
     {
         auto levelVars = makeArray(levelVarsArr, maxStaticLevels);
 
@@ -946,10 +944,6 @@ private:
         auto args = SaveTreeArgs{stream, levelVars};
 
         saveTree(args, 0, memory);
-
-        ////
-
-        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -980,7 +974,7 @@ UniquePtr<CfgOperations> CfgOperations::create()
 //
 //================================================================
 
-stdbool CfgOperationsImpl::loadFromFile(CfgTree& memory, const Char* filename, bool trackDataChange, stdPars(Kit))
+void CfgOperationsImpl::loadFromFile(CfgTree& memory, const Char* filename, bool trackDataChange, stdPars(Kit))
 {
     stdExceptBegin;
 
@@ -1011,7 +1005,7 @@ stdbool CfgOperationsImpl::loadFromFile(CfgTree& memory, const Char* filename, b
     //----------------------------------------------------------------
 
     BinaryFileImpl file;
-    require(file.open(filenameStr, false, false, stdPass));
+    file.open(filenameStr, false, false, stdPass);
 
     auto rawSize = file.getSize();
 
@@ -1022,12 +1016,12 @@ stdbool CfgOperationsImpl::loadFromFile(CfgTree& memory, const Char* filename, b
     StringStorage content;
     content.resize(size, false);
 
-    require(file.read(content.data(), size * sizeof(Char), stdPass));
+    file.read(content.data(), size * sizeof(Char), stdPass);
 
     ////
 
     InputStream stream{content};
-    require(loadFromStream(stream, memory, filenameStr, trackDataChange, temp, stdPass));
+    loadFromStream(stream, memory, filenameStr, trackDataChange, temp, stdPass);
 
     ////
 
@@ -1040,7 +1034,7 @@ stdbool CfgOperationsImpl::loadFromFile(CfgTree& memory, const Char* filename, b
 //
 //================================================================
 
-stdbool CfgOperationsImpl::saveToFile(CfgTree& memory, const Char* filename, stdPars(Kit))
+void CfgOperationsImpl::saveToFile(CfgTree& memory, const Char* filename, stdPars(Kit))
 {
     stdExceptBegin;
 
@@ -1075,13 +1069,13 @@ stdbool CfgOperationsImpl::saveToFile(CfgTree& memory, const Char* filename, std
     {
         OutputStream stream{wholeConfigReserve};
 
-        require(saveToStream(memory, stream, stdPass));
+        saveToStream(memory, stream, stdPass);
 
         BinaryFileImpl file;
-        require(file.open(tmpFilenameStr, true, true, stdPass));
-        require(file.truncate(stdPass));
+        file.open(tmpFilenameStr, true, true, stdPass);
+        file.truncate(stdPass);
 
-        require(file.write(stream.ptr(), stream.size() * sizeof(*stream.ptr()), stdPass));
+        file.write(stream.ptr(), stream.size() * sizeof(*stream.ptr()), stdPass);
     }
 
     //----------------------------------------------------------------

@@ -37,7 +37,7 @@ struct InitArgs
 //
 //================================================================
 
-using EventSource = Callable<stdbool (bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdParsNull)>;
+using EventSource = Callable<void (bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdParsNull)>;
 
 //================================================================
 //
@@ -45,7 +45,7 @@ using EventSource = Callable<stdbool (bool waitEvents, const OptionalObject<uint
 //
 //================================================================
 
-using Drawer = Callable<stdbool (const GpuMatrix<uint8_x4>& dstImage, stdParsNull)>;
+using Drawer = Callable<void (const GpuMatrix<uint8_x4>& dstImage, stdParsNull)>;
 
 //================================================================
 //
@@ -53,7 +53,7 @@ using Drawer = Callable<stdbool (const GpuMatrix<uint8_x4>& dstImage, stdParsNul
 //
 //================================================================
 
-using DrawReceiver = Callable<stdbool (Drawer& drawer, stdParsNull)>;
+using DrawReceiver = Callable<void (Drawer& drawer, stdParsNull)>;
 
 //================================================================
 //
@@ -93,7 +93,7 @@ struct GuiClass
 
     using InitKit = KitCombine<DiagnosticKit, MallocKit, TimerKit>;
 
-    virtual stdbool init(const InitArgs& args, stdPars(InitKit)) =0;
+    virtual void init(const InitArgs& args, stdPars(InitKit)) =0;
 
     ////
 
@@ -126,7 +126,7 @@ struct GuiClass
         CfgSerialization& guiSerialization; // GuiClass + the external shell
     };
 
-    virtual stdbool processEvents(const ProcessArgs& args, stdPars(ProcessKit)) =0;
+    virtual void processEvents(const ProcessArgs& args, stdPars(ProcessKit)) =0;
 
 };
 

@@ -11,7 +11,7 @@ namespace cfgVarsImpl {
 //
 //================================================================
 
-using StringReceiver = Callable<stdbool (const CharArray& str, stdParsNull)>;
+using StringReceiver = Callable<void (const CharArray& str, stdParsNull)>;
 
 //----------------------------------------------------------------
 

@@ -69,7 +69,7 @@ TMP_MACRO2(BORDER_MIRROR)
 #if HOSTCODE
 
 template <>
-stdbool warpImage
+void warpImage
 (
     const GpuMatrix<const SRC_PIXEL>& src,
     const LinearTransform<Point<float32>>& srcTransform,
@@ -85,11 +85,11 @@ stdbool warpImage
     #define TMP_MACRO(borderMode) \
         { \
             if (interpType == INTERP_LINEAR) \
-                {require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_LINEAR, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass));} \
+                {PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_LINEAR, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass);} \
             else if (interpType == INTERP_CUBIC) \
-                {require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass));} \
+                {PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass);} \
             else if (interpType == INTERP_CUBIC_BSPLINE) \
-                {require(PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC_BSPLINE, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass));} \
+                {PREP_PASTE_UNDER5(warpImageFunc, SRC_PIXEL, DST_PIXEL, INTERP_CUBIC_BSPLINE, borderMode)(src, map, dst, srcTransform, mapScaleFactor, mapValueFactor, stdPass);} \
             else \
                 {REQUIRE(false);} \
         }
@@ -102,8 +102,6 @@ stdbool warpImage
         REQUIRE(false);
 
     #undef TMP_MACRO
-
-    returnTrue;
 }
 
 #endif

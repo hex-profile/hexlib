@@ -38,7 +38,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool drawSingleRect(const DrawSingleRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
+void drawSingleRect(const DrawSingleRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
 {
     auto org = args.org;
     auto end = args.end;
@@ -47,14 +47,12 @@ stdbool drawSingleRect(const DrawSingleRectArgs& args, const GpuMatrix<uint8_x4>
     end = clampRange(end, point(0), dst.size());
 
     if_not (org < end)
-        returnTrue;
+        return;
 
     GpuMatrix<uint8_x4> dstRegion;
     REQUIRE(dst.subr(org, end, dstRegion));
 
-    require(drawSingleRectFunc(dstRegion, org, args, stdPass));
-
-    returnTrue;
+    drawSingleRectFunc(dstRegion, org, args, stdPass);
 }
 
 #endif
@@ -93,7 +91,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool drawFilledRect(const DrawFilledRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
+void drawFilledRect(const DrawFilledRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit))
 {
     auto org = minv(args.inner.org, args.outer.org);
     auto end = maxv(args.inner.end, args.outer.end);
@@ -102,14 +100,12 @@ stdbool drawFilledRect(const DrawFilledRectArgs& args, const GpuMatrix<uint8_x4>
     end = clampRange(end, point(0), dst.size());
 
     if_not (org < end)
-        returnTrue;
+        return;
 
     GpuMatrix<uint8_x4> dstRegion;
     REQUIRE(dst.subr(org, end, dstRegion));
 
-    require(drawFilledRectFunc(dstRegion, org, args, stdPass));
-
-    returnTrue;
+    drawFilledRectFunc(dstRegion, org, args, stdPass);
 }
 
 #endif

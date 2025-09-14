@@ -54,7 +54,7 @@ public:
 
 public:
 
-    stdbool reallocEx
+    void reallocEx
     (
         const Point<Space>& newBaseSize,
         Space newLevels,
@@ -73,7 +73,7 @@ public:
 public:
 
     template <typename Kit>
-    inline stdbool realloc
+    inline void realloc
     (
         const Point<Space>& newBaseSize,
         Space newLevels,
@@ -84,7 +84,7 @@ public:
         stdPars(Kit)
     )
     {
-        return reallocEx
+        reallocEx
         (
             newBaseSize, newLevels, newLayers, scale, sizeRounding, options,
             kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc,
@@ -95,7 +95,7 @@ public:
 public:
 
     template <typename Kit>
-    inline stdbool realloc
+    inline void realloc
     (
         const Point<Space>& newBaseSize,
         Space newLevels,
@@ -105,7 +105,7 @@ public:
         stdPars(Kit)
     )
     {
-        return realloc(newBaseSize, newLevels, newLayers, scale, sizeRounding, PyramidConfigOptions{}, stdPassThru);
+        realloc(newBaseSize, newLevels, newLayers, scale, sizeRounding, PyramidConfigOptions{}, stdPassThru);
     }
 
 private:

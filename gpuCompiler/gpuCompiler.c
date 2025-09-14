@@ -148,7 +148,7 @@ inline StlString filenameToCString(const StlString& str)
 //
 //================================================================
 
-stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
+void runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 {
     StlString cmdline;
 
@@ -166,9 +166,7 @@ stdbool runProcess(const vector<StlString>& args, stdPars(CompilerKit))
 
     ////
 
-    require(runProcess(cmdline, stdPass));
-
-    returnTrue;
+    runProcess(cmdline, stdPass);
 }
 
 //================================================================
@@ -189,7 +187,7 @@ constexpr int outputOptionLen = OS_CHOICE(2, 1);
 //
 //================================================================
 
-stdbool parseCompilerArgs
+void parseCompilerArgs
 (
     const vector<StlString>& args,
     vector<StlString>& includes,
@@ -220,8 +218,6 @@ stdbool parseCompilerArgs
             outputDir = tmpDir;
             outputFile = body;
         }
-
-        returnTrue;
     };
 
     ////
@@ -269,7 +265,7 @@ stdbool parseCompilerArgs
                 if (body.size())
                 {
                     prevOption = 0;
-                    require(handleOutputOption(body, stdPass));
+                    handleOutputOption(body, stdPass);
                 }
             }
             else
@@ -286,7 +282,7 @@ stdbool parseCompilerArgs
                 defines.push_back(s);
             else if (prevOption == 'O')
             {
-                require(handleOutputOption(s, stdPass));
+                handleOutputOption(s, stdPass);
             }
             else
             {
@@ -301,8 +297,6 @@ stdbool parseCompilerArgs
             prevOption = 0;
         }
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -313,13 +307,13 @@ stdbool parseCompilerArgs
 //
 //================================================================
 
-stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(CompilerKit))
+void prepareForDeviceCompilation(const StlString& inputName, const StlString& outputName, stdPars(CompilerKit))
 {
     InputTextFile<CharType> inputStream;
-    require(inputStream.open(inputName.c_str(), stdPass));
+    inputStream.open(inputName.c_str(), stdPass);
 
     OutputTextFile file;
-    require(file.open(outputName.c_str(), stdPass));
+    file.open(outputName.c_str(), stdPass);
 
     auto log = getLog(file, kit);
 
@@ -343,9 +337,7 @@ stdbool prepareForDeviceCompilation(const StlString& inputName, const StlString&
     printMsg(log, STR(""));
     printMsg(log, STR("#endif"));
 
-    require(file.flushAndClose(stdPass));
-
-    returnTrue;
+    file.flushAndClose(stdPass);
 }
 
 //================================================================
@@ -722,7 +714,7 @@ void extractKernelAndSamplerNames(const CharType* filePtr, size_t fileSize, vect
 //
 //================================================================
 
-stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch, stdPars(CompilerKit))
+void addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch, stdPars(CompilerKit))
 {
     REMEMBER_CLEANUP_EX(formatError, printMsg(kit.msgLog, STR("HEXLIB_GPU_ARCH should be a colon-separated list of integers")));
 
@@ -750,7 +742,6 @@ stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch
     ////
 
     formatError.cancel();
-    returnTrue;
 }
 
 //================================================================
@@ -759,7 +750,7 @@ stdbool addTargetArch(vector<StlString>& nvccArgs, const StlString& platformArch
 //
 //================================================================
 
-stdbool compileDevicePartToBin
+void compileDevicePartToBin
 (
     const StlString& inputPath,
     const StlString& binPath,
@@ -796,7 +787,7 @@ stdbool compileDevicePartToBin
 
     StlString cuInputPath = sprintMsg(kit, STR("%0/%1.cu"), inputDir, inputName);
     REMEMBER_CLEANUP(remove(cuInputPath.c_str()));
-    require(prepareForDeviceCompilation(inputPath, cuInputPath, stdPass));
+    prepareForDeviceCompilation(inputPath, cuInputPath, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -837,7 +828,7 @@ stdbool compileDevicePartToBin
         nvccArgs.push_back(CT("-o"));
         nvccArgs.push_back(cupPath);
 
-        require(addTargetArch(nvccArgs, platformArch, stdPass));
+        addTargetArch(nvccArgs, platformArch, stdPass);
 
         nvccArgs.push_back(cuInputPath);
 
@@ -847,7 +838,7 @@ stdbool compileDevicePartToBin
                 printMsg(kit.msgLog, STR("[NVCC %0] %1"), dec(i, 2), nvccArgs[i]);
         }
 
-        require(runProcess(nvccArgs, stdPass));
+        runProcess(nvccArgs, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -859,7 +850,7 @@ stdbool compileDevicePartToBin
     auto readCharFile = [] (const StlString& filename, vector<CharType>& result, stdPars(CompilerKit))
     {
         BinaryFileImpl file;
-        require(file.open(charArrayFromPtr(filename.c_str()), false, false, stdPass));
+        file.open(charArrayFromPtr(filename.c_str()), false, false, stdPass);
         auto fileSizeInBytes = file.getSize();
 
         REQUIRE(intLessEq(fileSizeInBytes, typeMax<size_t>()));
@@ -868,8 +859,7 @@ stdbool compileDevicePartToBin
 
         result.resize(fileSize);
 
-        require(file.read(result.data(), fileSize * sizeof(CharType), stdPass));
-        returnTrue;
+        file.read(result.data(), fileSize * sizeof(CharType), stdPass);
     };
 
     //----------------------------------------------------------------
@@ -879,7 +869,7 @@ stdbool compileDevicePartToBin
     //----------------------------------------------------------------
 
     vector<CharType> cupData;
-    require(readCharFile(cupPath, cupData, stdPass));
+    readCharFile(cupPath, cupData, stdPass);
 
     //
     // Extract kernel and sampler names
@@ -906,14 +896,14 @@ stdbool compileDevicePartToBin
         //
 
         vector<CharType> oldData;
-        require(readCharFile(cachedPath, oldData, stdPass));
+        readCharFile(cachedPath, oldData, stdPass);
 
         ////
 
         if (sourcesAreIdentical(oldData.data(), oldData.size(), cupData.data(), cupData.size()))
         {
             remove(cupPath.c_str());
-            returnTrue;
+            return;
         }
     }
 
@@ -940,9 +930,9 @@ stdbool compileDevicePartToBin
 
         nvccArgs.push_back(cupPath);
 
-        require(addTargetArch(nvccArgs, platformArch, stdPass));
+        addTargetArch(nvccArgs, platformArch, stdPass);
 
-        require(runProcess(nvccArgs, stdPass));
+        runProcess(nvccArgs, stdPass);
     }
 
     //
@@ -959,11 +949,11 @@ stdbool compileDevicePartToBin
 
     #if defined(_WIN32)
 
-        require(runProcess(sprintMsg(kit, STR("cmd /c \"%0\""), dumpSass), stdPass));
+        runProcess(sprintMsg(kit, STR("cmd /c \"%0\""), dumpSass), stdPass);
 
     #elif defined(__linux__)
 
-        require(runProcess(sprintMsg(kit, STR("sh -c \"%0\""), dumpSass), stdPass));
+        runProcess(sprintMsg(kit, STR("sh -c \"%0\""), dumpSass), stdPass);
 
     #else
 
@@ -978,8 +968,6 @@ stdbool compileDevicePartToBin
     //
 
     rename(cupPath.c_str(), cachedPath.c_str());
-
-    returnTrue;
 }
 
 //================================================================
@@ -988,7 +976,7 @@ stdbool compileDevicePartToBin
 //
 //================================================================
 
-stdbool makeCppBinAssembly
+void makeCppBinAssembly
 (
     const StlString& cppPath,
     const StlString& binPath,
@@ -999,7 +987,7 @@ stdbool makeCppBinAssembly
 )
 {
     OutputTextFile file;
-    require(file.open(outPath.c_str(), stdPass));
+    file.open(outPath.c_str(), stdPass);
 
     auto log = getLog(file, kit);
 
@@ -1044,19 +1032,18 @@ stdbool makeCppBinAssembly
     auto readBinFile = [] (const StlString& filename, vector<Byte>& result, stdPars(CompilerKit))
     {
         BinaryFileImpl file;
-        require(file.open(charArrayFromPtr(filename.c_str()), false, false, stdPass));
+        file.open(charArrayFromPtr(filename.c_str()), false, false, stdPass);
 
         auto fileSize = size_t{0};
         REQUIRE(convertExact(file.getSize(), fileSize));
 
         result.resize(fileSize);
 
-        require(file.read(result.data(), fileSize, stdPass));
-        returnTrue;
+        file.read(result.data(), fileSize, stdPass);
     };
 
     vector<Byte> binData;
-    require(readBinFile(binPath, binData, stdPass));
+    readBinFile(binPath, binData, stdPass);
 
     //
     // Neccessary definitions
@@ -1231,9 +1218,7 @@ stdbool makeCppBinAssembly
     // Flush
     //
 
-    require(file.flushAndClose(stdPass));
-
-    returnTrue;
+    file.flushAndClose(stdPass);
 }
 
 //================================================================
@@ -1264,7 +1249,7 @@ bool importUnicodeString(StlString::const_iterator ptr, StlString::const_iterato
 //
 //================================================================
 
-stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
+void mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
 {
 
     //----------------------------------------------------------------
@@ -1304,10 +1289,10 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             //system(cmdline.c_str());
 
             InputTextFile<CharType> rspFile;
-            require(rspFile.open(rspFileName.c_str(), stdPass));
+            rspFile.open(rspFileName.c_str(), stdPass);
 
             StlString content;
-            require(rspFile.readEntireFileToString(content, stdPass));
+            rspFile.readEntireFileToString(content, stdPass);
 
             ////
 
@@ -1373,7 +1358,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
     StlString outputFile;
     vector<StlString> otherArgs;
 
-    require(parseCompilerArgs(args, includes, defines, cppFiles, cudaFiles, outputDir, outputFile, otherArgs, stdPass));
+    parseCompilerArgs(args, includes, defines, cppFiles, cudaFiles, outputDir, outputFile, otherArgs, stdPass);
 
     bool gpuDetected = cudaFiles.size() > 0;
 
@@ -1390,9 +1375,9 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         clArgs.push_back(compilerName);
         clArgs.insert(clArgs.end(), cmdArgs.begin(), cmdArgs.end());
 
-        require(runProcess(clArgs, stdPass));
+        runProcess(clArgs, stdPass);
 
-        returnTrue;
+        return;
     }
 
     //----------------------------------------------------------------
@@ -1496,7 +1481,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         clArgs.push_back(sprintMsg(kit, STR("-%0%1"), outputOption, outputFile));
         clArgs.insert(clArgs.end(), cppFiles.begin(), cppFiles.end());
 
-        require(runProcess(clArgs, stdPass));
+        runProcess(clArgs, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -1533,7 +1518,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
         clArgs.push_back(sprintMsg(kit, STR("-%0%1"), outputOption, outputFile));
         clArgs.insert(clArgs.end(), cudaFiles.begin(), cudaFiles.end());
 
-        require(runProcess(clArgs, stdPass));
+        runProcess(clArgs, stdPass);
     }
 
     //----------------------------------------------------------------
@@ -1566,7 +1551,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             StlString binPath = sprintMsg(kit, STR("%0/%1.bin"), outputDir, inputName);
             StlString asmPath = sprintMsg(kit, STR("%0/%1.asm"), outputDir, inputName);
 
-            require(compileDevicePartToBin(inputPath, binPath, asmPath, kernelNames, samplerNames, includes, defines, platformArch, platformBitness, platformDisasm, stdPass));
+            compileDevicePartToBin(inputPath, binPath, asmPath, kernelNames, samplerNames, includes, defines, platformArch, platformBitness, platformDisasm, stdPass);
 
             if (0)
             {
@@ -1579,7 +1564,7 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
             //
 
             StlString cppAssemblyPath = sprintMsg(kit, STR("%0/%1.assembled.cpp"), outputDir, inputName);
-            require(makeCppBinAssembly(inputPath, binPath, cppAssemblyPath, kernelNames, samplerNames, stdPass));
+            makeCppBinAssembly(inputPath, binPath, cppAssemblyPath, kernelNames, samplerNames, stdPass);
 
             //
             // Compile the assembled CPP
@@ -1618,14 +1603,10 @@ stdbool mainFunc(int argCount, const CharType* argStr[], stdPars(CompilerKit))
                 clArgs.push_back(sprintMsg(kit, STR("-%0%1"), outputOption, outputFile));
                 clArgs.push_back(cppAssemblyPath);
 
-                require(runProcess(clArgs, stdPass));
+                runProcess(clArgs, stdPass);
             }
         }
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

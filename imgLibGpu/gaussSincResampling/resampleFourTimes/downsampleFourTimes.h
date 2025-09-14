@@ -12,7 +12,7 @@ namespace gaussSincResampling {
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleFourTimesConservative
+void downsampleFourTimesConservative
 (
     const GpuMatrix<const Src>& src,
     const GpuMatrix<Dst>& dst,
@@ -21,7 +21,7 @@ stdbool downsampleFourTimesConservative
 );
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleFourTimesConservativeDual
+void downsampleFourTimesConservativeDual
 (
     const GpuMatrix<const Src>& srcA,
     const GpuMatrix<Dst>& dstA,

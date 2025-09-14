@@ -11,6 +11,7 @@
 #include "tests/gaussPresentationTest/gaussPresentationTest.h"
 #include "tests/mallocTest/mallocTest.h"
 #include "tests/popCountTest/popCountTest.h"
+#include "tests/preciseIntrinsicsCalib/picPatternTest.h"
 #include "tests/quatGenTest/quatGenTest.h"
 #include "tests/resamplingTest/resamplingTest.h"
 #include "tests/rotation3dTest/rotation3dTest.h"
@@ -29,7 +30,7 @@ class TestShellImpl : public TestShell
 public:
 
     void serialize(const ModuleSerializeKit& kit);
-    stdbool process(Process& baseProcess, stdPars(ProcessKit));
+    void process(Process& baseProcess, stdPars(ProcessKit));
 
 private:
 
@@ -44,6 +45,7 @@ private:
     UniqueInstance<PopCountTest> popCountTest;
     UniqueInstance<ExceptionTest> exceptionTest;
     UniqueInstance<FontTest> fontTest;
+    UniqueInstance<PicPatternTest> picPatternTest;
 
 };
 
@@ -114,6 +116,15 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
             CFG_NAMESPACE("Font Test");
             fontTest->serialize(kit);
         }
+
+        {
+            CFG_NAMESPACE("Precise Intrinsics Calibration");
+
+            {
+                CFG_NAMESPACE("Pattern Generator");
+                picPatternTest->serialize(kit);
+            }
+        }
     }
 }
 
@@ -123,7 +134,7 @@ void TestShellImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool TestShellImpl::process(Process& baseProcess, stdPars(ProcessKit))
+void TestShellImpl::process(Process& baseProcess, stdPars(ProcessKit))
 {
 
     //----------------------------------------------------------------
@@ -134,68 +145,74 @@ stdbool TestShellImpl::process(Process& baseProcess, stdPars(ProcessKit))
 
     if (fourierFilterBank.active())
     {
-        require(fourierFilterBank.process({}, stdPass));
-        returnTrue;
+        fourierFilterBank.process({}, stdPass);
+        return;
     }
 
     if (gaussPresentationTest.active())
     {
-        require(gaussPresentationTest.process({}, stdPass));
-        returnTrue;
+        gaussPresentationTest.process({}, stdPass);
+        return;
     }
 
     if (resamplingTest.active())
     {
         errorBlock(resamplingTest.process(resamplingTest::ProcessParams(kit.gpuRgbFrame), stdPassNc));
-        returnTrue;
+        return;
     }
 
     if (rotation3dTest.active())
     {
         errorBlock(rotation3dTest.process(stdPassNc));
-        returnTrue;
+        return;
     }
 
     if (mallocTest->active())
     {
-        require(mallocTest->process(stdPass));
-        returnTrue;
+        mallocTest->process(stdPass);
+        return;
     }
 
     if (atanTest->active())
     {
-        require(atanTest->process(stdPass));
-        returnTrue;
+        atanTest->process(stdPass);
+        return;
     }
 
     if (formatTest->active())
     {
-        require(formatTest->process(stdPass));
-        returnTrue;
+        formatTest->process(stdPass);
+        return;
     }
 
     if (quatGenTest->active())
     {
-        require(quatGenTest->process(stdPass));
-        returnTrue;
+        quatGenTest->process(stdPass);
+        return;
     }
 
     if (popCountTest->active())
     {
-        require(popCountTest->process(stdPass));
-        returnTrue;
+        popCountTest->process(stdPass);
+        return;
     }
 
     if (exceptionTest->active())
     {
-        require(exceptionTest->process(stdPass));
-        returnTrue;
+        exceptionTest->process(stdPass);
+        return;
     }
 
     if (fontTest->active())
     {
-        require(fontTest->process(stdPass));
-        returnTrue;
+        fontTest->process(stdPass);
+        return;
+    }
+
+    if (picPatternTest->active())
+    {
+        picPatternTest->process(stdPass);
+        return;
     }
 
     //----------------------------------------------------------------
@@ -204,11 +221,7 @@ stdbool TestShellImpl::process(Process& baseProcess, stdPars(ProcessKit))
     //
     //----------------------------------------------------------------
 
-    require(baseProcess(stdPass));
-
-    ////
-
-    returnTrue;
+    baseProcess(stdPass);
 }
 
 //----------------------------------------------------------------

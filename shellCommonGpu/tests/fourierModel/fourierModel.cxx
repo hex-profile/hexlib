@@ -78,7 +78,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool fourierSeparable
+void fourierSeparable
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,
@@ -98,10 +98,8 @@ stdbool fourierSeparable
     ////
 
     GPU_MATRIX_ALLOC(tmp, float32_x2, point(dst.sizeX(), src.sizeY()));
-    require(fourierSeparableFunc(src, circleTable, tmp, src.sizeX(), dstToFreqX, true, stdPass));
-    require(fourierSeparableFunc(tmp, circleTable, dst, src.sizeY(), dstToFreqY, false, stdPass));
-
-    returnTrue;
+    fourierSeparableFunc(src, circleTable, tmp, src.sizeX(), dstToFreqX, true, stdPass);
+    fourierSeparableFunc(tmp, circleTable, dst, src.sizeY(), dstToFreqY, false, stdPass);
 }
 
 #endif
@@ -183,7 +181,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool invFourierSeparable
+void invFourierSeparable
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,
@@ -200,10 +198,8 @@ stdbool invFourierSeparable
     ////
 
     GPU_MATRIX_ALLOC(tmp, float32_x2, point(dst.sizeX(), src.sizeY()));
-    require(invFourierSeparableFunc(src, circleTable, tmp, src.sizeX(), dst.sizeX(), srcToFreqX, true, normalize, stdPass));
-    require(invFourierSeparableFunc(tmp, circleTable, dst, src.sizeY(), dst.sizeY(), srcToFreqY, false, normalize, stdPass));
-
-    returnTrue;
+    invFourierSeparableFunc(src, circleTable, tmp, src.sizeX(), dst.sizeX(), srcToFreqX, true, normalize, stdPass);
+    invFourierSeparableFunc(tmp, circleTable, dst, src.sizeY(), dst.sizeY(), srcToFreqY, false, normalize, stdPass);
 }
 
 #endif
@@ -272,7 +268,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool orientedFourier
+void orientedFourier
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,
@@ -286,9 +282,7 @@ stdbool orientedFourier
     float32 dstSizef = convertFloat32(dst.sizeX());
     LinearTransform<float32> dstToFreqX = ltByTwoPoints(0.f, -1.f/minPeriod, dstSizef, +1.f/minPeriod);
 
-    require(orientedFourierKernel(src, circleTable, dst, src.size(), dstToFreqX, stdPass));
-
-    returnTrue;
+    orientedFourierKernel(src, circleTable, dst, src.size(), dstToFreqX, stdPass);
 }
 
 #endif
@@ -353,7 +347,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool invOrientedFourier
+void invOrientedFourier
 (
     const GpuMatrix<const float32_x2>& src,
     const GpuMatrix<float32_x2>& dst,
@@ -366,9 +360,7 @@ stdbool invOrientedFourier
     Point<float32> srcSizef = convertFloat32(src.size());
     LinearTransform<float32> srcToFreqX = ltByTwoPoints(0.f, -1.f/minPeriod, srcSizef.X, +1.f/minPeriod);
 
-    require(invOrientedFourierKernel(src, circleTable, dst, src.size(), srcToFreqX, stdPass));
-
-    returnTrue;
+    invOrientedFourierKernel(src, circleTable, dst, src.size(), srcToFreqX, stdPass);
 }
 
 #endif

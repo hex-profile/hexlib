@@ -63,7 +63,7 @@ public:
 
 public:
 
-    static stdbool getStatistics(int32& moduleCount, int32& kernelCount, int32& samplerCount, stdPars(ErrorLogKit));
+    static void getStatistics(int32& moduleCount, int32& kernelCount, int32& samplerCount, stdPars(ErrorLogKit));
 
     //----------------------------------------------------------------
     //
@@ -73,7 +73,7 @@ public:
 
 public:
 
-    stdbool create(const GpuContext& context, stdPars(CreateKit));
+    void create(const GpuContext& context, stdPars(CreateKit));
     void destroy();
 
     //----------------------------------------------------------------
@@ -84,8 +84,8 @@ public:
 
 public:
 
-    stdbool fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const;
-    stdbool fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const;
+    void fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const;
+    void fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const;
 
     //----------------------------------------------------------------
     //

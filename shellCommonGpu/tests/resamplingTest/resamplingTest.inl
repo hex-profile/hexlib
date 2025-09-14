@@ -105,7 +105,7 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool FUNCNAME
+void FUNCNAME
 (
     const GpuMatrix<const PIXEL>& src,
     const GpuMatrix<PIXEL>& dst,
@@ -116,10 +116,8 @@ stdbool FUNCNAME
 {
     GPU_MATRIX_ALLOC(tmp, PIXEL, point(dst.sizeX(), src.sizeY()));
 
-    require(PREP_PASTE4(FUNCNAME, Horizontal, PIXEL, KERNEL)(src, tmp, downsampleFactor.X, filterKernel, stdPass));
-    require(PREP_PASTE4(FUNCNAME, Vertical, PIXEL, KERNEL)(tmp, dst, downsampleFactor.Y, filterKernel, stdPass));
-
-    returnTrue;
+    PREP_PASTE4(FUNCNAME, Horizontal, PIXEL, KERNEL)(src, tmp, downsampleFactor.X, filterKernel, stdPass);
+    PREP_PASTE4(FUNCNAME, Vertical, PIXEL, KERNEL)(tmp, dst, downsampleFactor.Y, filterKernel, stdPass);
 }
 
 #endif

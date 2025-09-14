@@ -34,7 +34,7 @@ struct SaveVarsToTreeArgs
     bool const debugPrint;
 };
 
-stdbool saveVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit));
+void saveVarsToTree(const SaveVarsToTreeArgs& args, stdPars(Kit));
 
 //================================================================
 //
@@ -51,7 +51,7 @@ struct LoadVarsFromTreeArgs
     bool const updateSyncedFlag;
 };
 
-stdbool loadVarsFromTree(const LoadVarsFromTreeArgs& args, stdPars(Kit));
+void loadVarsFromTree(const LoadVarsFromTreeArgs& args, stdPars(Kit));
 
 //----------------------------------------------------------------
 

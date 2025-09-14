@@ -82,7 +82,7 @@ private:
 //
 //================================================================
 
-stdbool mutexCreate(Mutex& section, stdPars(ThreadToolKit))
+void mutexCreate(Mutex& section, stdPars(ThreadToolKit))
 {
     section.clear();
 
@@ -90,8 +90,6 @@ stdbool mutexCreate(Mutex& section, stdPars(ThreadToolKit))
 
     constructDefault(sectionEx);
     section.intrface = &sectionEx;
-
-    returnTrue;
 }
 
 //================================================================
@@ -138,7 +136,7 @@ public:
 
 public:
 
-    stdbool create(stdPars(ThreadToolKit))
+    void create(stdPars(ThreadToolKit))
     {
         clear();
 
@@ -150,8 +148,6 @@ public:
         ////
 
         DEBUG_ONLY(testPtr = malloc(3);)
-
-        returnTrue;
     }
 
 public:
@@ -187,7 +183,7 @@ private:
 //
 //================================================================
 
-stdbool eventCreate(EventOwner& event, stdPars(ThreadToolKit))
+void eventCreate(EventOwner& event, stdPars(ThreadToolKit))
 {
     event.clear();
 
@@ -196,13 +192,9 @@ stdbool eventCreate(EventOwner& event, stdPars(ThreadToolKit))
     auto& eventEx = event.data.recast<EventWin32>();
 
     constructDefault(eventEx);
-    require(eventEx.create(stdPass));
+    eventEx.create(stdPass);
 
     event.intrface = &eventEx;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -299,7 +291,7 @@ public:
 public:
 
     // Open is atomic
-    stdbool open(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, stdPars(ErrorLogKit))
+    void open(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, stdPars(ErrorLogKit))
     {
         REQUIRE(!opened);
 
@@ -317,8 +309,6 @@ public:
 
         DEBUG_ONLY(testPtr = malloc(11);) // do not check the debug allocation
         opened = true;
-
-        returnTrue;
     }
 
     void close()
@@ -370,7 +360,7 @@ public:
 //
 //================================================================
 
-stdbool threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
+void threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
 
@@ -379,14 +369,12 @@ stdbool threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackS
     constructDefault(threadControlEx);
     REMEMBER_CLEANUP_EX(destructControl, destruct(threadControlEx));
 
-    require(threadControlEx.open(threadFunc, threadParams, stackSize, stdPassThru));
+    threadControlEx.open(threadFunc, threadParams, stackSize, stdPassThru);
 
     ////
 
     destructControl.cancel();
     threadControl.intrface = &threadControlEx;
-
-    returnTrue;
 }
 
 //================================================================
@@ -395,7 +383,7 @@ stdbool threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackS
 //
 //================================================================
 
-stdbool threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit))
+void threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit))
 {
     threadControl.waitAndClear();
 
@@ -403,8 +391,6 @@ stdbool threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit))
 
     constructDefault(threadControlEx);
     threadControl.intrface = &threadControlEx;
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

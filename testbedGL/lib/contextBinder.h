@@ -18,6 +18,6 @@ struct ContextBinder
 
     using Kit = KitCombine<ErrorLogKit, MsgLogExKit>;
 
-    virtual stdbool bind(stdPars(Kit)) =0;
-    virtual stdbool unbind(stdPars(Kit)) =0;
+    virtual void bind(stdPars(Kit)) =0;
+    virtual void unbind(stdPars(Kit)) =0;
 };

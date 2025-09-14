@@ -10,7 +10,7 @@
 //
 //================================================================
 
-stdbool pointUsage()
+void pointUsage()
 {
     stdTraceRoot;
 
@@ -86,6 +86,4 @@ stdbool pointUsage()
     Point<int> t3 = clampMin(A, 0);
     Point<int> t4 = clampMax(A, 10);
     Point<int> t5 = clampRange(A, 0, 10);
-
-    returnTrue;
 }

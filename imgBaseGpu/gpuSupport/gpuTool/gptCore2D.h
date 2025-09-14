@@ -71,7 +71,7 @@
     \
     hostDeclareKernel(prefix##Kernel, prefix##Params, o) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         PREP_IF(superTaskSupport, Space superTaskCount) PREP_IF_COMMA(superTaskSupport) \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
@@ -81,7 +81,7 @@
     ) \
     { \
         if_not (kit.dataProcessing) \
-            returnTrue; \
+            return; \
         \
         auto globSize = point<Space>(0); \
         GPT_FOREACH(matrixList, GPT_GET_SIZE) \
@@ -95,7 +95,7 @@
         REQUIRE(superTaskCount >= 1); \
         \
         if_not (groupCountX && groupCountY && superTaskCount) \
-            returnTrue; \
+            return; \
         \
         GPT_FOREACH_SAMPLER(samplerList, GPT_BIND_SAMPLER, prefix) \
         \
@@ -105,21 +105,16 @@
         kernelParams.globSize = globSize; \
         GPT_FOREACH(paramList, GPT_SET_PARAM_FIELD) \
         \
-        require \
+        kit.gpuKernelCalling.callKernel \
         ( \
-            kit.gpuKernelCalling.callKernel \
-            ( \
-                point3D(groupCountX, groupCountY, superTaskCount), \
-                point((tileSizeX) * (cellSizeX), (tileSizeY) * (cellSizeY)), \
-                areaOf(globSize), \
-                prefix##Kernel, \
-                kernelParams, \
-                kit.gpuCurrentStream, \
-                stdPassLocationMsg("Kernel") \
-            ) \
+            point3D(groupCountX, groupCountY, superTaskCount), \
+            point((tileSizeX) * (cellSizeX), (tileSizeY) * (cellSizeY)), \
+            areaOf(globSize), \
+            prefix##Kernel, \
+            kernelParams, \
+            kit.gpuCurrentStream, \
+            stdPassLocationMsg("Kernel") \
         ); \
-        \
-        returnTrue; \
     }
 
 //================================================================
@@ -130,7 +125,7 @@
 
 #define GPT_CALLER_2D_PROTO(prefix, samplerList, matrixList, matrixPitch, paramList) \
     \
-    stdbool prefix \
+    void prefix \
     ( \
         GPT_FOREACH_SAMPLER(samplerList, GPT_DECLARE_SAMPLER_ARG, o) \
         GPT_FOREACH(matrixList, PREP_PASTE_UNDER(GPT_DECLARE_MATRIX_ARG, matrixPitch)) \

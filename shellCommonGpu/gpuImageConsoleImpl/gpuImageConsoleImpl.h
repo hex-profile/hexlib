@@ -27,26 +27,26 @@ public:
     void setTextEnabled(bool textEnabled)
         {}
 
-    stdbool clear(stdPars(Kit))
-        {CHECK(false); returnTrue;}
+    void clear(stdPars(Kit))
+        {CHECK(false);}
 
-    stdbool update(stdPars(Kit))
-        {CHECK(false); returnTrue;}
+    void update(stdPars(Kit))
+        {CHECK(false);}
 
-    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
-        {CHECK(false); returnTrue;}
+    void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+        {CHECK(false);}
 
-    stdbool overlayClear(stdPars(Kit))
-        {CHECK(false); returnTrue;}
+    void overlayClear(stdPars(Kit))
+        {CHECK(false);}
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
-        {CHECK(false); returnTrue;}
+    void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
+        {CHECK(false);}
 
-    stdbool overlaySetImageFake(stdPars(Kit))
-        {CHECK(false); returnTrue;}
+    void overlaySetImageFake(stdPars(Kit))
+        {CHECK(false);}
 
-    stdbool overlayUpdate(stdPars(Kit))
-        {CHECK(false); returnTrue;}
+    void overlayUpdate(stdPars(Kit))
+        {CHECK(false);}
 
 };
 
@@ -75,26 +75,26 @@ class GpuImageConsoleThunk : public GpuImageConsole
 
 public:
 
-    stdbool clear(stdPars(Kit))
-        {return baseConsole.clear(stdPassThru);}
+    void clear(stdPars(Kit))
+        {baseConsole.clear(stdPassThru);}
 
-    stdbool update(stdPars(Kit))
-        {return baseConsole.update(stdPassThru);}
+    void update(stdPars(Kit))
+        {baseConsole.update(stdPassThru);}
 
-    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
-        {return baseConsole.addImageBgr(img, hint, stdPassThru);}
+    void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+        {baseConsole.addImageBgr(img, hint, stdPassThru);}
 
-    stdbool overlayClear(stdPars(Kit))
-        {return baseConsole.overlayClear(stdPassThru);}
+    void overlayClear(stdPars(Kit))
+        {baseConsole.overlayClear(stdPassThru);}
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
-        {return baseConsole.overlaySetImageBgr(size, img, hint, stdPassThru);}
+    void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
+        {baseConsole.overlaySetImageBgr(size, img, hint, stdPassThru);}
 
-    stdbool overlaySetImageFake(stdPars(Kit))
-        {return baseConsole.overlaySetImageFake(stdPassThru);}
+    void overlaySetImageFake(stdPars(Kit))
+        {baseConsole.overlaySetImageFake(stdPassThru);}
 
-    stdbool overlayUpdate(stdPars(Kit))
-        {return baseConsole.overlayUpdate(stdPassThru);}
+    void overlayUpdate(stdPars(Kit))
+        {baseConsole.overlayUpdate(stdPassThru);}
 
     bool getTextEnabled()
         {return baseConsole.getTextEnabled();}
@@ -112,7 +112,7 @@ public:
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addMatrixFunc \
+        void addMatrixFunc \
         ( \
             const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
@@ -124,7 +124,7 @@ public:
             stdParsNull \
         ) \
         { \
-            return addMatrixExImpl(img, 0, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
+            addMatrixExImpl(img, 0, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
         }
 
     IMAGE_CONSOLE_FOREACH_SCALAR_TYPE(TMP_MACRO, _)
@@ -141,7 +141,7 @@ public:
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addMatrixChanFunc \
+        void addMatrixChanFunc \
         ( \
             const GpuMatrixAP<const Type>& img, \
             int channel, \
@@ -154,7 +154,7 @@ public:
             stdParsNull \
         ) \
         { \
-            return addMatrixExImpl(img, channel, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
+            addMatrixExImpl(img, channel, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
         }
 
     IMAGE_CONSOLE_FOREACH_VECTOR_TYPE(TMP_MACRO, _)
@@ -170,7 +170,7 @@ public:
 private:
 
     template <typename Type>
-    stdbool addMatrixExImpl
+    void addMatrixExImpl
     (
         const GpuMatrixAP<const Type>& img,
         int channel,
@@ -192,7 +192,7 @@ private:
 public:
 
     template <typename Vector>
-    stdbool addVectorImageGeneric
+    void addVectorImageGeneric
     (
         const GpuMatrix<const Vector>& image,
         float32 maxVector,
@@ -206,7 +206,7 @@ public:
 
     #define TMP_MACRO(Vector, o) \
         \
-        stdbool addVectorImageFunc \
+        void addVectorImageFunc \
         ( \
             const GpuMatrix<const Vector>& image, \
             float32 maxVector, \
@@ -218,7 +218,7 @@ public:
             stdParsNull \
         ) \
         { \
-            return addVectorImageGeneric<Vector>(image, maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
+            addVectorImageGeneric<Vector>(image, maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassThru); \
         }
 
     IMAGE_CONSOLE_FOREACH_VECTOR_IMAGE_TYPE(TMP_MACRO, o)
@@ -234,7 +234,7 @@ public:
 public:
 
     template <typename Type>
-    stdbool addYuvImage420Func
+    void addYuvImage420Func
     (
         const GpuPackedYuv<const Type>& image,
         const ImgOutputHint& hint,
@@ -245,14 +245,14 @@ public:
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addYuvImage420 \
+        void addYuvImage420 \
         ( \
             const GpuPackedYuv<const Type>& image, \
             const ImgOutputHint& hint, \
             stdParsNull \
         ) \
         { \
-            return addYuvImage420Func(image, hint, stdPassNullThru); \
+            addYuvImage420Func(image, hint, stdPassNullThru); \
         }
 
     IMAGE_CONSOLE_FOREACH_YUV420_TYPE(TMP_MACRO, _)
@@ -268,7 +268,7 @@ public:
 public:
 
     template <typename Type>
-    stdbool addColorImageFunc
+    void addColorImageFunc
     (
         const GpuMatrixAP<const Type>& img,
         float32 minVal, float32 maxVal,
@@ -288,7 +288,7 @@ public:
 
     #define TMP_MACRO2(Type, funcName, colorSpace) \
         \
-        stdbool funcName \
+        void funcName \
         ( \
             const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
@@ -300,7 +300,7 @@ public:
             stdParsNull \
         ) \
         { \
-            return addColorImageFunc(img, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, colorSpace, stdPassThru); \
+            addColorImageFunc(img, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, colorSpace, stdPassThru); \
         }
 
     IMAGE_CONSOLE_FOREACH_X4_TYPE(TMP_MACRO, (addYuvColorImage, ColorYuv))

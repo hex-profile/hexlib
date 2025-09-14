@@ -56,25 +56,26 @@
 //
 //----------------------------------------------------------------
 //
-// This approach eliminates boilerplate return checks but has side effects. In
-// particular, the `stdPass*` macro is no longer a single entity and splits the
-// function call into two statements.
+// This approach eliminates boilerplate return checks but has side effects.
+// In particular, the `stdPass*` macro is no longer a single entity and splits
+// the function call into two statements.
 //
-// As a result, if a function call is under an `if` or `while` statement, only
-// the first part of the macro may be executed, and the check is performed
-// after the statement.
+// As a result, if the function call is under a conditional or loop statement,
+// only the first part of the macro may be executed, and the check
+// will be performed after the statement.
 //
-// At first glance, it seems that this prevents practical use of this method.
-// However, the situation is not so critical: there are no such loops in the
-// codebase, and a Python script exists to identify potential problem areas.
+// At first glance, this seems to doom this method. However, it's not so bad.
 //
-// In the case of an `if+else` structure, the compiler requires the use of
-// curly braces, giving an error at the compilation stage.
+// In the case of an `if+else` construction, the compiler requires the use
+// of curly brackets, giving an error during the compilation stage.
 //
 // In the case of a single `if`, such a place is indeed missed by the compiler,
-// while the flag check is always performed, regardless of the condition, which
-// does not violate the logic of operation but may lead to the execution of two
-// or three extra assembly instructions.
+// while the flag check is always performed, regardless of the condition,
+// which does not disrupt the logic of work, but may lead to the execution of two
+// or three extra assembly commands.
+//
+// To identify problematic places with loops, there is a Python script,
+// the function `check_issues_in_bool_ref_error_mode`.
 //
 //================================================================
 
@@ -101,59 +102,16 @@
     __success{__success},
 
 #define ERROR_HANDLING_CHECK \
-    ); do {if (!__success) return stdbool{};} while (0
+    ); do {if (!__success) return;} while (0
 
 //================================================================
 //
-// stdbool
-//
-//================================================================
-
-struct stdbool {};
-
-//================================================================
-//
-// returnTrue
 // returnFalse
 //
 //================================================================
 
-#define returnTrue \
-    return stdbool{}
-
 #define returnFalse \
-    do {__success = false; return stdbool{};} while (0)
-
-//================================================================
-//
-// requireHelper
-//
-//================================================================
-
-template <typename Type>
-sysinline bool requireHelper(const Type& value)
-    MISSING_FUNCTION_BODY
-
-////
-
-template <>
-sysinline bool requireHelper(const stdbool& value)
-    {return true;}
-
-////
-
-template <>
-sysinline bool requireHelper(const bool& value)
-    {return value;}
-
-//================================================================
-//
-// allv
-//
-//================================================================
-
-sysinline stdbool allv(const stdbool& value)
-    {return value;}
+    do {__success = false; return;} while (0)
 
 //================================================================
 //
@@ -161,15 +119,11 @@ sysinline stdbool allv(const stdbool& value)
 //
 //================================================================
 
-#define require(code) \
+#define require(expression) \
     \
     do \
     { \
-        auto __require_result = code; \
-        \
-        if (requireHelper(allv(__require_result))) \
-            ; \
-        else \
+        if (!allv(expression)) \
             returnFalse; \
     } \
     while (0)
@@ -178,14 +132,48 @@ sysinline stdbool allv(const stdbool& value)
 //
 // errorBlock
 //
+// Suppresses the error in the specified block of code.
+//
+//----------------------------------------------------------------
+//
+// The utility preserves a success flag, then invokes the specified function,
+// subsequently restoring the original success flag state and returning a boolean
+// value indicating the successful execution of the function.
+//
+// When starting with normal code flow, the success flag is already true.
+// In this case, the function suppresses the error by maintaining the true value,
+// then restoring it.
+//
+// However, it is not possible to simply overwrite the flag with true
+// in all cases. There are scenarios where an error has already occurred,
+// and the flag is set to false. During destructor execution or cleanup code,
+// there might be internal cleanup functions that also need error suppression.
+// It is crucial not to carelessly negate the initial error by resetting the flag
+// to a true state.
+//
 //================================================================
 
-sysinline bool errorBlockHelper(bool& __success)
+template <typename Action>
+sysinline bool errorBlockHelper(bool& __success, const Action& action)
 {
-    bool result = __success;
-    __success = true;
-    return result;
+    bool savedSuccess = __success;
+
+    ////
+
+    __success = true; // Required to calculate the actual success of the executed function.
+
+    action();
+
+    bool actionSucceeded = __success;
+
+    ////
+
+    __success = savedSuccess;
+
+    return actionSucceeded;
 }
 
-#define errorBlock(code) \
-    ((code), errorBlockHelper(__success))
+//----------------------------------------------------------------
+
+#define errorBlock(action) \
+    errorBlockHelper(__success, [&] () -> void {return (action);})

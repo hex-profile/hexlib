@@ -35,12 +35,10 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool CircleTableHolder::realloc(Space size, stdPars(GpuProcessKit))
+void CircleTableHolder::realloc(Space size, stdPars(GpuProcessKit))
 {
-    require(table.realloc(point(size, 1), stdPass));
-    require(makeCircleTable(table, stdPass));
-
-    returnTrue;
+    table.realloc(point(size, 1), stdPass);
+    makeCircleTable(table, stdPass);
 }
 
 #endif

@@ -167,10 +167,10 @@ devDefineSampler(srcSampler4, DevSampler2D, DevSamplerFloat, 4)
 #if HOSTCODE
 
 template <typename Src, typename Dst>
-stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, stdPars(GpuProcessKit))
+void upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, stdPars(GpuProcessKit))
 {
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     //
     // The kernel covers destination 2k+1, 2k+2.
@@ -202,27 +202,20 @@ stdbool upsampleTwiceCubic(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>
     if (srcRank == 4) srcSampler = &srcSampler4;
     REQUIRE(srcSampler);
 
-    require(kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, BORDER_CLAMP, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{false}, stdPass));
+    kit.gpuSamplerSetting.setSamplerImage(*srcSampler, src, BORDER_CLAMP, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{false}, stdPass);
 
     ////
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            divUpNonneg(srcRange, point(threadCountX, threadCountY)),
-            point(threadCountX, threadCountY),
-            areaOf(dst),
-            upsampleTwiceKernelLink<Dst>(),
-            UpsampleParams<Dst>{dst},
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        divUpNonneg(srcRange, point(threadCountX, threadCountY)),
+        point(threadCountX, threadCountY),
+        areaOf(dst),
+        upsampleTwiceKernelLink<Dst>(),
+        UpsampleParams<Dst>{dst},
+        kit.gpuCurrentStream,
+        stdPass
     );
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

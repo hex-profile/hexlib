@@ -44,7 +44,7 @@
 //
 //================================================================
 
-stdbool GpuModuleKeeper::getStatistics(int32& moduleCount, int32& kernelCount, int32& samplerCount, stdPars(ErrorLogKit))
+void GpuModuleKeeper::getStatistics(int32& moduleCount, int32& kernelCount, int32& samplerCount, stdPars(ErrorLogKit))
 {
     const GpuModuleDesc* const* modrefPtr = &gpuSectionStart;
     ptrdiff_t modrefCountEx = &gpuSectionEnd - &gpuSectionStart;
@@ -70,8 +70,6 @@ stdbool GpuModuleKeeper::getStatistics(int32& moduleCount, int32& kernelCount, i
             ++moduleCount;
         }
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -80,7 +78,7 @@ stdbool GpuModuleKeeper::getStatistics(int32& moduleCount, int32& kernelCount, i
 //
 //================================================================
 
-stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
+void GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 {
     destroy();
 
@@ -102,11 +100,11 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
     ////
 
-    require(modrefToKernelIndex.realloc(modrefCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+    modrefToKernelIndex.realloc(modrefCount, cpuBaseByteAlignment, kit.malloc, stdPass);
     ARRAY_EXPOSE(modrefToKernelIndex);
     REMEMBER_CLEANUP_EX(kernelIndexCleanup, modrefToKernelIndex.dealloc());
 
-    require(modrefToSamplerIndex.realloc(modrefCount, cpuBaseByteAlignment, kit.malloc, stdPass));
+    modrefToSamplerIndex.realloc(modrefCount, cpuBaseByteAlignment, kit.malloc, stdPass);
     ARRAY_EXPOSE(modrefToSamplerIndex);
     REMEMBER_CLEANUP_EX(samplerIndexCleanup, modrefToSamplerIndex.dealloc());
 
@@ -137,27 +135,27 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
     //
     //----------------------------------------------------------------
 
-    require(moduleInfo.reallocInHeap(moduleCount, stdPass));
+    moduleInfo.reallocInHeap(moduleCount, stdPass);
     ARRAY_EXPOSE(moduleInfo);
     REMEMBER_CLEANUP_EX(moduleInfoCleanup, moduleInfo.dealloc());
 
     ////
 
-    require(kernelHandle.reallocInHeap(kernelCount, stdPass));
+    kernelHandle.reallocInHeap(kernelCount, stdPass);
     ARRAY_EXPOSE(kernelHandle);
     REMEMBER_CLEANUP_EX(kernelHandleCleanup, kernelHandle.dealloc());
 
-    require(kernelInfo.reallocInHeap(kernelCount, stdPass));
+    kernelInfo.reallocInHeap(kernelCount, stdPass);
     ARRAY_EXPOSE(kernelInfo);
     REMEMBER_CLEANUP_EX(kernelInfoCleanup, kernelInfo.dealloc());
 
     ////
 
-    require(samplerHandle.reallocInHeap(samplerCount, stdPass));
+    samplerHandle.reallocInHeap(samplerCount, stdPass);
     ARRAY_EXPOSE(samplerHandle);
     REMEMBER_CLEANUP_EX(samplerHandleCleanup, samplerHandle.dealloc());
 
-    require(samplerInfo.reallocInHeap(samplerCount, stdPass));
+    samplerInfo.reallocInHeap(samplerCount, stdPass);
     ARRAY_EXPOSE(samplerInfo);
     REMEMBER_CLEANUP_EX(samplerInfoCleanup, samplerInfo.dealloc());
 
@@ -197,7 +195,7 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
             ////
 
-            require(kit.gpuModuleCreation.createModuleFromBinary(context, binary, modInfo, stdPass));
+            kit.gpuModuleCreation.createModuleFromBinary(context, binary, modInfo, stdPass);
 
             //
             // Load kernels
@@ -209,8 +207,8 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
                 ////
 
-                require(kit.gpuKernelLoading.createKernelFromModule(modInfo, modDesc.kernelNames[k],
-                    kernelInfoPtr[kernelIdx].owner, stdPass));
+                kit.gpuKernelLoading.createKernelFromModule(modInfo, modDesc.kernelNames[k],
+                    kernelInfoPtr[kernelIdx].owner, stdPass);
 
                 kernelInfoPtr[kernelIdx].name = modDesc.kernelNames[k];
 
@@ -233,8 +231,8 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
 
                 ////
 
-                require(kit.gpuSamplerLoading.getSamplerFromModule(modInfo, modDesc.samplerNames[k],
-                    samplerInfoPtr[samplerIdx].owner, stdPass));
+                kit.gpuSamplerLoading.getSamplerFromModule(modInfo, modDesc.samplerNames[k],
+                    samplerInfoPtr[samplerIdx].owner, stdPass);
 
                 samplerInfoPtr[samplerIdx].name = modDesc.samplerNames[k];
 
@@ -266,8 +264,6 @@ stdbool GpuModuleKeeper::create(const GpuContext& context, stdPars(CreateKit))
     samplerInfoCleanup.cancel();
 
     loaded = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -298,7 +294,7 @@ void GpuModuleKeeper::destroy()
 //
 //================================================================
 
-stdbool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const
+void GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kernel, stdPars(ErrorLogKit)) const
 {
     REQUIRE(loaded);
 
@@ -319,8 +315,6 @@ stdbool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kerne
     ARRAY_EXPOSE(kernelHandle);
     REQUIRE(SpaceU(kernelIdx) < SpaceU(kernelHandleSize));
     kernel = kernelHandlePtr[kernelIdx];
-
-    returnTrue;
 }
 
 //================================================================
@@ -329,7 +323,7 @@ stdbool GpuModuleKeeper::fetchKernel(const GpuKernelLink& link, GpuKernel& kerne
 //
 //================================================================
 
-stdbool GpuModuleKeeper::fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const
+void GpuModuleKeeper::fetchSampler(const GpuSamplerLink& link, GpuSampler& sampler, stdPars(ErrorLogKit)) const
 {
     REQUIRE(loaded);
 
@@ -350,6 +344,4 @@ stdbool GpuModuleKeeper::fetchSampler(const GpuSamplerLink& link, GpuSampler& sa
     ARRAY_EXPOSE(samplerHandle);
     REQUIRE(SpaceU(samplerIdx) < SpaceU(samplerHandleSize));
     sampler = samplerHandlePtr[samplerIdx];
-
-    returnTrue;
 }

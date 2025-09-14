@@ -60,7 +60,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != Display::Nothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -98,12 +98,12 @@ void QuatGenTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool QuatGenTestImpl::process(stdPars(GpuModuleProcessKit))
+void QuatGenTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     Display displayType = kit.verbosity >= Verbosity::On ? displaySwitch : Display::Nothing;
 
     if (displayType == Display::Nothing)
-        returnTrue;
+        return;
 
     ////
 
@@ -143,10 +143,6 @@ stdbool QuatGenTestImpl::process(stdPars(GpuModuleProcessKit))
             worstV = V;
         }
     }
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

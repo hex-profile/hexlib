@@ -27,7 +27,7 @@ typedef void ThreadFunc(void* params);
 //
 //================================================================
 
-stdbool threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit));
+void threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackSize, ThreadControl& threadControl, stdPars(ThreadToolKit));
 
 //================================================================
 //
@@ -35,7 +35,7 @@ stdbool threadCreate(ThreadFunc* threadFunc, void* threadParams, CpuAddrU stackS
 //
 //================================================================
 
-stdbool threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit));
+void threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit));
 
 //================================================================
 //
@@ -43,7 +43,7 @@ stdbool threadGetCurrent(ThreadControl& threadControl, stdPars(ThreadToolKit));
 //
 //================================================================
 
-stdbool mutexCreate(Mutex& section, stdPars(ThreadToolKit));
+void mutexCreate(Mutex& section, stdPars(ThreadToolKit));
 
 //================================================================
 //
@@ -51,4 +51,4 @@ stdbool mutexCreate(Mutex& section, stdPars(ThreadToolKit));
 //
 //================================================================
 
-stdbool eventCreate(EventOwner& event, stdPars(ThreadToolKit));
+void eventCreate(EventOwner& event, stdPars(ThreadToolKit));

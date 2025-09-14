@@ -9,13 +9,13 @@
 //================================================================
 
 template <typename Type>
-stdbool ArrayObjectMemory<Type>::reallocEx(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit))
+void ArrayObjectMemory<Type>::reallocEx(Space size, Space byteAlignment, AllocatorInterface<AddrU>& allocator, bool dataProcessing, stdPars(ErrorLogKit))
 {
     dealloc(); // Call destructors and dealloc memory
 
     ////
 
-    require(ArrayMemoryEx<Type*>::realloc(size, byteAlignment, allocator, stdPassThru));
+    ArrayMemoryEx<Type*>::realloc(size, byteAlignment, allocator, stdPassThru);
 
     ////
 
@@ -29,10 +29,6 @@ stdbool ArrayObjectMemory<Type>::reallocEx(Space size, Space byteAlignment, Allo
 
         constructed = true;
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

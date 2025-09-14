@@ -10,31 +10,29 @@
     bool aOk = errorBlock(a.code); \
     bool bOk = errorBlock(b.code); \
     \
-    require(aOk && bOk); \
-    \
-    returnTrue;
+    require(aOk && bOk);
 
 ////
 
-stdbool GpuBaseConsoleSplitter::clear(stdPars(Kit))
+void GpuBaseConsoleSplitter::clear(stdPars(Kit))
     {SPLITTER(clear(stdPassNc))}
 
-stdbool GpuBaseConsoleSplitter::update(stdPars(Kit))
+void GpuBaseConsoleSplitter::update(stdPars(Kit))
     {SPLITTER(update(stdPassNc))}
 
-stdbool GpuBaseConsoleSplitter::addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+void GpuBaseConsoleSplitter::addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
     {SPLITTER(addImageBgr(img, hint, stdPassNc))}
 
-stdbool GpuBaseConsoleSplitter::overlayClear(stdPars(Kit))
+void GpuBaseConsoleSplitter::overlayClear(stdPars(Kit))
     {SPLITTER(overlayClear(stdPassNc))}
 
-stdbool GpuBaseConsoleSplitter::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
+void GpuBaseConsoleSplitter::overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit))
     {SPLITTER(overlaySetImageBgr(size, img, hint, stdPassNc))}
 
-stdbool GpuBaseConsoleSplitter::overlaySetImageFake(stdPars(Kit))
+void GpuBaseConsoleSplitter::overlaySetImageFake(stdPars(Kit))
     {SPLITTER(overlaySetImageFake(stdPassNc))}
 
-stdbool GpuBaseConsoleSplitter::overlayUpdate(stdPars(Kit))
+void GpuBaseConsoleSplitter::overlayUpdate(stdPars(Kit))
     {SPLITTER(overlayUpdate(stdPassNc))}
 
 bool GpuBaseConsoleSplitter::getTextEnabled()

@@ -43,8 +43,8 @@ COPY_FOREACH(TMP_MACRO, o)
 
 #define TMP_MACRO(Type, o) \
     template <> \
-    stdbool gpuMatrixCopyImpl(const GpuMatrixAP<const Type>& src, const GpuMatrixAP<Type>& dst, stdPars(GpuProcessKit)) \
-        {return gpuMatrixCopyFunc_##Type(src, dst, stdPassThru);}
+    void gpuMatrixCopyImpl(const GpuMatrixAP<const Type>& src, const GpuMatrixAP<Type>& dst, stdPars(GpuProcessKit)) \
+        {gpuMatrixCopyFunc_##Type(src, dst, stdPassThru);}
 
 HOST_ONLY(COPY_FOREACH(TMP_MACRO, o))
 
@@ -80,8 +80,8 @@ COPY_FOREACH(TMP_MACRO, o)
 
 #define TMP_MACRO(Type, o) \
     template <> \
-    stdbool gpuArrayCopy(const GpuArray<const Type>& src, const GpuArray<Type>& dst, stdPars(GpuProcessKit)) \
-        {return gpuArrayCopyFunc_##Type(src, dst, stdPassThru);}
+    void gpuArrayCopy(const GpuArray<const Type>& src, const GpuArray<Type>& dst, stdPars(GpuProcessKit)) \
+        {gpuArrayCopyFunc_##Type(src, dst, stdPassThru);}
 
 HOST_ONLY(COPY_FOREACH(TMP_MACRO, o))
 

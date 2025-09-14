@@ -220,9 +220,9 @@ public:
     GaussPresentationTestImpl();
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != DisplayNothing;}
-    stdbool realloc(stdPars(GpuModuleReallocKit)) {returnTrue;}
+    void realloc(stdPars(GpuModuleReallocKit)) {}
     bool reallocValid() const {return true;}
-    stdbool process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
+    void process(const ProcessParams& o, stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -282,12 +282,12 @@ void GaussPresentationTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
+void GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuModuleProcessKit))
 {
     DisplayType displayType = kit.verbosity >= Verbosity::On ? displaySwitch : DisplayNothing;
 
     if (displayType == DisplayNothing)
-        returnTrue;
+        return;
 
     ////
 
@@ -300,22 +300,19 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
     //----------------------------------------------------------------
 
     GPU_MATRIX_ALLOC(hiresData, float32, hiSize);
-    require(fillEdgeImage(hiresData, circleCCW(rotationAngle()), stdPass));
+    fillEdgeImage(hiresData, circleCCW(rotationAngle()), stdPass);
 
     ////
 
     if (displayType == DisplayHiresInput)
     {
-        require
+        kit.gpuImageConsole.addMatrixEx
         (
-            kit.gpuImageConsole.addMatrixEx
-            (
-                hiresData,
-                0, kit.display.factor, point(1.f),
-                INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP,
-                STR("Hires Input"),
-                stdPass
-            )
+            hiresData,
+            0, kit.display.factor, point(1.f),
+            INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP,
+            STR("Hires Input"),
+            stdPass
         );
     }
 
@@ -329,7 +326,7 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
 
     GPU_MATRIX_ALLOC(loresData, float32, loSize);
 
-    require(downsampleByFilter(hiresData, loresData, downsampleFactor, downsampleScale, gaussSigma, kit.alternative, stdPass));
+    downsampleByFilter(hiresData, loresData, downsampleFactor, downsampleScale, gaussSigma, kit.alternative, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -341,40 +338,30 @@ stdbool GaussPresentationTestImpl::process(const ProcessParams& o, stdPars(GpuMo
 
     ///
 
-    require
+    upsampleByFilter
     (
-        upsampleByFilter
-        (
-            loresData,
-            upsampledData,
-            upsampleFactor,
-            convertFloat32(hiSize) / downsampleFactor(),
-            convertFloat32(hiSize),
-            upsampleScale,
-            gaussSigma,
-            kit.alternative,
-            stdPass
-        )
+        loresData,
+        upsampledData,
+        upsampleFactor,
+        convertFloat32(hiSize) / downsampleFactor(),
+        convertFloat32(hiSize),
+        upsampleScale,
+        gaussSigma,
+        kit.alternative,
+        stdPass
     );
 
     if (displayType == DisplayHiresOutput)
     {
-        require
+        kit.gpuImageConsole.addMatrixEx
         (
-            kit.gpuImageConsole.addMatrixEx
-            (
-                upsampledData,
-                0, kit.display.factor, point(1.f),
-                INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP,
-                STR("Hires Output"),
-                stdPass
-            )
+            upsampledData,
+            0, kit.display.factor, point(1.f),
+            INTERP_NEAREST, kit.display.screenSize, BORDER_CLAMP,
+            STR("Hires Output"),
+            stdPass
         );
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

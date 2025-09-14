@@ -31,7 +31,7 @@ public:
     GpuBaseImageProvider(const GpuProcessKit& kit)
         : kit(kit) {}
 
-    stdbool setImage(const GpuMatrixAP<const ColorPixel>& image, stdParsNull);
+    void setImage(const GpuMatrixAP<const ColorPixel>& image, stdParsNull);
 
 public:
 
@@ -41,9 +41,9 @@ public:
     Space desiredBaseByteAlignment() const
         {return kit.gpuProperties.samplerAndFastTransferBaseAlignment;}
 
-    stdbool saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull);
+    void saveBgr32(const MatrixAP<ColorPixel>& dest, stdParsNull);
 
-    stdbool saveBgr24(const MatrixAP<MonoPixel>& dest, stdParsNull);
+    void saveBgr24(const MatrixAP<MonoPixel>& dest, stdParsNull);
 
 private:
 
@@ -69,53 +69,43 @@ class GpuBaseConsoleByCpuThunk : public GpuBaseConsole
 
 public:
 
-    stdbool clear(stdPars(Kit))
+    void clear(stdPars(Kit))
     {
         if (kit.dataProcessing)
-            require(baseImageConsole.clear(stdPassThru));
-
-        returnTrue;
+            baseImageConsole.clear(stdPassThru);
     }
 
-    stdbool update(stdPars(Kit))
+    void update(stdPars(Kit))
     {
         if (kit.dataProcessing)
-            require(baseImageConsole.update(stdPassThru));
-
-        returnTrue;
+            baseImageConsole.update(stdPassThru);
     }
 
 public:
 
-    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
-        {return addImageCopyImpl(img, hint, stdPassThru);}
+    void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit))
+        {addImageCopyImpl(img, hint, stdPassThru);}
 
 public:
 
-    stdbool overlayClear(stdPars(Kit))
+    void overlayClear(stdPars(Kit))
     {
         if (kit.dataProcessing)
-            require(baseVideoOverlay.overlayClear(stdPassThru));
-
-        returnTrue;
+            baseVideoOverlay.overlayClear(stdPassThru);
     }
 
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit));
+    void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit));
 
-    stdbool overlaySetImageFake(stdPars(Kit))
+    void overlaySetImageFake(stdPars(Kit))
     {
         if (kit.dataProcessing)
-            require(baseVideoOverlay.overlaySetFake(stdPassThru));
-
-        returnTrue;
+            baseVideoOverlay.overlaySetFake(stdPassThru);
     }
 
-    stdbool overlayUpdate(stdPars(Kit))
+    void overlayUpdate(stdPars(Kit))
     {
         if (kit.dataProcessing)
-            require(baseVideoOverlay.overlayUpdate(stdPassThru));
-
-        returnTrue;
+            baseVideoOverlay.overlayUpdate(stdPassThru);
     }
 
 public:
@@ -129,7 +119,7 @@ public:
 public:
 
     template <typename Type>
-    stdbool addImageCopyImpl(const GpuMatrixAP<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit));
+    void addImageCopyImpl(const GpuMatrixAP<const Type>& gpuMatrix, const ImgOutputHint& hint, stdPars(Kit));
 
 public:
 

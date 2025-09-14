@@ -49,7 +49,7 @@ struct GuiClassImpl : public GuiClass
     //
     //----------------------------------------------------------------
 
-    stdbool init(const InitArgs& args, stdPars(InitKit));
+    void init(const InitArgs& args, stdPars(InitKit));
 
     ////
 
@@ -64,7 +64,7 @@ struct GuiClassImpl : public GuiClass
     //
     //----------------------------------------------------------------
 
-    stdbool processEvents(const ProcessArgs& args, stdPars(ProcessKit));
+    void processEvents(const ProcessArgs& args, stdPars(ProcessKit));
 
     //----------------------------------------------------------------
     //
@@ -81,7 +81,7 @@ struct GuiClassImpl : public GuiClass
         CfgSerialization& guiSerialization;
     };
 
-    stdbool processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit));
+    void processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit));
 
     //----------------------------------------------------------------
     //
@@ -103,9 +103,9 @@ struct GuiClassImpl : public GuiClass
 
     ////
 
-    stdbool drawNormal(const DrawArgs& args, stdPars(ProcessKit));
+    void drawNormal(const DrawArgs& args, stdPars(ProcessKit));
 
-    stdbool drawErrorPattern(const DrawArgs& args, stdPars(ProcessKit));
+    void drawErrorPattern(const DrawArgs& args, stdPars(ProcessKit));
 
     ////
 
@@ -119,7 +119,7 @@ struct GuiClassImpl : public GuiClass
         const GpuMatrix<uint8_x4>& dstImage;
     };
 
-    stdbool updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(ProcessKit));
+    void updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(ProcessKit));
 
     //----------------------------------------------------------------
     //
@@ -127,7 +127,7 @@ struct GuiClassImpl : public GuiClass
     //
     //----------------------------------------------------------------
 
-    stdbool printHelp(const ProcessArgs& args, bool printAlgoKeys, stdPars(ProcessKit));
+    void printHelp(const ProcessArgs& args, bool printAlgoKeys, stdPars(ProcessKit));
 
     //----------------------------------------------------------------
     //
@@ -373,19 +373,19 @@ void GuiClassImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool GuiClassImpl::init(const InitArgs& args, stdPars(InitKit))
+void GuiClassImpl::init(const InitArgs& args, stdPars(InitKit))
 {
     initialized = false;
 
     ////
 
-    require(minimalShell->init(stdPass));
+    minimalShell->init(stdPass);
 
     ////
 
-    require(keyBuffer->reserve(64, stdPass));
+    keyBuffer->reserve(64, stdPass);
 
-    require(signalSupport.initSignals(args.guiSerialization, stdPass));
+    signalSupport.initSignals(args.guiSerialization, stdPass);
 
     ////
 
@@ -395,8 +395,6 @@ stdbool GuiClassImpl::init(const InitArgs& args, stdPars(InitKit))
     ////
 
     initialized = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -405,7 +403,7 @@ stdbool GuiClassImpl::init(const InitArgs& args, stdPars(InitKit))
 //
 //================================================================
 
-stdbool GuiClassImpl::drawErrorPattern(const DrawArgs& args, stdPars(ProcessKit))
+void GuiClassImpl::drawErrorPattern(const DrawArgs& args, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -435,7 +433,7 @@ stdbool GuiClassImpl::drawErrorPattern(const DrawArgs& args, stdPars(ProcessKit)
     //
     //----------------------------------------------------------------
 
-    require(::drawErrorPattern(args.dstImage, stdPass));
+    ::drawErrorPattern(args.dstImage, stdPass);
 
     ////
 
@@ -448,7 +446,7 @@ stdbool GuiClassImpl::drawErrorPattern(const DrawArgs& args, stdPars(ProcessKit)
 //
 //================================================================
 
-stdbool GuiClassImpl::drawNormal(const DrawArgs& args, stdPars(ProcessKit))
+void GuiClassImpl::drawNormal(const DrawArgs& args, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -503,15 +501,15 @@ stdbool GuiClassImpl::drawNormal(const DrawArgs& args, stdPars(ProcessKit))
     auto guiModuleThunk = ms::engineModuleThunk
     (
         [&] () {return guiModule->reallocValid();},
-        [&] (stdPars(auto)) {return guiModule->realloc(stdPassKit(kitCombine(kit, gpuAppAllocKit)));},
-        [&] (stdPars(auto)) {return guiModule->draw(args, stdPass);}
+        [&] (stdPars(auto)) {guiModule->realloc(stdPassKit(kitCombine(kit, gpuAppAllocKit)));},
+        [&] (stdPars(auto)) {guiModule->draw(args, stdPass);}
     );
 
     ////
 
     bool sysAllocHappened{};
 
-    require(minimalShell->process({&externalContext, guiModuleThunk, guiModuleMemory, true, sysAllocHappened}, stdPass));
+    minimalShell->process({&externalContext, guiModuleThunk, guiModuleMemory, true, sysAllocHappened}, stdPass);
 
     ////
 
@@ -544,11 +542,11 @@ public:
     virtual void clearImage()
         {return base.clearImage();}
 
-    virtual stdbool setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(SetImageKit))
-        {return base.setImage(size, provider, stdPassThru);}
+    virtual void setImage(const Point<Space>& size, const GpuImageProviderBgr32& provider, stdPars(SetImageKit))
+        {base.setImage(size, provider, stdPassThru);}
 
-    virtual stdbool useImage(ImageUser& imageUser, stdPars(UseImageKit))
-        {return base.useImage(imageUser, stdPassThru);}
+    virtual void useImage(ImageUser& imageUser, stdPars(UseImageKit))
+        {base.useImage(imageUser, stdPassThru);}
 
     ////
 
@@ -576,7 +574,7 @@ private:
 //
 //================================================================
 
-stdbool GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit))
+void GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, stdPars(ProcessKit))
 {
 
     //----------------------------------------------------------------
@@ -727,8 +725,6 @@ stdbool GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, s
 
         CHECK(args.workerService.addConfigUpdate(*configInputUpdate)); // Send to WORKER
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -737,7 +733,7 @@ stdbool GuiClassImpl::processInputUpdates(const ProcessInputUpdatesArgs& args, s
 //
 //================================================================
 
-stdbool GuiClassImpl::updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(ProcessKit))
+void GuiClassImpl::updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -771,7 +767,7 @@ stdbool GuiClassImpl::updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(P
     auto drawArgs = DrawArgs{*overlayBuffer, *globalLogBuffer, *localLogBuffer, args.dstImage};
 
     if_not (errorBlock(drawNormal(drawArgs, stdPassNc)))
-        require(drawErrorPattern(drawArgs, stdPass));
+        drawErrorPattern(drawArgs, stdPass);
 
     ////
 
@@ -784,7 +780,7 @@ stdbool GuiClassImpl::updateAndRedraw(const UpdateAndRedrawArgs& args, stdPars(P
 //
 //================================================================
 
-stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool printAlgoKeys, stdPars(ProcessKit))
+void GuiClassImpl::printHelp(const ProcessArgs& args, bool printAlgoKeys, stdPars(ProcessKit))
 {
     stdExceptBegin;
 
@@ -822,7 +818,7 @@ stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool printAlgoKeys, std
 
         size_t signalCount{};
 
-        require(signalTools::gatherActionSet(args.guiSerialization, receiver, signalCount, stdPass));
+        signalTools::gatherActionSet(args.guiSerialization, receiver, signalCount, stdPass);
 
         printMsg(kit.msgLog, STR(""));
 
@@ -852,7 +848,7 @@ stdbool GuiClassImpl::printHelp(const ProcessArgs& args, bool printAlgoKeys, std
 //
 //================================================================
 
-stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit))
+void GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit))
 {
     REQUIRE(initialized);
 
@@ -875,14 +871,12 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     {
         using namespace cfgSerializeImpl;
 
-        require(saveVarsToTree({args.guiSerialization, *configOutputBuffer, configTemp, true, true, false}, stdPass));
+        saveVarsToTree({args.guiSerialization, *configOutputBuffer, configTemp, true, true, false}, stdPass);
 
         ////
 
         if (configOutputBuffer->hasUpdates())
             REQUIRE(args.configService.addConfigUpdate(*configOutputBuffer));
-
-        returnTrue;
     };
 
     errorBlock(updateConfigVars());
@@ -895,9 +889,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
 
     auto keyReceiver = KeyReceiver::O | [&] (const KeyEvent& event, stdParsNull)
     {
-        require(keyBuffer->receiveKey(event, stdPass));
-
-        returnTrue;
+        keyBuffer->receiveKey(event, stdPass);
     };
 
     ////
@@ -906,7 +898,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     {
         auto drawer = Drawer::O | [&] (auto& dstImage, stdParsNull)
         {
-            return updateAndRedraw
+            updateAndRedraw
             (
                 {args.guiService, args.workerService, args.logService, args.intrinsicBuffer, args.guiSerialization, dstImage},
                 stdPass
@@ -914,8 +906,6 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
         };
 
         errorBlock(args.drawReceiver(drawer, stdPassNullNc));
-
-        returnTrue;
     };
 
     ////
@@ -927,14 +917,12 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
         errorBlock(guiModule->mouseMoveReceiver(pos, redraw, stdPassNc));
 
         if (redraw.on)
-            require(refreshReceiver(stdPass));
+            refreshReceiver(stdPass);
 
         auto offset = guiModule->getOverlayOffset();
 
         if (offset)
             mousePointer.position = *offset + pos;
-
-        returnTrue;
     };
 
     ////
@@ -946,29 +934,25 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
         errorBlock(guiModule->mouseButtonReceiver(event, redraw, stdPassNc));
 
         if (redraw.on)
-            require(refreshReceiver(stdPass));
+            refreshReceiver(stdPass);
 
         if (event.button == 0)
             mousePointer.button0 = event.press;
 
         if (event.button == 1)
             mousePointer.button1 = event.press;
-
-        returnTrue;
     };
 
     ////
 
     auto scrollReceiver = ScrollReceiver::O | [&] (auto& event, stdParsNull)
     {
-        returnTrue;
     };
 
     ////
 
     auto resizeReceiver = ResizeReceiver::O | [&] (auto& event, stdParsNull)
     {
-        returnTrue;
     };
 
     ////
@@ -994,7 +978,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
 
     ////
 
-    require(guiModule->checkWake({*globalLogBuffer}, stdPass));
+    guiModule->checkWake({*globalLogBuffer}, stdPass);
 
     auto wakeMoment = guiModule->getWakeMoment();
 
@@ -1017,7 +1001,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
 
     bool noWait = (waitTimeoutMs && *waitTimeoutMs == 0);
 
-    require(args.eventSource(!noWait, waitTimeoutMs, receivers, stdPass));
+    args.eventSource(!noWait, waitTimeoutMs, receivers, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -1141,7 +1125,6 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
         }
 
         editRequest->addRequest(textEditor(), textEditorHelpMessage());
-        returnTrue;
     };
 
     ////
@@ -1174,14 +1157,12 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     {
         auto body = [&] ()
         {
-            require(printHelp(args, printAlgoKeysSignal != 0, stdPass));
+            printHelp(args, printAlgoKeysSignal != 0, stdPass);
 
-            require(refreshReceiver(stdPass));
+            refreshReceiver(stdPass);
 
-            require(makeEditRequest(stdPass));
+            makeEditRequest(stdPass);
             REQUIRE(args.logService.addEditRequest(*editRequest));
-
-            returnTrue;
         };
 
         errorBlock(body());
@@ -1194,11 +1175,7 @@ stdbool GuiClassImpl::processEvents(const ProcessArgs& args, stdPars(ProcessKit)
     //----------------------------------------------------------------
 
     if (needRedraw)
-        require(refreshReceiver(stdPass));
-
-    ////
-
-    returnTrue;
+        refreshReceiver(stdPass);
 }
 
 //----------------------------------------------------------------

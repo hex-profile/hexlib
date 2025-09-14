@@ -52,7 +52,7 @@ struct GuiModule
     using ReallocKit = KitCombine<GpuModuleReallocKit, GpuAppAllocKit>;
 
     virtual bool reallocValid() const =0;
-    virtual stdbool realloc(stdPars(ReallocKit)) =0;
+    virtual void realloc(stdPars(ReallocKit)) =0;
 
     //----------------------------------------------------------------
     //
@@ -67,7 +67,7 @@ struct GuiModule
 
     using CheckWakeKit = KitCombine<ErrorLogKit, TimerKit>;
 
-    virtual stdbool checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit)) =0;
+    virtual void checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit)) =0;
 
     ////
 
@@ -79,8 +79,8 @@ struct GuiModule
     //
     //----------------------------------------------------------------
 
-    virtual stdbool mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
-    virtual stdbool mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
+    virtual void mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
+    virtual void mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit)) =0;
 
     //----------------------------------------------------------------
     //
@@ -98,7 +98,7 @@ struct GuiModule
         const GpuMatrix<uint8_x4>& dstImage;
     };
 
-    virtual stdbool draw(const DrawArgs& args, stdPars(DrawKit)) =0;
+    virtual void draw(const DrawArgs& args, stdPars(DrawKit)) =0;
 };
 
 //----------------------------------------------------------------

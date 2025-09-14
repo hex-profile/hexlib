@@ -158,10 +158,9 @@ public:
 
 public:
 
-    sysinline stdbool realloc(Space newSize, stdPars(ErrorLogKit))
+    sysinline void realloc(Space newSize, stdPars(ErrorLogKit))
     {
         REQUIRE(reallocStatic(newSize));
-        returnTrue;
     }
 
 public:
@@ -283,4 +282,4 @@ GET_SIZE_DEFINE(PREP_PASS2(ArrayObjectMemoryStatic<Type, maxSize>), value.size()
 #define ARRAY_OBJECT_STATIC_ALLOC(name, Type, maxSize, size) \
     \
     ArrayObjectMemoryStatic<Type, maxSize> name; \
-    require(name.realloc(size, stdPass));
+    name.realloc(size, stdPass);

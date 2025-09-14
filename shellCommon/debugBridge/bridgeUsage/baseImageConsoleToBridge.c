@@ -39,8 +39,7 @@ public:
         {
             Matrix<PixelRgb32> matrix;
             REQUIRE(matrix.assignValidated(dst.ptr, dst.pitch, dst.size.X, dst.size.Y));
-            require(imageProvider.saveBgr32(recastElement<uint8_x4>(matrix), stdPass));
-            returnTrue;
+            imageProvider.saveBgr32(recastElement<uint8_x4>(matrix), stdPass);
         };
 
         if_not (errorBlock(code()))
@@ -53,8 +52,7 @@ public:
         {
             Matrix<PixelMono> matrix;
             REQUIRE(matrix.assignValidated(dst.ptr, dst.pitch, dst.size.X, dst.size.Y));
-            require(imageProvider.saveBgr24(matrix, stdPass));
-            returnTrue;
+            imageProvider.saveBgr24(matrix, stdPass);
         };
 
         if_not (errorBlock(code()))
@@ -74,10 +72,9 @@ private:
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlayClear(stdParsNull)
+void BaseVideoOverlayToBridge::overlayClear(stdParsNull)
 {
     convertExceptions(destOverlay.clear());
-    returnTrue;
 }
 
 //================================================================
@@ -86,7 +83,7 @@ stdbool BaseVideoOverlayToBridge::overlayClear(stdParsNull)
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
+void BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
 {
     BridgeImageProviderThunk bridgeProvider(imageProvider, stdPass);
 
@@ -97,7 +94,7 @@ stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool data
 
         Matrix<uint8_x4> image;
         REQUIRE(image.assignValidated(nullptr, imageProvider.desiredPitch(), size.X, size.Y));
-        require(imageProvider.saveBgr32(image, stdPass));
+        imageProvider.saveBgr32(image, stdPass);
     }
     else
     {
@@ -106,10 +103,6 @@ stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool data
 
         convertExceptions(destOverlay.set(ImagePoint{size.X, size.Y}, bridgeProvider, ""));
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -118,9 +111,8 @@ stdbool BaseVideoOverlayToBridge::overlaySet(const Point<Space>& size, bool data
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlaySetFake(stdParsNull)
+void BaseVideoOverlayToBridge::overlaySetFake(stdParsNull)
 {
-    returnTrue;
 }
 
 //================================================================
@@ -129,9 +121,8 @@ stdbool BaseVideoOverlayToBridge::overlaySetFake(stdParsNull)
 //
 //================================================================
 
-stdbool BaseVideoOverlayToBridge::overlayUpdate(stdParsNull)
+void BaseVideoOverlayToBridge::overlayUpdate(stdParsNull)
 {
-    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -19,7 +19,7 @@ class FloatRangesTestImpl
 public:
 
     void serialize(const ModuleSerializeKit& kit);
-    stdbool process(stdPars(ProcessKit));
+    void process(stdPars(ProcessKit));
 
 private:
 
@@ -58,7 +58,7 @@ float64 convertThruFloat(const Type& value)
 //================================================================
 
 template <typename Int>
-stdbool findFloatFloorCeil(Int intValue, stdPars(DiagnosticKit))
+void findFloatFloorCeil(Int intValue, stdPars(DiagnosticKit))
 {
     float64 exactValue = intValue;
 
@@ -76,10 +76,6 @@ stdbool findFloatFloorCeil(Int intValue, stdPars(DiagnosticKit))
         ++i;
 
     printMsg(kit.msgLog, STR("floatUp(%) = %"), intValue, fltg(convertThruFloat(i), 10));
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -88,20 +84,16 @@ stdbool findFloatFloorCeil(Int intValue, stdPars(DiagnosticKit))
 //
 //================================================================
 
-stdbool FloatRangesTestImpl::process(stdPars(ProcessKit))
+void FloatRangesTestImpl::process(stdPars(ProcessKit))
 {
     if_not (testSignal != 0)
-        returnTrue;
+        return;
 
     ////
 
-    require(findFloatFloorCeil(0x7FFFFFFF, stdPass));
+    findFloatFloorCeil(0x7FFFFFFF, stdPass);
 
-    require(findFloatFloorCeil(0xFFFFFFFF, stdPass));
-
-    ////
-
-    returnTrue;
+    findFloatFloorCeil(0xFFFFFFFF, stdPass);
 }
 
 //================================================================

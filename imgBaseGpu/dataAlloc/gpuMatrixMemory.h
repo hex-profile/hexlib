@@ -63,7 +63,7 @@ public:
 
 public:
 
-    stdbool reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
+    void reallocEx(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit));
 
     ////
 
@@ -105,12 +105,12 @@ public:
     //
 
     template <typename Kit>
-    sysinline stdbool realloc(const Point<Space>& size, stdPars(Kit))
-        {return reallocEx(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
+    sysinline void realloc(const Point<Space>& size, stdPars(Kit))
+        {reallocEx(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, kit.gpuProperties.samplerRowAlignment, kit.gpuFastAlloc, stdPassThru);}
 
     template <typename Kit>
-    sysinline stdbool realloc(const Point<Space>& size, Space rowByteAlignment, stdPars(Kit))
-        {return reallocEx(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);}
+    sysinline void realloc(const Point<Space>& size, Space rowByteAlignment, stdPars(Kit))
+        {reallocEx(size, kit.gpuProperties.samplerAndFastTransferBaseAlignment, rowByteAlignment, kit.gpuFastAlloc, stdPassThru);}
 
 public:
 
@@ -136,4 +136,4 @@ private:
 
 #define GPU_MATRIX_ALLOC(name, Type, size) \
     GpuMatrixMemory<Type> name; \
-    require(name.realloc(size, stdPass));
+    name.realloc(size, stdPass);

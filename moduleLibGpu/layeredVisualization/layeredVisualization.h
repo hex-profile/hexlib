@@ -15,7 +15,7 @@ namespace layeredVisualization {
 //================================================================
 
 template <typename VectorType, typename PresenceType>
-stdbool visualizeLayeredVector
+void visualizeLayeredVector
 (
     const GpuLayeredMatrix<const VectorType>& vectorValue,
     const GpuLayeredMatrix<const PresenceType>& vectorPresence,
@@ -35,7 +35,7 @@ stdbool visualizeLayeredVector
 //================================================================
 
 template <typename VectorType>
-stdbool visualizeLayeredVector
+void visualizeLayeredVector
 (
     const GpuLayeredMatrix<const VectorType>& vectorValue,
     float32 maxVector,

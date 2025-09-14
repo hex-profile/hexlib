@@ -11,7 +11,7 @@
 //================================================================
 
 template <typename Kit>
-sysinline stdbool checkGL(const CharArray& errDesc, stdPars(Kit))
+sysinline void checkGL(const CharArray& errDesc, stdPars(Kit))
 {
     bool ok = true;
 
@@ -24,11 +24,10 @@ sysinline stdbool checkGL(const CharArray& errDesc, stdPars(Kit))
 
         ok = false;
 
-        require(printMsgTrace(STR("OpenGL error: %0: %1."), errDesc, (const char*) gluErrorString(err), msgErr, stdPassThru));
+        printMsgTrace(STR("OpenGL error: %0: %1."), errDesc, (const char*) gluErrorString(err), msgErr, stdPassThru);
     }
 
     require(ok);
-    returnTrue;
 }
 
 ////
@@ -36,7 +35,7 @@ sysinline stdbool checkGL(const CharArray& errDesc, stdPars(Kit))
 #define REQUIRE_GL(statement) \
     do { \
         {statement;} \
-        require(checkGL(STR(PREP_STRINGIZE(statement)), stdPass)); \
+        checkGL(STR(PREP_STRINGIZE(statement)), stdPass); \
     } while (0)
 
 ////
@@ -54,15 +53,15 @@ sysinline stdbool checkGL(const CharArray& errDesc, stdPars(Kit))
 //================================================================
 
 template <typename Kit>
-sysinline stdbool checkGLFuncMsg(const CharArray& funcName, stdPars(Kit))
+sysinline void checkGLFuncMsg(const CharArray& funcName, stdPars(Kit))
 {
-    return printMsgTrace(STR("OpenGL extension %0 is not available."), funcName, msgErr, stdPassThru);
+    printMsgTrace(STR("OpenGL extension %0 is not available."), funcName, msgErr, stdPassThru);
 }
 
 ////
 
 #define REQUIRE_GL_FUNC(funcName) \
-    if (funcName) ; else {require(checkGLFuncMsg(STR(PREP_STRINGIZE(funcName)), stdPass)); returnFalse;}
+    if (funcName) ; else {checkGLFuncMsg(STR(PREP_STRINGIZE(funcName)), stdPass); returnFalse;}
 
 ////
 

@@ -62,20 +62,20 @@ struct Window
 
     virtual ~Window() {}
 
-    virtual stdbool setThreadDrawingContext(stdPars(Kit)) =0;
+    virtual void setThreadDrawingContext(stdPars(Kit)) =0;
 
-    virtual stdbool setVisible(bool visible, stdPars(Kit)) =0;
+    virtual void setVisible(bool visible, stdPars(Kit)) =0;
 
-    virtual stdbool getEvents(bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdPars(Kit)) =0;
+    virtual void getEvents(bool waitEvents, const OptionalObject<uint32>& waitTimeoutMs, const EventReceivers& receivers, stdPars(Kit)) =0;
 
-    virtual stdbool shouldContinue(stdPars(Kit)) =0;
+    virtual void shouldContinue(stdPars(Kit)) =0;
 
-    virtual stdbool swapBuffers(stdPars(Kit)) =0;
+    virtual void swapBuffers(stdPars(Kit)) =0;
 
-    virtual stdbool getWindowLocation(WindowLocation& location, stdPars(Kit)) =0;
-    virtual stdbool setWindowLocation(const WindowLocation& location, stdPars(Kit)) =0;
+    virtual void getWindowLocation(WindowLocation& location, stdPars(Kit)) =0;
+    virtual void setWindowLocation(const WindowLocation& location, stdPars(Kit)) =0;
 
-    virtual stdbool getImageSize(Point<Space>& size, stdPars(Kit)) =0;
+    virtual void getImageSize(Point<Space>& size, stdPars(Kit)) =0;
 };
 
 //================================================================
@@ -90,11 +90,11 @@ struct WindowManager
 
     virtual void postEmptyEvent() =0; // can be called from a concurrent thread
 
-    virtual stdbool getCurrentDisplayResolution(Point<Space>& result, stdPars(Kit)) =0;
+    virtual void getCurrentDisplayResolution(Point<Space>& result, stdPars(Kit)) =0;
 
-    virtual stdbool createWindow(UniquePtr<Window>& window, const WindowCreationArgs& par, stdPars(Kit)) =0;
+    virtual void createWindow(UniquePtr<Window>& window, const WindowCreationArgs& par, stdPars(Kit)) =0;
 
-    virtual stdbool createOffscreenGLContext(UniquePtr<ContextBinder>& context, stdPars(Kit)) =0;
+    virtual void createOffscreenGLContext(UniquePtr<ContextBinder>& context, stdPars(Kit)) =0;
 };
 
 //================================================================
@@ -108,7 +108,7 @@ class WindowManagerGLFW : public WindowManager
 
 public:
 
-    stdbool init(stdPars(Kit));
+    void init(stdPars(Kit));
     void deinit();
 
     inline ~WindowManagerGLFW() {deinit();}
@@ -117,11 +117,11 @@ public:
 
     void postEmptyEvent(); // can be called from a concurrent thread
 
-    stdbool getCurrentDisplayResolution(Point<Space>& result, stdPars(Kit));
+    void getCurrentDisplayResolution(Point<Space>& result, stdPars(Kit));
 
-    stdbool createWindow(UniquePtr<Window>& window, const WindowCreationArgs& par, stdPars(Kit));
+    void createWindow(UniquePtr<Window>& window, const WindowCreationArgs& par, stdPars(Kit));
 
-    stdbool createOffscreenGLContext(UniquePtr<ContextBinder>& context, stdPars(Kit));
+    void createOffscreenGLContext(UniquePtr<ContextBinder>& context, stdPars(Kit));
 
 private:
 

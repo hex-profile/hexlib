@@ -13,7 +13,7 @@ namespace visualizeComplex {
 //
 //================================================================
 
-stdbool visualizeComplexFilter
+void visualizeComplexFilter
 (
     const GpuMatrix<const ComplexFloat>& image,
     const Point<float32>& filterFreq, // In original resolution.

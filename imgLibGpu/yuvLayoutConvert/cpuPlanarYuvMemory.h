@@ -16,7 +16,7 @@ class CpuPlanarYuvMemory : public CpuPlanarYuv<Element>
 public:
 
     template <typename Kit>
-    inline stdbool realloc(const Point<Space>& size, Space baseByteAlignment, AllocatorInterface<CpuAddrU>& allocator, stdPars(Kit))
+    inline void realloc(const Point<Space>& size, Space baseByteAlignment, AllocatorInterface<CpuAddrU>& allocator, stdPars(Kit))
     {
         this->data.assignNull();
         this->size = point(0);
@@ -26,14 +26,12 @@ public:
         REQUIRE(yuv420SizeValid(size));
         Space totalSize = yuv420TotalArea(size);
 
-        require(allocData.realloc(totalSize, baseByteAlignment, allocator, stdPass));
+        allocData.realloc(totalSize, baseByteAlignment, allocator, stdPass);
 
         ////
 
         this->data = allocData;
         this->size = size;
-
-        returnTrue;
     }
 
 public:

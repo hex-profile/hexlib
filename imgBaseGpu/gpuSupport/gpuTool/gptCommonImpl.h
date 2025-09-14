@@ -166,9 +166,9 @@
     REQUIRE(globSize == name##Matrix.size());
 
 #define GPT_BIND_SAMPLER(Type, name, interp, border, prefix) \
-    require(kit.gpuSamplerSetting.setSamplerImage(PREP_PASTE3(prefix, name, Sampler), name##Matrix, border, \
+    kit.gpuSamplerSetting.setSamplerImage(PREP_PASTE3(prefix, name, Sampler), name##Matrix, border, \
         LinearInterpolation{interp == INTERP_LINEAR}, ReadNormalizedFloat{true}, NormalizedCoords{true}, \
-        stdPassLocationMsg(PREP_STRINGIZE(PREP_PASTE2(name, Sampler)))));
+        stdPassLocationMsg(PREP_STRINGIZE(PREP_PASTE2(name, Sampler))));
 
 #define GPT_SET_SAMPLER_FIELD(Type, name, interp, border, o) \
     kernelParams.name##Texstep = 1.f / convertFloat32(clampMin(name##Matrix.size(), 1));

@@ -53,7 +53,7 @@ struct DisplayReportParams
 //
 //================================================================
 
-stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Space treeLevel, const TraceScope* nodeScope, stdPars(ErrorLogKit))
+void displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Space treeLevel, const TraceScope* nodeScope, stdPars(ErrorLogKit))
 {
     //----------------------------------------------------------------
     //
@@ -106,11 +106,7 @@ stdbool displayProfilerTree(ProfilerNode& node, const DisplayReportParams& o, Sp
     //----------------------------------------------------------------
 
     for (ProfilerNode* p = node.lastChild; p != 0; p = p->prevBrother)
-        require(displayProfilerTree(*p, o, treeLevel + 1, &nodeStack, stdPass));
-
-    ////
-
-    returnTrue;
+        {displayProfilerTree(*p, o, treeLevel + 1, &nodeStack, stdPass);}
 }
 
 //================================================================
@@ -203,7 +199,7 @@ private:
 //
 //================================================================
 
-stdbool namedNodesReport
+void namedNodesReport
 (
     ProfilerNode* rootNode,
     float32 divTicksPerSec,
@@ -247,9 +243,7 @@ stdbool namedNodesReport
 
     PrintNode visitor(processingThroughput, kit);
     DisplayReportParams o{tickFactor, cycleCount, fullRunTime, visitor};
-    require(displayProfilerTree(*rootNode, o, 0, 0, stdPass));
-
-    returnTrue;
+    displayProfilerTree(*rootNode, o, 0, 0, stdPass);
 }
 
 //----------------------------------------------------------------

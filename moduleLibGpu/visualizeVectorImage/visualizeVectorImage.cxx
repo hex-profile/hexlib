@@ -98,7 +98,7 @@ FOREACH_VISUALIZATION_TYPE(TMP_MACRO)
 
 #define CALL_KERNEL_AUX(i, b, VectorType) \
     if (interpType == i && borderMode == b) \
-        require(visualize_##VectorType##_##i##_##b(src, dst, coordBackTransform, vectorFactor, grayMode, stdPassThru));
+        visualize_##VectorType##_##i##_##b(src, dst, coordBackTransform, vectorFactor, grayMode, stdPassThru);
 
 //----------------------------------------------------------------
 
@@ -107,7 +107,7 @@ FOREACH_VISUALIZATION_TYPE(TMP_MACRO)
 #define TMP_MACRO(VectorType) \
     \
     template <> \
-    stdbool visualizeVectorImage \
+    void visualizeVectorImage \
     ( \
         const GpuMatrix<const VectorType>& src, \
         const GpuMatrixAP<uint8_x4>& dst, \
@@ -120,7 +120,6 @@ FOREACH_VISUALIZATION_TYPE(TMP_MACRO)
     ) \
     { \
         CALL_KERNEL(VectorType) \
-        returnTrue; \
     }
 
 TMP_MACRO(float16_x2)

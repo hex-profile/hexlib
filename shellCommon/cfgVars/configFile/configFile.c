@@ -64,17 +64,17 @@ class ConfigFileImpl : public ConfigFile
 
 public:
 
-    virtual stdbool loadFile(const SimpleString& cfgFilename, stdPars(Kit));
+    virtual void loadFile(const SimpleString& cfgFilename, stdPars(Kit));
     virtual void unloadFile();
 
-    virtual stdbool loadVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit));
-    virtual stdbool saveVars(CfgSerialization& serialization, bool forceUpdate, bool& updateHappened, stdPars(Kit));
+    virtual void loadVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit));
+    virtual void saveVars(CfgSerialization& serialization, bool forceUpdate, bool& updateHappened, stdPars(Kit));
 
-    virtual stdbool updateFile(bool forceUpdate, stdPars(Kit));
-    virtual stdbool editFile(const SimpleString& configEditor, stdPars(Kit));
+    virtual void updateFile(bool forceUpdate, stdPars(Kit));
+    virtual void editFile(const SimpleString& configEditor, stdPars(Kit));
 
-    virtual stdbool saveToString(StringReceiver& receiver, stdPars(Kit));
-    virtual stdbool loadFromString(const CharArray& str, stdPars(Kit));
+    virtual void saveToString(StringReceiver& receiver, stdPars(Kit));
+    virtual void loadFromString(const CharArray& str, stdPars(Kit));
 
 private:
 
@@ -122,7 +122,7 @@ public:
 //
 //================================================================
 
-stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(Kit))
+void ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(Kit))
 {
     memory->clearAll();
 
@@ -169,8 +169,6 @@ stdbool ConfigFileImpl::loadFile(const SimpleString& cfgFilename, stdPars(Kit))
     }
 
     memoryNotEqualToTheFile = false;
-
-    returnTrue;
 }
 
 //================================================================
@@ -193,14 +191,14 @@ void ConfigFileImpl::unloadFile()
 //
 //================================================================
 
-stdbool ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate, bool& updateHappened, stdPars(Kit))
+void ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpdate, bool& updateHappened, stdPars(Kit))
 {
     updateHappened = false;
 
     ////
 
     if (!forceUpdate && cfgvarsSynced(serialization))
-        returnTrue;
+        return;
 
     ////
 
@@ -213,9 +211,7 @@ stdbool ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpda
     using namespace cfgOperations;
 
     SaveVarsOptions options{!forceUpdate, true};
-    require(operations->saveVars(*memory, serialization, options, stdPass));
-
-    returnTrue;
+    operations->saveVars(*memory, serialization, options, stdPass);
 }
 
 //================================================================
@@ -224,12 +220,12 @@ stdbool ConfigFileImpl::saveVars(CfgSerialization& serialization, bool forceUpda
 //
 //================================================================
 
-stdbool ConfigFileImpl::loadVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit))
+void ConfigFileImpl::loadVars(CfgSerialization& serialization, bool forceUpdate, stdPars(Kit))
 {
     using namespace cfgOperations;
 
     LoadVarsOptions options{!forceUpdate, true};
-    return operations->loadVars(*memory, serialization, options, stdPass);
+    operations->loadVars(*memory, serialization, options, stdPass);
 }
 
 //================================================================
@@ -238,13 +234,13 @@ stdbool ConfigFileImpl::loadVars(CfgSerialization& serialization, bool forceUpda
 //
 //================================================================
 
-stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(Kit))
+void ConfigFileImpl::updateFile(bool forceUpdate, stdPars(Kit))
 {
     if_not (updateFileEnabled)
         returnFalse;
 
     if_not (forceUpdate || memoryNotEqualToTheFile)
-        returnTrue;
+        return;
 
     //
     // update file
@@ -260,8 +256,6 @@ stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(Kit))
         updateFileEnabled = false;
         returnFalse;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -270,14 +264,12 @@ stdbool ConfigFileImpl::updateFile(bool forceUpdate, stdPars(Kit))
 //
 //================================================================
 
-stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filename, stdPars(MsgLogKit))
+void launchEditor(const SimpleString& configEditor, const SimpleString& filename, stdPars(MsgLogKit))
 {
     SimpleString cmdLine; cmdLine << configEditor << CT(" \"") << filename << CT("\"");
     require(def(cmdLine));
 
-    require(runAndWaitProcess(cmdLine.cstr(), stdPass));
-
-    returnTrue;
+    runAndWaitProcess(cmdLine.cstr(), stdPass);
 }
 
 //================================================================
@@ -286,20 +278,20 @@ stdbool launchEditor(const SimpleString& configEditor, const SimpleString& filen
 //
 //================================================================
 
-stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(Kit))
+void ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(Kit))
 {
     require(updateFileEnabled);
     REQUIRE(filename.size() != 0);
 
     ////
 
-    require(updateFile(false, stdPass));
+    updateFile(false, stdPass);
 
     ////
 
     if_not (errorBlock(launchEditor(configEditor, filename, stdPassNc)))
     {
-        require(launchEditor(SimpleString{CT("notepad")}, filename, stdPass));
+        launchEditor(SimpleString{CT("notepad")}, filename, stdPass);
     }
 
     ////
@@ -311,10 +303,6 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(Kit))
     }
 
     memoryNotEqualToTheFile = false;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -323,11 +311,9 @@ stdbool ConfigFileImpl::editFile(const SimpleString& configEditor, stdPars(Kit))
 //
 //================================================================
 
-stdbool ConfigFileImpl::saveToString(StringReceiver& receiver, stdPars(Kit))
+void ConfigFileImpl::saveToString(StringReceiver& receiver, stdPars(Kit))
 {
-    require(operations->saveToString(*memory, receiver, stdPass));
-
-    returnTrue;
+    operations->saveToString(*memory, receiver, stdPass);
 }
 
 //================================================================
@@ -336,13 +322,11 @@ stdbool ConfigFileImpl::saveToString(StringReceiver& receiver, stdPars(Kit))
 //
 //================================================================
 
-stdbool ConfigFileImpl::loadFromString(const CharArray& str, stdPars(Kit))
+void ConfigFileImpl::loadFromString(const CharArray& str, stdPars(Kit))
 {
-    require(operations->loadFromString(*memory, str, stdPass));
+    operations->loadFromString(*memory, str, stdPass);
 
     memoryNotEqualToTheFile = true;
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

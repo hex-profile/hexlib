@@ -14,7 +14,7 @@
 //================================================================
 
 template <typename Pointer>
-stdbool MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
+void MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByteAlignment, Space rowByteAlignment, AllocatorInterface<AddrU>& allocator, stdPars(ErrorLogKit))
 {
     Space sizeX = size.X;
     Space sizeY = size.Y;
@@ -86,7 +86,7 @@ stdbool MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByt
     COMPILE_ASSERT(sizeof(SpaceU) <= sizeof(AddrU));
 
     AddrU newAddr = 0;
-    require(allocator.alloc(SpaceU(byteAllocSize), SpaceU(baseByteAlignment), memoryOwner, newAddr, stdPass));
+    allocator.alloc(SpaceU(byteAllocSize), SpaceU(baseByteAlignment), memoryOwner, newAddr, stdPass);
 
     COMPILE_ASSERT(sizeof(Pointer) == sizeof(AddrU));
     Pointer newPtr = Pointer(newAddr);
@@ -100,8 +100,6 @@ stdbool MatrixMemoryEx<Pointer>::realloc(const Point<Space>& size, Space baseByt
     ////
 
     BaseMatrix::assignUnsafe(newPtr, alignedSizeX, sizeX, sizeY);
-
-    returnTrue;
 }
 
 //================================================================

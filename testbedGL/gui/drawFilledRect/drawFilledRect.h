@@ -21,7 +21,7 @@ struct DrawSingleRectArgs
 //
 //================================================================
 
-stdbool drawSingleRect(const DrawSingleRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
+void drawSingleRect(const DrawSingleRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -41,4 +41,4 @@ struct DrawFilledRectArgs
 //
 //================================================================
 
-stdbool drawFilledRect(const DrawFilledRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));
+void drawFilledRect(const DrawFilledRectArgs& args, const GpuMatrix<uint8_x4>& dst, stdPars(GpuProcessKit));

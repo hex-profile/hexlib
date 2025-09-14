@@ -9,4 +9,4 @@
 //
 //================================================================
 
-stdbool setDpiAwareness(stdPars(DiagnosticKit));
+void setDpiAwareness(stdPars(DiagnosticKit));

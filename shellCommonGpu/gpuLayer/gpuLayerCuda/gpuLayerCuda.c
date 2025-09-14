@@ -132,11 +132,9 @@ inline bool cudaChannelFormat(GpuChannelType chanType, CUarray_format& result)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::initialize(stdParsNull)
+void CudaInitApiThunk::initialize(stdParsNull)
 {
     REQUIRE_CUDA(cuInit(0));
-
-    returnTrue;
 }
 
 //================================================================
@@ -145,14 +143,12 @@ stdbool CudaInitApiThunk::initialize(stdParsNull)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::getDeviceCount(int32& deviceCount, stdParsNull)
+void CudaInitApiThunk::getDeviceCount(int32& deviceCount, stdParsNull)
 {
     int count = 0;
     REQUIRE_CUDA(cuDeviceGetCount(&count));
 
     deviceCount = count;
-
-    returnTrue;
 }
 
 //================================================================
@@ -232,7 +228,7 @@ int getCudaCoresPerMultiprocessor(int version)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdParsNull)
+void CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdParsNull)
 {
     CUdevice deviceId = 0;
     REQUIRE_CUDA(cuDeviceGet(&deviceId, deviceIndex));
@@ -312,8 +308,6 @@ stdbool CudaInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& proper
     REQUIRE_CUDA(cuDeviceGetAttribute(&properties.maxThreadCount.X, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X, deviceId));
     REQUIRE_CUDA(cuDeviceGetAttribute(&properties.maxThreadCount.Y, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y, deviceId));
     REQUIRE_CUDA(cuDeviceGetAttribute(&properties.maxGroupArea, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK, deviceId));
-
-    returnTrue;
 }
 
 //================================================================
@@ -347,7 +341,7 @@ class ContextEx
 public:
 
     ~ContextEx() {destroy();}
-    stdbool create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(MsgLogExKit));
+    void create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(MsgLogExKit));
     void destroy();
 
     //----------------------------------------------------------------
@@ -398,7 +392,7 @@ public:
 //
 //================================================================
 
-stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(MsgLogExKit))
+void ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties, GpuScheduling gpuScheduling, void*& baseContext, stdPars(MsgLogExKit))
 {
     destroy();
     baseContext = 0;
@@ -440,7 +434,7 @@ stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties,
     }
 
     if (0)
-        require(printMsgTrace(STR("Creating GPU context with % policy."), policy, msgInfo, stdPass));
+        printMsgTrace(STR("Creating GPU context with % policy."), policy, msgInfo, stdPass);
 
     ////
 
@@ -453,8 +447,6 @@ stdbool ContextEx::create(int32 deviceIndex, const GpuProperties& gpuProperties,
     baseContext = cuContext;
     this->gpuProperties = gpuProperties;
     created = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -497,7 +489,7 @@ inline const ContextEx& uncast(const GpuContext& context)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdParsNull)
+void CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdParsNull)
 {
     result.clear();
     baseContext = 0;
@@ -505,7 +497,7 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSche
     ////
 
     GpuProperties tmpProperties;
-    require(getProperties(deviceIndex, tmpProperties, stdPass));
+    getProperties(deviceIndex, tmpProperties, stdPass);
 
     ////
 
@@ -513,7 +505,7 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSche
     REQUIRE(ctx != 0);
     REMEMBER_CLEANUP_EX(contextAllocCleanup, delete ctx);
 
-    require(ctx->create(deviceIndex, tmpProperties, gpuScheduling, baseContext, stdPass));
+    ctx->create(deviceIndex, tmpProperties, gpuScheduling, baseContext, stdPass);
 
     ////
 
@@ -522,7 +514,7 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSche
 
     ////
 
-    require(ctx->moduleKeeper.create(tmpContext, stdPassKit(kitCombine(kit, getKit()))));
+    ctx->moduleKeeper.create(tmpContext, stdPassKit(kitCombine(kit, getKit())));
     REMEMBER_CLEANUP_EX(moduleKeeperCleanup, ctx->moduleKeeper.destroy());
 
     ////
@@ -537,10 +529,6 @@ stdbool CudaInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSche
 
     contextAllocCleanup.cancel();
     moduleKeeperCleanup.cancel();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -562,7 +550,7 @@ void CudaInitApiThunk::destroyContext(GpuContextDeallocContext& deallocContext)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdParsNull)
+void CudaInitApiThunk::threadContextSet(const GpuContext& context, GpuThreadContextSave& save, stdParsNull)
 {
     const ContextEx& ctx = uncast(context);
     REQUIRE(ctx.isCreated());
@@ -579,8 +567,6 @@ stdbool CudaInitApiThunk::threadContextSet(const GpuContext& context, GpuThreadC
 
     if (newContext != currentContext)
         REQUIRE_CUDA(cuCtxSetCurrent(newContext));
-
-    returnTrue;
 }
 
 //================================================================
@@ -589,7 +575,7 @@ stdbool CudaInitApiThunk::threadContextSet(const GpuContext& context, GpuThreadC
 //
 //================================================================
 
-stdbool CudaInitApiThunk::threadContextRestore(const GpuThreadContextSave& save, stdParsNull)
+void CudaInitApiThunk::threadContextRestore(const GpuThreadContextSave& save, stdParsNull)
 {
     auto newContext = save.recast<CUcontext>();
 
@@ -602,8 +588,6 @@ stdbool CudaInitApiThunk::threadContextRestore(const GpuThreadContextSave& save,
 
     if (newContext != currentContext)
         REQUIRE_CUDA(cuCtxSetCurrent(newContext));
-
-    returnTrue;
 }
 
 //================================================================
@@ -622,7 +606,7 @@ stdbool CudaInitApiThunk::threadContextRestore(const GpuThreadContextSave& save,
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdParsNull)
+void CudaInitApiThunk::createModuleFromBinary(const GpuContext& context, const Array<const uint8>& binary, GpuModuleOwner& result, stdParsNull)
 {
     result.clear();
 
@@ -642,10 +626,6 @@ stdbool CudaInitApiThunk::createModuleFromBinary(const GpuContext& context, cons
 
     GpuModule& resultBase = result;
     resultBase.recast<CUmodule>()  = module;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -680,7 +660,7 @@ void CudaInitApiThunk::destroyModule(GpuModuleDeallocContext& deallocContext)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdParsNull)
+void CudaInitApiThunk::createKernelFromModule(const GpuModule& module, const char* kernelName, GpuKernelOwner& result, stdParsNull)
 {
     result.clear();
 
@@ -697,10 +677,6 @@ stdbool CudaInitApiThunk::createKernelFromModule(const GpuModule& module, const 
 
     GpuKernel& resultBase = result;
     resultBase.recast<CUfunction>() = kernel;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -719,7 +695,7 @@ stdbool CudaInitApiThunk::createKernelFromModule(const GpuModule& module, const 
 //
 //================================================================
 
-stdbool CudaInitApiThunk::getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdParsNull)
+void CudaInitApiThunk::getSamplerFromModule(const GpuModule& module, const char* samplerName, GpuSamplerOwner& result, stdParsNull)
 {
     result.clear();
 
@@ -737,10 +713,6 @@ stdbool CudaInitApiThunk::getSamplerFromModule(const GpuModule& module, const ch
 
     GpuSampler& resultBase = result;
     resultBase.recast<CUtexref>() = sampler;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -761,7 +733,7 @@ stdbool CudaInitApiThunk::getSamplerFromModule(const GpuModule& module, const ch
 
 struct CudaCpuAllocCore
 {
-    inline stdbool operator()(CpuAddrU& result, CpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
+    inline void operator()(CpuAddrU& result, CpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
     {
 
         /*
@@ -797,8 +769,6 @@ struct CudaCpuAllocCore
 
         if (reportAllocatedBlocks)
             printMsg(kit.msgLog, STR("Allocated CPU memory range %0 .. %1"), hex(result), hex(result + allocSize - 1));
-
-        returnTrue;
     }
 };
 
@@ -808,13 +778,13 @@ struct CudaCpuAllocCore
 //
 //================================================================
 
-stdbool CudaCpuAllocThunk::alloc(const GpuContext& context, CpuAddrU size, CpuAddrU alignment, GpuMemoryOwner& owner, CpuAddrU& result, stdParsNull)
+void CudaCpuAllocThunk::alloc(const GpuContext& context, CpuAddrU size, CpuAddrU alignment, GpuMemoryOwner& owner, CpuAddrU& result, stdParsNull)
 {
     if (size == 0)
-        {result = 0; owner.clear(); returnTrue;}
+        {result = 0; owner.clear(); return;}
 
     CudaCpuAllocCore coreAlloc;
-    return sysAllocAlignShell<CpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
+    sysAllocAlignShell<CpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
 }
 
 //================================================================
@@ -843,7 +813,7 @@ void CudaCpuAllocThunk::dealloc(MemoryDeallocContext& deallocContext)
 
 struct CudaGpuAllocCore
 {
-    inline stdbool operator()(GpuAddrU& result, GpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
+    inline void operator()(GpuAddrU& result, GpuAddrU allocSize, stdPars(CudaInitApiThunkKit))
     {
         /*
         Test allocation alignment.
@@ -882,10 +852,6 @@ struct CudaGpuAllocCore
 
         if (reportAllocatedBlocks)
             printMsg(kit.msgLog, STR("Allocated GPU memory range %0 .. %1"), hex(result), hex(result + allocSize - 1));
-
-        ////
-
-        returnTrue;
     }
 };
 
@@ -895,13 +861,13 @@ struct CudaGpuAllocCore
 //
 //================================================================
 
-stdbool CudaGpuAllocThunk::alloc(const GpuContext& context, GpuAddrU size, GpuAddrU alignment, GpuMemoryOwner& owner, GpuAddrU& result, stdParsNull)
+void CudaGpuAllocThunk::alloc(const GpuContext& context, GpuAddrU size, GpuAddrU alignment, GpuMemoryOwner& owner, GpuAddrU& result, stdParsNull)
 {
     if (size == 0)
-        {result = 0; owner.clear(); returnTrue;}
+        {result = 0; owner.clear(); return;}
 
     CudaGpuAllocCore coreAlloc;
-    return sysAllocAlignShell<GpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
+    sysAllocAlignShell<GpuAddrU>(size, alignment, owner, result, coreAlloc, dealloc, stdPassThru);
 }
 
 //================================================================
@@ -938,7 +904,7 @@ void CudaGpuAllocThunk::dealloc(MemoryDeallocContext& deallocContext)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
+void CudaInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
 {
     ++textureAllocCount;
 
@@ -968,10 +934,6 @@ stdbool CudaInitApiThunk::createTexture(const GpuContext& context, const Point<S
 
     GpuTextureDeallocContext& ownerContext = result.owner.replace(destroyTexture);
     ownerContext.recast<CUarray>() = texture;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1078,10 +1040,10 @@ struct CoverageRecord
 //
 //================================================================
 
-sysinline stdbool flushCoverageRecord(CoverageRecord& r, bool& syncFlagLatch, Profiler* profiler, stdPars(GpuCoverageKit))
+sysinline void flushCoverageRecord(CoverageRecord& r, bool& syncFlagLatch, Profiler* profiler, stdPars(GpuCoverageKit))
 {
     if_not (r.profilerNode.connected() && profiler)
-        returnTrue;
+        return;
 
     ////
 
@@ -1120,10 +1082,6 @@ sysinline stdbool flushCoverageRecord(CoverageRecord& r, bool& syncFlagLatch, Pr
 
     profiler->addDeviceTime(r.profilerNode, deviceTime, predictedOverhead);
     r.profilerNode.disconnect();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1195,7 +1153,7 @@ public:
 
 public:
 
-    stdbool allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit));
+    void allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit));
 
     void deallocate() {history.dealloc(); allocated = false;}
     bool isAllocated() const {return allocated;}
@@ -1203,7 +1161,7 @@ public:
 
 public:
 
-    stdbool getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit));
+    void getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit));
 
     inline void advanceCoverageSlot()
         {history.addAdvance();}
@@ -1212,7 +1170,7 @@ public:
 
     void discardAll();
 
-    stdbool flushAll(Profiler* profiler, stdPars(GpuCoverageKit));
+    void flushAll(Profiler* profiler, stdPars(GpuCoverageKit));
 
 public:
 
@@ -1236,7 +1194,7 @@ public:
 //
 //================================================================
 
-stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit))
+void CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& context, GpuEventAllocator& gpuEventAlloc, stdPars(AllocKit))
 {
     deallocate();
 
@@ -1244,7 +1202,7 @@ stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& c
 
     CoverageQueue& self = *this;
 
-    require(history.reallocInHeap(coverageQueueCapacity, stdPass));
+    history.reallocInHeap(coverageQueueCapacity, stdPass);
     REMEMBER_CLEANUP_EX(queueCleanup, self.history.dealloc());
 
     REQUIRE(cacheFlushMemBlock.alloc(cacheFlushMemSize));
@@ -1259,12 +1217,12 @@ stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& c
 
         for_count (k, coverageMultiplier)
         {
-            require(gpuEventAlloc.eventCreate(context, true, r->events[k].startEvent, stdPass));
-            require(gpuEventAlloc.eventCreate(context, true, r->events[k].stopEvent, stdPass));
+            gpuEventAlloc.eventCreate(context, true, r->events[k].startEvent, stdPass);
+            gpuEventAlloc.eventCreate(context, true, r->events[k].stopEvent, stdPass);
         }
 
         if (coverageTotalTrapCount)
-            require(gpuEventAlloc.eventCreate(context, false, r->trapEvent, stdPass));
+            gpuEventAlloc.eventCreate(context, false, r->trapEvent, stdPass);
     }
 
     ////
@@ -1276,10 +1234,6 @@ stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& c
     allocated = true;
     queueCleanup.cancel();
     auxMemCleanup.cancel();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1288,20 +1242,18 @@ stdbool CoverageQueue::allocate(Space coverageQueueCapacity, const GpuContext& c
 //
 //================================================================
 
-stdbool CoverageQueue::getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit))
+void CoverageQueue::getFreeCoverageSlot(CoverageRecord*& coverageRecord, Profiler* profiler, stdPars(GpuCoverageKit))
 {
     CoverageRecord* r = history.addLocation();
     REQUIRE(r != 0);
 
     ////
 
-    require(flushCoverageRecord(*r, syncHappened, profiler, stdPass));
+    flushCoverageRecord(*r, syncHappened, profiler, stdPass);
 
     ////
 
     coverageRecord = r;
-
-    returnTrue;
 }
 
 //================================================================
@@ -1329,7 +1281,7 @@ void CoverageQueue::discardAll()
 //
 //================================================================
 
-stdbool CoverageQueue::flushAll(Profiler* profiler, stdPars(GpuCoverageKit))
+void CoverageQueue::flushAll(Profiler* profiler, stdPars(GpuCoverageKit))
 {
     CoverageQueue& self = *this;
     REMEMBER_CLEANUP(self.discardAll());
@@ -1345,12 +1297,8 @@ stdbool CoverageQueue::flushAll(Profiler* profiler, stdPars(GpuCoverageKit))
 
         CoverageRecord* r = history[i];
         REQUIRE(r != 0);
-        require(flushCoverageRecord(*r, syncHappened, profiler, stdPass));
+        flushCoverageRecord(*r, syncHappened, profiler, stdPass);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1368,7 +1316,7 @@ public:
 
     ~StreamEx() {destroy();}
 
-    stdbool create(const GpuContext& context, bool nullStream, stdPars(AllocKit));
+    void create(const GpuContext& context, bool nullStream, stdPars(AllocKit));
     void destroy();
 
 public:
@@ -1408,7 +1356,7 @@ void StreamEx::destroy()
 //
 //================================================================
 
-stdbool StreamEx::create(const GpuContext& context, bool nullStream, stdPars(AllocKit))
+void StreamEx::create(const GpuContext& context, bool nullStream, stdPars(AllocKit))
 {
     destroy();
 
@@ -1431,8 +1379,6 @@ stdbool StreamEx::create(const GpuContext& context, bool nullStream, stdPars(All
 
     parentContext = context;
     cuStreamCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -1463,7 +1409,7 @@ void* getNativeHandle(const GpuStream& stream)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::coverageInit(const GpuStream& stream, Space coverageQueueCapacity, stdParsNull)
+void CudaInitApiThunk::coverageInit(const GpuStream& stream, Space coverageQueueCapacity, stdParsNull)
 {
     REQUIRE(coverageQueueCapacity >= 0);
     StreamEx& streamEx = uncast(stream);
@@ -1473,11 +1419,7 @@ stdbool CudaInitApiThunk::coverageInit(const GpuStream& stream, Space coverageQu
     CoverageQueue& coverageQueue = streamEx.coverageQueue;
 
     if_not (coverageQueue.isAllocated() && coverageQueue.allocSize() == coverageQueueCapacity)
-        require(coverageQueue.allocate(coverageQueueCapacity, streamEx.getContext(), *this, stdPass));
-
-    ////
-
-    returnTrue;
+        coverageQueue.allocate(coverageQueueCapacity, streamEx.getContext(), *this, stdPass);
 }
 
 //================================================================
@@ -1524,7 +1466,7 @@ void CudaInitApiThunk::coverageClearSyncFlag(const GpuStream& stream)
 //
 //================================================================
 
-stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdParsNull)
+void CudaInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdParsNull)
 {
     result.clear();
 
@@ -1534,7 +1476,7 @@ stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStrea
     REQUIRE(streamEx != 0);
     REMEMBER_CLEANUP_EX(streamAllocCleanup, delete streamEx);
 
-    require(streamEx->create(context, nullStream, stdPass));
+    streamEx->create(context, nullStream, stdPass);
 
     ////
 
@@ -1547,8 +1489,6 @@ stdbool CudaInitApiThunk::createStream(const GpuContext& context, bool nullStrea
     ////
 
     streamAllocCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -1581,7 +1521,7 @@ void CudaInitApiThunk::destroyStream(GpuStreamDeallocContext& deallocContext)
 //================================================================
 
 template <typename KernelParams>
-stdbool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& threadCount, const GpuKernelLink& kernelLink, const KernelParams& kernelParams, const GpuStream& stream, stdPars(GpuCoverageKit))
+void callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& threadCount, const GpuKernelLink& kernelLink, const KernelParams& kernelParams, const GpuStream& stream, stdPars(GpuCoverageKit))
 {
     StreamEx& streamEx = uncast(stream);
     const ContextEx& ctx = uncast(streamEx.getContext());
@@ -1589,7 +1529,7 @@ stdbool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& t
     REQUIRE(ctx.isCreated());
 
     GpuKernel kernelHandle;
-    require(ctx.moduleKeeper.fetchKernel(kernelLink, kernelHandle, stdPass));
+    ctx.moduleKeeper.fetchKernel(kernelLink, kernelHandle, stdPass);
 
     ////
 
@@ -1623,8 +1563,6 @@ stdbool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& t
             config
         )
     );
-
-    returnTrue;
 }
 
 //================================================================
@@ -1633,10 +1571,9 @@ stdbool callCudaKernel(const Point3D<Space>& groupCount, const Point3D<Space>& t
 //
 //================================================================
 
-stdbool callEmptyKernel(const GpuStream& stream, stdPars(GpuCoverageKit))
+void callEmptyKernel(const GpuStream& stream, stdPars(GpuCoverageKit))
 {
-    require(callCudaKernel(point3D(1), point3D(1), getEmptyKernelLink(), EmptyKernelParams(), stream, stdPass));
-    returnTrue;
+    callCudaKernel(point3D(1), point3D(1), getEmptyKernelLink(), EmptyKernelParams(), stream, stdPass);
 }
 
 //================================================================
@@ -1645,7 +1582,7 @@ stdbool callEmptyKernel(const GpuStream& stream, stdPars(GpuCoverageKit))
 //
 //================================================================
 
-stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& readMemory, stdPars(GpuCoverageKit))
+void callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& readMemory, stdPars(GpuCoverageKit))
 {
     GpuAddrU atomCount = readMemory.size() / sizeof(ReadMemoryAtom);
 
@@ -1658,9 +1595,7 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
     GpuAddrU groupSize = 256;
     GpuAddrU groupCount = divUpNonneg(atomCount, groupSize);
 
-    require(callCudaKernel(point3D(Space(groupCount), 1, 1), point3D(Space(groupSize), 1, 1), getReadMemoryKernelLink(), params, stream, stdPass));
-
-    returnTrue;
+    callCudaKernel(point3D(Space(groupCount), 1, 1), point3D(Space(groupSize), 1, 1), getReadMemoryKernelLink(), params, stream, stdPass);
 }
 
 //================================================================
@@ -1682,7 +1617,7 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
         \
         if (coverageActive) \
         { \
-            require(coverageQueue.getFreeCoverageSlot(coverageRec, profiler, stdPass)); \
+            coverageQueue.getFreeCoverageSlot(coverageRec, profiler, stdPass); \
             coverageRec->kernels = (kernelsVal); \
             coverageRec->groups = (groupsVal); \
         } \
@@ -1695,7 +1630,7 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
             Space coveragePreTraps = coverageTotalTrapCount / 2; \
             \
             if (coverageIdx != 0 && coverageTryToFlushCache) \
-                require(callReadMemoryKernel(stream, coverageQueue.cacheFlushMemBlock, stdPass)); \
+                callReadMemoryKernel(stream, coverageQueue.cacheFlushMemBlock, stdPass); \
             \
             if (coverageActive) \
             { \
@@ -1742,7 +1677,7 @@ stdbool callReadMemoryKernel(const GpuStream& stream, const CudaMemoryBlock& rea
 //
 //================================================================
 
-stdbool CudaInitApiThunk::eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdParsNull)
+void CudaInitApiThunk::eventCreate(const GpuContext& context, bool timingEnabled, GpuEventOwner& result, stdParsNull)
 {
     result.clear();
 
@@ -1762,10 +1697,6 @@ stdbool CudaInitApiThunk::eventCreate(const GpuContext& context, bool timingEnab
 
     GpuEvent& resultEvent = result;
     resultEvent.recast<CUevent>() = event;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -1800,13 +1731,12 @@ void CudaInitApiThunk::destroyEvent(GpuEventDeallocContext& deallocContext)
 //
 //================================================================
 
-stdbool CudaExecApiThunk::copyArrayCpuCpu(CpuAddrU srcPtr, CpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
+void CudaExecApiThunk::copyArrayCpuCpu(CpuAddrU srcPtr, CpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
 {
     memcpy((void*) dstPtr, (void*) srcPtr, size);
-    returnTrue;
 }
 
-stdbool CudaExecApiThunk::copyArrayCpuGpu(CpuAddrU srcPtr, GpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
+void CudaExecApiThunk::copyArrayCpuGpu(CpuAddrU srcPtr, GpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
 {
     GPU_COVERAGE_BEGIN(0, 0);
 
@@ -1814,10 +1744,9 @@ stdbool CudaExecApiThunk::copyArrayCpuGpu(CpuAddrU srcPtr, GpuAddrU dstPtr, Spac
         REQUIRE_CUDA(cuMemcpyHtoDAsync(CUdeviceptr(dstPtr), (void*) srcPtr, size, uncast(stream).cuStream));
 
     GPU_COVERAGE_END;
-    returnTrue;
 }
 
-stdbool CudaExecApiThunk::copyArrayGpuCpu(GpuAddrU srcPtr, CpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
+void CudaExecApiThunk::copyArrayGpuCpu(GpuAddrU srcPtr, CpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
 {
     GPU_COVERAGE_BEGIN(0, 0);
 
@@ -1825,10 +1754,9 @@ stdbool CudaExecApiThunk::copyArrayGpuCpu(GpuAddrU srcPtr, CpuAddrU dstPtr, Spac
         REQUIRE_CUDA(cuMemcpyDtoHAsync((void*) dstPtr, CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
 
     GPU_COVERAGE_END;
-    returnTrue;
 }
 
-stdbool CudaExecApiThunk::copyArrayGpuGpu(GpuAddrU srcPtr, GpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
+void CudaExecApiThunk::copyArrayGpuGpu(GpuAddrU srcPtr, GpuAddrU dstPtr, Space size, const GpuStream& stream, stdParsNull)
 {
     GPU_COVERAGE_BEGIN(0, 0);
 
@@ -1836,7 +1764,6 @@ stdbool CudaExecApiThunk::copyArrayGpuGpu(GpuAddrU srcPtr, GpuAddrU dstPtr, Spac
         REQUIRE_CUDA(cuMemcpyDtoDAsync(CUdeviceptr(dstPtr), CUdeviceptr(srcPtr), size, uncast(stream).cuStream));
 
     GPU_COVERAGE_END;
-    returnTrue;
 }
 
 //================================================================
@@ -1846,7 +1773,7 @@ stdbool CudaExecApiThunk::copyArrayGpuGpu(GpuAddrU srcPtr, GpuAddrU dstPtr, Spac
 //================================================================
 
 template <typename SrcAddrU, typename DstAddrU>
-inline stdbool genericMatrixCopy
+inline void genericMatrixCopy
 (
     CUmemorytype srcType, SrcAddrU srcPtr, Space srcBytePitch,
     CUmemorytype dstType, DstAddrU dstPtr, Space dstBytePitch,
@@ -1877,8 +1804,6 @@ inline stdbool genericMatrixCopy
     ASSIGN_CONVERT(params.Height, sizeY);
 
     REQUIRE_CUDA(cuMemcpy2DAsync(&params, uncast(stream).cuStream));
-
-    returnTrue;
 }
 
 //================================================================
@@ -1892,7 +1817,7 @@ inline stdbool genericMatrixCopy
 
 #define TMP_MACRO(funcName, SrcAddr, DstAddr, srcType, dstType) \
     \
-    stdbool CudaExecApiThunk::funcName \
+    void CudaExecApiThunk::funcName \
     ( \
         SrcAddr srcAddr, Space srcBytePitch, \
         DstAddr dstAddr, Space dstBytePitch, \
@@ -1905,22 +1830,17 @@ inline stdbool genericMatrixCopy
         \
         if (gpuEnqueueMode == GpuEnqueueNormal) \
         { \
-            require \
+            genericMatrixCopy \
             ( \
-                genericMatrixCopy \
-                ( \
-                    srcType, srcAddr, srcBytePitch, \
-                    dstType, dstAddr, dstBytePitch, \
-                    byteSizeX, sizeY, \
-                    stream, \
-                    stdPassThru \
-                ) \
+                srcType, srcAddr, srcBytePitch, \
+                dstType, dstAddr, dstBytePitch, \
+                byteSizeX, sizeY, \
+                stream, \
+                stdPassThru \
             ); \
         } \
         \
         GPU_COVERAGE_END; \
-        \
-        returnTrue; \
     }
 
 TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU, CU_MEMORYTYPE_HOST, CU_MEMORYTYPE_HOST)
@@ -1978,7 +1898,7 @@ inline CUaddress_mode cudaAddrMode(BorderMode borderMode)
 //
 //================================================================
 
-stdbool CudaExecApiThunk::setSamplerImageEx
+void CudaExecApiThunk::setSamplerImageEx
 (
     const GpuSamplerLink& sampler,
     GpuAddrU imageBaseAddr,
@@ -1997,7 +1917,7 @@ stdbool CudaExecApiThunk::setSamplerImageEx
     REQUIRE(imageSize >= 0);
 
     if_not (imageSize >= 1)
-        returnTrue;
+        return;
 
     //
     // Get texref
@@ -2007,7 +1927,7 @@ stdbool CudaExecApiThunk::setSamplerImageEx
     REQUIRE(ctx.isCreated());
 
     GpuSampler samplerHandle;
-    require(ctx.moduleKeeper.fetchSampler(sampler, samplerHandle, stdPass));
+    ctx.moduleKeeper.fetchSampler(sampler, samplerHandle, stdPass);
 
     CUtexref texref = samplerHandle.recast<const CUtexref>();
 
@@ -2061,10 +1981,6 @@ stdbool CudaExecApiThunk::setSamplerImageEx
         flags |= CU_TRSF_NORMALIZED_COORDINATES;
 
     REQUIRE_CUDA(cuTexRefSetFlags(texref, flags));
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -2073,7 +1989,7 @@ stdbool CudaExecApiThunk::setSamplerImageEx
 //
 //================================================================
 
-stdbool CudaExecApiThunk::setSamplerArray
+void CudaExecApiThunk::setSamplerArray
 (
     const GpuSamplerLink& sampler,
     GpuAddrU arrayAddr,
@@ -2096,7 +2012,7 @@ stdbool CudaExecApiThunk::setSamplerArray
     REQUIRE(ctx.isCreated());
 
     GpuSampler samplerHandle;
-    require(ctx.moduleKeeper.fetchSampler(sampler, samplerHandle, stdPass));
+    ctx.moduleKeeper.fetchSampler(sampler, samplerHandle, stdPass);
 
     CUtexref texref = samplerHandle.recast<const CUtexref>();
 
@@ -2149,10 +2065,6 @@ stdbool CudaExecApiThunk::setSamplerArray
         flags |= CU_TRSF_NORMALIZED_COORDINATES;
 
     REQUIRE_CUDA(cuTexRefSetFlags(texref, flags));
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------
@@ -2177,7 +2089,7 @@ stdbool CudaExecApiThunk::setSamplerArray
 //
 //================================================================
 
-stdbool CudaExecApiThunk::callKernel
+void CudaExecApiThunk::callKernel
 (
     const Point3D<Space>& groupCount,
     const Point<Space>& threadCount,
@@ -2200,7 +2112,7 @@ stdbool CudaExecApiThunk::callKernel
     REQUIRE(ctx.isCreated());
 
     GpuKernel kernelHandle;
-    require(ctx.moduleKeeper.fetchKernel(gpuEnqueueMode == GpuEnqueueNormal ? kernelLink : getEmptyKernelLink(), kernelHandle, stdPass));
+    ctx.moduleKeeper.fetchKernel(gpuEnqueueMode == GpuEnqueueNormal ? kernelLink : getEmptyKernelLink(), kernelHandle, stdPass);
 
     ////
 
@@ -2276,8 +2188,8 @@ stdbool CudaExecApiThunk::callKernel
 
             if_not (cudaErr == CUDA_SUCCESS)
             {
-                require(printMsgTrace(STR("CUDA error: kernel returned %0, groupCount {%1}, threadCount {%2}."),
-                    cudaErr, groupCount, threadCount, msgErr, stdPassThru));
+                printMsgTrace(STR("CUDA error: kernel returned %0, groupCount {%1}, threadCount {%2}."),
+                    cudaErr, groupCount, threadCount, msgErr, stdPassThru);
 
                 returnFalse;
             }
@@ -2310,7 +2222,7 @@ stdbool CudaExecApiThunk::callKernel
 //
 //================================================================
 
-stdbool CudaExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
+void CudaExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
 {
     StreamEx& streamEx = uncast(stream);
 
@@ -2319,11 +2231,7 @@ stdbool CudaExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
     ////
 
     if (streamEx.coverageQueue.isAllocated())
-        require(streamEx.coverageQueue.flushAll(kit.profiler, stdPass));
-
-    ////
-
-    returnTrue;
+        streamEx.coverageQueue.flushAll(kit.profiler, stdPass);
 }
 
 //================================================================
@@ -2336,19 +2244,17 @@ stdbool CudaExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool CudaExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull)
+void CudaExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull)
 {
     REQUIRE_CUDA(cuEventRecord(uncast(event), uncast(stream).cuStream));
-    returnTrue;
 }
 
-stdbool CudaExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull)
+void CudaExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull)
 {
     REQUIRE_CUDA(cuStreamWaitEvent(uncast(stream).cuStream, uncast(event), 0));
-    returnTrue;
 }
 
-stdbool CudaExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull)
+void CudaExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull)
 {
     realWaitHappened = false;
 
@@ -2357,16 +2263,13 @@ stdbool CudaExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappene
         REQUIRE_CUDA(cuEventSynchronize(uncast(event)));
         realWaitHappened = true;
     }
-
-    returnTrue;
 }
 
-stdbool CudaExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull)
+void CudaExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull)
 {
     float32 milliseconds = 0;
     REQUIRE_CUDA(cuEventElapsedTime(&milliseconds, uncast(event1), uncast(event2)));
     time = 1e-3f * milliseconds;
-    returnTrue;
 }
 
 //----------------------------------------------------------------

@@ -84,7 +84,7 @@ struct PostprocessParams
 
 #if HOSTCODE
 
-stdbool gaborExampleFunc
+void gaborExampleFunc
 (
     const GpuMatrix<const float16>& src,
     const GpuMatrix<const float32_x2>& circleTable,
@@ -95,23 +95,16 @@ stdbool gaborExampleFunc
     stdPars(GpuProcessKit)
 )
 {
-    require
+    (horizontallyFirst ? gaborExampleProcessFullHor : gaborExampleProcessFullVer)
     (
-        (horizontallyFirst ? gaborExampleProcessFullHor : gaborExampleProcessFullVer)
-        (
-            src,
-            circleTable,
-            dst,
-            demodulateOutput,
-            PostprocessParams{},
-            uncachedVersion,
-            stdPass
-        )
+        src,
+        circleTable,
+        dst,
+        demodulateOutput,
+        PostprocessParams{},
+        uncachedVersion,
+        stdPass
     );
-
-    ////
-
-    returnTrue;
 }
 
 #endif

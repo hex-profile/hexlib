@@ -34,9 +34,8 @@ static const Space EMU_TEX_ROW_ALIGNMENT = 32;
 //
 //================================================================
 
-stdbool EmuInitApiThunk::initialize(stdParsNull)
+void EmuInitApiThunk::initialize(stdParsNull)
 {
-    returnTrue;
 }
 
 //================================================================
@@ -45,10 +44,9 @@ stdbool EmuInitApiThunk::initialize(stdParsNull)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdParsNull)
+void EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdParsNull)
 {
     deviceCount = 1;
-    returnTrue;
 }
 
 //================================================================
@@ -57,7 +55,7 @@ stdbool EmuInitApiThunk::getDeviceCount(int32& deviceCount, stdParsNull)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdParsNull)
+void EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& properties, stdParsNull)
 {
     using namespace emuMultiProc;
 
@@ -71,8 +69,6 @@ stdbool EmuInitApiThunk::getProperties(int32 deviceIndex, GpuProperties& propert
     properties.maxGroupCount = point3D(SpaceU(typeMax<Space>()));
     properties.maxThreadCount = point(EMU_MAX_THREAD_COUNT_X, EMU_MAX_THREAD_COUNT_Y);
     properties.maxGroupArea = EMU_MAX_THREAD_COUNT;
-
-    returnTrue;
 }
 
 //================================================================
@@ -109,14 +105,14 @@ private:
 
 public:
 
-    stdbool create(const GpuProperties& gpuProperties, stdPars(CreateKit))
+    void create(const GpuProperties& gpuProperties, stdPars(CreateKit))
     {
         Space cpuCount = emuMultiProc::getCpuCount();
 
-        require(emulator.create(cpuCount, stdPassThru));
+        emulator.create(cpuCount, stdPassThru);
         REMEMBER_CLEANUP_EX(emulatorCleanup, emulator.destroy());
 
-        require(mutexCreate(emuLock, stdPass));
+        mutexCreate(emuLock, stdPass);
         REMEMBER_CLEANUP_EX(emuLockCleanup, emuLock.clear());
 
         this->gpuProperties = gpuProperties;
@@ -124,8 +120,6 @@ public:
         emulatorCleanup.cancel();
 
         emuLockCleanup.cancel();
-
-        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -136,7 +130,7 @@ public:
 
 public:
 
-    stdbool emuLaunchKernel
+    void emuLaunchKernel
     (
         const Point3D<Space>& groupCount,
         const Point<Space>& threadCount,
@@ -146,8 +140,7 @@ public:
     )
     {
         MUTEX_GUARD(emuLock);
-        require(emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru));
-        returnTrue;
+        emulator.launchKernel(groupCount, threadCount, kernel, userParams, stdPassThru);
     }
 
 public:
@@ -184,7 +177,7 @@ inline ContextEx& uncast(const GpuContext& context)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdParsNull)
+void EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuScheduling, GpuContextOwner& result, void*& baseContext, stdParsNull)
 {
     result.clear();
     baseContext = 0;
@@ -200,8 +193,8 @@ stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSched
     //
 
     GpuProperties gpuProperties;
-    require(getProperties(deviceIndex, gpuProperties, stdPass));
-    require(ctx->create(gpuProperties, stdPass));
+    getProperties(deviceIndex, gpuProperties, stdPass);
+    ctx->create(gpuProperties, stdPass);
 
     ////
 
@@ -215,10 +208,6 @@ stdbool EmuInitApiThunk::createContext(int32 deviceIndex, GpuScheduling gpuSched
     ////
 
     contextAllocCleanup.cancel();
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -276,7 +265,7 @@ struct EmuTexture
 //
 //================================================================
 
-stdbool emuAllocateTexture(Space sizeX, Space sizeY, GpuChannelType chanType, int rank, Byte*& sysAllocPtr, EmuTexture& result, stdPars(ErrorLogKit))
+void emuAllocateTexture(Space sizeX, Space sizeY, GpuChannelType chanType, int rank, Byte*& sysAllocPtr, EmuTexture& result, stdPars(ErrorLogKit))
 {
     REQUIRE(sizeX >= 0 && sizeY >= 0);
 
@@ -357,8 +346,6 @@ stdbool emuAllocateTexture(Space sizeX, Space sizeY, GpuChannelType chanType, in
     result.imageBaseAddr = alignedPtr;
     result.imageBytePitch = alignedRowByteSize;
     result.imageSize = point(sizeX, sizeY);
-
-    returnTrue;
 }
 
 //================================================================
@@ -378,7 +365,7 @@ struct EmuTextureContext
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
+void EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Space>& size, GpuChannelType chanType, int rank, GpuTextureOwner& result, stdParsNull)
 {
     ++textureAllocCount;
 
@@ -393,17 +380,13 @@ stdbool EmuInitApiThunk::createTexture(const GpuContext& context, const Point<Sp
     ////
 
     Byte* sysAllocPtr = 0;
-    require(emuAllocateTexture(size.X, size.Y, chanType, rank, sysAllocPtr, emuTexture, stdPass));
+    emuAllocateTexture(size.X, size.Y, chanType, rank, sysAllocPtr, emuTexture, stdPass);
 
     ////
 
     GpuTextureDeallocContext& deallocContext = result.owner.replace(destroyTexture);
     auto& emuTextureContext = deallocContext.recast<EmuTextureContext>();
     emuTextureContext.allocPtr = sysAllocPtr;
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -446,8 +429,8 @@ public:
 
     ~StreamEx() {destroy();}
 
-    stdbool create(const GpuContext& context, stdPars(MsgLogExKit))
-        {this->context = context; returnTrue;}
+    void create(const GpuContext& context, stdPars(MsgLogExKit))
+        {this->context = context;}
 
     void destroy()
         {}
@@ -491,7 +474,7 @@ void* getNativeHandle(const GpuStream& stream)
 //
 //================================================================
 
-stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdParsNull)
+void EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream, GpuStreamOwner& result, stdParsNull)
 {
     result.clear();
 
@@ -501,7 +484,7 @@ stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream
     REQUIRE(streamEx != 0);
     REMEMBER_CLEANUP_EX(streamAllocCleanup, delete streamEx);
 
-    require(streamEx->create(context, stdPass));
+    streamEx->create(context, stdPass);
 
     ////
 
@@ -515,8 +498,6 @@ stdbool EmuInitApiThunk::createStream(const GpuContext& context, bool nullStream
     ////
 
     streamAllocCleanup.cancel();
-
-    returnTrue;
 }
 
 //================================================================
@@ -610,7 +591,7 @@ devDefineKernel(copyArrayKernel, CopyArrayParams, o)
 //
 //================================================================
 
-inline stdbool genericArrayCopy
+inline void genericArrayCopy
 (
     CpuAddrU srcAddr, CpuAddrU dstAddr, Space byteSize,
     ContextEx& ctx,
@@ -628,19 +609,14 @@ inline stdbool genericArrayCopy
 
     ////
 
-    require
+    ctx.emuLaunchKernel
     (
-        ctx.emuLaunchKernel
-        (
-            point3D(1, ctx.emuThreadCount(), 1),
-            point(1, 1),
-            (EmuKernelFunc*) (void*) copyArrayKernelCode,
-            &params,
-            stdPassThru
-        )
+        point3D(1, ctx.emuThreadCount(), 1),
+        point(1, 1),
+        (EmuKernelFunc*) (void*) copyArrayKernelCode,
+        &params,
+        stdPassThru
     );
-
-    returnTrue;
 }
 
 //================================================================
@@ -654,12 +630,10 @@ inline stdbool genericArrayCopy
 
 #define TMP_MACRO(funcName, SrcAddr, DstAddr) \
     \
-    stdbool EmuExecApiThunk::funcName(SrcAddr srcAddr, DstAddr dstAddr, Space size, const GpuStream& stream, stdParsNull) \
+    void EmuExecApiThunk::funcName(SrcAddr srcAddr, DstAddr dstAddr, Space size, const GpuStream& stream, stdParsNull) \
     { \
         if (gpuEnqueueMode == GpuEnqueueNormal) \
-            require(genericArrayCopy(srcAddr, dstAddr, size, uncast(uncast(stream).getContext()), stdPassThru)); \
-        \
-        returnTrue; \
+            genericArrayCopy(srcAddr, dstAddr, size, uncast(uncast(stream).getContext()), stdPassThru); \
     }
 
 TMP_MACRO(copyArrayCpuCpu, CpuAddrU, CpuAddrU)
@@ -720,7 +694,7 @@ devDefineKernel(copyMatrixKernel, CopyMatrixParams, o)
 //
 //================================================================
 
-inline stdbool genericMatrixCopy
+inline void genericMatrixCopy
 (
     CpuAddrU srcPtr, Space srcBytePitch,
     CpuAddrU dstPtr, Space dstBytePitch,
@@ -731,19 +705,14 @@ inline stdbool genericMatrixCopy
 {
     CopyMatrixParams params{srcPtr, srcBytePitch, dstPtr, dstBytePitch, byteSizeX, sizeY};
 
-    require
+    ctx.emuLaunchKernel
     (
-        ctx.emuLaunchKernel
-        (
-            point3D(1, ctx.emuThreadCount(), 1),
-            point(1, 1),
-            (EmuKernelFunc*) (void*) copyMatrixKernelCode,
-            &params,
-            stdPassThru
-        )
+        point3D(1, ctx.emuThreadCount(), 1),
+        point(1, 1),
+        (EmuKernelFunc*) (void*) copyMatrixKernelCode,
+        &params,
+        stdPassThru
     );
-
-    returnTrue;
 }
 
 //================================================================
@@ -757,7 +726,7 @@ inline stdbool genericMatrixCopy
 
 #define TMP_MACRO(funcName, SrcAddr, DstAddr) \
     \
-    stdbool EmuExecApiThunk::funcName \
+    void EmuExecApiThunk::funcName \
     ( \
         SrcAddr srcAddr, Space srcBytePitch, \
         DstAddr dstAddr, Space dstBytePitch, \
@@ -768,20 +737,15 @@ inline stdbool genericMatrixCopy
     { \
         if (gpuEnqueueMode == GpuEnqueueNormal) \
         { \
-            require \
+            genericMatrixCopy \
             ( \
-                genericMatrixCopy \
-                ( \
-                    srcAddr, srcBytePitch, \
-                    dstAddr, dstBytePitch, \
-                    byteSizeX, sizeY, \
-                    uncast(uncast(stream).getContext()), \
-                    stdPassThru \
-                ) \
+                srcAddr, srcBytePitch, \
+                dstAddr, dstBytePitch, \
+                byteSizeX, sizeY, \
+                uncast(uncast(stream).getContext()), \
+                stdPassThru \
             ); \
         } \
-        \
-        returnTrue; \
     }
 
 TMP_MACRO(copyMatrixCpuCpu, CpuAddrU, CpuAddrU)
@@ -807,7 +771,7 @@ TMP_MACRO(copyMatrixGpuGpu, GpuAddrU, GpuAddrU)
 //
 //================================================================
 
-stdbool EmuExecApiThunk::setSamplerArray
+void EmuExecApiThunk::setSamplerArray
 (
     const GpuSamplerLink& sampler,
     GpuAddrU arrayAddr,
@@ -822,7 +786,7 @@ stdbool EmuExecApiThunk::setSamplerArray
     stdParsNull
 )
 {
-    return emuSetSamplerArray
+    emuSetSamplerArray
     (
         sampler,
         arrayAddr,
@@ -843,7 +807,7 @@ stdbool EmuExecApiThunk::setSamplerArray
 //
 //================================================================
 
-stdbool EmuExecApiThunk::setSamplerImageEx
+void EmuExecApiThunk::setSamplerImageEx
 (
     const GpuSamplerLink& sampler,
     GpuAddrU imageBaseAddr,
@@ -859,7 +823,7 @@ stdbool EmuExecApiThunk::setSamplerImageEx
     stdParsNull
 )
 {
-    return emuSetSamplerImage
+    emuSetSamplerImage
     (
         sampler,
         imageBaseAddr,
@@ -891,7 +855,7 @@ stdbool EmuExecApiThunk::setSamplerImageEx
 //
 //================================================================
 
-stdbool EmuExecApiThunk::callKernel
+void EmuExecApiThunk::callKernel
 (
     const Point3D<Space>& groupCount,
     const Point<Space>& threadCount,
@@ -910,22 +874,15 @@ stdbool EmuExecApiThunk::callKernel
 
     if (gpuEnqueueMode == GpuEnqueueNormal)
     {
-        require
+        ctx.emuLaunchKernel
         (
-            ctx.emuLaunchKernel
-            (
-                groupCount,
-                threadCount,
-                kernelFunc,
-                paramPtr,
-                stdPassThru
-            )
+            groupCount,
+            threadCount,
+            kernelFunc,
+            paramPtr,
+            stdPassThru
         );
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -938,9 +895,8 @@ stdbool EmuExecApiThunk::callKernel
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
+void EmuExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
 {
-    returnTrue;
 }
 
 //================================================================
@@ -953,26 +909,22 @@ stdbool EmuExecApiThunk::waitStream(const GpuStream& stream, stdParsNull)
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 //================================================================
 
-stdbool EmuExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull)
+void EmuExecApiThunk::recordEvent(const GpuEvent& event, const GpuStream& stream, stdParsNull)
 {
-    returnTrue;
 }
 
-stdbool EmuExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull)
+void EmuExecApiThunk::putEventDependency(const GpuEvent& event, const GpuStream& stream, stdParsNull)
 {
-    returnTrue;
 }
 
-stdbool EmuExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull)
+void EmuExecApiThunk::waitEvent(const GpuEvent& event, bool& realWaitHappened, stdParsNull)
 {
     realWaitHappened = false;
-    returnTrue;
 }
 
-stdbool EmuExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull)
+void EmuExecApiThunk::eventElapsedTime(const GpuEvent& event1, const GpuEvent& event2, float32& time, stdParsNull)
 {
     time = 0;
-    returnTrue;
 }
 
 //----------------------------------------------------------------

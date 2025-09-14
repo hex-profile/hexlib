@@ -15,7 +15,7 @@ namespace packageImpl {
 //================================================================
 
 template <typename Pixel>
-stdbool copyImageFromCpu
+void copyImageFromCpu
 (
     const MatrixAP<const Pixel> srcImage,
     GpuArrayMemory<Pixel>& memory,
@@ -43,11 +43,11 @@ stdbool copyImageFromCpu
     REQUIRE(srcArray.assignValidated(srcMemPtr, srcMemPitch * srcSizeY));
 
     auto& dstArray = memory;
-    require(dstArray.realloc(srcArray.size(), stdPass));
+    dstArray.realloc(srcArray.size(), stdPass);
 
     ////
 
-    require(gpuCopier(srcArray, dstArray, stdPass));
+    gpuCopier(srcArray, dstArray, stdPass);
 
     ////
 
@@ -55,10 +55,6 @@ stdbool copyImageFromCpu
 
     if (inverted)
         dst = flipMatrix(dst);
-
-    ////
-
-    returnTrue;
 }
 
 ////

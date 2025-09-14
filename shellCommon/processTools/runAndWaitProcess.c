@@ -22,7 +22,7 @@
 
 #if defined(_WIN32)
 
-stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
+void runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
 {
     STARTUPINFO si;
     ZeroMemory(&si, sizeof(si));
@@ -43,8 +43,6 @@ stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
 
     // Wait process
     WaitForSingleObject(pi.hProcess, INFINITE);
-
-    returnTrue;
 }
 
 //================================================================
@@ -55,7 +53,7 @@ stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
 
 #elif defined(__linux__)
 
-stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
+void runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
 {
     printMsg(kit.msgLog, STR("Editing: %"), cmdLine);
     kit.msgLog.update();
@@ -68,8 +66,6 @@ stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
         kit.msgLog.update();
         returnFalse;
     }
-
-    returnTrue;
 }
 
 //================================================================
@@ -80,7 +76,7 @@ stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
 
 #elif defined(__linux__)
 
-stdbool runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
+void runAndWaitProcess(const CharType* cmdLine, stdPars(MsgLogKit))
 {
     printMsg(kit.msgLog, STR("Cannot launch `%`: Not implemented."), cmdLine, msgErr);
     returnFalse;

@@ -28,7 +28,7 @@ struct FastAllocatorDeallocContext
 //================================================================
 
 template <typename AddrU, bool realAlloc, bool stateMode>
-stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
+void FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alignment, MemoryOwner& owner, AddrU& result, stdParsNull)
 {
     // State?
     REQUIRE(validState);
@@ -100,8 +100,6 @@ stdbool FastAllocator<AddrU, realAlloc, stateMode>::alloc(AddrU size, AddrU alig
     // Result.
     AddrU allocatedAddr = memAddr + alignedOffset;
     result = realAlloc ? allocatedAddr : 0;
-
-    returnTrue;
 }
 
 //================================================================

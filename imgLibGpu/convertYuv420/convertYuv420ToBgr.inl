@@ -249,7 +249,7 @@ devDefineKernel(PREP_PASTE(convertKernel, SUFFIX), ConvertParamsYuvBgr<DST_PIXEL
 #if HOSTCODE
 
 template <typename SrcPixel, typename SrcPixel2, typename DST_PIXEL>
-stdbool PREP_PASTE(convertYuv420To, SUFFIX)
+void PREP_PASTE(convertYuv420To, SUFFIX)
 (
     const GpuMatrix<const SrcPixel>& srcLuma,
     const GpuMatrix<const SrcPixel2>& srcChromaPacked,
@@ -264,7 +264,7 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     stdScopedBegin;
 
     if_not (kit.dataProcessing)
-        returnTrue;
+        return;
 
     stdEnterElemCount(areaOf(dst.size() >> 1));
 
@@ -319,18 +319,18 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
     //
     //----------------------------------------------------------------
 
-    require(kit.gpuSamplerSetting.setSamplerImage(lumaSampler, srcLuma, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
+    kit.gpuSamplerSetting.setSamplerImage(lumaSampler, srcLuma, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass);
 
     ////
 
     if (chromaIsPacked)
     {
-        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerPacked, srcChromaPacked, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
+        kit.gpuSamplerSetting.setSamplerImage(chromaSamplerPacked, srcChromaPacked, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass);
     }
     else
     {
-        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerU, srcChromaU, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
-        require(kit.gpuSamplerSetting.setSamplerImage(chromaSamplerV, srcChromaV, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass));
+        kit.gpuSamplerSetting.setSamplerImage(chromaSamplerU, srcChromaU, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass);
+        kit.gpuSamplerSetting.setSamplerImage(chromaSamplerV, srcChromaV, BORDER_MIRROR, LinearInterpolation{false}, ReadNormalizedFloat{true}, NormalizedCoords{true}, stdPass);
     }
 
     ////
@@ -345,18 +345,15 @@ stdbool PREP_PASTE(convertYuv420To, SUFFIX)
         dst
     };
 
-    require
+    kit.gpuKernelCalling.callKernel
     (
-        kit.gpuKernelCalling.callKernel
-        (
-            divUpNonneg(kernRange, point(threadCountX, threadCountY)),
-            point(threadCountX, threadCountY),
-            areaOf(dst),
-            PREP_PASTE(convertKernel, SUFFIX),
-            params,
-            kit.gpuCurrentStream,
-            stdPass
-        )
+        divUpNonneg(kernRange, point(threadCountX, threadCountY)),
+        point(threadCountX, threadCountY),
+        areaOf(dst),
+        PREP_PASTE(convertKernel, SUFFIX),
+        params,
+        kit.gpuCurrentStream,
+        stdPass
     );
 
     ////

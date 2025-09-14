@@ -2,7 +2,6 @@
 //
 // HEXLIB_ERROR_MODE
 //
-// 0: Using bool error code.
 // 1: Using exceptions.
 // 2: Using bool parameter by reference.
 //
@@ -22,7 +21,7 @@
 
 #if HEXLIB_ERROR_MODE == 0
 
-    #include "errorHandlingBool.h"
+    #error Error handling through returning bool is no longer supported after The Great Error Handling Remake.
 
 #elif HEXLIB_ERROR_MODE == 1
 

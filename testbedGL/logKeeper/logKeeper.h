@@ -42,7 +42,7 @@ struct LogKeeper
 
     using InitKit = DiagnosticKit;
 
-    virtual stdbool init(const InitArgs& args, stdPars(InitKit)) =0;
+    virtual void init(const InitArgs& args, stdPars(InitKit)) =0;
 
     //----------------------------------------------------------------
     //

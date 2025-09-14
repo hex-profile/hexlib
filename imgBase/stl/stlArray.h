@@ -58,7 +58,7 @@ public:
 public:
 
     template <typename Kit>
-    sysinline stdbool realloc(Space newSize, stdPars(Kit))
+    sysinline void realloc(Space newSize, stdPars(Kit))
     {
         stdExceptBegin;
 

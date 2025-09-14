@@ -22,7 +22,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != Display::Nothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -59,20 +59,16 @@ void FontTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool FontTestImpl::process(stdPars(GpuModuleProcessKit))
+void FontTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     Display displayType = kit.verbosity >= Verbosity::On ? displaySwitch : Display::Nothing;
 
     if (displayType == Display::Nothing)
-        returnTrue;
+        return;
 
     ////
 
     printMsgL(kit, STR("Font test"));
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

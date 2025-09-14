@@ -64,7 +64,7 @@ class GuiModuleImpl : public GuiModule
         return allocIsValid;
     }
 
-    virtual stdbool realloc(stdPars(ReallocKit));
+    virtual void realloc(stdPars(ReallocKit));
 
     //----------------------------------------------------------------
     //
@@ -72,7 +72,7 @@ class GuiModuleImpl : public GuiModule
     //
     //----------------------------------------------------------------
 
-    virtual stdbool checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit));
+    virtual void checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit));
 
     virtual OptionalObject<TimeMoment> getWakeMoment() const {return wakeMoment;}
 
@@ -82,7 +82,7 @@ class GuiModuleImpl : public GuiModule
     //
     //----------------------------------------------------------------
 
-    stdbool draw(const DrawArgs& args, stdPars(DrawKit));
+    void draw(const DrawArgs& args, stdPars(DrawKit));
 
     //----------------------------------------------------------------
     //
@@ -131,7 +131,7 @@ class GuiModuleImpl : public GuiModule
     //
     //----------------------------------------------------------------
 
-    virtual stdbool mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
+    virtual void mouseButtonReceiver(const MouseButtonEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
     {
         if (event.button == 0 && event.press)
         {
@@ -153,11 +153,9 @@ class GuiModuleImpl : public GuiModule
 
             mainImage.dragLastPos = {};
         }
-
-        returnTrue;
     }
 
-    virtual stdbool mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
+    virtual void mouseMoveReceiver(const MouseMoveEvent& event, RedrawRequest& redraw, stdPars(ErrorLogKit))
     {
         if (localConsole.dragLastPos)
         {
@@ -184,8 +182,6 @@ class GuiModuleImpl : public GuiModule
             drag = event;
             redraw.on = true;
         }
-
-        returnTrue;
     }
 
     //----------------------------------------------------------------
@@ -388,7 +384,7 @@ void GuiModuleImpl::serialize(const CfgSerializeKit& kit)
 //
 //================================================================
 
-stdbool GuiModuleImpl::realloc(stdPars(ReallocKit))
+void GuiModuleImpl::realloc(stdPars(ReallocKit))
 {
     allocIsValid = false;
 
@@ -396,7 +392,7 @@ stdbool GuiModuleImpl::realloc(stdPars(ReallocKit))
 
     auto font = fontMono9x16();
 
-    require(gpuFontOwner.realloc(font, stdPass));
+    gpuFontOwner.realloc(font, stdPass);
     gpuFont = gpuFontOwner;
 
     ////
@@ -409,18 +405,16 @@ stdbool GuiModuleImpl::realloc(stdPars(ReallocKit))
 
     ////
 
-    require(globalConsole.drawer.realloc(textBufferSize, stdPass));
+    globalConsole.drawer.realloc(textBufferSize, stdPass);
 
     ////
 
-    require(localConsole.drawer.realloc(textBufferSize, stdPass));
+    localConsole.drawer.realloc(textBufferSize, stdPass);
 
     ////
 
     allocIsValid = true;
     allocMaxImageSize = configMaxImageSize;
-
-    returnTrue;
 }
 
 //================================================================
@@ -429,7 +423,7 @@ stdbool GuiModuleImpl::realloc(stdPars(ReallocKit))
 //
 //================================================================
 
-stdbool GuiModuleImpl::checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit))
+void GuiModuleImpl::checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit))
 {
     //----------------------------------------------------------------
     //
@@ -446,10 +440,6 @@ stdbool GuiModuleImpl::checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit
         if_not (wakeMoment) // Set to wake immediately, on redraw it will set the moment precisely.
             wakeMoment = currentMoment;
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -458,7 +448,7 @@ stdbool GuiModuleImpl::checkWake(const CheckWakeArgs& args, stdPars(CheckWakeKit
 //
 //================================================================
 
-stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
+void GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
 {
     REQUIRE(allocIsValid);
 
@@ -502,19 +492,17 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
     {
         if (desktop.mode == DesktopMode::RandomPattern)
         {
-            require(drawBackgroundPattern(point(desktop.scrollOffset, 0), outputImage, stdPass));
+            drawBackgroundPattern(point(desktop.scrollOffset, 0), outputImage, stdPass);
         }
         else if (desktop.mode == DesktopMode::SolidColor)
         {
             auto color = convertColor(desktop.solidColor);
-            require(gpuMatrixSet(outputImage, color, stdPass));
+            gpuMatrixSet(outputImage, color, stdPass);
         }
         else
         {
             REQUIRE(false);
         }
-
-        returnTrue;
     };
 
     errorBlock(drawDesktop(stdPassNc));
@@ -538,18 +526,16 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
     auto drawScrollbars = [&] (stdPars(auto))
     {
         if (sbarFlags.X)
-            require(drawSingleRect({sbarHorOrg - common.shadowRadius(), sbarHorEnd + common.shadowRadius(), shadowColor}, outputImage, stdPass));
+            drawSingleRect({sbarHorOrg - common.shadowRadius(), sbarHorEnd + common.shadowRadius(), shadowColor}, outputImage, stdPass);
 
         if (sbarFlags.Y)
-            require(drawSingleRect({sbarVerOrg - common.shadowRadius(), sbarVerEnd + common.shadowRadius(), shadowColor}, outputImage, stdPass));
+            drawSingleRect({sbarVerOrg - common.shadowRadius(), sbarVerEnd + common.shadowRadius(), shadowColor}, outputImage, stdPass);
 
         if (sbarFlags.X)
-            require(drawSingleRect({sbarHorOrg, sbarHorEnd, bodyColor}, outputImage, stdPass));
+            drawSingleRect({sbarHorOrg, sbarHorEnd, bodyColor}, outputImage, stdPass);
 
         if (sbarFlags.Y)
-            require(drawSingleRect({sbarVerOrg, sbarVerEnd, bodyColor}, outputImage, stdPass));
-
-        returnTrue;
+            drawSingleRect({sbarVerOrg, sbarVerEnd, bodyColor}, outputImage, stdPass);
     };
 
     REMEMBER_CLEANUP(errorBlock(drawScrollbars(stdPassNc)));
@@ -598,7 +584,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             GpuMatrix<const uint8_x4> srcRegion;
             REQUIRE(image.subs(shifti, usedSize, srcRegion));
 
-            require(gpuMatrixCopy(srcRegion, dstRegion, stdPass));
+            gpuMatrixCopy(srcRegion, dstRegion, stdPass);
 
             ////
 
@@ -623,16 +609,10 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
 
             sbarVerOrg = point(outputSize.X - barThickess, barOfs.Y);
             sbarVerEnd = point(outputSize.X, barOfs.Y + barSize.Y);
-
-            ////
-
-            returnTrue;
         };
 
         if (args.overlay.hasUpdates())
-            require(args.overlay.useImage(imageUser, stdPass));
-
-        returnTrue;
+            args.overlay.useImage(imageUser, stdPass);
     };
 
     ////
@@ -713,7 +693,6 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             };
 
             args.globalLog.readLastMessages(logBufferReceiver, maxCount);
-            returnTrue;
         };
 
         ////
@@ -728,7 +707,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
         args.fontUpscalingFactor = textLogs.fontUpscalingFactor;
         args.outlineColor = textLogs.outlineColor;
 
-        require(globalConsole.drawer.drawText(args, stdPass));
+        globalConsole.drawer.drawText(args, stdPass);
 
         //
         // Animation.
@@ -741,8 +720,6 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             else
                 wakeMoment = kit.timer.add(*oldestMessage, globalConsole.maxAge());
         }
-
-        returnTrue;
     };
 
     ////
@@ -773,7 +750,6 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             };
 
             args.localLog.readFirstMessagesShowOverflow(logBufferReceiver, maxCount);
-            returnTrue;
         };
 
         //----------------------------------------------------------------
@@ -795,9 +771,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
         args.padOpacity = localConsole.padOpacity;
         args.outlineColor = textLogs.outlineColor;
 
-        require(localConsole.drawer.drawText(args, stdPass));
-
-        returnTrue;
+        localConsole.drawer.drawText(args, stdPass);
     };
 
     ////
@@ -813,7 +787,7 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
     auto drawLocalConsoleDragging = [&] (stdPars(auto))
     {
         if_not (localConsole.dragLastPos)
-            returnTrue;
+            return;
 
         ////
 
@@ -834,18 +808,12 @@ stdbool GuiModuleImpl::draw(const DrawArgs& args, stdPars(DrawKit))
             {org - shadowRadius, end + shadowRadius, shadowColor}
         };
 
-        require(drawFilledRect(args, outputImage, stdPass));
-
-        returnTrue;
+        drawFilledRect(args, outputImage, stdPass);
     };
 
     ////
 
     errorBlock(drawLocalConsoleDragging(stdPassNc));
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

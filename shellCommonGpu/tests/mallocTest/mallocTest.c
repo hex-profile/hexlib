@@ -75,7 +75,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != Display::Nothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -120,12 +120,12 @@ void MallocTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool MallocTestImpl::process(stdPars(GpuModuleProcessKit))
+void MallocTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     Display displayType = kit.verbosity >= Verbosity::On ? displaySwitch : Display::Nothing;
 
     if (displayType == Display::Nothing)
-        returnTrue;
+        return;
 
     ////
 
@@ -160,7 +160,7 @@ stdbool MallocTestImpl::process(stdPars(GpuModuleProcessKit))
     {
         printMsgL(kit, STR("Pool re-setup!"), msgWarn);
 
-        require(pool.realloc(poolSize, stdPass));
+        pool.realloc(poolSize, stdPass);
         poolAmount = 0;
 
         ARRAY_EXPOSE(pool);
@@ -216,10 +216,6 @@ stdbool MallocTestImpl::process(stdPars(GpuModuleProcessKit))
             poolAmount += f.size;
         }
     }
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

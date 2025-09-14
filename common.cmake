@@ -249,27 +249,6 @@ function (hexlibProjectTemplate projectName libType sourceDirs dependentProjects
 
     #----------------------------------------------------------------
     #
-    # RVISION build support:
-    # target headers and install config.
-    #
-    #----------------------------------------------------------------
-
-    if (headers)
-        target_sources(${projectName} PUBLIC
-            FILE_SET headers TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/ FILES "${headers}"
-        )
-    endif()
-
-    if (DEFINED RVISION_PLATFORM_BUILD AND DEFINED namespace)
-        install(TARGETS ${projectName} EXPORT "${namespace}-targets"
-            COMPONENT ${projectName}
-            FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hexbase
-            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
-    endif()
-
-    #----------------------------------------------------------------
-    #
     # Target sources.
     #
     #----------------------------------------------------------------

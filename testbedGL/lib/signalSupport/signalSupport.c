@@ -43,7 +43,7 @@ SignalSupport::~SignalSupport()
 //
 //================================================================
 
-stdbool SignalSupport::initSignals(CfgSerialization& serialization, stdPars(InitKit))
+void SignalSupport::initSignals(CfgSerialization& serialization, stdPars(InitKit))
 {
 
     //----------------------------------------------------------------
@@ -68,7 +68,7 @@ stdbool SignalSupport::initSignals(CfgSerialization& serialization, stdPars(Init
     //
     //----------------------------------------------------------------
 
-    require(signalKeys.reallocInHeap(signalCount, stdPass));
+    signalKeys.reallocInHeap(signalCount, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -101,10 +101,6 @@ stdbool SignalSupport::initSignals(CfgSerialization& serialization, stdPars(Init
     };
 
     serialization({CfgVisitVarNull{}, parseSignal, CfgScopeVisitorNull{}});
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================

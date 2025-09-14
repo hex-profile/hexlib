@@ -29,13 +29,13 @@ void resetFrameDesc(FrameDesc& desc)
 //
 //================================================================
 
-stdbool updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(FrameChangeDetector::Kit))
+void updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(FrameChangeDetector::Kit))
 {
     Space nameSize = 0;
     REQUIRE(convertExact(info.videofileName.size, nameSize));
 
     if_not (desc.name.resize(nameSize))
-        require(desc.name.realloc(nameSize, cpuBaseByteAlignment, kit.malloc, stdPass));
+        desc.name.realloc(nameSize, cpuBaseByteAlignment, kit.malloc, stdPass);
 
     ARRAY_EXPOSE_UNSAFE_EX(desc.name, descName);
     memcpy(descNamePtr, info.videofileName.ptr, nameSize * sizeof(CharType));
@@ -57,8 +57,6 @@ stdbool updateFrameState(const AtVideoInfo& info, FrameDesc& desc, stdPars(Frame
     ////
 
     desc.initialized = true;
-
-    returnTrue;
 }
 
 //================================================================
@@ -129,14 +127,14 @@ void FrameChangeDetector::reset()
 //
 //================================================================
 
-stdbool FrameChangeDetector::check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit))
+void FrameChangeDetector::check(const AtVideoInfo& info, bool& frameAdvance, stdPars(Kit))
 {
     FrameDesc& prevFrame = frameHist[histIdx ^ 0];
     FrameDesc& currFrame = frameHist[histIdx ^ 1];
 
     ////
 
-    require(updateFrameState(info, currFrame, stdPass));
+    updateFrameState(info, currFrame, stdPass);
 
     ////
 
@@ -149,8 +147,6 @@ stdbool FrameChangeDetector::check(const AtVideoInfo& info, bool& frameAdvance, 
     ////
 
     histIdx ^= 1;
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------

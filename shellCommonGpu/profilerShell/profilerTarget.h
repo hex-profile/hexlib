@@ -11,4 +11,4 @@
 //
 //================================================================
 
-using ProfilerTarget = Callable<stdbool (stdPars(ProfilerKit))>;
+using ProfilerTarget = Callable<void (stdPars(ProfilerKit))>;

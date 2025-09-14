@@ -36,17 +36,17 @@ public:
     OverlaySmoother();
     ~OverlaySmoother();
 
-    stdbool init(stdPars(InitKit));
+    void init(stdPars(InitKit));
     void deinit();
 
 public:
 
-    stdbool setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
-    stdbool setImageFake(stdPars(ProcessKit)) {returnTrue;}
-    stdbool updateImage(stdPars(ProcessKit));
-    stdbool clearQueue(stdPars(ProcessKit));
-    stdbool setSmoothing(bool smoothing, stdPars(ProcessKit));
-    stdbool flushSmoothly(stdPars(ProcessKit));
+    void setImage(const Point<Space>& size, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdPars(ProcessKit));
+    void setImageFake(stdPars(ProcessKit)) {}
+    void updateImage(stdPars(ProcessKit));
+    void clearQueue(stdPars(ProcessKit));
+    void setSmoothing(bool smoothing, stdPars(ProcessKit));
+    void flushSmoothly(stdPars(ProcessKit));
 
 public:
 
@@ -77,23 +77,23 @@ public:
 
 public:
 
-    stdbool setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
-        {overlayIsSet = true; require(base.setImage(size, imageProvider, desc, id, textEnabled, stdPassThru)); returnTrue;}
+    void setImage(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
+        {overlayIsSet = true; base.setImage(size, imageProvider, desc, id, textEnabled, stdPassThru);}
 
-    stdbool setImageFake(stdParsNull)
-        {overlayIsSet = true; require(base.setImageFake(stdPassThru)); returnTrue;}
+    void setImageFake(stdParsNull)
+        {overlayIsSet = true; base.setImageFake(stdPassThru);}
 
-    stdbool updateImage(stdParsNull)
-        {return base.updateImage(stdPassThru);}
+    void updateImage(stdParsNull)
+        {base.updateImage(stdPassThru);}
 
-    stdbool clearQueue(stdParsNull)
-        {return base.clearQueue(stdPassThru);}
+    void clearQueue(stdParsNull)
+        {base.clearQueue(stdPassThru);}
 
-    stdbool setSmoothing(bool smoothing, stdParsNull)
-        {return base.setSmoothing(smoothing, stdPassThru);}
+    void setSmoothing(bool smoothing, stdParsNull)
+        {base.setSmoothing(smoothing, stdPassThru);}
 
-    stdbool flushSmoothly(stdParsNull)
-        {return base.flushSmoothly(stdPassThru);}
+    void flushSmoothly(stdParsNull)
+        {base.flushSmoothly(stdPassThru);}
 
 public:
 

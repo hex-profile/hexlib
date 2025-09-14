@@ -66,7 +66,7 @@ public:
     }
 
     template <typename Type, typename Kit>
-    stdbool getArray(GpuArray<Type>& result, stdPars(Kit)) const
+    void getArray(GpuArray<Type>& result, stdPars(Kit)) const
     {
         REQUIRE(size() <= spaceMax);
 
@@ -75,14 +75,12 @@ public:
         REQUIRE(count * SpaceU(sizeof(Type)) == bytes);
 
         result.assignUnsafe(ptr<Type>(), Space(count));
-
-        returnTrue;
     }
 
 public:
 
     template <typename Kit>
-    stdbool realloc(size_t size, size_t alignment, stdPars(Kit))
+    void realloc(size_t size, size_t alignment, stdPars(Kit))
     {
         dealloc();
 
@@ -93,13 +91,11 @@ public:
         ////
 
         GpuAddrU ptr{};
-        require(allocator.alloc(kit.gpuCurrentContext, size, alignment, allocOwner, ptr, stdPass));
+        allocator.alloc(kit.gpuCurrentContext, size, alignment, allocOwner, ptr, stdPass);
 
         allocPtr = ptr;
         allocSize = size;
         allocAlignment = alignment;
-
-        returnTrue;
     }
 
     void dealloc()

@@ -13,7 +13,7 @@ namespace gaussMaskResampling {
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit));
+void downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>& src, const GpuLayeredMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit));
 
 //================================================================
 //
@@ -22,8 +22,8 @@ stdbool downsampleOneAndHalfGaussMaskMultitask(const GpuLayeredMatrix<const Src>
 //================================================================
 
 template <typename Src, typename Interm, typename Dst>
-inline stdbool downsampleOneAndHalfGaussMask(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
-    {return downsampleOneAndHalfGaussMaskMultitask<Src, Interm, Dst>(layeredMatrix(src), layeredMatrix(dst), borderMode, initial, stdPassThru);}
+inline void downsampleOneAndHalfGaussMask(const GpuMatrix<const Src>& src, const GpuMatrix<Dst>& dst, BorderMode borderMode, bool initial, stdPars(GpuProcessKit))
+    {downsampleOneAndHalfGaussMaskMultitask<Src, Interm, Dst>(layeredMatrix(src), layeredMatrix(dst), borderMode, initial, stdPassThru);}
 
 //----------------------------------------------------------------
 

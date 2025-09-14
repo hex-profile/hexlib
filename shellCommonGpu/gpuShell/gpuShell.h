@@ -30,7 +30,7 @@ public:
 public:
 
     using InitKit = KitCombine<GpuInitKit, ErrorLogKit, MsgLogKit>;
-    stdbool createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit));
+    void createContext(GpuProperties& gpuProperties, GpuContextOwner& gpuContext, stdPars(InitKit));
 
 private:
 
@@ -46,7 +46,7 @@ private:
 //
 //================================================================
 
-using GpuShellTarget = Callable<stdbool (stdPars(GpuShellKit))>;
+using GpuShellTarget = Callable<void (stdPars(GpuShellKit))>;
 
 //================================================================
 //
@@ -75,7 +75,7 @@ public:
 
 public:
 
-    stdbool execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit));
+    void execCyclicShell(GpuShellTarget& app, stdPars(ExecCyclicToolkit));
 
 private:
 

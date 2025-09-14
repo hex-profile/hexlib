@@ -16,7 +16,7 @@
 
 #if defined(__linux__)
 
-stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
+void runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
 {
     // printMsg(kit.msgLog, STR("Launching %0"), cmdLine, msgInfo);
 
@@ -27,8 +27,6 @@ stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
         printMsg(kit.msgLog, STR("Cannot launch %0"), cmdLine, msgErr);
         returnFalse;
     }
-
-    returnTrue;
 }
 
 #endif
@@ -41,7 +39,7 @@ stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
 
 #if defined(_WIN32)
 
-stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
+void runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
 {
     // printMsg(kit.msgLog, STR("Launching %0"), cmdLine, msgInfo);
 
@@ -68,8 +66,6 @@ stdbool runProcess(const StlString& cmdLine, stdPars(RunProcessKit))
 
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
-
-    returnTrue;
 }
 
 #endif

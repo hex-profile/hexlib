@@ -103,27 +103,27 @@ class AtOverlayMonitor : public BaseVideoOverlay
 
 public:
 
-    stdbool overlayClear(stdParsNull)
+    void overlayClear(stdParsNull)
     {
         overlayIsSet = false;
-        return base.overlayClear(stdPassNullThru);
+        base.overlayClear(stdPassNullThru);
     }
 
-    stdbool overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
+    void overlaySet(const Point<Space>& size, bool dataProcessing, BaseImageProvider& imageProvider, const FormatOutputAtom& desc, uint32 id, bool textEnabled, stdParsNull)
     {
         overlayIsSet = true;
-        return base.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPassNullThru);
+        base.overlaySet(size, dataProcessing, imageProvider, desc, id, textEnabled, stdPassNullThru);
     }
 
-    stdbool overlaySetFake(stdParsNull)
+    void overlaySetFake(stdParsNull)
     {
         overlayIsSet = true;
-        return base.overlaySetFake(stdPassNullThru);
+        base.overlaySetFake(stdPassNullThru);
     }
 
-    stdbool overlayUpdate(stdParsNull)
+    void overlayUpdate(stdParsNull)
     {
-        return base.overlayUpdate(stdPassNullThru);
+        base.overlayUpdate(stdPassNullThru);
     }
 
 public:
@@ -212,13 +212,13 @@ public:
     void setFrameSize(const Point<Space>& frameSize);
 
     bool reallocValid() const;
-    stdbool realloc(stdPars(ReallocKit));
+    void realloc(stdPars(ReallocKit));
 
     Point<Space> outputFrameSize() const;
 
-    stdbool process(VideoPrepTarget& target, stdPars(ProcessKit));
+    void process(VideoPrepTarget& target, stdPars(ProcessKit));
 
-    stdbool processSingleFrame
+    void processSingleFrame
     (
         VideoPrepTarget& target,
         const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -226,7 +226,7 @@ public:
         stdPars(ProcessKit)
     );
 
-    stdbool processPrepFrontend
+    void processPrepFrontend
     (
         VideoPrepTarget& target,
         const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -234,7 +234,7 @@ public:
         stdPars(ProcessKit)
     );
 
-    stdbool processCropFrontend
+    void processCropFrontend
     (
         VideoPrepTarget& target,
         const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -242,7 +242,7 @@ public:
         stdPars(ProcessKit)
     );
 
-    stdbool processTarget
+    void processTarget
     (
         VideoPrepTarget& target,
         const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -467,20 +467,20 @@ bool VideoPreprocessorImpl::reallocValid() const
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
+void VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
 {
     allocFrameSize = point(0);
 
     ////
 
-    require(frameHistory.realloc(frameHistoryCapacity, stdPass));
+    frameHistory.realloc(frameHistoryCapacity, stdPass);
 
     ////
 
     for_count (k, frameHistoryCapacity())
     {
         FrameSnapshot* f = frameHistory.add();
-        require(f->frameMemory.realloc(desiredFrameSize, stdPass));
+        f->frameMemory.realloc(desiredFrameSize, stdPass);
         f->frame = f->frameMemory;
     }
 
@@ -489,14 +489,12 @@ stdbool VideoPreprocessorImpl::realloc(stdPars(ReallocKit))
 
     ////
 
-    require(rndgenFrame.realloc(desiredFrameSize, stdPass));
+    rndgenFrame.realloc(desiredFrameSize, stdPass);
     rndgenFrameInitialized = false;
 
     ////
 
     allocFrameSize = desiredFrameSize;
-
-    returnTrue;
 }
 
 //================================================================
@@ -516,7 +514,7 @@ Point<Space> VideoPreprocessorImpl::outputFrameSize() const
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::processTarget
+void VideoPreprocessorImpl::processTarget
 (
     VideoPrepTarget& target,
     const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -537,7 +535,7 @@ stdbool VideoPreprocessorImpl::processTarget
     //
     //----------------------------------------------------------------
 
-    auto aviSetOutput = [&] () -> stdbool
+    auto aviSetOutput = [&] () -> void
     {
         if_not (aviConfig.outputDir->size() != 0)
         {
@@ -545,12 +543,10 @@ stdbool VideoPreprocessorImpl::processTarget
             returnFalse;
         }
 
-        require(aviConsole.setOutputDir(aviConfig.outputDir->cstr(), stdPass));
-        require(aviConsole.setCodec(baseConsoleAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass));
-        require(aviConsole.setFps(aviConfig.outputFps, stdPass));
-        require(aviConsole.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass));
-
-        returnTrue;
+        aviConsole.setOutputDir(aviConfig.outputDir->cstr(), stdPass);
+        aviConsole.setCodec(baseConsoleAvi::codecFromStr(aviConfig.outputCodec->cstr()), stdPass);
+        aviConsole.setFps(aviConfig.outputFps, stdPass);
+        aviConsole.setMaxSegmentFrames(aviConfig.maxSegmentFrames, stdPass);
     };
 
     ////
@@ -638,8 +634,8 @@ stdbool VideoPreprocessorImpl::processTarget
 
             auto img = makeConst(frameHistory[-i]->frameMemory);
 
-            require(kit.gpuImageConsole.addRgbColorImage(img, 0x00, 0xFF * kit.display.factor, point(1.f), INTERP_NEAREST,
-                img.size(), BORDER_ZERO, paramMsg(STR("Video Preprocessor: Frame history [%0]"), i), stdPass));
+            kit.gpuImageConsole.addRgbColorImage(img, 0x00, 0xFF * kit.display.factor, point(1.f), INTERP_NEAREST,
+                img.size(), BORDER_ZERO, paramMsg(STR("Video Preprocessor: Frame history [%0]"), i), stdPass);
         }
     }
 
@@ -651,7 +647,7 @@ stdbool VideoPreprocessorImpl::processTarget
 
     DisplayDelayerThunk displayDelayer(displayWaitController, kit);
 
-    require(target.process(stdPassKit(kitCombine(kit, GpuRgbFrameKit(inputFrame), DisplayDelayerKit(displayDelayer)))));
+    target.process(stdPassKit(kitCombine(kit, GpuRgbFrameKit(inputFrame), DisplayDelayerKit(displayDelayer))));
 
     ////
 
@@ -664,7 +660,7 @@ stdbool VideoPreprocessorImpl::processTarget
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::processSingleFrame
+void VideoPreprocessorImpl::processSingleFrame
 (
     VideoPrepTarget& target,
     const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -703,7 +699,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 
     bool useOverlaySmoothing = overlaySmootherEnabled && (kit.atRunning && kit.atPlaying);
 
-    require(overlaySmootherThunk.setSmoothing(useOverlaySmoothing, stdPass));
+    overlaySmootherThunk.setSmoothing(useOverlaySmoothing, stdPass);
 
 #endif
 
@@ -728,17 +724,17 @@ stdbool VideoPreprocessorImpl::processSingleFrame
         if (kit.verbosity >= Verbosity::On)
         {
             GpuBaseImageProvider imageProvider(kit);
-            require(imageProvider.setImage(inputFrame, stdPass));
+            imageProvider.setImage(inputFrame, stdPass);
 
             if (kit.dataProcessing)
-                require(overlaySmootherThunk.setImage(inputFrame.size(), imageProvider, STR("Input Frame"), 0, true, stdPass));
+                overlaySmootherThunk.setImage(inputFrame.size(), imageProvider, STR("Input Frame"), 0, true, stdPass);
         }
     }
 
     ////
 
     if_not (useOverlaySmoothing)
-        require(overlaySmootherThunk.flushSmoothly(stdPass));
+        overlaySmootherThunk.flushSmoothly(stdPass);
 
 #endif
 
@@ -755,7 +751,7 @@ stdbool VideoPreprocessorImpl::processSingleFrame
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::processPrepFrontend
+void VideoPreprocessorImpl::processPrepFrontend
 (
     VideoPrepTarget& target,
     const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -782,8 +778,8 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 
     if (prepOff)
     {
-        require(processCropFrontend(target, inputFrame, frameIndex, stdPassKit(kitMonitorEx)));
-        returnTrue;
+        processCropFrontend(target, inputFrame, frameIndex, stdPassKit(kitMonitorEx));
+        return;
     }
 
     //----------------------------------------------------------------
@@ -848,25 +844,25 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 
         if (genMode == GenMode::Pulse)
         {
-            require(generatePulse(processedFrameMemory, convertNearest<Space>(-motionOfs), genPulsePeriod, stdPass));
+            generatePulse(processedFrameMemory, convertNearest<Space>(-motionOfs), genPulsePeriod, stdPass);
         }
         else if (genMode == GenMode::Grating)
         {
-            require(generateGrating(processedFrameMemory, genGratingPeriod, transMul, transAdd, genGratingRectangleShape(), stdPass));
+            generateGrating(processedFrameMemory, genGratingPeriod, transMul, transAdd, genGratingRectangleShape(), stdPass);
         }
         else if (genMode == GenMode::Edge)
         {
-            require(generateEdge(processedFrameMemory, transMul, transAdd, 1.f / genEdgeSigma, genEdgePulse, stdPass));
+            generateEdge(processedFrameMemory, transMul, transAdd, 1.f / genEdgeSigma, genEdgePulse, stdPass);
         }
         else if (genMode == GenMode::Random)
         {
-            require(initializeRandomStateMatrix(rndgenFrame, frameIndex, 0x113716C3, stdPass));
-            require(generateRandom(processedFrameMemory, rndgenFrame, stdPass));
+            initializeRandomStateMatrix(rndgenFrame, frameIndex, 0x113716C3, stdPass);
+            generateRandom(processedFrameMemory, rndgenFrame, stdPass);
         }
         else
         {
             auto func = simuMotionActive() ? rotateImageCubicMirror : rotateImageCubicZero;
-            require(func(srcFrame, processedFrameMemory, transMul, transAdd, stdPass));
+            func(srcFrame, processedFrameMemory, transMul, transAdd, stdPass);
         }
 
         ////
@@ -875,8 +871,8 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
         {
             printMsgL(kit, STR("Adding input noise, sigma = %0"), fltf(noiseSigma(), 3), msgWarn);
 
-            require(initializeRandomStateMatrix(rndgenFrame, frameIndex, 0x94D5B0B2, stdPass));
-            require(generateAdditionalGaussNoise(processedFrameMemory, processedFrameMemory, rndgenFrame, noiseSigma, stdPass));
+            initializeRandomStateMatrix(rndgenFrame, frameIndex, 0x94D5B0B2, stdPass);
+            generateAdditionalGaussNoise(processedFrameMemory, processedFrameMemory, rndgenFrame, noiseSigma, stdPass);
         }
     }
 
@@ -886,7 +882,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     //
     //----------------------------------------------------------------
 
-    require(processCropFrontend(target, processedFrame, frameIndex, stdPassKit(kitMonitorEx)));
+    processCropFrontend(target, processedFrame, frameIndex, stdPassKit(kitMonitorEx));
 
     //----------------------------------------------------------------
     //
@@ -897,14 +893,10 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
     if (kit.verbosity >= Verbosity::On && !atOverlayMonitor.overlayIsSet)
     {
         GpuBaseImageProvider imageProvider(kit);
-        require(imageProvider.setImage(processedFrame, stdPass));
+        imageProvider.setImage(processedFrame, stdPass);
 
-        require(kit.atVideoOverlay.overlaySet(processedFrame.size(), kit.dataProcessing, imageProvider, STR("Rotated Frame"), 0, true, stdPass));
+        kit.atVideoOverlay.overlaySet(processedFrame.size(), kit.dataProcessing, imageProvider, STR("Rotated Frame"), 0, true, stdPass);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -913,7 +905,7 @@ stdbool VideoPreprocessorImpl::processPrepFrontend
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::processCropFrontend
+void VideoPreprocessorImpl::processCropFrontend
 (
     VideoPrepTarget& target,
     const GpuMatrixAP<const uint8_x4>& inputFrame,
@@ -942,11 +934,11 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 
     if_not (allv(cropSize == frameSize))
     {
-        require(croppedFrameMemory.realloc(cropSize, stdPass));
+        croppedFrameMemory.realloc(cropSize, stdPass);
 
         auto dstFrame = flipMatrix(relaxToAnyPitch(croppedFrameMemory));
         croppedFrame = dstFrame;
-        require(copyImageRect(inputFrame, cropOfs, dstFrame, stdPass));
+        copyImageRect(inputFrame, cropOfs, dstFrame, stdPass);
     }
 
     //
@@ -969,7 +961,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     // Main process
     //
 
-    require(processTarget(target, croppedFrame, frameIndex, stdPassKit(kitReplace(kit, kitCombine(newUserPointKit, atOverlayKit)))));
+    processTarget(target, croppedFrame, frameIndex, stdPassKit(kitReplace(kit, kitCombine(newUserPointKit, atOverlayKit))));
 
     //
     // If overlay is not set, use the cropped video image
@@ -978,14 +970,10 @@ stdbool VideoPreprocessorImpl::processCropFrontend
     if (kit.verbosity >= Verbosity::On && !atOverlayMonitor.overlayIsSet)
     {
         GpuBaseImageProvider imageProvider(kit);
-        require(imageProvider.setImage(croppedFrame, stdPass));
+        imageProvider.setImage(croppedFrame, stdPass);
 
-        require(kit.atVideoOverlay.overlaySet(croppedFrame.size(), kit.dataProcessing, imageProvider, STR(""), 0, false, stdPass));
+        kit.atVideoOverlay.overlaySet(croppedFrame.size(), kit.dataProcessing, imageProvider, STR(""), 0, false, stdPass);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -994,7 +982,7 @@ stdbool VideoPreprocessorImpl::processCropFrontend
 //
 //================================================================
 
-stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessKit))
+void VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessKit))
 {
     stdScopedBegin;
 
@@ -1036,7 +1024,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
     if (kit.dataProcessing)
     {
-        require(floatRangesTest.process(stdPass));
+        floatRangesTest.process(stdPass);
     }
 
     //----------------------------------------------------------------
@@ -1061,12 +1049,12 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
 
         if (cpuFrame.memPitch() >= 0)
         {
-            require(copyMatrixAsArray(cpuFrame, f->frameMemory, cpuFrameSender, stdPass));
+            copyMatrixAsArray(cpuFrame, f->frameMemory, cpuFrameSender, stdPass);
             f->frame = f->frameMemory;
         }
         else
         {
-            require(copyMatrixAsArray(flipMatrix(cpuFrame), f->frameMemory, cpuFrameSender, stdPass));
+            copyMatrixAsArray(flipMatrix(cpuFrame), f->frameMemory, cpuFrameSender, stdPass);
             f->frame = flipMatrix(f->frameMemory);
         }
     }
@@ -1134,7 +1122,7 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
             FrameSnapshot* f = frameHistory[0];
             REQUIRE(f != 0);
 
-            require(processSingleFrame(target, f->frame, movingFrameIndex, stdPassEx(kit, processLocation)));
+            processSingleFrame(target, f->frame, movingFrameIndex, stdPassEx(kit, processLocation));
         }
         else
         {
@@ -1162,15 +1150,12 @@ stdbool VideoPreprocessorImpl::process(VideoPrepTarget& target, stdPars(ProcessK
                 VerbosityKit outputKit(k == 0 ? kit.verbosity : Verbosity::Off);
                 ProfilerKit profilerKit(k == 0 ? kit.profiler : 0);
 
-                require
+                processSingleFrame
                 (
-                    processSingleFrame
-                    (
-                        target,
-                        f->frame,
-                        movingFrameIndex - k,
-                        stdPassEx(kitReplace(kit, kitCombine(pipelineControlKit, outputKit, profilerKit)), processLocation)
-                    )
+                    target,
+                    f->frame,
+                    movingFrameIndex - k,
+                    stdPassEx(kitReplace(kit, kitCombine(pipelineControlKit, outputKit, profilerKit)), processLocation)
                 );
             }
         }

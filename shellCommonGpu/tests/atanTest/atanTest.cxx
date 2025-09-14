@@ -54,7 +54,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != Display::Nothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -95,12 +95,12 @@ void AtanTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool AtanTestImpl::process(stdPars(GpuModuleProcessKit))
+void AtanTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     Display displayType = kit.verbosity >= Verbosity::On ? displaySwitch : Display::Nothing;
 
     if (displayType == Display::Nothing)
-        returnTrue;
+        return;
 
     GpuCopyThunk gpuCopy;
 
@@ -129,7 +129,7 @@ stdbool AtanTestImpl::process(stdPars(GpuModuleProcessKit))
 
     GPU_ARRAY_ALLOC(srcGpu, Point<float32>, size);
 
-    require(gpuCopy(srcCpu, srcGpu, stdPass));
+    gpuCopy(srcCpu, srcGpu, stdPass);
 
     //----------------------------------------------------------------
     //
@@ -139,13 +139,13 @@ stdbool AtanTestImpl::process(stdPars(GpuModuleProcessKit))
 
     GPU_ARRAY_ALLOC(testGpu, float32, size);
 
-    require(computePhase(srcGpu, testGpu, testApproxPhase, stdPass));
+    computePhase(srcGpu, testGpu, testApproxPhase, stdPass);
 
     ////
 
     ARRAY_ALLOC_FOR_GPU_EXCH(testCpu, float32, size);
 
-    require(gpuCopy(testGpu, testCpu, stdPass));
+    gpuCopy(testGpu, testCpu, stdPass);
 
     gpuCopy.waitClear();
 
@@ -188,10 +188,6 @@ stdbool AtanTestImpl::process(stdPars(GpuModuleProcessKit))
     ////
 
     printMsgL(kit, STR("Atan test: Accuracy % bits"), fltf(getBits(maxError), 2));
-
-    ////
-
-    returnTrue;
 }
 
 #endif

@@ -691,7 +691,7 @@ PREP_PASTE(FUNCNAME, ProcessFinalProto) PREP_PASTE(FUNCNAME, ProcessFinalCachedV
 
 #if HOSTCODE
 
-stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
+void PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 (
     const GpuMatrix<const GABOR_INPUT_PIXEL>& src,
     PREP_LIST_FOREACH_PAIR(GABOR_PREPROCESS_IMAGES (o), GABOR_DECLARE_MATRIX_PARAM, _)
@@ -753,21 +753,18 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
 
     ////
 
-    require
     (
-        (
-            uncachedVersion ?
-                PREP_PASTE3(FUNCNAME, ProcessInitialSimple, DIR(Hor, Ver)) :
-                PREP_PASTE3(FUNCNAME, ProcessInitialCached, DIR(Hor, Ver))
-        )
-        (
-            src,
-            PREP_LIST_FOREACH_PAIR(GABOR_PREPROCESS_IMAGES (o), GABOR_PASS_MATRIX_PARAM, _)
-            circleTable,
-            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp),
-            demodulateOutput,
-            stdPass
-        )
+        uncachedVersion ?
+            PREP_PASTE3(FUNCNAME, ProcessInitialSimple, DIR(Hor, Ver)) :
+            PREP_PASTE3(FUNCNAME, ProcessInitialCached, DIR(Hor, Ver))
+    )
+    (
+        src,
+        PREP_LIST_FOREACH_PAIR(GABOR_PREPROCESS_IMAGES (o), GABOR_PASS_MATRIX_PARAM, _)
+        circleTable,
+        GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp),
+        demodulateOutput,
+        stdPass
     );
 
     //----------------------------------------------------------------
@@ -776,27 +773,20 @@ stdbool PREP_PASTE3(FUNCNAME, ProcessFull, DIR(Hor, Ver))
     //
     //----------------------------------------------------------------
 
-    require
     (
-        (
-            uncachedVersion ?
-            PREP_PASTE3(FUNCNAME, ProcessFinalSimple, DIR(Ver, Hor)) :
-            PREP_PASTE3(FUNCNAME, ProcessFinalCached, DIR(Ver, Hor))
-        )
-        (
-            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp),
-            circleTable,
-            PREP_LIST_FOREACH_PAIR(GABOR_POSTPROCESS_IMAGES (o), GABOR_PASS_MATRIX_PARAM, _)
-            GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, dst),
-            demodulateOutput,
-            params,
-            stdPass
-        )
+        uncachedVersion ?
+        PREP_PASTE3(FUNCNAME, ProcessFinalSimple, DIR(Ver, Hor)) :
+        PREP_PASTE3(FUNCNAME, ProcessFinalCached, DIR(Ver, Hor))
+    )
+    (
+        GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, tmp),
+        circleTable,
+        PREP_LIST_FOREACH_PAIR(GABOR_POSTPROCESS_IMAGES (o), GABOR_PASS_MATRIX_PARAM, _)
+        GPU_LAYERED_MATRIX_PASS(GABOR_ORIENT_COUNT, dst),
+        demodulateOutput,
+        params,
+        stdPass
     );
-
-    ////
-
-    returnTrue;
 }
 
 #endif
@@ -1237,7 +1227,7 @@ GPUTOOL_2D_PROTO
     #define TMP_MACRO(Type, name, _) \
         name##Matrix
 
-    require(initialFunc(PREP_LIST_ENUM_PAIR(ENVELOPE_INPUT_IMAGES (o), TMP_MACRO, _), tmp, params, stdPass));
+    initialFunc(PREP_LIST_ENUM_PAIR(ENVELOPE_INPUT_IMAGES (o), TMP_MACRO, _), tmp, params, stdPass);
 
     #undef TMP_MACRO
 
@@ -1252,13 +1242,9 @@ GPUTOOL_2D_PROTO
     #define TMP_MACRO(Type, name, _) \
         name##Matrix
 
-    require(finalFunc(tmp, PREP_LIST_ENUM_PAIR(ENVELOPE_OUTPUT_IMAGES (o), TMP_MACRO, _), params, stdPass));
+    finalFunc(tmp, PREP_LIST_ENUM_PAIR(ENVELOPE_OUTPUT_IMAGES (o), TMP_MACRO, _), params, stdPass);
 
     #undef TMP_MACRO
-
-    ////
-
-    returnTrue;
 }
 
 #endif

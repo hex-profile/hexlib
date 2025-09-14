@@ -83,9 +83,9 @@ LAMBDA_THUNK4
     lambda0(kit),
     bool reallocValid() const,
     lambda1(),
-    stdbool realloc(stdPars(EngineReallocKit)),
+    void realloc(stdPars(EngineReallocKit)),
     lambda2(stdPassThru),
-    stdbool process(stdPars(EngineProcessKit)),
+    void process(stdPars(EngineProcessKit)),
     lambda3(stdPassThru)
 )
 
@@ -103,9 +103,9 @@ struct PackageKeeper
     virtual void serialize(const CfgSerializeKit& kit) =0;
     virtual Settings& settings() =0;
 
-    virtual stdbool init(const CharType* const configName, SerializeTarget& target, stdPars(StarterDebugKit)) =0;
-    virtual stdbool finalize(SerializeTarget& target, stdPars(StarterDebugKit)) =0;
-    virtual stdbool process(ProcessTarget& target, bool warmup, stdPars(StarterDebugKit)) =0;
+    virtual void init(const CharType* const configName, SerializeTarget& target, stdPars(StarterDebugKit)) =0;
+    virtual void finalize(SerializeTarget& target, stdPars(StarterDebugKit)) =0;
+    virtual void process(ProcessTarget& target, bool warmup, stdPars(StarterDebugKit)) =0;
 };
 
 //----------------------------------------------------------------

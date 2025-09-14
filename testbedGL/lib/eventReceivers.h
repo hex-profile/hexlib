@@ -14,7 +14,7 @@
 //
 //================================================================
 
-using RefreshReceiver = Callable<stdbool (stdParsNull)>;
+using RefreshReceiver = Callable<void (stdParsNull)>;
 
 KIT_CREATE(RefreshReceiverKit, RefreshReceiver&, refreshReceiver);
 
@@ -24,7 +24,7 @@ KIT_CREATE(RefreshReceiverKit, RefreshReceiver&, refreshReceiver);
 //
 //================================================================
 
-using KeyReceiver = Callable<stdbool (const KeyEvent& event, stdParsNull)>;
+using KeyReceiver = Callable<void (const KeyEvent& event, stdParsNull)>;
 
 KIT_CREATE(KeyReceiverKit, KeyReceiver&, keyReceiver);
 
@@ -36,7 +36,7 @@ KIT_CREATE(KeyReceiverKit, KeyReceiver&, keyReceiver);
 
 using MouseMoveEvent = Point<float32>;
 
-using MouseMoveReceiver = Callable<stdbool (const MouseMoveEvent& event, stdParsNull)>;
+using MouseMoveReceiver = Callable<void (const MouseMoveEvent& event, stdParsNull)>;
 
 KIT_CREATE(MouseMoveReceiverKit, MouseMoveReceiver&, mouseMoveReceiver);
 
@@ -56,7 +56,7 @@ struct MouseButtonEvent
 
 ////
 
-using MouseButtonReceiver = Callable<stdbool (const MouseButtonEvent& event, stdParsNull)>;
+using MouseButtonReceiver = Callable<void (const MouseButtonEvent& event, stdParsNull)>;
 
 ////
 
@@ -70,7 +70,7 @@ KIT_CREATE(MouseButtonReceiverKit, MouseButtonReceiver&, mouseButtonReceiver);
 
 using ScrollEvent = Point<float32>;
 
-using ScrollReceiver = Callable<stdbool (const ScrollEvent& event, stdParsNull)>;
+using ScrollReceiver = Callable<void (const ScrollEvent& event, stdParsNull)>;
 
 KIT_CREATE(ScrollReceiverKit, ScrollReceiver&, scrollReceiver);
 
@@ -82,7 +82,7 @@ KIT_CREATE(ScrollReceiverKit, ScrollReceiver&, scrollReceiver);
 
 using ResizeEvent = Point<Space>; // New framebuffer size in pixels
 
-using ResizeReceiver = Callable<stdbool (const ResizeEvent& event, stdParsNull)>;
+using ResizeReceiver = Callable<void (const ResizeEvent& event, stdParsNull)>;
 
 KIT_CREATE(ResizeReceiverKit, ResizeReceiver&, resizeReceiver);
 

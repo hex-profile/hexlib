@@ -151,7 +151,7 @@ struct GpuSamplerSetup
     // setSamplerArray
     //
 
-    virtual stdbool setSamplerArray
+    virtual void setSamplerArray
     (
         const GpuSamplerLink& sampler,
         GpuAddrU arrayAddr,
@@ -168,7 +168,7 @@ struct GpuSamplerSetup
     =0;
 
     template <typename Type, typename Kit>
-    inline stdbool setSamplerArray
+    inline void setSamplerArray
     (
         const GpuSamplerLink& sampler,
         const GpuArray<const Type>& array,
@@ -179,7 +179,7 @@ struct GpuSamplerSetup
         stdPars(Kit)
     )
     {
-        return setSamplerArray
+        setSamplerArray
         (
             sampler,
             GpuAddrU(array.ptrUnsafeForInternalUseOnly()),
@@ -199,7 +199,7 @@ struct GpuSamplerSetup
     // setSamplerImage
     //
 
-    virtual stdbool setSamplerImageEx
+    virtual void setSamplerImageEx
     (
         const GpuSamplerLink& sampler,
         GpuAddrU imageBaseAddr,
@@ -217,7 +217,7 @@ struct GpuSamplerSetup
     =0;
 
     template <typename Type, typename Pitch, typename Kit>
-    inline stdbool setSamplerImage
+    inline void setSamplerImage
     (
         const GpuSamplerLink& sampler,
         const GpuMatrix<Type, Pitch>& image,
@@ -228,7 +228,7 @@ struct GpuSamplerSetup
         stdPars(Kit)
     )
     {
-        return setSamplerImageEx
+        setSamplerImageEx
         (
             sampler,
             GpuAddrU(image.memPtrUnsafeInternalUseOnly()),

@@ -53,14 +53,14 @@ GPUTOOL_2D_END
 
 #if HOSTCODE
 
-stdbool drawBackgroundPattern
+void drawBackgroundPattern
 (
     const Point<Space>& scrollOfs,
     const GpuMatrix<uint8_x4>& dst,
     stdPars(GpuProcessKit)
 )
 {
-    return genTestImage(dst, scrollOfs, stdPassThru);
+    genTestImage(dst, scrollOfs, stdPassThru);
 }
 
 #endif

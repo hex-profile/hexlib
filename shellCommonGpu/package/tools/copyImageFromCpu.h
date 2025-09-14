@@ -13,7 +13,7 @@ namespace packageImpl {
 //================================================================
 
 template <typename Pixel>
-stdbool copyImageFromCpu
+void copyImageFromCpu
 (
     const MatrixAP<const Pixel> srcImage,
     GpuArrayMemory<Pixel>& memory,

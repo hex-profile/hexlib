@@ -17,7 +17,7 @@ class CircleTableHolder
 
 public:
 
-    stdbool realloc(Space size, stdPars(GpuProcessKit));
+    void realloc(Space size, stdPars(GpuProcessKit));
     GpuMatrix<const float32_x2> operator () () const {return table;}
 
 private:

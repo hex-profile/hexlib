@@ -31,7 +31,7 @@ using ProcessTargetKit = KitCombine<GpuImageConsoleKit, GpuRgbFrameKit, PipeCont
 struct VideoPrepTarget
 {
     virtual void inspectProcess(ProcessInspector& inspector) =0;
-    virtual stdbool process(stdPars(ProcessTargetKit)) =0;
+    virtual void process(stdPars(ProcessTargetKit)) =0;
 };
 
 //================================================================
@@ -64,10 +64,10 @@ public:
     void setFrameSize(const Point<Space>& frameSize);
 
     bool reallocValid() const;
-    stdbool realloc(stdPars(ReallocKit));
+    void realloc(stdPars(ReallocKit));
 
     Point<Space> outputFrameSize() const;
-    stdbool process(VideoPrepTarget& target, stdPars(ProcessKit));
+    void process(VideoPrepTarget& target, stdPars(ProcessKit));
 
 private:
 

@@ -10,7 +10,7 @@
 //
 //================================================================
 
-stdbool gaborExampleFunc
+void gaborExampleFunc
 (
     const GpuMatrix<const float16>& src,
     const GpuMatrix<const float32_x2>& circleTable,

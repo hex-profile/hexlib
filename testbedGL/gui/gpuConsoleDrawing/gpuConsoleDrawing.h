@@ -34,7 +34,7 @@ using ColorTextReceiver = Callable<void (const CharArray& text, uint32 color)>;
 //
 //================================================================
 
-using ColorTextProvider = Callable<stdbool (Space maxCount, ColorTextReceiver& receiver, stdParsNull)>;
+using ColorTextProvider = Callable<void (Space maxCount, ColorTextReceiver& receiver, stdParsNull)>;
 
 //================================================================
 //
@@ -57,7 +57,7 @@ public:
 
 public:
 
-    stdbool realloc(const CpuFontMono& font, stdPars(GpuModuleReallocKit));
+    void realloc(const CpuFontMono& font, stdPars(GpuModuleReallocKit));
 
 private:
 
@@ -128,7 +128,7 @@ public:
 
     using ReallocKit = KitCombine<CpuFuncKit, GpuAppFullKit>;
 
-    stdbool realloc(const Point<Space>& textBufferSize, stdPars(ReallocKit));
+    void realloc(const Point<Space>& textBufferSize, stdPars(ReallocKit));
 
     void dealloc();
 
@@ -136,7 +136,7 @@ public:
 
     using ProcessKit = KitCombine<GpuProcessKit, LocalLogKit>;
 
-    stdbool drawText(const DrawText& args, stdPars(ProcessKit));
+    void drawText(const DrawText& args, stdPars(ProcessKit));
 
 private:
 

@@ -19,7 +19,7 @@ struct KeyBufferImpl : public KeyBuffer
     //
     //----------------------------------------------------------------
 
-    virtual stdbool reserve(Space capacity, stdPars(Kit))
+    virtual void reserve(Space capacity, stdPars(Kit))
     {
         stdExceptBegin;
 
@@ -47,7 +47,7 @@ struct KeyBufferImpl : public KeyBuffer
     //
     //----------------------------------------------------------------
 
-    virtual stdbool receiveKey(const KeyEvent& key, stdPars(Kit))
+    virtual void receiveKey(const KeyEvent& key, stdPars(Kit))
     {
         stdExceptBegin;
 

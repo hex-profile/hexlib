@@ -65,7 +65,7 @@ struct GpuImageConsole : public GpuBaseConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        virtual stdbool addMatrixFunc \
+        virtual void addMatrixFunc \
         ( \
             const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
@@ -85,7 +85,7 @@ struct GpuImageConsole : public GpuBaseConsole
     ////
 
     template <typename Type, typename Pitch>
-    sysinline stdbool addMatrixEx
+    sysinline void addMatrixEx
     (
         const GpuMatrix<Type, Pitch>& img,
         float32 minVal, float32 maxVal,
@@ -97,7 +97,7 @@ struct GpuImageConsole : public GpuBaseConsole
         stdParsNull
     )
     {
-        return addMatrixFunc(makeConst(img), minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
+        addMatrixFunc(makeConst(img), minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
     }
 
     //----------------------------------------------------------------
@@ -108,7 +108,7 @@ struct GpuImageConsole : public GpuBaseConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        virtual stdbool addMatrixChanFunc \
+        virtual void addMatrixChanFunc \
         ( \
             const GpuMatrixAP<const Type>& img, \
             int channel, \
@@ -129,7 +129,7 @@ struct GpuImageConsole : public GpuBaseConsole
     ////
 
     template <typename Type, typename Pitch>
-    sysinline stdbool addMatrixChan
+    sysinline void addMatrixChan
     (
         const GpuMatrix<Type, Pitch>& img,
         int channel,
@@ -142,13 +142,13 @@ struct GpuImageConsole : public GpuBaseConsole
         stdParsNull
     )
     {
-        return addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
+        addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
     }
 
     ////
 
     template <typename Type, typename Pitch>
-    sysinline stdbool addMatrixChan
+    sysinline void addMatrixChan
     (
         const GpuMatrix<Type, Pitch>& img,
         int channel,
@@ -157,7 +157,7 @@ struct GpuImageConsole : public GpuBaseConsole
         stdParsNull
     )
     {
-        return addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, point(1.f), INTERP_NONE, img.size(), BORDER_ZERO, hint, stdPassNullThru);
+        addMatrixChanFunc(makeConst(img), channel, minVal, maxVal, point(1.f), INTERP_NONE, img.size(), BORDER_ZERO, hint, stdPassNullThru);
     }
 
     //----------------------------------------------------------------
@@ -178,7 +178,7 @@ struct GpuImageConsole : public GpuBaseConsole
 
     #define TMP_MACRO(VectorType, o) \
         \
-        virtual stdbool addVectorImageFunc \
+        virtual void addVectorImageFunc \
         ( \
             const GpuMatrix<const VectorType>& image, \
             float32 maxVector, \
@@ -196,7 +196,7 @@ struct GpuImageConsole : public GpuBaseConsole
     ////
 
     template <typename VectorType, typename Pitch>
-    sysinline stdbool addVectorImage
+    sysinline void addVectorImage
     (
         const GpuMatrix<VectorType, Pitch>& image,
         float32 maxVector,
@@ -208,11 +208,11 @@ struct GpuImageConsole : public GpuBaseConsole
         stdParsNull
     )
     {
-        return addVectorImageFunc(makeConst(image), maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
+        addVectorImageFunc(makeConst(image), maxVector, upsampleFactor, upsampleType, upsampleSize, borderMode, hint, stdPassNullThru);
     }
 
     template <typename VectorType, typename Pitch>
-    sysinline stdbool addVectorImageSimple
+    sysinline void addVectorImageSimple
     (
         const GpuMatrix<VectorType, Pitch>& image,
         float32 maxVector,
@@ -220,7 +220,7 @@ struct GpuImageConsole : public GpuBaseConsole
         stdParsNull
     )
     {
-        return addVectorImageFunc(makeConst(image), maxVector, point(1.f), INTERP_NONE, point(0), BORDER_ZERO, hint, stdPassNullThru);
+        addVectorImageFunc(makeConst(image), maxVector, point(1.f), INTERP_NONE, point(0), BORDER_ZERO, hint, stdPassNullThru);
     }
 
     #undef TMP_MACRO
@@ -239,7 +239,7 @@ struct GpuImageConsole : public GpuBaseConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        virtual stdbool addYuvImage420 \
+        virtual void addYuvImage420 \
         ( \
             const GpuPackedYuv<const Type>& image, \
             const ImgOutputHint& hint, \
@@ -259,7 +259,7 @@ struct GpuImageConsole : public GpuBaseConsole
 
     #define TMP_MACRO(Type, funcName) \
         \
-        virtual stdbool funcName \
+        virtual void funcName \
         ( \
             const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
@@ -298,24 +298,24 @@ struct GpuImageConsoleNull : public GpuImageConsole
     // Basic control functions.
     //
 
-    stdbool clear(stdPars(Kit)) {returnTrue;}
-    stdbool update(stdPars(Kit)) {returnTrue;}
+    void clear(stdPars(Kit)) {}
+    void update(stdPars(Kit)) {}
 
     //
     // Basic output interaces.
     //
 
-    stdbool addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) {returnTrue;}
+    void addImageBgr(const GpuMatrixAP<const uint8_x4>& img, const ImgOutputHint& hint, stdPars(Kit)) {}
 
 
     //
     // Video overlay output.
     //
 
-    stdbool overlayClear(stdPars(Kit)) {returnTrue;}
-    stdbool overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit)) {returnTrue;}
-    stdbool overlaySetImageFake(stdPars(Kit)) {returnTrue;}
-    stdbool overlayUpdate(stdPars(Kit)) {returnTrue;}
+    void overlayClear(stdPars(Kit)) {}
+    void overlaySetImageBgr(const Point<Space>& size, const GpuImageProviderBgr32& img, const ImgOutputHint& hint, stdPars(Kit)) {}
+    void overlaySetImageFake(stdPars(Kit)) {}
+    void overlayUpdate(stdPars(Kit)) {}
 
     //
     // Text enabled.
@@ -332,7 +332,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addMatrixFunc \
+        void addMatrixFunc \
         ( \
             const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
@@ -344,7 +344,6 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdParsNull \
         ) \
         { \
-            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_SCALAR_TYPE(TMP_MACRO, _)
@@ -359,7 +358,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addMatrixChanFunc \
+        void addMatrixChanFunc \
         ( \
             const GpuMatrixAP<const Type>& img, \
             int channel, \
@@ -372,7 +371,6 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdParsNull \
         ) \
         { \
-            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_VECTOR_TYPE(TMP_MACRO, _)
@@ -387,7 +385,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
 
     #define TMP_MACRO(VectorType, o) \
         \
-        stdbool addVectorImageFunc \
+        void addVectorImageFunc \
         ( \
             const GpuMatrix<const VectorType>& image, \
             float32 maxVector, \
@@ -399,7 +397,6 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdParsNull \
         ) \
         { \
-            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_VECTOR_IMAGE_TYPE(TMP_MACRO, o)
@@ -414,8 +411,8 @@ struct GpuImageConsoleNull : public GpuImageConsole
 
     #define TMP_MACRO(Type, _) \
         \
-        stdbool addYuvImage420(const GpuPackedYuv<const Type>& image, const ImgOutputHint& hint, stdParsNull) \
-            {returnTrue;}
+        void addYuvImage420(const GpuPackedYuv<const Type>& image, const ImgOutputHint& hint, stdParsNull) \
+            {}
 
     IMAGE_CONSOLE_FOREACH_YUV420_TYPE(TMP_MACRO, _)
 
@@ -429,7 +426,7 @@ struct GpuImageConsoleNull : public GpuImageConsole
 
     #define TMP_MACRO(Type, funcName) \
         \
-        stdbool funcName \
+        void funcName \
         ( \
             const GpuMatrixAP<const Type>& img, \
             float32 minVal, float32 maxVal, \
@@ -441,7 +438,6 @@ struct GpuImageConsoleNull : public GpuImageConsole
             stdParsNull \
         ) \
         { \
-            returnTrue; \
         }
 
     IMAGE_CONSOLE_FOREACH_X4_TYPE(TMP_MACRO, addYuvColorImage)

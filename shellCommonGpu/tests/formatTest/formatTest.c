@@ -18,7 +18,7 @@ namespace formatTest {
 //================================================================
 
 template <typename Uint, typename Writer>
-stdbool referenceFixedFormat(Uint body, int expo, int fracDigits, const Writer& writer, stdPars(ErrorLogKit))
+void referenceFixedFormat(Uint body, int expo, int fracDigits, const Writer& writer, stdPars(ErrorLogKit))
 {
     COMPILE_ASSERT(TYPE_IS_BUILTIN_INT(Uint) && !TYPE_IS_SIGNED(Uint));
     REQUIRE(fracDigits >= 0);
@@ -168,10 +168,6 @@ stdbool referenceFixedFormat(Uint body, int expo, int fracDigits, const Writer& 
 
         writeZeros(capacity);
     }
-
-    ////
-
-    returnTrue;
 }
 
 //================================================================
@@ -187,7 +183,7 @@ public:
 
     void serialize(const ModuleSerializeKit& kit);
     bool active() const {return displaySwitch != Display::Nothing;}
-    stdbool process(stdPars(GpuModuleProcessKit));
+    void process(stdPars(GpuModuleProcessKit));
 
 private:
 
@@ -224,12 +220,12 @@ void FormatTestImpl::serialize(const ModuleSerializeKit& kit)
 //
 //================================================================
 
-stdbool FormatTestImpl::process(stdPars(GpuModuleProcessKit))
+void FormatTestImpl::process(stdPars(GpuModuleProcessKit))
 {
     Display displayType = kit.verbosity >= Verbosity::On ? displaySwitch : Display::Nothing;
 
     if (displayType == Display::Nothing)
-        returnTrue;
+        return;
 
     ////
 
@@ -286,7 +282,7 @@ stdbool FormatTestImpl::process(stdPars(GpuModuleProcessKit))
         auto writer = [&] (auto* ptr, auto size)
             {resultRef.append(ptr, size);};
 
-        require(referenceFixedFormat(bodyInt, expo - digits, precision, writer, stdPass));
+        referenceFixedFormat(bodyInt, expo - digits, precision, writer, stdPass);
 
         REQUIRE(def(resultRef));
 
@@ -295,7 +291,7 @@ stdbool FormatTestImpl::process(stdPars(GpuModuleProcessKit))
         if_not (resultRef == resultOpt)
         {
             resultRef.clear();
-            require(referenceFixedFormat(bodyInt, expo - digits, precision, writer, stdPass));
+            referenceFixedFormat(bodyInt, expo - digits, precision, writer, stdPass);
 
             printMsgG(kit, STR("Ref %"), resultRef, msgWarn);
             printMsgG(kit, STR("Opt %"), resultOpt, msgWarn);
@@ -303,10 +299,6 @@ stdbool FormatTestImpl::process(stdPars(GpuModuleProcessKit))
         }
 
     }
-
-    ////
-
-    returnTrue;
 }
 
 //----------------------------------------------------------------
